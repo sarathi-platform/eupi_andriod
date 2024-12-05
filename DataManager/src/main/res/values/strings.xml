@@ -125,6 +125,25 @@
     <string name="cancel_text">Cancel</string>
     <string name="decrease_in_number">decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
+    <string name="data_send_to_server">Data sent to Server</string>
+    <string name="sync_on">Auto Sync - On</string>
+    <string name="sync_off">Auto Sync - Off</string>
+    <string name="auto_sync">Auto Sync -  %s</string>
+    <string name="images_send_to_server">Images sent to Server</string>
+    <string name="data_processes_by_server">Data processed by Server</string>
+    <string name="images_processes_by_server">Images processed by Server</string>
+    <string name="sync_view_progress">View Progress</string>
+    <string name="sync_worker_cancelled">Sync worker cancelled</string>
+    <string name="sync_already_cancelled">Sync is already Cancelled</string>
+
+    <string name="synced">Synced</string>
+
+    <string name="edit_event">Edit Event</string>
+    <string name="showing">"Showing "</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">Assets</string>
+    <string name="last_updated_days_ago">Last updated: %1$s days ago</string>
+    <string name="last_1_month">Last 1 Month</string>
     <string name="hours">Hours</string>
     <string name="years">Years</string>
     <string name="minute">Minute</string>

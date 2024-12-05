@@ -144,8 +144,9 @@ fun VillageSelectionScreen(
                 navController.navigate(AuthScreen.LOGIN.route)
             },
             onPositiveButtonClick = {
-
-                viewModel.clearLocalDB(context = context)
+                viewModel.clearLocalDB(context = context) {
+                    // Removed remote config call
+                }
                 viewModel.showUserChangedDialog.value = false
             })
     }

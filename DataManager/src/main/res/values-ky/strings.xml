@@ -100,6 +100,10 @@
     <string name="search_didi">Naitukdi Aibi no</string>
     <string name="search_by_small_groups">Chikon Bodolrok bai naituk di</string>
     <string name="total_didis">Bebak Aibi song - %1$s</string>
+    <string name="data_send_to_server">Data sent to Server</string>
+    <string name="images_send_to_server">Images sent to Server</string>
+    <string name="data_processes_by_server">Data processed by Server</string>
+    <string name="images_processes_by_server">Images processed by Server</string>
     <string name="decrease_in_number">decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">"Khoroksa Aibi phano yapharjakya nono "</string>
     <string name="save_text">Save</string>
@@ -119,9 +123,22 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
+    <string name="edit_event">Edit Event</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"Rwbai "</string>
+    <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
+    <string name="last_1_month">Last 1 Month</string>
+    <string name="auto_sync">Saknisak Sync -  %s</string>
+    <string name="sync_on">Saknisak sync: On</string>
+    <string name="sync_off">Saknisak sync: Off</string>
     <string name="hours">Hours</string>
     <string name="years">Years</string>
     <string name="minute">Minute</string>
     <string name="month">Month</string>
+    <string name="synced">Synced</string>
+    <string name="sync_view_progress">Ung tongjak naidi</string>
+    <string name="sync_worker_cancelled">Sync worker cancelled</string>
+    <string name="sync_already_cancelled">Sync cancelled ungjak se.</string>
 
 </resources>

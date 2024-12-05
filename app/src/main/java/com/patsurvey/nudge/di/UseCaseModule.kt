@@ -10,9 +10,31 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.commo_reposito
 import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_case.EventsWriterUserCase
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMissionStatusUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
+import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.database.dao.EventStatusDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.RequestStatusDao
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.syncmanager.database.SyncManagerDatabase
+import com.nudge.syncmanager.domain.repository.SyncApiRepository
+import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
+import com.nudge.syncmanager.domain.repository.SyncBlobRepository
+import com.nudge.syncmanager.domain.repository.SyncBlobRepositoryImpl
+import com.nudge.syncmanager.domain.repository.SyncRepository
+import com.nudge.syncmanager.domain.repository.SyncRepositoryImpl
+import com.nudge.syncmanager.domain.usecase.AddUpdateEventUseCase
+import com.nudge.syncmanager.domain.usecase.BlobUploadUseCase
+import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
+import com.nudge.syncmanager.domain.usecase.GetUserDetailsSyncRepoUseCase
+import com.nudge.syncmanager.domain.usecase.SyncAPIUseCase
+import com.nudge.syncmanager.domain.usecase.SyncAnalyticsEventUseCase
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
+import com.nudge.syncmanager.imageupload.BlobImageUploader
+import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.repository.ReopenActivityEventHelperRepository
@@ -23,6 +45,9 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.GetExportOptionList
 import com.patsurvey.nudge.activities.backup.domain.use_case.GetUserDetailsExportUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityEventHelperUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
+import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
+import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
+import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
@@ -37,6 +62,16 @@ import com.patsurvey.nudge.activities.settings.domain.use_case.GetUserDetailsUse
 import com.patsurvey.nudge.activities.settings.domain.use_case.LogoutUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SaveLanguageScreenOpenFromUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.sync.history.domain.repository.SyncHistoryRepository
+import com.patsurvey.nudge.activities.sync.history.domain.repository.SyncHistoryRepositoryImpl
+import com.patsurvey.nudge.activities.sync.history.domain.use_case.GetSyncHistoryUseCase
+import com.patsurvey.nudge.activities.sync.history.domain.use_case.SyncHistoryUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepository
+import com.patsurvey.nudge.activities.sync.home.domain.repository.SyncHomeRepositoryImpl
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.FetchLastSyncDateForNetwork
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetSyncEventsUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.GetUserDetailsSyncUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.impls.SelectionVillageRepositoryImpl
 import com.patsurvey.nudge.activities.ui.progress.domain.repository.interfaces.SelectionVillageRepository
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
@@ -88,7 +123,8 @@ object UseCaseModule {
     @Singleton
     fun providesSettingScreenUseCase(
         repository: SettingBSRepository,
-        getSummaryFileRepository: GetSummaryFileRepository
+        getSummaryFileRepository: GetSummaryFileRepository,
+        syncHomeRepository: SyncHomeRepository
     ): SettingBSUserCase {
         return SettingBSUserCase(
             getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
@@ -99,7 +135,8 @@ object UseCaseModule {
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
             getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository),
             getCasteUseCase = GetCasteUseCase(repository),
-            clearSelectionDBExportUseCase = ClearSelectionDBExportUseCase(repository)
+            clearSelectionDBExportUseCase = ClearSelectionDBExportUseCase(repository),
+            getSyncEventsUseCase = GetSyncEventsUseCase(syncHomeRepository)
 
         )
     }
@@ -148,6 +185,153 @@ object UseCaseModule {
     ): GetSummaryFileRepository {
         return GetSummaryFileRepositoryImpl(activityTaskDao, missionActivityDao)
     }
+
+    @Provides
+    @Singleton
+    fun provideSyncHomeRepository(
+        corePrefRepo: CorePrefRepo,
+        eventsDao: EventsDao,
+        syncApiService: SyncApiService
+    ): SyncHomeRepository {
+        return SyncHomeRepositoryImpl(
+            corePrefRepo = corePrefRepo,
+            eventsDao = eventsDao,
+            syncApiService = syncApiService
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncHomeUseCase(
+        repository: SyncHomeRepository,
+        eventsWriterRepository: EventsWriterRepository,
+        syncRepository: SyncRepository,
+        syncAPiRepository: SyncApiRepository,
+        syncAnalyticsEventUseCase: SyncAnalyticsEventUseCase
+    ): SyncEventDetailUseCase {
+        return SyncEventDetailUseCase(
+            getUserDetailsSyncUseCase = GetUserDetailsSyncUseCase(repository),
+            getSyncEventsUseCase = GetSyncEventsUseCase(repository),
+            eventsWriterUseCase = EventsWriterUserCase(eventsWriterRepository),
+            fetchLastSyncDateForNetwork = FetchLastSyncDateForNetwork(repository),
+            syncAPIUseCase = SyncAPIUseCase(syncRepository, syncAPiRepository),
+            syncAnalyticsEventUseCase = syncAnalyticsEventUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncHistoryRepository(
+        prefRepo: PrefRepo,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao
+    ):SyncHistoryRepository{
+        return SyncHistoryRepositoryImpl(
+            prefRepo = prefRepo,
+            eventsDao = eventsDao,
+            eventStatusDao = eventStatusDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncHistoryUseCase(
+        repository: SyncHistoryRepository
+    ):SyncHistoryUseCase{
+        return SyncHistoryUseCase(
+           getSyncHistoryUseCase = GetSyncHistoryUseCase(repository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncRepository(
+        corePrefRepo: CorePrefRepo,
+        requestStatusDao: RequestStatusDao,
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao,
+        apiService: SyncApiService,
+        eventsDao: EventsDao,
+        blobImageUploader: BlobImageUploader
+    ): SyncRepository {
+        return SyncRepositoryImpl(
+            corePrefRepo = corePrefRepo,
+            requestStatusDao = requestStatusDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao,
+            apiService = apiService,
+            eventDao = eventsDao,
+            imageUploader = blobImageUploader
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncApiRepository(
+        apiService: SyncApiService,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+    ): SyncApiRepository {
+        return SyncApiRepositoryImpl(
+            apiService = apiService,
+            imageStatusDao = imageStatusDao,
+            eventStatusDao = eventStatusDao,
+            corePrefRepo = corePrefRepo
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncManagerUseCase(
+        repository: SyncRepository,
+        syncAPiRepository: SyncApiRepository,
+        syncBlobRepository: SyncBlobRepository,
+        analyticsManager: AnalyticsManager,
+        fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    ): SyncManagerUseCase {
+        return SyncManagerUseCase(
+            addUpdateEventUseCase = AddUpdateEventUseCase(repository),
+            syncAPIUseCase = SyncAPIUseCase(repository, syncAPiRepository),
+            getUserDetailsSyncUseCase = GetUserDetailsSyncRepoUseCase(repository),
+            fetchEventsFromDBUseCase = FetchEventsFromDBUseCase(repository),
+            syncBlobUploadUseCase = BlobUploadUseCase(syncBlobRepository),
+            syncAnalyticsEventUseCase = SyncAnalyticsEventUseCase(
+                analyticsManager = analyticsManager
+            ),
+            fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncAnalyticsEventUseCase(
+        analyticsManager: AnalyticsManager,
+    ): SyncAnalyticsEventUseCase {
+        return SyncAnalyticsEventUseCase(analyticsManager)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSyncBlobRepository(
+        apiService: SyncApiService,
+        eventStatusDao: EventStatusDao,
+        corePrefRepo: CorePrefRepo,
+        imageStatusDao: ImageStatusDao,
+        blobImageUploader: BlobImageUploader,
+        eventsDao: EventsDao
+    ): SyncBlobRepository {
+        return SyncBlobRepositoryImpl(
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao,
+            corePrefRepo = corePrefRepo,
+            apiService = apiService,
+            blobImageUploader = blobImageUploader,
+            eventsDao = eventsDao
+        )
+    }
+
+
 
     @Provides
     @Singleton
@@ -218,4 +402,37 @@ object UseCaseModule {
             villageListDao = villageListDao
         )
     }
+
+    @Provides
+    @Singleton
+    fun providesFetchEventsFromDBUseCase(repository: SyncRepository): FetchEventsFromDBUseCase {
+        return FetchEventsFromDBUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesCheckEventLimitThresholdUseCase(
+        checkEventLimitThresholdRepository: CheckEventLimitThresholdRepository,
+        fetchEventsFromDBUseCase: FetchEventsFromDBUseCase
+    ): CheckEventLimitThresholdUseCase {
+        return CheckEventLimitThresholdUseCase(
+            checkEventLimitThresholdRepository,
+            fetchEventsFromDBUseCase
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesCheckEventLimitThresholdRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao
+    ): CheckEventLimitThresholdRepository {
+        return CheckEventLimitThresholdRepositoryImpl(
+            coreSharedPrefs = coreSharedPrefs,
+            eventsDao = eventsDao,
+            eventStatusDao = eventStatusDao
+        )
+    }
+
 }

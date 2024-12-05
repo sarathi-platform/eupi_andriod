@@ -18,7 +18,9 @@ import com.nrlm.baselinesurvey.utils.getParentEntityMapForEvent
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -42,7 +44,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
     private val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
-
+    private val eventStatusDao: EventStatusDao,
+    private val imageStatusDao: ImageStatusDao
     ) : EventsWriterRepository {
 
     override suspend fun <T> createEvent(
@@ -70,10 +73,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = survey?.surveyName ?: BLANK_STRING,
@@ -111,10 +112,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                             createdBy = prefBSRepo.getUserId(),
                             mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                             request_payload = requestPayload.json(),
-                            status = EventSyncStatus.OPEN.name,
+                            status = EventSyncStatus.OPEN.eventSyncStatus,
                             modified_date = System.currentTimeMillis().toDate(),
-                            result = null,
-                            consumer_status = BLANK_STRING,
                             payloadLocalId = BLANK_STRING,
                             metadata = MetadataDto(
                                 mission = survey?.surveyName ?: BLANK_STRING,
@@ -151,10 +150,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                             createdBy = prefBSRepo.getUserId(),
                             mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                             request_payload = requestPayload.json(),
-                            status = EventSyncStatus.OPEN.name,
+                            status = EventSyncStatus.OPEN.eventSyncStatus,
                             modified_date = System.currentTimeMillis().toDate(),
-                            result = null,
-                            consumer_status = BLANK_STRING,
                             payloadLocalId = BLANK_STRING,
                             metadata = MetadataDto(
                                 mission = survey?.surveyName ?: BLANK_STRING,
@@ -199,10 +196,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = mission.missionName ?: BLANK_STRING,
@@ -236,10 +231,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = mission.missionName ?: BLANK_STRING,
@@ -273,10 +266,8 @@ class EventsWriterRepositoryImpl @Inject constructor(
                     createdBy = prefBSRepo.getUserId(),
                     mobile_number = prefBSRepo.getMobileNumber() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = mission.missionName ?: BLANK_STRING,
@@ -340,13 +331,37 @@ class EventsWriterRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveFailedEventWithFileName(
+        event: Events,
+        eventDependencies: List<EventDependencyEntity>,
+        eventType: EventType,
+        fileNameWithoutExtension: String
+    ) {
+        try {
+            val selectedEventWriter = mutableListOf<EventWriterName>(
+                EventWriterName.FILE_EVENT_WRITER
+            )
+            val eventFormatter: IEventFormatter = getEventFormatter()
+            eventFormatter.saveAndFormatEventWithFileName(
+                event = event,
+                dependencyEntity = eventDependencies,
+                selectedEventWriters = selectedEventWriter,
+                fileNameWithoutExtension = fileNameWithoutExtension
+            )
+        } catch (exception: Exception) {
+            BaselineLogger.e("saveEventToMultipleSources", exception.message ?: "")
+        }
+    }
+
 
     override fun getEventFormatter(): IEventFormatter {
         return EventWriterFactory().createEventWriter(
             BaselineCore.getAppContext(),
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao = eventDependencyDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

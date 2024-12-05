@@ -10,6 +10,8 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.json
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.patsurvey.nudge.MyApplication
@@ -81,7 +83,6 @@ import com.patsurvey.nudge.utils.FLAG_WEIGHT
 import com.patsurvey.nudge.utils.FORM_C
 import com.patsurvey.nudge.utils.FORM_D
 import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.LOW_SCORE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -171,6 +172,7 @@ class VillageSelectionRepository @Inject constructor(
     val poorDidiListDao: PoorDidiListDao,
     val androidDownloader: AndroidDownloader,
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
+    val analyticsManager: AnalyticsManager
 ): BaseRepository() {
 
     private var isPendingForBpc = 0
@@ -4075,6 +4077,12 @@ class VillageSelectionRepository @Inject constructor(
         } else {
             prefRepo.setIsUserBPC(false)
         }
+        analyticsManager.setUserDetail(
+            distinctId = prefRepo.getMobileNumber(),
+            name = userDetailsModel.name,
+            userType = userDetailsModel.typeName,
+            buildEnvironment = prefRepo.getBuildEnvironment()
+        )
 
     }
 

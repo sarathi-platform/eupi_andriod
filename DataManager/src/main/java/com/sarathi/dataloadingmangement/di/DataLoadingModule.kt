@@ -3,11 +3,15 @@ package com.sarathi.dataloadingmangement.di
 import android.content.Context
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -219,7 +223,8 @@ class DataLoadingModule {
             .addMigrations(
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_4_5
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -654,6 +659,7 @@ class DataLoadingModule {
         fetchMoneyJournalUseCase: FetchMoneyJournalUseCase,
         livelihoodUseCase: LivelihoodUseCase,
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
+        analyticsManager: AnalyticsManager,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase
         ): FetchAllDataUseCase {
@@ -672,7 +678,7 @@ class DataLoadingModule {
             ),
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
             fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
-            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository),
+            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository, analyticsManager),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
@@ -753,14 +759,18 @@ class DataLoadingModule {
         @ApplicationContext context: Context,
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao
 
     ): IEventWriterRepository {
         return EventWriterRepositoryImpl(
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             coreSharedPrefs = coreSharedPrefs,
-            context = context
+            context = context,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 
@@ -934,12 +944,14 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        downloaderManager: DownloaderManager
     ): FetchDidiDetailsFromNetworkRepository {
         return FetchDidiDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs, dataLoadingApiService,
             subjectEntityDao,
-            apiStatusDao = apiStatusDao
+            apiStatusDao = apiStatusDao,
+            downloaderManager = downloaderManager
         )
     }
 
@@ -1436,13 +1448,15 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         taskDao: TaskDao,
         sectionStatusEntityDao: SectionStatusEntityDao,
-        surveyEntityDao: SurveyEntityDao
+        surveyEntityDao: SurveyEntityDao,
+        activityConfigDao: ActivityConfigDao
     ): SectionStatusEventWriterRepository {
         return SectionStatusEventWriterRepositoryImpl(
             coreSharedPrefs,
             taskDao,
             sectionStatusEntityDao,
-            surveyEntityDao
+            surveyEntityDao,
+            activityConfigDao
         )
     }
 
@@ -1483,6 +1497,17 @@ class DataLoadingModule {
             coreSharedPrefs, subjectLivelihoodEventMappingDao
         )
     }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsManager(
+        @ApplicationContext context: Context,
+        coreSharedPrefs: CoreSharedPrefs
+    ): AnalyticsManager {
+        return AnalyticsManager(MixPanelAnalyticsProvider(context, coreSharedPrefs))
+
+    }
+
 
     @Provides
     @Singleton

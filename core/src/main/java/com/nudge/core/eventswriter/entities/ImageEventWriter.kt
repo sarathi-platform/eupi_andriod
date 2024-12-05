@@ -12,7 +12,9 @@ import android.util.Log
 import androidx.core.net.toUri
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventWriterName
@@ -31,7 +33,9 @@ class ImageEventWriter : IEventWriter {
         uri: Uri?,
         dependencyEntity: List<EventDependencyEntity>,
         eventsDao: EventsDao,
-        eventDependencyDao: EventDependencyDao
+        eventStatusDao: EventStatusDao,
+        eventDependencyDao: EventDependencyDao,
+        imageStatusDao: ImageStatusDao
     ) {
         uri?.let { saveImageToMediaStore(context, it, mobileNo) }
     }
@@ -39,6 +43,21 @@ class ImageEventWriter : IEventWriter {
 
     override suspend fun getEventWriteType(): EventWriterName {
         return EventWriterName.IMAGE_EVENT_WRITER
+    }
+
+    override suspend fun addFailedEventIntoFile(
+        context: Context,
+        event: Events,
+        mobileNo: String,
+        uri: Uri?,
+        dependencyEntity: List<EventDependencyEntity>,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
+        eventDependencyDao: EventDependencyDao,
+        imageStatusDao: ImageStatusDao,
+        fileNameWithoutExtension: String
+    ) {
+        // Only to write failed event into file
     }
 
     private fun saveImageToMediaStore(

@@ -49,6 +49,8 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -64,8 +66,6 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
-import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
-import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -74,6 +74,7 @@ import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
+import com.sarathi.surveymanager.ui.component.ContentBottomViewComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
@@ -273,7 +274,7 @@ fun QuestionUiContent(
             QuestionType.NumericField.name,
             QuestionType.InputText.name -> {
                 InputComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     maxLength = getMaxInputLength(
                         questionId = question.questionId,
@@ -294,8 +295,8 @@ fun QuestionUiContent(
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
                     isEditable = !viewModel.isActivityCompleted.value,
-                    defaultValue = question.options?.firstOrNull()?.selectedValue
-                        ?: BLANK_STRING,
+                    defaultValue = question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                    optionsItem = question.options?.firstOrNull(),
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -310,12 +311,8 @@ fun QuestionUiContent(
                         ?: BLANK_STRING
                 ) { selectedValue, remainingAmout ->
                     viewModel.totalRemainingAmount = remainingAmout
-                    saveInputTypeAnswer(selectedValue, question, viewModel)
+                    saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                 }
             }
 
@@ -342,12 +339,8 @@ fun QuestionUiContent(
                         ?: BLANK_STRING,
                     isFutureDateDisable = true
                 ) { selectedValue ->
-                    saveInputTypeAnswer(selectedValue, question, viewModel)
+                    saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                 }
             }
 
@@ -378,17 +371,13 @@ fun QuestionUiContent(
                         question.options,
                         isDeleted
                     )
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                     onAnswerSelect(question)
 
                 }
             }
             QuestionType.SingleImage.name -> {
                 SingleImageComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths =
                     question.options?.firstOrNull()?.selectedValue
@@ -401,11 +390,6 @@ fun QuestionUiContent(
                 ) { selectedValue, isDeleted ->
                     saveSingleImage(isDeleted, question.options, selectedValue)
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
-
                 }
             }
             QuestionType.SingleSelectDropDown.name,
@@ -430,10 +414,6 @@ fun QuestionUiContent(
                         question.options?.forEach { option ->
                             option.isSelected = selectedValue.id == option.optionId
                         }
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                         onAnswerSelect(question)
 
                     }
@@ -442,7 +422,7 @@ fun QuestionUiContent(
 
             QuestionType.MultiSelectDropDown.name -> {
                 TypeMultiSelectedDropDownComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     title = question.questionDisplay,
                     isMandatory = question.isMandatory,
@@ -469,10 +449,6 @@ fun QuestionUiContent(
                                 options.isSelected = false
                             }
                         }
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                         onAnswerSelect(question)
 
                     }
@@ -489,13 +465,14 @@ fun QuestionUiContent(
 
             QuestionType.RadioButton.name -> {
                 RadioQuestionBoxComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
@@ -511,10 +488,6 @@ fun QuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 )
             }
@@ -522,7 +495,7 @@ fun QuestionUiContent(
             QuestionType.MultiSelect.name,
             QuestionType.Grid.name -> {
                 GridTypeComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
@@ -530,6 +503,7 @@ fun QuestionUiContent(
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
                     optionStateMap = viewModel.optionStateMap,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -555,10 +529,6 @@ fun QuestionUiContent(
 
 
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     },
                     questionDetailExpanded = {
 
@@ -568,12 +538,13 @@ fun QuestionUiContent(
 
             QuestionType.Toggle.name -> {
                 ToggleQuestionBoxComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
@@ -589,17 +560,13 @@ fun QuestionUiContent(
                         }
                         question.options?.get(optionItemIndex)?.isSelected = true
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 )
             }
 
             QuestionType.IncrementDecrementList.name -> {
                 IncrementDecrementCounterList(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     title = question.questionDisplay,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
@@ -620,17 +587,13 @@ fun QuestionUiContent(
                             isSelected = true
                         }
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 )
             }
 
             QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                 HrsMinRangePickerComponent(
-                    contests = question.contentEntities,
+                    content = question.contentEntities,
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
                     title = question.questionDisplay,
@@ -650,10 +613,6 @@ fun QuestionUiContent(
                     question.options?.firstOrNull()?.selectedValue = selectValue
                     question.options?.firstOrNull()?.isSelected = true
                     onAnswerSelect(question)
-                    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[question.questionId] =
-                            Pair(isValid, message)
-                    }
                 }
             }
 
@@ -661,7 +620,9 @@ fun QuestionUiContent(
         Text(
             text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
                 ?: BLANK_STRING,
-            modifier = Modifier.padding(horizontal = dimen_5_dp),
+            modifier = Modifier
+                .padding(horizontal = dimen_5_dp)
+                .padding(top = dimen_8_dp, bottom = dimen_10_dp),
             style = quesOptionTextStyle.copy(color = eventTextColor)
         )
     }
@@ -677,7 +638,8 @@ fun FormQuestionUiContent(
     onClick: () -> Unit,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
-    showEditErrorToast: (context: Context, editErrorType: String) -> Unit
+    showEditErrorToast: (context: Context, editErrorType: String) -> Unit,
+    navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {}
 ) {
 
     val context = LocalContext.current
@@ -736,30 +698,12 @@ fun FormQuestionUiContent(
                     if (viewModel.showSummaryView.get(question.formId)
                             .value() > NUMBER_ZERO
                     ) {
-                        val surveyConfigForForm = viewModel.surveyConfig[question.formId]
-                        surveyConfigForForm?.forEach { mapEntry ->
-                            mapEntry.value.filter {
-                                it.componentType.equals(
-                                    CONFIG_SLOT_TYPE_QUESTION_CARD,
-                                    true
-                                )
-                            }.forEach {
-                                val mMapEntry = mapOf(mapEntry.key to it)
-                                val updatedModel = viewModel.getSurveyModelWithValue(
-                                    mMapEntry.entries.firstOrNull()!!,
-                                    question,
-                                    surveyConfigForForm
-                                )
-
-                                if (!it.type.equals(CALCULATION_TYPE, true)) {
-                                    CustomVerticalSpacer()
-
-                                    SubContainerView(
-                                        updatedModel,
-                                        isNumberFormattingRequired = false
-                                    )
-                                }
-                            }
+                        viewModel.filteredSurveyModels[question.formId]?.forEach { model ->
+                            CustomVerticalSpacer()
+                            SubContainerView(
+                                model,
+                                isNumberFormattingRequired = false
+                            )
                         }
                         CustomVerticalSpacer()
                         LinkTextButtonWithIcon(
@@ -772,7 +716,24 @@ fun FormQuestionUiContent(
                         ) {
                             onViewSummaryClicked(question)
                         }
+                    }
 
+                    if (question.formContent?.isNotEmpty() == true) {
+                        CustomVerticalSpacer(size = dimen_6_dp)
+                        ContentBottomViewComponent(
+                            contents = question.formContent,
+                            questionIndex = 0,
+                            showCardView = true,
+                            questionDetailExpanded = {},
+                            navigateToMediaPlayerScreen = { contentList ->
+                                handleContentClick(
+                                    viewModel = viewModel,
+                                    context = context,
+                                    navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                    contentList = contentList
+                                )
+                            }
+                        )
                     }
                 }
             }
@@ -837,9 +798,7 @@ fun saveInputTypeAnswer(
         question.options?.firstOrNull()?.isSelected = true
     }
     question.options?.firstOrNull()?.selectedValue = selectedValue
-    viewModel.runValidationCheck(questionId = question.questionId) { isValid, message ->
 
-    }
 }
 
 fun saveMultiImageTypeAnswer(filePath: String, options: List<OptionsUiModel>?, isDeleted: Boolean) {

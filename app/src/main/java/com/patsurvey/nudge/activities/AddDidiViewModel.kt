@@ -578,13 +578,22 @@ class AddDidiViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity(),
                     ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                 )
-                addDidiRepository.insertDidi(didiEntity)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Adding Didi ${didiEntity.name} and guardian Name: ${didiEntity.guardianName}"
+                )
 
                 addDidiRepository.saveEvent(
                     didiEntity,
                     EventName.ADD_DIDI,
                     EventType.STATEFUL
                 )
+                addDidiRepository.insertDidi(didiEntity)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Added Didi ${didiEntity.name} and guardian Name: ${didiEntity.guardianName}"
+                )
+
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
                 setSocialMappingINProgress(
@@ -677,12 +686,22 @@ class AddDidiViewModel @Inject constructor(
                 )
                 val selectedTolaEntity =
                     addDidiRepository.fetchSingleTolaFromServerId(selectedTola.value.first)
-                addDidiRepository.insertDidi(updatedDidi)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Updatingf Didi ${updatedDidi.name} and guardian Name: ${updatedDidi.guardianName}"
+                )
+
                 addDidiRepository.saveEvent(
                     updatedDidi,
                     EventName.UPDATE_DIDI,
                     EventType.STATEFUL
                 )
+                addDidiRepository.insertDidi(updatedDidi)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Updated Didi ${updatedDidi.name} and guardian Name: ${updatedDidi.guardianName}"
+                )
+
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
@@ -1040,11 +1059,12 @@ class AddDidiViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.e("AddDidiViewModel", "onServerError -> ${error}")
+
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.e("AddDidiViewModel", "onServerError -> ${errorModel}")
     }
 
     /*private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
@@ -1438,6 +1458,11 @@ class AddDidiViewModel @Inject constructor(
                 didiId,
                 addDidiRepository.getSelectedVillage().id
             )
+            NudgeLogger.d(
+                "AddDidiViewModel",
+                "-----Didi Unavaliable Didi ${updatedDidiEntity.name} and guardian Name: ${updatedDidiEntity.guardianName}"
+            )
+
             //TODO @Anupam check why not available case is not working.
             addDidiRepository.saveEvent(
                 eventItem = updatedDidiEntity,
@@ -1518,16 +1543,25 @@ class AddDidiViewModel @Inject constructor(
         networkCallbackListener: NetworkCallbackListener
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            addDidiRepository.deleteDidiOffline(
-                id = didi.id,
-                activeStatus = DidiStatus.DIID_DELETED.ordinal,
-                needsToPostDeleteStatus = didi.serverId != 0
+
+            NudgeLogger.d(
+                "AddDidiViewModel",
+                "-----Deleting Didi ${didi.name} and guardian Name: ${didi.guardianName}"
             )
 
             addDidiRepository.saveEvent(
                 didi,
                 EventName.DELETE_DIDI,
                 EventType.STATEFUL
+            )
+            addDidiRepository.deleteDidiOffline(
+                id = didi.id,
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = didi.serverId != 0
+            )
+            NudgeLogger.d(
+                "AddDidiViewModel",
+                "-----Deleted Didi ${didi.name} and guardian Name: ${didi.guardianName}"
             )
 
             if (didi.serverId == 0)

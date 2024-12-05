@@ -65,6 +65,10 @@ fun SurveyScreen(
             }
         },
         onAnswerSelect = { questionUiModel ->
+            viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
+                viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
+                    Pair(isValid, message)
+            }
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
             viewModel.updateTaskStatus(taskId)
             viewModel.updateSectionStatus(
@@ -110,6 +114,10 @@ fun SurveyScreen(
                 onAnswerSelect = { questionUiModel ->
                     viewModel.updateQuestionResponseMap(questionUiModel)
                     viewModel.runConditionCheck(questionUiModel)
+                    viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
+                        viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
+                            Pair(isValid, message)
+                    }
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
                     viewModel.updateTaskStatus(taskId)

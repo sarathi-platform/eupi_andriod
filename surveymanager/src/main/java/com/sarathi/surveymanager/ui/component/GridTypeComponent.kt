@@ -49,6 +49,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.GreyLight
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -57,6 +58,7 @@ import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
@@ -65,14 +67,15 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun GridTypeComponent(
-    contests: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
+    content: List<ContentList?>? = listOf(),
     questionDisplay: String,
     optionUiModelList: List<OptionsUiModel>,
     areOptionsEnabled: Boolean = true,
@@ -128,7 +131,10 @@ fun GridTypeComponent(
         ) {
             Column(modifier = Modifier.background(white)) {
                 Column(
-                    Modifier.padding(top = dimen_16_dp),
+                    Modifier.padding(
+                        top = dimen_16_dp,
+                        bottom = if (showCardView) dimen_16_dp else dimen_2_dp
+                    ),
                     verticalArrangement = Arrangement.spacedBy(
                         dimen_18_dp
                     )
@@ -144,7 +150,7 @@ fun GridTypeComponent(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
                                     QuestionComponent(
-                                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                         onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
                                         questionNumber = if (showCardView) getQuestionNumber(
@@ -179,6 +185,7 @@ fun GridTypeComponent(
                                             ?: emptyList()
                                     ) { _index, optionItem ->
                                         GridOptionCard(
+                                            isEditAllowed = isEditAllowed,
                                             optionItem = optionItem,
                                             isEnabled = optionStateMap.filter {
                                                 it.key == Pair(
@@ -200,16 +207,17 @@ fun GridTypeComponent(
                             }
                         }
                         item {
-                            if (showCardView && contests?.isNotEmpty() == true)
-                            ContentBottomViewComponent(
-                                contents = contests,
-                                questionIndex = questionIndex,
-                                showCardView = showCardView,
-                                questionDetailExpanded = {},
-                                navigateToMediaPlayerScreen = { contentList ->
-                                    navigateToMediaPlayerScreen(contentList)
-                                }
-                            )
+                            if (showCardView && content?.isNotEmpty() == true) {
+                                ContentBottomViewComponent(
+                                contents = content,
+                                    questionIndex = questionIndex,
+                                    showCardView = showCardView,
+                                    questionDetailExpanded = {},
+                                    navigateToMediaPlayerScreen = { contentList ->
+                                        navigateToMediaPlayerScreen(contentList)
+                                    }
+                                )
+                            }
                         }
                     }
 
@@ -227,8 +235,10 @@ fun GridOptionCard(
     isTaskMarkedNotAvailable: MutableState<Boolean>,
     isEnabled: Map.Entry<Pair<Int, Int>, Boolean>?,
     isOptionSelected: Boolean = false,
-    onOptionSelected: (Int, isSelected: Boolean) -> Unit
+    isEditAllowed: Boolean,
+    onOptionSelected: (Int, isSelected: Boolean) -> Unit,
 ) {
+    val context = LocalContext.current
 
     val isSelected = remember(optionItem.description, isEnabled?.key, isEnabled?.value) {
         mutableStateOf(isOptionSelected)
@@ -251,8 +261,16 @@ fun GridOptionCard(
             )
             .clickable {
                 if (isOptionEnabled.value) {
-                    isSelected.value = !isSelected.value
-                    onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                    if (isEditAllowed) {
+                        isSelected.value = !isSelected.value
+                        onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
+                    } else {
+                        showCustomToast(
+                            context,
+                            context.getString(R.string.edit_disable_message)
+                        )
+                    }
+
                 }
             }
             .then(modifier)) {

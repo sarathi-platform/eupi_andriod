@@ -74,17 +74,16 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 baseLineApiService.userAndVillageListAPI(languageId = userViewApiRequest)
             if (userApiResponse.status.equals(SUCCESS, true)) {
                 userApiResponse.data?.let {
-                    prefBSRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
-                    prefBSRepo.savePref(PREF_KEY_NAME, it.name ?: "")
-                    prefBSRepo.savePref(PREF_KEY_EMAIL, it.email ?: "")
-                    prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
-                    prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
-                    prefBSRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
-                    prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
+                    prefBSRepo.savePref(PREF_KEY_USER_NAME, it.username ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_NAME, it.name ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_EMAIL, it.email ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: BLANK_STRING)
                     updateCoreEventFileName(
                         context = BaselineCore.getAppContext(),
-                        mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)
-                            ?: BLANK_STRING
+                        mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
                     )
                 }
                 val apiResponse = userApiResponse.data?.username?.toInt()

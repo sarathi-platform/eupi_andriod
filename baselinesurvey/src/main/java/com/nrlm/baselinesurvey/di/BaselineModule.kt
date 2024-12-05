@@ -137,7 +137,10 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivity
 import com.nudge.core.data.repository.caste.CasteConfigRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -239,9 +242,10 @@ object BaselineModule {
     @Singleton
     fun provideLoginScreenRepository(
         prefBSRepo: PrefBSRepo,
-        baseLineApiService: BaseLineApiService
+        baseLineApiService: BaseLineApiService,
+        corePrefRepo: CorePrefRepo
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService)
+        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService, corePrefRepo = corePrefRepo)
     }
 
     @Provides
@@ -469,6 +473,7 @@ object BaselineModule {
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         apiStatusDao: ApiStatusDao,
+        corePrefRepo: CorePrefRepo,
         downloaderManager: DownloaderManager
 
     ): DataLoadingScreenRepository {
@@ -488,6 +493,7 @@ object BaselineModule {
             baselineDatabase,
             didiSectionProgressEntityDao,
             apiStatusDao,
+            corePrefRepo,
             downloaderManager = downloaderManager
         )
     }
@@ -701,7 +707,9 @@ object BaselineModule {
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
         nudgeBaselineDatabase: NudgeBaselineDatabase,
-        eventWriterHelper: EventWriterHelperImpl
+        eventWriterHelper: EventWriterHelperImpl,
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
             prefBSRepo = prefBSRepo,
@@ -710,6 +718,8 @@ object BaselineModule {
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             missionEntityDao = missionEntityDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

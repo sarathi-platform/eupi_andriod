@@ -4,7 +4,9 @@ import android.content.Context
 import android.net.Uri
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventFormatterName
@@ -43,9 +45,11 @@ class EventWriterRepositoryImpl @Inject constructor(
     @ApplicationContext private val context: Context,
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
-    val coreSharedPrefs: CoreSharedPrefs
-) : IEventWriterRepository {
-
+    val coreSharedPrefs: CoreSharedPrefs,
+    private val eventStatusDao: EventStatusDao,
+    private val imageStatusDao: ImageStatusDao
+) :
+    IEventWriterRepository {
     override suspend fun <T> createAndSaveEvent(
         eventItem: T,
         eventName: EventName,
@@ -154,10 +158,8 @@ class EventWriterRepositoryImpl @Inject constructor(
             createdBy = coreSharedPrefs.getUserName(),
             mobile_number = coreSharedPrefs.getMobileNo(),
             request_payload = requestPayload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = BLANK_STRING,
             metadata = MetadataDto(
                 isRegenerateFile = isFromRegenerate,
@@ -167,7 +169,6 @@ class EventWriterRepositoryImpl @Inject constructor(
                 parentEntity = emptyMap()
             ).json()
         )
-
         return event
     }
 
@@ -203,7 +204,9 @@ class EventWriterRepositoryImpl @Inject constructor(
             context,
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao = eventDependencyDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 
@@ -215,7 +218,7 @@ class EventWriterRepositoryImpl @Inject constructor(
                 event = event,
                 dependencyEntity = listOf(),
                 listOf(
-                    EventWriterName.IMAGE_EVENT_WRITER,
+                    EventWriterName.IMAGE_EVENT_WRITER, EventWriterName.DB_EVENT_WRITER
                 ), uri
             )
         } catch (exception: Exception) {

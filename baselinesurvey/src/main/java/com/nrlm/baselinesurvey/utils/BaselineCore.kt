@@ -21,13 +21,14 @@ import kotlin.coroutines.CoroutineContext
 object BaselineCore {
 
     private val TAG = BaselineCore::class.java.simpleName
+
     private lateinit var mainApplication: Application
     private lateinit var connectionLiveData: ConnectionMonitor
     private val validNetworksList: MutableSet<Network> = HashSet()
 
     private var downloader: AndroidDownloader? = null
 
-    private var eventObservations = SparseArray<EventObserverInterface>()
+
 
     val autoReadOtp = mutableStateOf("")
 
@@ -82,18 +83,6 @@ object BaselineCore {
         }
         return null
     }
-
-    fun addCommunicationObserver(observer: EventObserverInterface, name: String) {
-        val id = System.identityHashCode(observer)
-        eventObservations.put(id, observer)
-    }
-
-    fun <T> notifyEventObservers(event: T) {
-        eventObservations.forEach { id, observer ->
-            observer.onEventCallback(event)
-        }
-    }
-
 
     fun getAndroidDownloader(): AndroidDownloader {
         return downloader ?: AndroidDownloader(mainApplication.applicationContext)

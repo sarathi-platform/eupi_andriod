@@ -36,5 +36,6 @@ interface SettingBSRepository {
     fun getUserName(): String
     fun getAllCasteForLanguage(languageId:Int):List<CasteEntity>
     fun clearSelectionLocalDB()
+    fun isSyncEnable(): Boolean
 
 }

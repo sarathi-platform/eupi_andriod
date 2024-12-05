@@ -27,7 +27,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 
 @Composable
 fun IncrementDecrementCounterList(
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     title: String = BLANK_STRING,
     optionList: List<OptionsUiModel>?,
     isEditAllowed: Boolean = true,
@@ -76,7 +76,7 @@ fun IncrementDecrementCounterList(
             if (showCardView) {
                 CustomVerticalSpacer(size = dimen_6_dp)
                 ContentBottomViewComponent(
-                    contents = contests,
+                    contents = content,
                     questionIndex = 0,
                     showCardView = showCardView,
                     questionDetailExpanded = {},

@@ -90,6 +90,7 @@ import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.enums.EventName
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -953,7 +954,7 @@ fun BulletList(
 fun compressImage(imageUri: String, activity: Context, name: String): String? {
     var filename: String? = ""
     try {
-        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
+        val filePath = imageUri
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -1602,5 +1603,6 @@ fun getSortedMap(didiSortedIndex:Int,tolaMapList:Map<String,List<DidiEntity>>):M
     }
    return fMapList
 }
+
 
 

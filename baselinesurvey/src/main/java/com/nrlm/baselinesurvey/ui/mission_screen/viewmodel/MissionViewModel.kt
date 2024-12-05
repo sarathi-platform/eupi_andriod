@@ -28,7 +28,7 @@ import javax.inject.Inject
 class MissionViewModel @Inject constructor(
     private val missionScreenUseCase: MissionScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    private val eventWriterHelperImpl: EventWriterHelperImpl
 
     ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
@@ -131,9 +131,7 @@ class MissionViewModel @Inject constructor(
     }
 
     fun refreshData() {
-        refreshData(
-            fetchDataUseCase
-        )
+        refreshData(fetchDataUseCase)
     }
 
 }

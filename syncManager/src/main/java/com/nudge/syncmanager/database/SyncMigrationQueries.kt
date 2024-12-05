@@ -1,0 +1,57 @@
+package com.nudge.syncmanager.database
+
+import com.nudge.core.EVENT_STATUS_TABLE_NAME
+import com.nudge.core.EventsTable
+import com.nudge.core.IMAGE_STATUS_TABLE_NAME
+import com.nudge.core.REQUEST_STATUS_TABLE_NAME
+
+object SyncMigrationQueries {
+
+    const val ADD_REQUEST_ID_IN_EVENT_TABLE =
+        "ALTER TABLE $EventsTable ADD COLUMN requestId TEXT\n"
+    const val ADD_EVENT_ID_IN_EVENT_TABLE =
+        "ALTER TABLE $EventsTable ADD COLUMN eventId TEXT\n"
+
+    const val CREATE_EVENT_STATUS_TABLE =
+        "CREATE TABLE IF NOT EXISTS $EVENT_STATUS_TABLE_NAME (\n" +
+                "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    clientId TEXT NOT NULL,\n" +
+                "    createdDate INTEGER NOT NULL,\n" +
+                "    createdBy TEXT NOT NULL,\n" +
+                "    mobileNumber TEXT NOT NULL,\n" +
+                "    status TEXT NOT NULL,\n" +
+                "    requestId TEXT,\n" +
+                "    errorMessage TEXT\n" +
+                ")"
+
+    const val CREATE_IMAGE_STATUS_TABLE =
+        "CREATE TABLE IF NOT EXISTS $IMAGE_STATUS_TABLE_NAME (\n" +
+                "id TEXT NOT NULL PRIMARY KEY,\n" +
+                "    name TEXT NOT NULL,\n" +
+                "    type TEXT NOT NULL,\n" +
+                "    createDate INTEGER,\n" +
+                "    modifiedDate INTEGER NOT NULL,\n" +
+                "    createdBy TEXT NOT NULL,\n" +
+                "    mobileNumber TEXT NOT NULL,\n" +
+                "    fileName TEXT,\n" +
+                "    filePath TEXT,\n" +
+                "    status TEXT NOT NULL,\n" +
+                "    retryCount INTEGER,\n" +
+                "    errorMessage TEXT,\n" +
+                "    imageEventId TEXT,\n" +
+                "    requestId TEXT,\n" +
+                "    blobUrl TEXT\n" +
+                ")"
+
+    const val CREATE_REQUEST_STATUS_TABLE =
+        "CREATE TABLE IF NOT EXISTS $REQUEST_STATUS_TABLE_NAME (\n" +
+                "'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    status TEXT,\n" +
+                "    requestId TEXT,\n" +
+                "    createdDate INTEGER,\n" +
+                "    modifiedDate INTEGER NOT NULL,\n" +
+                "    createdBy TEXT NOT NULL,\n" +
+                "    mobileNumber TEXT NOT NULL,\n" +
+                "    eventCount INTEGER\n" +
+                ")"
+}

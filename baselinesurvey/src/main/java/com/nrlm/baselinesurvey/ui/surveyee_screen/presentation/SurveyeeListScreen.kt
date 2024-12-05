@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
@@ -51,6 +53,7 @@ import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_250_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.navigationmanager.graphs.navigateToSectionListScreen
@@ -113,93 +116,101 @@ fun SurveyeeListScreen(
         })
 
     ModelBottomSheetDescriptionContentComponent(
-        modifier = Modifier
-            .fillMaxSize(),
         sheetContent = {
-            Column(
-                modifier = Modifier.padding(dimen_10_dp),
-                horizontalAlignment = Alignment.CenterHorizontally
+            Box(
+                modifier = Modifier
+                    .height(dimen_250_dp)
+                    .fillMaxWidth()
             ) {
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .weight(1f),
-                        text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
-                        style = newMediumTextStyle.copy(color = blueDark)
-                    )
-                    IconButton(onClick = {
-                        scope.launch {
-                            scaffoldState.hide()
-                        }
-                    }, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            painter = painterResource(id = com.sarathi.dataloadingmangement.R.drawable.icon_close),
-                            contentDescription = "Close",
-                            tint = blueDark
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(10.dp))
-
-                Text(
-                    text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
-                    style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(
+                LazyColumn(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimen_10_dp),
+                        .fillMaxSize()
+                        .padding(horizontal = dimen_10_dp)
+                        .padding(bottom = dimen_10_dp)
                 ) {
-                    if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty() && viewModel.activity?.status == SectionStatus.INPROGRESS.name) {
-
-                        DoubleButtonBox(
-                            modifier = Modifier
-                                .shadow(10.dp),
-                            positiveButtonText = stringResource(id = R.string.complete) + " " + activityName.replace(
-                                oldValue = "Conduct ",
-                                newValue = BLANK_STRING
-                            ),
-                            negativeButtonText = stringResource(id = R.string.go_back_text),
-                            negativeButtonRequired = false,
-                            isPositiveButtonActive = viewModel.isEnableNextBTn.value,
-                            positiveButtonOnClick = {
-                                viewModel.onEvent(
-                                    SurveyeeListEvents.UpdateActivityAllTask(
-                                        activityId,
-                                        viewModel.isEnableNextBTn.value
+                    item {
+                        Column(
+                            modifier = Modifier.padding(dimen_10_dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                Text(
+                                    modifier = Modifier
+                                        .weight(1f),
+                                    text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
+                                    style = newMediumTextStyle.copy(color = blueDark)
+                                )
+                                IconButton(onClick = {
+                                    scope.launch {
+                                        scaffoldState.hide()
+                                    }
+                                }, modifier = Modifier.size(48.dp)) {
+                                    Icon(
+                                        painter = painterResource(id = com.sarathi.dataloadingmangement.R.drawable.icon_close),
+                                        contentDescription = "Close",
+                                        tint = blueDark
                                     )
-                                )
-
-                                viewModel.onEvent(
-                                    EventWriterEvents.UpdateActivityStatusEvent(
-                                        missionId,
-                                        activityId,
-                                        SectionStatus.COMPLETED
-                                    )
-                                )
-                                navController.navigate(
-                                    "${Step_Complition_Screen_ROUTE_NAME}/${
-                                        context.getString(
-                                            R.string.activity_completed_message, activityName
-                                        )
-                                    }"
-                                )
-                            },
-                            negativeButtonOnClick = {
-
+                                }
                             }
-                        )
+                            Spacer(modifier = Modifier.height(10.dp))
+                            Text(
+                                text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
+                                style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimen_10_dp),
+                            ) {
+                                if (viewModel.isEnableNextBTn.value && viewModel.filteredSurveyeeListState.value.isNotEmpty() && viewModel.activity?.status == SectionStatus.INPROGRESS.name) {
+
+                                    DoubleButtonBox(
+                                        modifier = Modifier
+                                            .shadow(10.dp),
+                                        positiveButtonText = stringResource(id = R.string.complete) + " " + activityName.replace(
+                                            oldValue = "Conduct ",
+                                            newValue = BLANK_STRING
+                                        ),
+                                        negativeButtonText = stringResource(id = R.string.go_back_text),
+                                        negativeButtonRequired = false,
+                                        isPositiveButtonActive = viewModel.isEnableNextBTn.value,
+                                        positiveButtonOnClick = {
+                                            viewModel.onEvent(
+                                                SurveyeeListEvents.UpdateActivityAllTask(
+                                                    activityId,
+                                                    viewModel.isEnableNextBTn.value
+                                                )
+                                            )
+
+                                            viewModel.onEvent(
+                                                EventWriterEvents.UpdateActivityStatusEvent(
+                                                    missionId,
+                                                    activityId,
+                                                    SectionStatus.COMPLETED
+                                                )
+                                            )
+                                            navController.navigate(
+                                                "${Step_Complition_Screen_ROUTE_NAME}/${
+                                                    context.getString(
+                                                        R.string.activity_completed_message,
+                                                        activityName
+                                                    )
+                                                }"
+                                            )
+                                        },
+                                        negativeButtonOnClick = {
+
+                                        }
+                                    )
+                                }
+                            }
+                        }
                     }
-
-
                 }
             }
         },

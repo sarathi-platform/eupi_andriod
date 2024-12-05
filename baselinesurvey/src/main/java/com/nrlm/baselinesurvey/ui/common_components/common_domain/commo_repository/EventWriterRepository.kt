@@ -27,6 +27,13 @@ interface EventsWriterRepository {
         eventType: EventType
     )
 
+    suspend fun saveFailedEventWithFileName(
+        event: Events,
+        eventDependencies: List<EventDependencyEntity>,
+        eventType: EventType,
+        fileNameWithoutExtension: String
+    )
+
     fun getEventFormatter(): IEventFormatter
 
     suspend fun isSectionProgressForDidiAlreadyAdded(

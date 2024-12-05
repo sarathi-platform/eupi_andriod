@@ -1,11 +1,15 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.MODE_TAG
@@ -76,7 +80,7 @@ class SurveyRepositoryImpl @Inject constructor(
         )
 
         val questionList = questionDao.getSurveySectionQuestionForLanguage(
-            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_CODE else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -112,9 +116,13 @@ class SurveyRepositoryImpl @Inject constructor(
                 isConditional = it.isConditional,
                 sectionName = sectionEntity.sectionName,
                 formDescriptionInEnglish = getFormDescription(surveyConfigList, it),
-                contentEntities = setQuestionContentData(questionEntity = it)
+                contentEntities = setQuestionContentData(questionEntity = it),
+                formOrder = it.formOrder,
+                sortingKey = it.formOrder + it.order!!,
+                formContent = setFormContentData(questionEntity = it)
             )
-            questionUiList.add(questionUiModel)
+
+            questionUiList.add(checkAndGetResponseForEncryptedValue(questionUiModel))
 
         }
 
@@ -123,9 +131,9 @@ class SurveyRepositoryImpl @Inject constructor(
 
     private fun getFormDescription(
         surveyConfigList: List<SurveyConfigEntity>,
-        it: QuestionUiEntity
+        questionUiEntity: QuestionUiEntity
     ) = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
-        .find { surveyConfigFormId -> surveyConfigFormId.formId == it.formId }?.value
+        .find { surveyConfigFormId -> surveyConfigFormId.formId == questionUiEntity.formId }?.value
 
     suspend fun setQuestionContentData(questionEntity: QuestionUiEntity): List<ContentList> {
         val contentList = mutableListOf<ContentList>()
@@ -150,6 +158,33 @@ class SurveyRepositoryImpl @Inject constructor(
                 )
             }
         }
+        return contentList
+    }
+
+    fun setFormContentData(questionEntity: QuestionUiEntity): List<ContentList> {
+        val contentList = ArrayList<ContentList>()
+        questionEntity.formContents.forEach { data ->
+            // Fetch content from database based on content key and language ID
+            val contentKey = data.contentKey ?: BLANK_STRING
+            val languageId = coreSharedPrefs.getSelectedLanguageCode()
+
+            val contentData = contentDao.getContentFromIds(
+                contentkey = contentKey,
+                languageId = languageId
+            )
+
+            // Add to the content list if contentData is not null
+            if (contentData != null) {
+                contentList.add(
+                    ContentList(
+                        contentValue = contentData.contentValue ?: "",
+                        contentType = contentData.contentType ?: "",
+                        contentKey = contentKey
+                    )
+                )
+            }
+        }
+
         return contentList
     }
 
@@ -242,4 +277,22 @@ class SurveyRepositoryImpl @Inject constructor(
     }
 
 
+    private fun checkAndGetResponseForEncryptedValue(question: QuestionUiModel): QuestionUiModel {
+        val secretKeyPass = String(
+            Base64.decode(
+                coreSharedPrefs.getPref(
+                    AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                    com.nudge.core.BLANK_STRING
+                ), Base64.DEFAULT
+            )
+        )
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) {
+            question.options?.firstOrNull()?.selectedValue = AESHelper.decrypt(
+                question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                secretKeyPass
+            )
+
+        }
+        return question
+    }
 }

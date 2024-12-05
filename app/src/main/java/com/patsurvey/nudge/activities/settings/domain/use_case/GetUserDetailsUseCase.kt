@@ -21,7 +21,6 @@ class GetUserDetailsUseCase(
         return repository.getUserName()
     }
 
-
-
+    fun isSyncEnable() = repository.isSyncEnable()
 
 }

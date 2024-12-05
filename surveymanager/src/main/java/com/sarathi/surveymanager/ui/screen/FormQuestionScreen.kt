@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.ui.screen
 import android.content.Context
 import android.text.TextUtils
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -111,6 +113,9 @@ fun FormQuestionScreen(
         mutableStateOf(DescriptionContentState())
     }
     val coroutineScope = rememberCoroutineScope()
+
+    val showAlertDialog = remember { mutableStateOf(false) }
+
     LaunchedEffect(key1 = Unit) {
         viewModel.setPreviousScreenData(
             taskId,
@@ -126,6 +131,25 @@ fun FormQuestionScreen(
         viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
 
     }
+
+    BackHandler {
+        showAlertDialog.value = true
+    }
+
+    if (showAlertDialog.value) {
+        AlertDialogComponent(
+            onDismissRequest = { showAlertDialog.value = false },
+            onConfirmation = {
+                showAlertDialog.value = false
+                navController.navigateUp()
+            },
+            dialogTitle = stringResource(R.string.alert_dialog_title_text),
+            dialogText = stringResource(R.string.form_alert_dialog_message),
+            confirmButtonText = stringResource(R.string.proceed),
+            dismissButtonText = stringResource(R.string.cancel_text)
+        )
+    }
+
     ModelBottomSheetDescriptionContentComponent(
         modifier = Modifier
             .fillMaxSize(),
@@ -157,6 +181,10 @@ fun FormQuestionScreen(
                         }
                     },
                     navigateToMediaPlayerScreen = { contentList ->
+                        coroutineScope.launch {
+                            if (sheetState.isVisible)
+                                sheetState.hide()
+                        }
                         onNavigateToMediaScreen(contentList)
                     },
                     descriptionContentState = selectedSectionDescription.value
@@ -171,7 +199,7 @@ fun FormQuestionScreen(
         ToolBarWithMenuComponent(
             title = viewModel.formTitle.value,
             modifier = modifier,
-            onBackIconClick = { navController.navigateUp() },
+            onBackIconClick = { showAlertDialog.value = true },
             onSearchValueChange = {},
             onBottomUI = {
                 Box(
@@ -183,8 +211,9 @@ fun FormQuestionScreen(
                         isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
                         buttonTitle = stringResource(R.string.submit),
                         onSubmitButtonClick = {
-                            viewModel.saveAllAnswers()
+                            viewModel.saveAllAnswers {
                             onNavigateBack()
+                            }
                         }
                     )
                 }
@@ -230,6 +259,10 @@ fun FormQuestionScreen(
                                 index = index,
                                 question = question,
                                 navigateToMediaPlayerScreen = { contentList ->
+                                    coroutineScope.launch {
+                                        if (sheetState.isVisible)
+                                            sheetState.hide()
+                                    }
                                     onNavigateToMediaScreen(contentList)
                                 },
                                 viewModel = viewModel,
@@ -253,6 +286,10 @@ fun FormQuestionScreen(
                                 onAnswerSelect = {
                                     viewModel.updateQuestionResponseMap(question)
                                     viewModel.runConditionCheck(question)
+                                    viewModel.runValidationCheck(question.questionId) { isValid, message ->
+                                        viewModel.fieldValidationAndMessageMap[question.questionId] =
+                                            Pair(isValid, message)
+                                    }
                                 }
                             )
                         }
@@ -292,7 +329,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.NumericField.name,
                 QuestionType.InputText.name -> {
                     InputComponent(
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isFromTypeQuestion = true,
                         questionIndex = index,
                         maxLength = getMaxInputLength(
@@ -323,12 +360,8 @@ fun FormScreenQuestionUiContent(
                         },
                         onDetailIconClicked = { onDetailIconClicked() }
                     ) { selectedValue, remainingAmout ->
-                        saveInputTypeAnswer(selectedValue, question, viewModel)
+                        saveInputTypeAnswer(selectedValue, question)
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
                     }
                 }
 
@@ -355,19 +388,16 @@ fun FormScreenQuestionUiContent(
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING
                     ) { selectedValue ->
-                        saveInputTypeAnswer(selectedValue, question, viewModel)
+                        saveInputTypeAnswer(selectedValue, question)
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
+
                     }
                 }
 
                 QuestionType.MultiImage.name,
                 QuestionType.SingleImage.name -> {
                     SingleImageComponent(
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isFromTypeQuestion = true,
                         onDetailIconClicked = { onDetailIconClicked() },
                         fileNamePrefix = viewModel.getPrefixFileName(question),
@@ -383,10 +413,7 @@ fun FormScreenQuestionUiContent(
                         ) { selectedValue, isDeleted ->
                         saveSingleImage(isDeleted, question.options, selectedValue)
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
+
 
                     }
                 }
@@ -415,10 +442,6 @@ fun FormScreenQuestionUiContent(
                                 option.isSelected = selectedValue.id == option.optionId
                             }
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
 
                         }
                     )
@@ -426,7 +449,7 @@ fun FormScreenQuestionUiContent(
 
                 QuestionType.MultiSelectDropDown.name -> {
                     TypeMultiSelectedDropDownComponent(
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isFromTypeQuestion = true,
                         questionIndex = index,
                         title = question.questionDisplay,
@@ -455,11 +478,6 @@ fun FormScreenQuestionUiContent(
                                 }
                             }
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
-
                         }
                     )
                 }
@@ -473,7 +491,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.RadioButton.name -> {
                     RadioQuestionBoxComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
@@ -496,10 +514,6 @@ fun FormScreenQuestionUiContent(
                             }
                             question.options?.get(optionItemIndex)?.isSelected = true
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
                         }
                     )
                 }
@@ -508,7 +522,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.Grid.name -> {
                     GridTypeComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
@@ -527,10 +541,6 @@ fun FormScreenQuestionUiContent(
 
                             question.options?.get(selectedOptionIndex)?.isSelected = isSelected
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
                         },
                         questionDetailExpanded = {
 
@@ -541,7 +551,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.Toggle.name -> {
                     ToggleQuestionBoxComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         questionIndex = index,
                         questionDisplay = question.questionDisplay,
                         isRequiredField = question.isMandatory,
@@ -563,10 +573,6 @@ fun FormScreenQuestionUiContent(
                             }
                             question.options?.get(optionItemIndex)?.isSelected = true
                             onAnswerSelect(question)
-                            viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                    Pair(isValid, message)
-                            }
                         }
                     )
                 }
@@ -574,7 +580,7 @@ fun FormScreenQuestionUiContent(
                 QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                     HrsMinRangePickerComponent(
                         isFromTypeQuestion = true,
-                        contests = question.contentEntities,
+                        content = question.contentEntities,
                         isMandatory = question.isMandatory,
                         title = question.questionDisplay,
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
@@ -595,12 +601,6 @@ fun FormScreenQuestionUiContent(
                         question.options?.firstOrNull()?.isSelected = true
 
                         onAnswerSelect(question)
-                        viewModel.runValidationCheck(question.questionId) { isValid, message ->
-                            viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                Pair(isValid, message)
-                        }
-
-
                     }
                 }
             }
@@ -622,7 +622,6 @@ fun FormScreenQuestionUiContent(
 fun saveInputTypeAnswer(
     selectedValue: String,
     question: QuestionUiModel,
-    viewModel: FormQuestionScreenViewModel
 ) {
     if (TextUtils.isEmpty(selectedValue)) {
         question.options?.firstOrNull()?.isSelected = false

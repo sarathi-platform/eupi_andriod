@@ -49,7 +49,7 @@ class ConfigViewModel @Inject constructor(
                         "fetchLanguageDetails -> response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
                     )
                     if (response.status.equals(SUCCESS, true)) {
-                        response.data?.let { it ->
+                        response.data?.let {
                             it.languageList.forEach { language ->
                                 NudgeLogger.d("ConfigViewModel", "$language")
                             }

@@ -175,13 +175,13 @@ fun getTabName(tab: SubTabs): String {
     return when (tab) {
         SubTabs.DidiTab -> stringResource(R.string.didi_sub_tab_title)
         SubTabs.SmallGroupTab -> stringResource(R.string.small_group_sub_tab_title)
-        SubTabs.All -> "All"
-        SubTabs.NoEntryMonthTab -> "No entry this month"
-        SubTabs.NoEntryWeekTab -> "No entry this week"
-        SubTabs.LastWeekTab -> "Last week"
-        SubTabs.LastMonthTab -> "Last month"
-        SubTabs.Last3MonthsTab -> "Last 3 months"
-        SubTabs.CustomDateRange -> "Custom Date"
+        SubTabs.All -> stringResource(R.string.all)
+        SubTabs.NoEntryMonthTab -> stringResource(R.string.no_entry_this_month)
+        SubTabs.NoEntryWeekTab -> stringResource(R.string.no_entry_this_week)
+        SubTabs.LastWeekTab -> stringResource(R.string.last_week)
+        SubTabs.LastMonthTab -> stringResource(R.string.last_month)
+        SubTabs.Last3MonthsTab -> stringResource(R.string.last_3_months)
+        SubTabs.CustomDateRange -> stringResource(R.string.custom_date)
         SubTabs.Step1 -> stringResource(R.string.reopen_activity_step_1)
         SubTabs.Step2 -> stringResource(R.string.reopen_activity_step_2)
         else -> {

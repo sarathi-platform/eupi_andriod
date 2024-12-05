@@ -42,6 +42,8 @@ import com.nudge.navigationmanager.routes.SEARCH_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SECTION_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SETTING_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SURVEYEE_LIST_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SYNC_HISTORY_ROUTE_NAME
+import com.nudge.navigationmanager.routes.SYNC_HOME_ROUTE_NAME
 import com.nudge.navigationmanager.routes.Step_Complition_Screen_ROUTE_NAME
 import com.nudge.navigationmanager.routes.VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.VIDEO_SCREEN_ROUTE_NAME
@@ -218,6 +220,8 @@ sealed class SettingScreens(val route: String) {
 
     object BACKUP_RECOVERY_SCREEN : SettingScreens(route = BACKUP_RECOVERY_SCREEN_ROUTE_NAME)
     object ACTIVITY_REOPENING_SCREEN : SettingScreens(route = ACTIVITY_REOPENING_SCREEN_ROUTE_NAME)
+    object SYNC_DATA_NOW_SCREEN : SettingScreens(route = SYNC_HOME_ROUTE_NAME)
+    object SYNC_HISTORY_SCREEN : SettingScreens(route = "$SYNC_HISTORY_ROUTE_NAME/{${NavigationParams.ARG_SYNC_TYPE.value}}")
     object EXPORT_BACKUP_FILE_SCREEN : SettingScreens(route = EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME)
 
 }

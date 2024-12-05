@@ -45,4 +45,5 @@ sealed class NavigationParams (val value:String){
     object ARG_ACTIVITY_NAME : NavigationParams("activity_name")
 
     object ARG_FORM_QUESTION_RESPONSE_REFERENCE_ID : NavigationParams("formQuestionResponseReferenceId")
+    object ARG_SYNC_TYPE : NavigationParams("sync_type")
 }

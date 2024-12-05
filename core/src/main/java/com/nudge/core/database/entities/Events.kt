@@ -15,13 +15,13 @@ import java.util.UUID
 data class Events (
     @ColumnInfo(name = "id")
     @PrimaryKey(autoGenerate = false)
-    val id: String = UUID.randomUUID().toString(), // TODO add mobile number and timestamp
+    var id: String = UUID.randomUUID().toString(), // TODO add mobile number and timestamp
 
     @ColumnInfo("name")
-    val name: String,
+    var name: String,
 
     @ColumnInfo("type")
-    val type: String,
+    var type: String,
 
     @ColumnInfo("created_date")
     @TypeConverters(DateConverter::class)
@@ -40,30 +40,32 @@ data class Events (
     @ColumnInfo("request_payload")
     val request_payload: String?,
 
-    //TODO change name to status and use it as a common status for both producer and consumer status
     @ColumnInfo("status")
     val status: String,
 
     @ColumnInfo("result")
-    val result: String?,
+    val result: String? = BLANK_STRING,
 
-    @ColumnInfo("consumer_status") //TODO Remove this
-    val consumer_status: String,
+    @ColumnInfo("consumer_status")
+    val consumer_status: String = BLANK_STRING,
 
-    // TODO Move this to other table
-    @ColumnInfo("retry_count") // TODO
-    val retry_count: Int = 0,
+    @ColumnInfo("retry_count")
+    var retry_count: Int = 0,
 
-    // TODO Move this to other table
     @ColumnInfo("error_message")
     val error_message: String? = BLANK_STRING,
 
     @ColumnInfo("metadata")
-    val metadata: String?,
+    var metadata: String?,
 
     @ColumnInfo("payloadLocalId")
-    val payloadLocalId: String?
+    val payloadLocalId: String?,
 
+    @ColumnInfo("requestId")
+    val requestId:String?= BLANK_STRING,
+
+    @ColumnInfo("eventId")
+    val eventId: String? = BLANK_STRING
 ) {
     companion object {
         fun getEmptyEvent(): Events {
@@ -75,8 +77,6 @@ data class Events (
                 modified_date = System.currentTimeMillis().toDate(),
                 request_payload = BLANK_STRING,
                 status = BLANK_STRING,
-                result = BLANK_STRING,
-                consumer_status = BLANK_STRING,
                 metadata = null,
                 mobile_number = BLANK_STRING,
                 payloadLocalId = BLANK_STRING

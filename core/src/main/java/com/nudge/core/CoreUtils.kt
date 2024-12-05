@@ -20,7 +20,9 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.unit.Dp
@@ -34,6 +36,8 @@ import com.google.gson.reflect.TypeToken
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.enums.SyncBatchEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.theme.dimen_60_dp
@@ -43,6 +47,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -138,13 +145,13 @@ fun List<Events>.getEventDependencyEntityListFromEvents(dependentEvents: Events)
     return eventDependencyList
 }
 
-fun getBatchSize(connectionQuality: ConnectionQuality): Int {
+fun getBatchSize(connectionQuality: ConnectionQuality): SyncBatchEnum {
     return when (connectionQuality) {
-        ConnectionQuality.EXCELLENT -> return 20
-        ConnectionQuality.GOOD -> return 15
-        ConnectionQuality.MODERATE -> return 10
-        ConnectionQuality.POOR -> 5
-        ConnectionQuality.UNKNOWN -> -1
+        ConnectionQuality.EXCELLENT -> SyncBatchEnum.EXCELLENT
+        ConnectionQuality.GOOD -> SyncBatchEnum.GOOD
+        ConnectionQuality.MODERATE -> SyncBatchEnum.MODERATE
+        ConnectionQuality.POOR -> SyncBatchEnum.POOR
+        ConnectionQuality.UNKNOWN -> SyncBatchEnum.UNKNOWN
     }
 }
 
@@ -1239,6 +1246,19 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
     Log.d("", "Chosen path = $filePath")
 }
 
+fun getImageUri(context: Context, fileName: String): Uri? {
+    val file =
+        File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
+    return if (file.exists() && file.isFile) {
+        CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+            uriFromFile(
+                context, file,
+                it
+            )
+        }
+    } else Uri.EMPTY
+}
+
 fun onlyNumberField(value: String): Boolean {
     if (value.isDigitsOnly() && value != "_" && value != "N") {
         return true
@@ -1293,6 +1313,59 @@ fun openSettings() {
     CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
 }
 
+
+fun getFileMimeType(file: File): String? {
+    var type: String? = null
+    val extension = MimeTypeMap.getFileExtensionFromUrl(file.path)
+    if (extension != null) {
+        type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+    return type
+}
+
+fun convertFileIntoMultipart(
+    imageFile: File,
+    imageEventDetail: ImageEventDetailsModel
+): MultipartBody.Part? {
+    try {
+        val imageRequest = imageFile
+            .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+        val multipartRequest = MultipartBody.Part.createFormData(
+            MULTIPART_IMAGE_PARAM_NAME,
+            imageEventDetail.fileName,
+            imageRequest
+        )
+        return multipartRequest
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        return null
+    }
+}
+
+fun getImagePathFromPicture() = CoreAppDetails.getApplicationContext().applicationContext
+    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath ?: BLANK_STRING
+
+fun isDataEvent(event: Events): Boolean {
+    return !event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) && event.name != FORM_C_TOPIC && event.name != FORM_D_TOPIC
+}
+
+fun isImageEvent(event: Events): Boolean {
+    return event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC
+}
+
+fun decodeBase64ToPlainText(encodedString: String): String {
+    // Decode Base64 encoded string
+    val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+
+    // Convert decoded bytes to String
+    return String(decodedBytes, Charsets.UTF_8)
+}
+
+
+
+
 fun replaceLastWord(sentence: String?, newWord: String?): String {
     if (sentence.isNullOrBlank() || newWord.isNullOrBlank()) {
         return sentence ?: BLANK_STRING
@@ -1302,6 +1375,7 @@ fun replaceLastWord(sentence: String?, newWord: String?): String {
         words[words.size - 1] = newWord
     }
     return words.joinToString(" ")
+
 }
 
 fun String.parseStringToList(): List<Int?> {

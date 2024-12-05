@@ -9,11 +9,14 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.SyncMigrationUseCase
+import com.nudge.core.value
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
@@ -67,7 +70,6 @@ import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
@@ -149,6 +151,7 @@ class VillageSelectionViewModel @Inject constructor(
 
     val villageSelectionRepository: VillageSelectionRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val syncMigrationUseCase: SyncMigrationUseCase,
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 
 ) : BaseViewModel() {
@@ -180,7 +183,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(context: Context) {
+    fun clearLocalDB(context: Context, onDataClearComplete: () -> Unit) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             casteListDao.deleteCasteTable()
@@ -195,10 +198,10 @@ class VillageSelectionViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
-            syncManagerDatabase.eventsDao().deleteAllEvents()
-            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init(context)
+            onDataClearComplete()
+
         }
     }
 
@@ -237,6 +240,8 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             }
         }
+        // To Delete events for version 1 to 2 sync migration
+        syncMigrationUseCase.deleteEventsAfter1To2Migration()
     }
 
 
@@ -1555,6 +1560,12 @@ class VillageSelectionViewModel @Inject constructor(
                                     it.villageList?.firstOrNull()?.stateId ?: 4
                                 )
 
+                                villageSelectionRepository.analyticsManager.setUserDetail(
+                                    distinctId = prefRepo.getMobileNumber(),
+                                    name = it.name.value(),
+                                    userType = it.typeName.value(),
+                                    buildEnvironment = prefRepo.getBuildEnvironment()
+                                )
 
                                 coreSharedPrefs.setBackupFileName(
                                     getDefaultBackUpFileName(

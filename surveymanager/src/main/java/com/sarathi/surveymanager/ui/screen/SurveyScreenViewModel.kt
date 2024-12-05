@@ -1,10 +1,9 @@
 package com.sarathi.surveymanager.ui.screen
 
-import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.value
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -52,7 +51,8 @@ class SurveyScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
@@ -71,28 +71,15 @@ class SurveyScreenViewModel @Inject constructor(
     getSurveyConfigFromDbUseCase,
     getSurveyValidationsFromDbUseCase,
     validationUseCase,
-    fetchContentUseCase = fetchContentUseCase
+    fetchContentUseCase = fetchContentUseCase,
+    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
 ) {
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             saveQuestionAnswerIntoDb(currentQuestionUiModel)
 
-            surveyAnswerEventWriterUseCase.saveSurveyAnswerEvent(
-                questionUiModel = currentQuestionUiModel,
-                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
-                subjectType = subjectType,
-                taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
-                referenceId = referenceId,
-                grantId = grantID,
-                grantType = granType,
-                taskId = taskId,
-                uriList = ArrayList(),
-                isFromRegenerate = false,
-                activityId = activityConfig?.activityId.value(),
-                activityReferenceId = activityConfig?.referenceId,
-                activityReferenceType = activityConfig?.referenceType
-            )
+            saveSurveyAnswerEvent(currentQuestionUiModel)
         }
     }
 
@@ -117,6 +104,35 @@ class SurveyScreenViewModel @Inject constructor(
             withContext(mainDispatcher) {
                 callBack()
             }
+        }
+    }
+
+    override suspend fun intiQuestions() {
+        super.intiQuestions()
+
+        questionUiModel.value.filterForValidations(visibilityMap).apply {
+
+            //If the filtered list is empty run button check to enable or disable submit button.
+            if (this.isEmpty()) {
+                isButtonEnable.value = isButtonEnabled(true)
+                return@apply
+            }
+
+            this.forEach {
+                runValidationCheck(it.questionId) { isValid, message ->
+                    try {
+                        fieldValidationAndMessageMap[it.questionId] =
+                            Pair(isValid, message)
+                    } catch (ex: Exception) {
+                        CoreLogger.e(
+                            tag = LOGGER_TAG,
+                            msg = "Exception: intiQuestions -> runValidationCheck@lambda: ${ex.message}",
+                            ex = ex
+                        )
+                    }
+                }
+            }
+
         }
     }
 }

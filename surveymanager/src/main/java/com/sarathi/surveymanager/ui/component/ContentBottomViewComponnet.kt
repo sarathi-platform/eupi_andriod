@@ -7,9 +7,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 
@@ -25,7 +25,7 @@ fun ContentBottomViewComponent(
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 10.dp)
+                .padding(bottom = dimen_6_dp)
         )
 
         if (contents?.isNotEmpty() == true && showCardView) {

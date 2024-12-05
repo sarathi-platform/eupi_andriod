@@ -69,7 +69,7 @@ fun TypeDropDownComponent(
 
     DropDownComponent(items = defaultSourceList,
         isFromTypeQuestion = isFromTypeQuestion,
-        contests = contests,
+        content = contests,
         showCardView = showCardView,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,

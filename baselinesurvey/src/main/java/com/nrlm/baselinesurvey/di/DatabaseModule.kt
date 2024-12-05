@@ -30,13 +30,6 @@ object DatabaseModule {
             .build()
 
 
-//    @Provides
-//    @Singleton
-//    fun provideSyncDatabase(@ApplicationContext context: Context) =
-//        Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
-//            .fallbackToDestructiveMigration()
-//            .build()
-
     @Provides
     @Singleton
     fun provideVillageDao(db: NudgeBaselineDatabase) = db.villageListDao()
@@ -102,12 +95,5 @@ object DatabaseModule {
     @Singleton
     fun provideInputTypeQuestionAnswerDao(db: NudgeBaselineDatabase) =
         db.inputTypeQuestionAnswerDao()
-
-
-
-    @Provides
-    @Singleton
-    fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
-
 
 }

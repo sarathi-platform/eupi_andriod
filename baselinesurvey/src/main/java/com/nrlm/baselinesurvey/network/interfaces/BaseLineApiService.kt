@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.network.interfaces
 
+import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.KEY_HEADER_MOBILE
 import com.nrlm.baselinesurvey.KEY_HEADER_TYPE
 import com.nrlm.baselinesurvey.model.request.ContentMangerRequest
@@ -36,6 +37,8 @@ import com.nrlm.baselinesurvey.network.SUBPATH_LOGOUT
 import com.nrlm.baselinesurvey.network.SUBPATH_SAVE_SURVEY_ANSWES
 import com.nrlm.baselinesurvey.network.SUBPATH_SURVEY_ANSWERS
 import com.nrlm.baselinesurvey.network.SUBPATH_USER_VIEW
+import com.nudge.core.KEY_HEADER_MOBILE
+import com.nudge.core.KEY_HEADER_TYPE
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Headers
@@ -65,9 +68,7 @@ interface BaseLineApiService {
     ): ApiResponseModel<UserDetailsResponse>
 
     @POST(SUBPATH_FETCH_SURVEY_FROM_NETWORK)
-//    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
-//    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<List<SurveyResponseModel>>
-        suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
+    suspend fun getSurveyFromNetwork(@Body surveyRequestBodyModel: SurveyRequestBodyModel): ApiResponseModel<SurveyResponseModel>
 
 
     @POST(SUBPATH_SAVE_SURVEY_ANSWES)

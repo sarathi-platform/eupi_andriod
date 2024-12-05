@@ -45,6 +45,7 @@ import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
@@ -52,7 +53,7 @@ import com.sarathi.surveymanager.utils.onlyNumberField
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputComponent(
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     title: String? = "select",
     defaultValue: String = BLANK_STRING,
     questionIndex: Int,
@@ -66,11 +67,13 @@ fun InputComponent(
     isZeroNotAllowed: Boolean = false,
     showCardView: Boolean = false,
     isFromTypeQuestion: Boolean = false,
+    resetResponse: Boolean = false,
+    optionsItem: OptionsUiModel? = null,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
-    val txt = remember {
+    val txt = remember(resetResponse, optionsItem?.optionId) {
         mutableStateOf(defaultValue)
     }
 
@@ -95,7 +98,7 @@ fun InputComponent(
         ) {
             if (title?.isNotBlank() == true) {
                 QuestionComponent(
-                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                     title = title,
                     questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
                     isRequiredField = isMandatory,
@@ -112,16 +115,20 @@ fun InputComponent(
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
                 onValueChange = { value ->
-                    if (value.length <= maxLength) {
+                    if (value.isEmpty()) {
+                        // Allow clearing the field
+                        txt.value = value
+                    } else if (value.length <= maxLength) {
+                        val isValidNumber =
+                            isOnlyNumber && onlyNumberField(value) && value.length <=  maxOf(
+                                maxLength,
+                                MAXIMUM_RANGE_LENGTH
+                            )
+                        val isNotZero = !isZeroNotAllowed || value.any { it != '0' }
+
                         if (isOnlyNumber) {
-                            if (onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
-                                if (isZeroNotAllowed) {
-                                    if (!value.all { it == '0' }) {
-                                        txt.value = value
-                                    }
-                                } else {
-                                    txt.value = value
-                                }
+                            if (isValidNumber && isNotZero) {
+                                txt.value = value
                             }
                         } else {
                             txt.value = value
@@ -175,10 +182,10 @@ fun InputComponent(
                 )
             }
         }
-        if (showCardView && contests?.isNotEmpty() == true) {
+        if (showCardView && content?.isNotEmpty() == true) {
             CustomVerticalSpacer(size = dimen_6_dp)
             ContentBottomViewComponent(
-                contents = contests,
+                contents = content,
                 questionIndex = questionIndex,
                 showCardView = showCardView,
                 questionDetailExpanded = {},

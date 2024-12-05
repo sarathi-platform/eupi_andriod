@@ -1,6 +1,10 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Base64
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.AESHelper
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
@@ -92,7 +96,11 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 subjectId = subjectId,
                 subjectType = subjectType,
                 sectionId = questionUiModel.sectionId,
-                question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+                question = getSaveAnswerEventQuestionItemDto(
+                    getEncryptedResponseForSensistiveInfo(
+                        questionUiModel
+                    )
+                )!!,
                 referenceId = refrenceId,
                 localTaskId = taskLocalId ?: BLANK_STRING,
                 grantId = grantId,
@@ -164,7 +172,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 options = options,
                 formId = questionUiModel.formId,
                 order = questionUiModel.order,
-                formDescription = questionUiModel.formDescriptionInEnglish ?: BLANK_STRING
+                formOder = questionUiModel.formOrder,
+                formDescription = questionUiModel.formDescriptionInEnglish ?: BLANK_STRING,
+                sortKey = questionUiModel.sortingKey
             )
 
         return saveAnswerEventQuestionItemDto1
@@ -209,5 +219,23 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         }
         return result
 
+    }
+    private fun getEncryptedResponseForSensistiveInfo(question: QuestionUiModel): QuestionUiModel {
+        val secretKeyPass = String(
+            Base64.decode(
+                coreSharedPrefs.getPref(
+                    AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                    com.nudge.core.BLANK_STRING
+                ), Base64.DEFAULT
+            )
+        )
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) {
+            question.options?.firstOrNull()?.selectedValue = AESHelper.encrypt(
+                question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                secretKeyPass
+            )
+
+        }
+        return question
     }
 }

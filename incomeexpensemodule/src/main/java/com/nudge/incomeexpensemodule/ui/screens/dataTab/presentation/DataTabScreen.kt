@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -31,7 +32,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
@@ -55,6 +58,7 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -206,7 +210,23 @@ fun DataTabScreen(
                                 .zIndex(1f),
                             contentColor = blueDark,
                         )
+                        if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .padding(horizontal = 16.dp),
+                                verticalArrangement = Arrangement.Center,
+                            ) {
+                                Text(
+                                    text = "LHP not done. Hence no didi list available.",
+                                    modifier = Modifier.fillMaxWidth(),
+                                    textAlign = TextAlign.Center,
+                                    style = mediumTextStyle,
+                                    color = textColorDark
+                                )
+                            }
+                        } else {
                             Column(
                                 modifier = Modifier
                                     .padding(horizontal = dimen_16_dp)
@@ -280,7 +300,7 @@ fun DataTabScreen(
                                         textProperties = TextProperties.getBasicTextProperties(
                                             text = buildAnnotatedString {
                                                 //TODO write function to get this string for the filter applied.
-                                                append("Showing ")
+                                                append(stringResource(R.string.showing))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
@@ -289,7 +309,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
                                                 }
-                                                append(" results for ")
+                                                append(stringResource(R.string.results_for))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
@@ -348,6 +368,9 @@ fun DataTabScreen(
 
                                 }
                             }
+                        }
+
+
 
                     }
                 }

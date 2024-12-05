@@ -11,6 +11,7 @@ import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -37,6 +38,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
@@ -51,7 +53,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val fetchContentUseCase: FetchContentUseCase
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 
 ) : BaseViewModel() {
 
@@ -310,7 +313,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAllAnswers() {
+    fun saveAllAnswers(onSaveComplete: () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
             questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
@@ -345,6 +348,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
                     )
                 }
                 checkAndUpdateNonVisibleQuestionResponseInDb(question = it)
+            }
+            withContext(Dispatchers.Main)
+            {
+                onSaveComplete()
             }
         }
     }
@@ -381,6 +388,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun isFilePathExists(filePath: String): Boolean {
         return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
+    fun getAESSecretKey(): String {
+        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
 }

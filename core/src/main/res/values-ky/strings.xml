@@ -22,7 +22,18 @@
     <string name="end_date_label">Pai mani Sal</string>
     <string name="reopen_activity_step_1">Step 1</string>
     <string name="reopen_activity_step_2">Step 2</string>
+    <string name="warning_title">Warning</string>
+    <string name="warning_text">Warning</string>
+    <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
+    <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="all">"Bebak "</string>
+    <string name="no_entry_this_month">"O tal o mwngsa phano tisa jakya "</string>
+    <string name="no_entry_this_week">No entry this week</string>
+    <string name="last_week">Last week</string>
+    <string name="last_month">Last month</string>
+    <string name="last_3_months">Last 3 months</string>
+    <string name="custom_date">"Tongraida wngjora "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
@@ -36,5 +47,7 @@
     <string name="empty_task_list_placeholder">No Task found for this activity!</string>
     <string name="details_have_already_been_added">Details have already been added!</string>
     <string name="no_result_found">No result found</string>
+    <string name="proceed">Proceed</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
 
 </resources>
