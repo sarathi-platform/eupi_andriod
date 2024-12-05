@@ -1,6 +1,10 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Base64
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.AESHelper
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
 import com.sarathi.dataloadingmangement.model.events.BaseSaveAnswerEventDto
@@ -17,8 +21,7 @@ import javax.inject.Inject
 class SurveyAnswerEventRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs,
     private val tagReferenceEntityDao: TagReferenceEntityDao
-) :
-    ISurveyAnswerEventRepository {
+) : ISurveyAnswerEventRepository {
 
     override suspend fun writeMoneyJournalSaveAnswerEvent(
         questionUiModels: List<QuestionUiModel>,
@@ -45,7 +48,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
             grantId = grantId,
             grantType = grantType,
             taskId = taskId,
-            tagId = sectionTagId
+            tagId = sectionTagId,
+            sectionName = questionUiModels.first().sectionName
         )
 
 
@@ -81,7 +85,8 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 taskId = taskId,
                 activityId = activityId,
                 activityReferenceId = activityReferenceId,
-                activityReferenceType = activityReferenceType
+                activityReferenceType = activityReferenceType,
+                sectionName = questionUiModel.sectionName
             )
         } else {
             SaveAnswerEventDto(
@@ -91,13 +96,18 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 subjectId = subjectId,
                 subjectType = subjectType,
                 sectionId = questionUiModel.sectionId,
-                question = getSaveAnswerEventQuestionItemDto(questionUiModel)!!,
+                question = getSaveAnswerEventQuestionItemDto(
+                    getEncryptedResponseForSensistiveInfo(
+                        questionUiModel
+                    )
+                )!!,
                 referenceId = refrenceId,
                 localTaskId = taskLocalId ?: BLANK_STRING,
                 grantId = grantId,
                 grantType = grantType,
                 taskId = taskId,
-                activityId = activityId
+                activityId = activityId,
+                sectionName = questionUiModel.sectionName
             )
         }
     }
@@ -153,7 +163,6 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
     ): SaveAnswerEventQuestionItemDto? {
         var saveAnswerEventQuestionItemDto1: SaveAnswerEventQuestionItemDto? = null
         val options = getOption(questionUiModel, "")
-
             saveAnswerEventQuestionItemDto1 = SaveAnswerEventQuestionItemDto(
                 questionId = questionUiModel.questionId,
                 questionType = questionUiModel.type,
@@ -161,7 +170,11 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 showQuestion = true,
                 questionDesc = questionUiModel.questionSummary ?: BLANK_STRING,
                 options = options,
-                formId = questionUiModel.formId
+                formId = questionUiModel.formId,
+                order = questionUiModel.order,
+                formOder = questionUiModel.formOrder,
+                formDescription = questionUiModel.formDescriptionInEnglish ?: BLANK_STRING,
+                sortKey = questionUiModel.sortingKey
             )
 
         return saveAnswerEventQuestionItemDto1
@@ -178,14 +191,17 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 if (questionUiModel.type == QuestionType.MultiSelectDropDown.name
                     || questionUiModel.type == QuestionType.SingleSelectDropDown.name
                     || questionUiModel.type == QuestionType.MultiSelect.name
+                    || questionUiModel.type == QuestionType.DropDown.name
+                    || questionUiModel.type == QuestionType.RadioButton.name
+                    || questionUiModel.type == QuestionType.Toggle.name
                 ) {
                     result.add(
                     SaveAnswerEventOptionItemDto(
                         optionId = optionItem.optionId ?: 0,
-                        selectedValue = optionItem.description,
+                        selectedValue = optionItem.originalValue,
                         optionDesc = optionItem.originalValue ?: BLANK_STRING,
-                        referenceId = referenceId
-
+                        referenceId = referenceId,
+                        order = optionItem.order
                     )
                     )
                 } else {
@@ -193,7 +209,7 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                         SaveAnswerEventOptionItemDto(
                             optionId = optionItem.optionId ?: 0,
                             selectedValue = optionItem.selectedValue,
-                            optionDesc = optionItem.description ?: BLANK_STRING,
+                            optionDesc = optionItem.originalValue ?: BLANK_STRING,
                             referenceId = referenceId
 
                         )
@@ -203,5 +219,23 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
         }
         return result
 
+    }
+    private fun getEncryptedResponseForSensistiveInfo(question: QuestionUiModel): QuestionUiModel {
+        val secretKeyPass = String(
+            Base64.decode(
+                coreSharedPrefs.getPref(
+                    AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                    com.nudge.core.BLANK_STRING
+                ), Base64.DEFAULT
+            )
+        )
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) {
+            question.options?.firstOrNull()?.selectedValue = AESHelper.encrypt(
+                question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                secretKeyPass
+            )
+
+        }
+        return question
     }
 }

@@ -22,7 +22,7 @@ interface SectionEntityDao {
         surveyId: Int,
     ): SectionEntity
 
-    @Query("Select sectionTable.sectionId, sectionTable.userId, sectionTable.surveyId, langAttrTable.description as sectionName, sectionTable.sectionOrder, sectionTable.sectionDetails, sectionTable.sectionIcon, sectionTable.questionSize from $SECTION_TABLE as sectionTable join $SURVEY_LANGUAGE_ATTRIBUTE_TABLE_NAME as langAttrTable on sectionTable.sectionId = langAttrTable.referenceId where sectionTable.userId=:userId and sectionTable.surveyId = :surveyId and langAttrTable.userId = :userId and langAttrTable.languageCode = :languageCode and langAttrTable.referenceType = :referenceType order by sectionTable.sectionOrder ASC")
+    @Query("Select sectionTable.sectionId, sectionTable.userId, sectionTable.surveyId, langAttrTable.description as sectionName, sectionTable.sectionOrder, sectionTable.sectionDetails, sectionTable.sectionIcon, sectionTable.questionSize ,sectionTable.contentEntities from $SECTION_TABLE as sectionTable join $SURVEY_LANGUAGE_ATTRIBUTE_TABLE_NAME as langAttrTable on sectionTable.sectionId = langAttrTable.referenceId where sectionTable.userId=:userId and sectionTable.surveyId = :surveyId and langAttrTable.userId = :userId and langAttrTable.languageCode = :languageCode and langAttrTable.referenceType = :referenceType order by sectionTable.sectionOrder ASC")
     fun getAllSectionForSurveyInLanguage(
         userId: String,
         surveyId: Int,

@@ -56,6 +56,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -71,13 +72,16 @@ import com.nudge.core.ui.theme.redDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.surveymanager.R
 import java.io.File
 
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "UnusedBoxWithConstraintsScope")
 @Composable
 fun AddImageComponent(
+    contents: List<ContentList?>? = listOf(),
+    showCardView: Boolean = false,
     isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
@@ -85,6 +89,8 @@ fun AddImageComponent(
     filePaths: List<String> = listOf(),
     fileNamePrefix: String,
     subtitle: String? = null,
+    areMultipleImagesAllowed: Boolean = true,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {},
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -142,7 +148,12 @@ fun AddImageComponent(
                     Box(
                         modifier =
                         boxModifier
-                            .clickable(enabled = isEditable) {
+                            .clickable(
+                                enabled = isEditable && isClickEnabled(
+                                    areMultipleImagesAllowed,
+                                    imageList.size
+                                )
+                            ) {
 
                                 requestCameraPermission(context as Activity) {
                                     shouldRequestPermission.value = it
@@ -188,6 +199,18 @@ fun AddImageComponent(
                 }
             }
         }
+        if (showCardView) {
+            CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = contents,
+                questionIndex = 0,
+                showCardView = showCardView,
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(content)
+                },
+                questionDetailExpanded = {},
+            )
+        }
     }
     if (shouldRequestPermission.value) {
         ShowCustomDialog(
@@ -204,6 +227,15 @@ fun AddImageComponent(
 
             }
         )
+    }
+
+}
+
+fun isClickEnabled(areMultipleImagesAllowed: Boolean, imageListSize: Int): Boolean {
+    return if (areMultipleImagesAllowed)
+        true
+    else {
+        imageListSize < 1
     }
 
 }

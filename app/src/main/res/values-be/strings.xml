@@ -299,7 +299,7 @@
     <string name="finish">फोजोबनाय</string>
     <string name="no_internet">फोनांजाबनाय जायाखै</string>
     <string name="connected">फोनांजाबनाय जाबाय</string>
-    <string name="sync_your_data">Sync Data Now</string>
+    <string name="sync_your_data">नोंनि डाटाखौ Sync खालाम</string>
     <string name="your_data_already_synced">नोंथांनि डाटाया बावैनो Sync जाबाय</string>
     <string name="data_synced_successfully">जाफुंसारै डाटा Sync खालामनाय जाबाय</string>
     <string name="sync">Sync</string>
@@ -499,10 +499,10 @@
     <string name="recover_old_data">पुराना डेटा पुनर्प्राप्त करें</string>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
     <string name="change_language">भाषा बदलें</string>
-    <string name="no_history_available_right_now">No History Available Right Now</string>
+    <string name="no_history_available_right_now">दानो जेबो जारिमिन गैया</string>
     <string name="sync_data">Data</string>
-    <string name="sync_images">Images</string>
-    <string name="last_sync_date_time">Last Sync Time:</string>
+    <string name="sync_images">सावगारिफोर</string>
+    <string name="last_sync_date_time">जोबथा sync time:</string>
     <string name="shg_member_text">1. सेल्फ हेल्प ग्रुपनि सोद्रोमा</string>
     <string name="able_bodied_women_text">2. गोहो गोनां आयजो</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
@@ -511,5 +511,13 @@
     <string name="select_mission">मिसनखौ सायख\'</string>
     <string name="select_activity_for">हाबाफारिफोरनि थाखाय सायख\'</string>
     <string name="select_all">गासैखौबो सायख\'</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
+    <string name="sync_all_data">Sync गासैबो data</string>
+    <string name="sync_failed_message">"माखासे data एबा सावगारि फोरा synced जायाखै। अन्नानै \'Failed Events' फाइलखौ एक्सपर्ट खालाम / admin जों सोमोन्दो लाखि।"</string>
+    <string name="sync_only_data">Sync खालि खारिखौल</string>
+    <string name="sync_data_first_message">सावगारि sync नि सिगां Data sync नि गोनांथि जायो</string>
+    <string name="sync_only_images">Sync सावगारिफोरखौल\'</string>
+    <string name="sync_started">Sync आ जागायबाय। अननानै नेथ\'....</string>
+    <string name="sync_data_history">Sync Data History</string>
 
 </resources>

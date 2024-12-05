@@ -1,9 +1,13 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.text.TextUtils
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -43,7 +47,11 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase
+    private val validationUseCase: SurveyValidationUseCase,
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+
+
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -60,7 +68,9 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     getConditionQuestionMappingsUseCase,
     getSurveyConfigFromDbUseCase,
     getSurveyValidationsFromDbUseCase,
-    validationUseCase
+    validationUseCase,
+    fetchContentUseCase = fetchContentUseCase,
+    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
@@ -83,6 +93,25 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
                 isFromRegenerate = false
             )
         }
+    }
+
+    override fun checkButtonValidation(): Boolean {
+        questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
+            if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
+                val disbursedAmount =
+                    if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
+                if (sanctionAmount != 0 && (disbursedAmount
+                        ?: 0) + totalRemainingAmount > sanctionAmount
+                ) {
+                    return false
+                }
+            }
+            val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
+            if (!result) {
+                return false
+            }
+        }
+        return true
     }
 
 }

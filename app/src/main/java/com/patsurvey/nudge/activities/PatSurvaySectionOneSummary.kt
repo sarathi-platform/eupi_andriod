@@ -338,9 +338,7 @@ fun isArrowVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity
         true
     }else didi.value.patEdit && (viewModel.isPATStepComplete.value == StepStatus.INPROGRESS.ordinal)
 }
-fun isArrowFlagVisible(viewModel: PatSectionSummaryViewModel, didi: State<DidiEntity>): Boolean {
-    return false
-}
+
 
 @Composable
 fun PatSummeryScreenDidiDetailBoxForSectionOne(

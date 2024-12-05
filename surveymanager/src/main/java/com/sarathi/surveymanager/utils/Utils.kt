@@ -9,8 +9,10 @@ import com.nudge.core.toSafeInt
 import com.sarathi.dataloadingmangement.enums.ValidationExpressionEnum
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 
+val onlyNumberRegex = "^(?!.*[_N,\\-=/+])[0-9]*$".toRegex()
+
 fun onlyNumberField(value: String): Boolean {
-    if (value.isDigitsOnly() && value != "_" && value != "N") {
+    if (value.isDigitsOnly() && value.matches(onlyNumberRegex)) {
         return true
     }
     return false
@@ -19,7 +21,7 @@ fun onlyNumberField(value: String): Boolean {
 fun onlyNumberField(value: String, excludeBlankSpace: Boolean = false): Boolean {
     var result = false
     if (excludeBlankSpace) {
-        result = value.isDigitsOnly() && value != "_" && value != "N" && value != BLANK_STRING
+        result = onlyNumberField(value) && value != BLANK_STRING
     } else {
         result = onlyNumberField(value)
     }

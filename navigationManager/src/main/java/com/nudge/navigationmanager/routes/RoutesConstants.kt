@@ -56,3 +56,5 @@ const val EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME = "export_backup_file_screen"
 const val SYNC_HOME_ROUTE_NAME="sync_home_screen"
 const val SYNC_HISTORY_ROUTE_NAME="sync_history_screen"
 const val ACTIVITY_REOPENING_SCREEN_ROUTE_NAME = "activity_reopening_screen"
+const val EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME = "export_backup_file_screen"
+

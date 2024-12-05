@@ -40,5 +40,13 @@
     <string name="view_summary">View Summary</string>
     <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Nini thangthai samung paikha ba, tangmung pai ridi.</string>
     <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*Tangmung paimani yagulo, nwng tai kisisa phano swlai wi manya.</string>
-
+    <string name="all_tab_title">All</string>
+    <string name="questions_data_tab_title">Questions</string>
+    <string name="section_information_tab_title">Sections</string>
+    <string name="village_filter_label">"Filter by Village: "</string>
+    <string name="empty_task_list_placeholder">No Task found for this activity!</string>
+    <string name="details_have_already_been_added">Details have already been added!</string>
+    <string name="no_result_found">No result found</string>
+    <string name="proceed">Proceed</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
 </resources>

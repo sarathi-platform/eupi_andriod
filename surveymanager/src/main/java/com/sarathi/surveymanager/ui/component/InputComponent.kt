@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -17,7 +16,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalFocusManager
@@ -37,7 +35,7 @@ import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
@@ -46,6 +44,8 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
@@ -53,6 +53,7 @@ import com.sarathi.surveymanager.utils.onlyNumberField
 @OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun InputComponent(
+    content: List<ContentList?>? = listOf(),
     title: String? = "select",
     defaultValue: String = BLANK_STRING,
     questionIndex: Int,
@@ -65,9 +66,14 @@ fun InputComponent(
     remainingAmount: Int = 0,
     isZeroNotAllowed: Boolean = false,
     showCardView: Boolean = false,
+    isFromTypeQuestion: Boolean = false,
+    resetResponse: Boolean = false,
+    optionsItem: OptionsUiModel? = null,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
-    val txt = remember {
+    val txt = remember(resetResponse, optionsItem?.optionId) {
         mutableStateOf(defaultValue)
     }
 
@@ -92,26 +98,36 @@ fun InputComponent(
         ) {
             if (title?.isNotBlank() == true) {
                 QuestionComponent(
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                     title = title,
                     questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
-                    isRequiredField = isMandatory
+                    isRequiredField = isMandatory,
+                    onDetailIconClicked = {
+                        onDetailIconClicked()
+                    }
                 )
             }
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimen_60_dp),
+                    .height(dimen_56_dp),
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
                 onValueChange = { value ->
-                    if (value.length <= maxLength) {
-                        if (isOnlyNumber && onlyNumberField(value) && value.length <= MAXIMUM_RANGE_LENGTH) {
-                            if (isZeroNotAllowed) {
-                                if (!value.all { it == '0' }) {
-                                    txt.value = value
-                                }
-                            } else {
+                    if (value.isEmpty()) {
+                        // Allow clearing the field
+                        txt.value = value
+                    } else if (value.length <= maxLength) {
+                        val isValidNumber =
+                            isOnlyNumber && onlyNumberField(value) && value.length <=  maxOf(
+                                maxLength,
+                                MAXIMUM_RANGE_LENGTH
+                            )
+                        val isNotZero = !isZeroNotAllowed || value.any { it != '0' }
+
+                        if (isOnlyNumber) {
+                            if (isValidNumber && isNotZero) {
                                 txt.value = value
                             }
                         } else {
@@ -128,7 +144,6 @@ fun InputComponent(
                         ),
                         modifier = Modifier
                             .fillMaxSize()
-                            .wrapContentHeight(align = Alignment.CenterVertically)
                     )
                 },
                 keyboardOptions = if (isOnlyNumber) {
@@ -167,9 +182,19 @@ fun InputComponent(
                 )
             }
         }
-        if (showCardView) {
+        if (showCardView && content?.isNotEmpty() == true) {
             CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = content,
+                questionIndex = questionIndex,
+                showCardView = showCardView,
+                questionDetailExpanded = {},
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                }
+            )
         }
+
     }
 }
 
@@ -182,5 +207,5 @@ private fun getRemainingValue(remainValue: Int, sanctionedAmount: Int, existValu
 @Composable
 fun NumberTextComponentPreview() {
     InputComponent(onAnswerSelection = { _, _ ->
-    }, isOnlyNumber = true, questionIndex = 0)
+    }, isOnlyNumber = true, questionIndex = 0, navigateToMediaPlayerScreen = {})
 }

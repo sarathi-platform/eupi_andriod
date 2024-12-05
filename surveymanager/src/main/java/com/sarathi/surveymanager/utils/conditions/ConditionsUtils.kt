@@ -6,13 +6,19 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_OPERAND_FOR_EXPRESSION_VALUE
 import com.nudge.core.OPERAND_DELIMITER
 import com.nudge.core.ifNotEmpty
+import com.nudge.core.toSafeInt
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.survey.response.Conditions
 import com.sarathi.dataloadingmangement.model.uiModel.ConditionsUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.util.constants.OptionType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.utils.onlyNumberField
 
 class ConditionsUtils {
@@ -31,7 +37,17 @@ class ConditionsUtils {
 
     private var questionUiModel: List<QuestionUiModel> = listOf()
 
+    /**
+     * Variable to handle question visibility state. To check whether the questions are visible or not.
+     * */
     val questionVisibilityMap: SnapshotStateMap<Int, Boolean> = mutableStateMapOf()
+
+    /**
+     * Variable to handle option state. To check whether the options are enable or disabled.
+     * */
+    val optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf()
+
+    val inputTypeQuestionResponses = mutableMapOf<Int, List<Pair<Int, String>>>()
 
     private fun setConditionsUiModelList(conditionsUiModelList: List<ConditionsUiModel>) {
         this.conditionsUiModelList = conditionsUiModelList
@@ -73,28 +89,37 @@ class ConditionsUtils {
                 }.value()
             }
             .forEach {
+                val selectedOptions = it.options?.filter { option -> option.isSelected.value() }
                 if (it.type != QuestionType.TextField.name && it.type != QuestionType.InputText.name && it.type != QuestionType.InputNumber.name && it.type != QuestionType.NumericField.name) {
-                    it.options?.filter { option -> option.isSelected.value() }
-                        ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
+                    selectedOptions?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
                 }
 
                 if (it.type == QuestionType.InputNumber.name || it.type == QuestionType.NumericField.name) {
-                    it.options?.filter { option -> option.isSelected.value() }
-                        ?.map { opt -> opt.selectedValue?.toInt()!! }?.ifNotEmpty { optionIds ->
+                    selectedOptions
+                        ?.map { opt -> opt.selectedValue?.toIntOrNull().value(NUMBER_ZERO) }
+                        ?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
+
 
                 }
 
                 if (it.type == QuestionType.TextField.name || it.type == QuestionType.InputText.name) {
-                    it.options?.filter { option -> option.isSelected.value() }
-                        ?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
+
+                    selectedOptions?.map { opt -> opt.optionId!! }?.ifNotEmpty { optionIds ->
                             map[it.questionId] = optionIds
                         }
                 }
-
+                if (QuestionType.userInputQuestionTypeList.contains(it.type.toLowerCase()) || QuestionType.numericUseInputQuestionTypeList.contains(
+                        it.type.toLowerCase()
+                    )
+                ) {
+                    inputTypeQuestionResponses[it.questionId] =
+                        selectedOptions?.map { Pair(it.optionId.value(), it.selectedValue.value()) }
+                            .value()
+                }
             }
         responseMap = map
     }
@@ -119,6 +144,21 @@ class ConditionsUtils {
             questionVisibilityMap.put(it.questionId, !it.isConditional)
             if (it.options?.any { optionsUiModel -> optionsUiModel.isSelected == true } == true) {
                 questionVisibilityMap.put(it.questionId, true)
+            }
+        }
+    }
+
+    fun initOptionsStateMap(questionUiModel: List<QuestionUiModel>) {
+        for (question in questionUiModel) {
+            if (updateOptionStateMapIfNoneOptionIsPresentAndSelected(question)) {
+                updateResponseMap(
+                    question.questionId,
+                    listOf(findNoneOption(question)?.optionId.value())
+                )
+                continue
+            }
+            question.options?.map { Pair(question.questionId, it.optionId.value()) }?.forEach {
+                optionStateMap[it] = true
             }
         }
     }
@@ -190,35 +230,57 @@ class ConditionsUtils {
                 }
             }
         }
+
+        if (QuestionType.userInputQuestionTypeList.contains(question.type.toLowerCase()) || QuestionType.numericUseInputQuestionTypeList.contains(
+                question.type.toLowerCase()
+            )
+        ) {
+            val selectedOptions = question.options?.filter { it.isSelected == true }
+            inputTypeQuestionResponses[question.questionId] =
+                selectedOptions?.map { Pair(it.optionId.value(), it.selectedValue.value()) }.value()
+        }
     }
 
     private fun updateResponseMap(questionId: Int, responseList: List<Int>) {
         responseMap[questionId] = responseList
     }
 
-    fun runConditionCheck(sourceQuestion: QuestionUiModel): Map<Int, Boolean> {
+    fun runConditionCheck(
+        sourceQuestion: QuestionUiModel,
+        isFromForm: Boolean = false
+    ): Map<Int, Boolean> {
 
-        return evaluateConditions(sourceQuestion)
+        return evaluateConditions(sourceQuestion, isFromForm)
 
     }
 
     /**
      * Evaluates the condition for a given source question
      * */
-    private fun evaluateConditions(sourceQuestion: QuestionUiModel): Map<Int, Boolean> {
+    private fun evaluateConditions(
+        sourceQuestion: QuestionUiModel,
+        isFromForm: Boolean = false
+    ): Map<Int, Boolean> {
 
         val questionsToShow = mutableMapOf<Int, Boolean>()
 
         val sourceQuestionType = sourceQuestion.type
 
-        val targetQuestionsIdList = sourceTargetMap[sourceQuestion.questionId]
+        var targetQuestionsIdList = sourceTargetMap[sourceQuestion.questionId]
+
+        if (isFromForm)
+            targetQuestionsIdList = targetQuestionsIdList?.distinct()
+
 
         if (targetQuestionsIdList.isNullOrEmpty())
             return questionsToShow
 
         for (targetQuestionId in targetQuestionsIdList) {
 
-            val condition = questionConditionMap.findConditionForQuestion(targetQuestionId)
+            var condition = questionConditionMap.findConditionForQuestion(targetQuestionId)
+
+            if (isFromForm)
+                condition = condition?.distinctBy { Pair(it.sourceQuestion, it.expression) }
 
             val response = responseMap[sourceQuestion.questionId]
 
@@ -226,20 +288,24 @@ class ConditionsUtils {
                 break
 
             if (condition.size == 1) {
+                val result = evaluateSingleCondition(
+                    sourceQuestion = sourceQuestion,
+                    response = response,
+                    conditions = condition.first(),
+                    sourceQuestionType = sourceQuestionType
+                )
                 questionVisibilityMap.put(
                     targetQuestionId,
-                    evaluateSingleCondition(
-                        sourceQuestion = sourceQuestion,
-                        response = response,
-                        conditions = condition.first(),
-                        sourceQuestionType = sourceQuestionType
-                    )
+                    result
                 )
+                if (!result) {
+                    responseMap.remove(targetQuestionId)
+                }
 
                 val targetQuestionUiModel =
                     questionUiModel.find { it.questionId == targetQuestionId } ?: continue
 
-                evaluateConditions(targetQuestionUiModel)
+                evaluateConditions(targetQuestionUiModel, isFromForm)
 
             }
 
@@ -252,21 +318,26 @@ class ConditionsUtils {
                     conditionsUiModelList.find { it.targetQuestionId == targetQuestionId }?.conditionOperator
                         ?: continue
 
+                val result = evaluateMultipleCondition(
+                    sourceQuestion = sourceQuestion,
+                    response = response,
+                    conditions = condition,
+                    conditionOperator = conditionOperator,
+                    sourceQuestionType = sourceQuestionType
+                )
                 questionVisibilityMap.put(
                     targetQuestionId,
-                    evaluateMultipleCondition(
-                        sourceQuestion = sourceQuestion,
-                        response = response,
-                        conditions = condition,
-                        conditionOperator = conditionOperator,
-                        sourceQuestionType = sourceQuestionType
-                    )
+                    result
                 )
+
+                if (!result) {
+                    responseMap.remove(targetQuestionId)
+                }
 
                 /**
                  * Evaluate conditions for child questions of current targetQuestion if their responses are present
                  * */
-                evaluateConditions(targetQuestionUiModel)
+                evaluateConditions(targetQuestionUiModel, isFromForm)
 
             }
 
@@ -309,10 +380,17 @@ class ConditionsUtils {
             QuestionType.Grid.name,
             QuestionType.ToggleGrid.name,
             QuestionType.MultiSelectDropDown.name,
-            QuestionType.IncrementDecrementList.name
-                -> {
+            QuestionType.IncrementDecrementList.name -> {
+                var conditionCheckResult = evaluateMultipleResponseConditions(response, conditions)
 
-                evaluateMultipleResponseConditions(response, conditions)
+                conditionCheckResult = checkIfInputValueIsNonZeroAndNotEmpty(
+                    sourceQuestion,
+                    conditionCheckResult,
+                    conditions,
+                    response
+                )
+
+                conditionCheckResult
             }
 
             else -> {
@@ -321,6 +399,33 @@ class ConditionsUtils {
         }
 
 
+    }
+
+    private fun checkIfInputValueIsNonZeroAndNotEmpty(
+        sourceQuestion: QuestionUiModel,
+        conditionCheckResult: Boolean,
+        conditions: Conditions,
+        response: List<Int>?
+    ): Boolean {
+        var valueCheckResult = conditionCheckResult
+        if (sourceQuestion.type == QuestionType.IncrementDecrementList.name && valueCheckResult) {
+            val userResponseValue = inputTypeQuestionResponses[sourceQuestion.questionId]
+
+            val operator = getOperatorForExpression(conditions.expression)
+
+            val operandVariables = getOperandVariables(conditions.expression, operator)
+            response?.firstOrNull()?.let {
+                val operand = getOperandsForExpression(
+                    operandVariables,
+                    it
+                ).second
+
+                val value = userResponseValue?.find { it.first == operand }?.second.value()
+                if (value == NUMBER_ZERO.toString() || value == BLANK_STRING)
+                    valueCheckResult = false
+            }
+        }
+        return valueCheckResult
     }
 
     /**
@@ -509,7 +614,7 @@ class ConditionsUtils {
             if (opVar.equals(OPERAND_DELIMITER)) {
                 first = response
             } else {
-                second = opVar.toInt()
+                second = opVar.toIntOrNull() ?: 0
             }
         }
         operands = Pair(first, second)
@@ -562,6 +667,14 @@ class ConditionsUtils {
                 operands.first > operands.second
             }
 
+            Operator.GREATER_THAN_EQUAL -> {
+                operands.first >= operands.second
+            }
+
+            Operator.LESS_THAN_EQUAL -> {
+                operands.first <= operands.second
+            }
+
             else -> false
         }
     }
@@ -596,6 +709,64 @@ class ConditionsUtils {
 
     }
 
+    fun updateAutoCalculateQuestionValue(
+        questionUiModel: List<QuestionUiModel>,
+        surveyConfig: MutableMap<String, List<SurveyCardModel>>?,
+        autoCalculateQuestionResultMap: SnapshotStateMap<Int, String>
+    ) {
+        questionUiModel.filter { QuestionType.autoCalculateQuestionType.contains(it.type.toLowerCase()) }
+            .forEach { question ->
+                val config = surveyConfig?.get(SurveyConfigCardSlots.CONFIG_AUTO_CALCULATE.name)
+                    ?.filter { question.tagId.contains(it.tagId) }
+                questionUiModel.find {
+                    config?.map { it.value.toSafeInt() }?.contains(it.questionId) == true
+                }?.apply {
+                    var resultMap = this.options?.map { it.selectedValue }
+                    resultMap = resultMap?.filter { it != BLANK_STRING }
+                    val result =
+                        if (QuestionType.numericUseInputQuestionTypeList.contains(this.type.toLowerCase())) {
+                            resultMap?.sumOf { it.toSafeInt() }.toString()
+                        } else {
+                            resultMap?.joinToString(DELIMITER_MULTISELECT_OPTIONS)
+                        }
+                    autoCalculateQuestionResultMap.put(question.questionId, result.value())
+                }
+            }
+    }
+
+    fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
+        return updateOptionStateMapIfNoneOptionIsPresentAndSelected(sourceQuestion)
+    }
+
+    private fun updateOptionStateMapIfNoneOptionIsPresentAndSelected(sourceQuestion: QuestionUiModel): Boolean {
+        val noneOption = findNoneOption(sourceQuestion)
+
+        return if (noneOption != null && noneOption.isSelected.value()) {
+            optionStateMap[Pair(sourceQuestion.questionId, noneOption.optionId.value())] = true
+            sourceQuestion.options?.filter { it.optionId != noneOption.optionId }
+                ?.map { Pair(sourceQuestion.questionId, it.optionId.value()) }?.forEach {
+                    optionStateMap[it] = false
+                }
+            true
+        } else {
+            sourceQuestion.options
+                ?.map { Pair(sourceQuestion.questionId, it.optionId.value()) }?.forEach {
+                    optionStateMap[it] = true
+                }
+            false
+        }
+    }
+
+}
+
+fun findNoneOption(sourceQuestion: QuestionUiModel): OptionsUiModel? {
+    val noneOption = sourceQuestion.options?.find {
+        it.optionType?.equals(
+            OptionType.None.name,
+            true
+        ) == true
+    }
+    return noneOption
 }
 
 /**
@@ -606,6 +777,8 @@ enum class Operator {
     LESS_THAN,
     MORE_THAN,
     IN_BETWEEN,
+    GREATER_THAN_EQUAL,
+    LESS_THAN_EQUAL,
     NOT_EQUAL_TO,
     NO_OPERATOR,
     AND,
@@ -627,6 +800,8 @@ enum class Operator {
             ">" -> MORE_THAN
             "><" -> IN_BETWEEN
             "<>" -> NOT_EQUAL_TO
+            ">=" -> GREATER_THAN_EQUAL
+            "<=" -> LESS_THAN_EQUAL
             "&&" -> AND
             "||" -> OR
             else -> NO_OPERATOR

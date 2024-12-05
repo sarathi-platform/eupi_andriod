@@ -7,6 +7,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.casteMap
+import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.toSafeInt
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -22,8 +27,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -44,7 +51,9 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val getTaskUseCase: GetTaskUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
-    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase
+    private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -60,12 +69,13 @@ class FormResponseSummaryViewModel @Inject constructor(
     val questionUiModel: State<List<QuestionUiModel>> get() = _questionUiModel
 
     private val _formQuestionResponseMap =
-        mutableStateMapOf<String, List<SurveyAnswerFormSummaryUiModel>>()
-    val formQuestionResponseMap: SnapshotStateMap<String, List<SurveyAnswerFormSummaryUiModel>> get() = _formQuestionResponseMap
+        mutableStateMapOf<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>>()
+    val formQuestionResponseMap: SnapshotStateMap<Pair<String, Int>, List<SurveyAnswerFormSummaryUiModel>> get() = _formQuestionResponseMap
 
-    val referenceIdsList = mutableStateListOf<String>()
+    val referenceIdsList = mutableStateListOf<Pair<String, Int>>()
 
-    var surveyConfig = mutableMapOf<String, SurveyCardModel>()
+    var surveyConfig =
+        mutableMapOf<String, List<SurveyCardModel>>()
 
 
     fun init(
@@ -107,7 +117,9 @@ class FormResponseSummaryViewModel @Inject constructor(
                     activityConfigId = activityConfigId,
                     referenceId = BLANK_STRING,
                     grantId = NUMBER_ZERO,
-                    formId = formId
+                    formId = formId,
+                    missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                    activityId = taskEntity?.activityId.value(DEFAULT_ID)
                 )
             }
 
@@ -124,6 +136,17 @@ class FormResponseSummaryViewModel @Inject constructor(
             activityConfig =
                 getActivityUiConfigUseCase.getActivityConfig(it.activityId, it.missionId)
 
+            val formQuestionIdList = fetchDataUseCase.invoke(
+                surveyId = surveyId,
+                sectionId = sectionId,
+                subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
+                activityConfigId = activityConfigId,
+                referenceId = BLANK_STRING,
+                grantId = NUMBER_ZERO,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
+            ).filter { it.formId != NUMBER_ZERO }.map { it.questionId }
+
             val savedAnswers = saveSurveyAnswerUseCase.getAllSaveAnswer(
                 activityConfigId = activityConfigId,
                 surveyId = surveyId,
@@ -133,14 +156,35 @@ class FormResponseSummaryViewModel @Inject constructor(
             )
 
             _formQuestionResponseMap.clear()
-            _formQuestionResponseMap.putAll(savedAnswers.groupBy { it.referenceId })
+            _formQuestionResponseMap.putAll(
+                savedAnswers
+                    .filter { savedAnswer ->
+                        savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
+                            savedAnswer.questionId
+                        )
+                    }
+                    .groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
+                    .filter { it.key.second == formId }
+            )
+
 
             referenceIdsList.clear()
-            referenceIdsList.addAll(formQuestionResponseMap.keys.toList())
+            referenceIdsList.addAll(
+                formQuestionResponseMap.entries
+                    .map { mapEntry -> // map formQuestionResponseMap Entries to a pair with map key as first and created data from map value.first()
+                        Pair(
+                            mapEntry.key,
+                            mapEntry.value.firstOrNull()?.createdDate.value(Long.MAX_VALUE)
+                        )
+                    }
+                    .sortedBy { pair: Pair<Pair<String, Int>, Long> -> pair.second } // sort the map of Pair on created date
+                    .map { it.first } // convert the sorted list back to the list of formQuestionResponseMap keys.
+            )
 
             getSurveyConfigFromDbUseCase.invoke(it.missionId, it.activityId, surveyId, formId)
                 .also { surveyConfigEntityList ->
-                    getSurveyConfig(surveyConfigEntityList)
+                    val taskAttributes = getTaskUseCase.getSubjectAttributes(it.taskId)
+                    getSurveyConfig(surveyConfigEntityList, taskAttributes)
                 }
 
             isActivityCompleted = getActivityUseCase.isAllActivityCompleted(
@@ -150,18 +194,45 @@ class FormResponseSummaryViewModel @Inject constructor(
         }
     }
 
-    private fun getSurveyConfig(surveyConfigEntityList: List<SurveyConfigEntity>) {
-        val mSurveyConfig = mutableMapOf<String, SurveyCardModel>()
-        surveyConfigEntityList.forEach { surveyConfigEntity ->
+    private fun getSurveyConfig(
+        surveyConfigEntityList: List<SurveyConfigEntity>,
+        taskAttributes: List<SubjectAttributes>
+    ) {
+        val mSurveyConfig = mutableMapOf<String, List<SurveyCardModel>>()
+        /*surveyConfigEntityList.forEach { surveyConfigEntity ->
             mSurveyConfig.put(
                 surveyConfigEntity.key,
                 SurveyCardModel.getSurveyCarModel(surveyConfigEntity)
             )
-        }
+        }*/
+        surveyConfigEntityList
+            .groupBy { it.key }
+            .mapValues { (key, entities) ->
+                mSurveyConfig.put(key, entities.map { entity ->
+                    val model = if (entity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
+                        // TEMP Code remove after moving caste table to code.
+                        if (entity.value.equals("casteId", true)) {
+                            val casteId =
+                                taskAttributes.find { it.key == entity.value }?.value.value()
+                                    .toSafeInt()
+                            entity.copy(
+                                value = casteMap.get(coreSharedPrefs.getAppLanguage())?.get(casteId)
+                                    ?: casteMap.get(DEFAULT_LANGUAGE_CODE)?.get(casteId).value()
+                            )
+                        } else {
+                            entity.copy(value = taskAttributes.find { it.key == entity.value }?.value.value())
+                        }
+                    } else {
+                        entity
+                    }
+                    SurveyCardModel.getSurveyCarModel(model)
+                })
+
+            }
         surveyConfig = mSurveyConfig
     }
 
-    fun deleteAnswer(referenceId: String?) {
+    fun deleteAnswer(referenceId: Pair<String?, Int>?) {
         ioViewModelScope {
             referenceIdsList.remove(referenceId)
 
@@ -169,7 +240,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                 surveyId = surveyId,
                 sectionId = sectionId,
                 taskId = taskId,
-                referenceId = referenceId.value(),
+                referenceId = referenceId?.first.value(),
             )
 
             if (deleteCount > 0) {
@@ -179,7 +250,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                     surveyName = BLANK_STRING,
                     grantId = NUMBER_ZERO,
                     grantType = BLANK_STRING,
-                    referenceId = referenceId.value(),
+                    referenceId = referenceId?.first.value(),
                     taskId = taskEntity?.taskId ?: DEFAULT_ID,
                     uriList = emptyList(),
                     taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
@@ -191,5 +262,10 @@ class FormResponseSummaryViewModel @Inject constructor(
 
         }
     }
+
+    fun getAESSecretKey(): String {
+        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
+    }
+
 
 }

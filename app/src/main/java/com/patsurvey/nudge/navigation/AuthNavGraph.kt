@@ -149,6 +149,12 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
 
         }
 
+
+        composable(route = SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route) {
+            ExportBackupScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+
         composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
             SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
         }

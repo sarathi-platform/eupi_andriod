@@ -1,5 +1,7 @@
 package com.patsurvey.nudge.activities.backup.domain.repository
 
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+
 interface ExportImportRepository {
   fun clearLocalData()
   fun setAllDataSynced()
@@ -11,6 +13,7 @@ interface ExportImportRepository {
   fun clearSelectionLocalDB()
   fun clearAPIStatusTableData()
   fun getLoggedInUserType():String
-
+  fun getStateId(): Int
+  suspend fun fetchMissionsForUser(): List<MissionUiModel>
 
 }

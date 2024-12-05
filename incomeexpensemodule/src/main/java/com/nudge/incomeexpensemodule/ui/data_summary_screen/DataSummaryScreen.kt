@@ -89,7 +89,6 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greenOnline
-import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.incomeCardBorderColor
 import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
@@ -581,7 +580,7 @@ private fun EventView(
                                     onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                                 })
                             CustomVerticalSpacer(size = dimen_5_dp)
-                            Divider(thickness = dimen_1_dp, color = greyBorder)
+                            Divider(thickness = dimen_1_dp, color = borderGreyLight)
                         }
                     }
                 }

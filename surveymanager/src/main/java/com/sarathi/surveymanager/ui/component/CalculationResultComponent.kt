@@ -1,14 +1,17 @@
 package com.sarathi.surveymanager.ui.component
 
 import android.annotation.SuppressLint
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -23,11 +26,19 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.surveymanager.constants.MAXIMUM_RANGE_LENGTH
 import com.sarathi.surveymanager.utils.onlyNumberField
@@ -41,6 +52,7 @@ fun CalculationResultComponent(
     defaultValue: String = BLANK_STRING,
     isOnlyNumber: Boolean = true,
     maxLength: Int = 150,
+    showCardView: Boolean = true
 ) {
 
     val txt =mutableStateOf(defaultValue)
@@ -50,10 +62,22 @@ fun CalculationResultComponent(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    BasicCardView(
+        cardElevation = CardDefaults.cardElevation(
+            defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
+        ),
+        cardShape = RoundedCornerShape(roundedCornerRadiusDefault),
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(white)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 2.dp)
+                .padding(
+                    horizontal = if (showCardView) dimen_16_dp else dimen_2_dp,
+                    vertical = if (showCardView) dimen_10_dp else dimen_0_dp
+                )
         ) {
             if (title?.isNotBlank() == true) {
                 Text(
@@ -114,6 +138,7 @@ fun CalculationResultComponent(
             )
 
 
+        }
     }
 }
 

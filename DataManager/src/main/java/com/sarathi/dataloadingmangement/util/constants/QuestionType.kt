@@ -16,7 +16,10 @@ enum class QuestionType {
     TextField,
     NumericField,
     InputText,
-    IncrementDecrementList;
+    IncrementDecrementList,
+    InputHrsMinutes,
+    InputYrsMonths,
+    SingleImage;
 
     companion object {
         val singleResponseQuestionTypeQuestions = listOf(
@@ -39,12 +42,26 @@ enum class QuestionType {
             DateType.name.toLowerCase(),
             TextField.name.toLowerCase(),
             InputText.name.toLowerCase(),
-            NumericField.name.toLowerCase()
+            NumericField.name.toLowerCase(),
+            InputHrsMinutes.name.toLowerCase(),
+            InputYrsMonths.name.toLowerCase()
         )
 
         val numericUseInputQuestionTypeList = listOf(
             InputNumber.name.toLowerCase(),
-            NumericField.name.toLowerCase()
+            NumericField.name.toLowerCase(),
+            IncrementDecrementList.name.toLowerCase()
+        )
+
+        val autoCalculateQuestionType = listOf(
+            AutoCalculation.name.toLowerCase()
+        )
+        val optionDescriptionAllowInExport = listOf(
+            IncrementDecrementList.name.toLowerCase()
         )
     }
+}
+
+enum class OptionType {
+    None;
 }
