@@ -72,7 +72,8 @@ interface ActivityDao {
                 "  AND activity_table.userId = :userId \n" +
                 "  AND activity_table.missionId = :missionId\n" +
                 "  AND activity_language_attribute_table.userId = :userId \n" +
-                "GROUP BY activity_table.activityId\n"
+                "  GROUP BY activity_table.activityId \n" +
+                "  ORDER BY activity_table.activityOrder ASC"
     )
 
     suspend fun getActivities(

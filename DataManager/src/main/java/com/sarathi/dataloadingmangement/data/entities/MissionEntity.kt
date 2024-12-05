@@ -32,7 +32,8 @@ data class MissionEntity(
     var actualStartDate: String = BLANK_STRING,
     var actualCompletedDate: String = BLANK_STRING,
     var isDataLoaded: Int = 0,
-    var isActive: Int = 1
+    var isActive: Int = 1,
+    var missionOrder: Int = 1
 ) {
     companion object {
         fun getMissionEntity(
@@ -56,7 +57,8 @@ data class MissionEntity(
                 startOffset = mission.startOffset,
                 endOffset = mission.endOffset,
                 programmeId = programmeId,
-                isDataLoaded = 0
+                isDataLoaded = 0,
+                missionOrder = mission.order
             )
         }
 
