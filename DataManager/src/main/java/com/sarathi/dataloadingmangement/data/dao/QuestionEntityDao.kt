@@ -63,7 +63,9 @@ interface QuestionEntityDao {
                 "    question_table.isMandatory,\n" +
                 "    question_table.contentEntities, \n" +
                 "    survey_language_attribute_table.languageCode, \n" +
+                "    question_table.formContents, \n" +
                 "    question_table.parentQuestionId,\n" +
+                "    question_table.formOrder,\n" +
                 "    GROUP_CONCAT(tag_reference_table.value, ',') AS tag \n" +
                 "FROM \n" +
                 "    question_table \n" +

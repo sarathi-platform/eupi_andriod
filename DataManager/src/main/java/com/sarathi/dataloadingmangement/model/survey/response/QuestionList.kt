@@ -39,6 +39,10 @@ data class QuestionList(
     @Expose
     var contentList: List<ContentList>? = listOf(),
 
+    @SerializedName("formContents")
+    @Expose
+    var formContents: List<ContentList>? = listOf(),
+
     @SerializedName("imageIcon")
     @Expose
     val imageIcon: String = BLANK_STRING,
@@ -64,9 +68,13 @@ data class QuestionList(
 
     @SerializedName("conditionsOpererator")
     @Expose
-    val conditionsOpererator: String? = null
+    val conditionsOpererator: String? = null,
+    @SerializedName("formOrder")
+    @Expose
+    var formOrder: Int? = null,
 
-)
+
+    )
 
 data class Conditions(
     @SerializedName("expression")
@@ -75,5 +83,5 @@ data class Conditions(
 
     @SerializedName("sourceQuestion")
     @Expose
-    var sourceQuestion: Int? = null
+    var sourceQuestion: Int? = null,
 )

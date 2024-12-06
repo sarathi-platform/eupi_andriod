@@ -71,7 +71,7 @@ fun SingleImageComponent(
     fileNamePrefix: String,
     subtitle: String? = null,
     isFromTypeQuestion: Boolean = true,
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
@@ -105,7 +105,7 @@ fun SingleImageComponent(
     Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
             QuestionComponent(
-                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                 onDetailIconClicked = { onDetailIconClicked() },
                 title = title,
                 isRequiredField = isMandatory,
@@ -162,7 +162,8 @@ fun SingleImageComponent(
                         }else
                         {
                             Box(
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier
+                                    .fillMaxSize()
                                     .height(dimen_150_dp)
                                     .padding(dimen_5_dp)
                             ) {
@@ -182,8 +183,11 @@ fun SingleImageComponent(
                                         .padding(dimen_10_dp)
                                         .align(Alignment.BottomEnd)
                                         .clickable(enabled = isEditable) {
-                                            image=null
-                                            onImageSelection(currentImageUri?.path ?: BLANK_STRING, true)
+                                            image = null
+                                            onImageSelection(
+                                                currentImageUri?.path ?: BLANK_STRING,
+                                                true
+                                            )
                                         }
                                         .size(dimen_24_dp),
                                     colorFilter = ColorFilter.tint(redDark)

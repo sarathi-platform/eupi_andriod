@@ -30,7 +30,8 @@ data class ActivityEntity(
     var activityStatus: String,
     var taskSize: Int,
     val isAllTask: Boolean,
-    var isActive: Int
+    var isActive: Int,
+    var activityOrder: Int
 ) {
     companion object {
         fun getMissionActivityEntity(
@@ -52,7 +53,8 @@ data class ActivityEntity(
                 isAllTask = false,
                 isActive = 1,
                 startOffset = activity.startOffset ?: DEFAULT_ID,
-                endOffset = activity.endOffset ?: DEFAULT_ID
+                endOffset = activity.endOffset ?: DEFAULT_ID,
+                activityOrder = activity.order ?: 1
             )
         }
 

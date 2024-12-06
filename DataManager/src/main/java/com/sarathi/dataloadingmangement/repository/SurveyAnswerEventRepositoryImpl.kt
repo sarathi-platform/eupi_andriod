@@ -172,7 +172,9 @@ class SurveyAnswerEventRepositoryImpl @Inject constructor(
                 options = options,
                 formId = questionUiModel.formId,
                 order = questionUiModel.order,
-                formDescription = questionUiModel.formDescriptionInEnglish ?: BLANK_STRING
+                formOder = questionUiModel.formOrder,
+                formDescription = questionUiModel.formDescriptionInEnglish ?: BLANK_STRING,
+                sortKey = questionUiModel.sortingKey
             )
 
         return saveAnswerEventQuestionItemDto1

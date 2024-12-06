@@ -42,7 +42,7 @@ import com.sarathi.surveymanager.R
 
 @Composable
 fun HrsMinRangePickerComponent(
-    contests: List<ContentList?>? = listOf(),
+    content: List<ContentList?>? = listOf(),
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     title: String? = BLANK_STRING,
@@ -73,13 +73,15 @@ fun HrsMinRangePickerComponent(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = if (showCardView) dimen_16_dp else dimen_2_dp)
-                .padding(top = if (showCardView) dimen_10_dp else dimen_2_dp)
+                .padding(
+                    horizontal = if (showCardView) dimen_16_dp else dimen_2_dp,
+                    vertical = if (showCardView) dimen_10_dp else dimen_2_dp
+                )
         ) {
             if (title != null) {
                 if (title.isNotBlank()) {
                     QuestionComponent(
-                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contests?.isNotEmpty() == true,
+                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                         onDetailIconClicked = { onDetailIconClicked() },
                         title = title,
                         isRequiredField = isMandatory
@@ -152,10 +154,10 @@ fun HrsMinRangePickerComponent(
                     }
                 }
             }
-            if (showCardView && contests?.isNotEmpty() == true) {
+        if (showCardView && content?.isNotEmpty() == true) {
                 CustomVerticalSpacer(size = dimen_6_dp)
                 ContentBottomViewComponent(
-                    contents = contests,
+                contents = content,
                     questionIndex = 0,
                     showCardView = showCardView,
                     questionDetailExpanded = {},
