@@ -47,6 +47,7 @@ class DataSummaryScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val tag = DataSummaryScreenViewModel::class.java.simpleName
+    private val ALL_DATA = -1
 
     val tabs = listOf<SubTabs>(
         SubTabs.LastWeekTab,
@@ -191,7 +192,7 @@ class DataSummaryScreenViewModel @Inject constructor(
         livelihoodFilter: Int,
         eventsSubFilter: Int
     ): List<SubjectLivelihoodEventSummaryUiModel> {
-        var result = if (livelihoodFilter == -1)
+        var result = if (livelihoodFilter == ALL_DATA)
             subjectLivelihoodEventSummaryUiModelList
         else subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
 
@@ -372,7 +373,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     }
 
     fun getLivelihood(): IncomeExpenseSummaryUiModel? {
-        if (selectedLivelihood.value == -1) {
+        if (selectedLivelihood.value == ALL_DATA) {
             val totalIncome = incomeExpenseSummaryUiModel.values.sumOf { it?.totalIncome ?: 0.0 }
             val totalExpense = incomeExpenseSummaryUiModel.values.sumOf { it?.totalExpense ?: 0.0 }
 
@@ -412,10 +413,10 @@ class DataSummaryScreenViewModel @Inject constructor(
     }
 
     fun getEventsList(): List<LivelihoodEventUiModel>? {
-        return if (selectedLivelihood.value == -1) {
-            livelihoodEventMap.values.flatten()  // Flatten and return the list of events
+        return if (selectedLivelihood.value == ALL_DATA) {
+            livelihoodEventMap.values.flatten()
         } else {
-            livelihoodEventMap[selectedLivelihood.value]  // Return the specific list if available
+            livelihoodEventMap[selectedLivelihood.value]
         }
     }
 
