@@ -154,7 +154,7 @@ fun DataSummaryScreen(
 
     if (viewModel.showAssetDialog.value) {
         AssetsDialog(
-            viewModel.incomeExpenseSummaryUiModel[viewModel.selectedLivelihood.value],
+            viewModel.getLivelihood(),
             viewModel.livelihoodModel,
             onDismissRequest = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -345,8 +345,7 @@ private fun DataSummaryView(
     EventView(
         viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.toList()
             .sortedByDescending { it.date },
-        viewModel.livelihoodEventMap,
-        viewModel.selectedLivelihood.value,
+        eventsList = viewModel.getEventsList(),
         showMoreItems = showMoreItems,
         onEventItemClicked = onEventItemClicked,
         onViewEditItemClicked = onViewEditItemClicked,
@@ -489,8 +488,7 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
 @Composable
 private fun EventView(
     filteredSubjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel>,
-    eventsList: Map<Int, List<LivelihoodEventUiModel>>,
-    selectedLivelihoodId: Int,
+    eventsList: List<LivelihoodEventUiModel>?,
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
     onViewEditItemClicked: (transactionId: String) -> Unit,
@@ -508,7 +506,7 @@ private fun EventView(
                 .take(DEFAULT_EVENT_LIST_VIEW_SIZE)
         ) { index, subjectLivelihoodEventSummaryUiModel ->
             Column {
-                EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
+                EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList)
                 EventDetails(subjectLivelihoodEventSummaryUiModel) {
                     if (subjectLivelihoodEventSummaryUiModel.status != 2) {
                         onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
@@ -540,7 +538,7 @@ private fun EventView(
                         Column {
                             EventHeader(
                                 subjectLivelihoodEventSummaryUiModel,
-                                eventsList[selectedLivelihoodId]
+                                eventsList
                             )
                             EventDetails(
                                 subjectLivelihoodEventSummaryUiModel,

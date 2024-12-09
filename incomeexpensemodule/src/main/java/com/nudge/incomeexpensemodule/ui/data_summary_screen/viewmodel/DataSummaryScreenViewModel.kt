@@ -191,8 +191,9 @@ class DataSummaryScreenViewModel @Inject constructor(
         livelihoodFilter: Int,
         eventsSubFilter: Int
     ): List<SubjectLivelihoodEventSummaryUiModel> {
-        var result =
-            subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
+        var result = if (livelihoodFilter == -1)
+            subjectLivelihoodEventSummaryUiModelList
+        else subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
 
         result =
             filterListForSelectedTab(if (selectedTabFilter == -1) 0 else selectedTabFilter, result)
@@ -409,5 +410,14 @@ class DataSummaryScreenViewModel @Inject constructor(
 
         return selectedLivelihood.value?.let { incomeExpenseSummaryUiModel[it] }
     }
+
+    fun getEventsList(): List<LivelihoodEventUiModel>? {
+        return if (selectedLivelihood.value == -1) {
+            livelihoodEventMap.values.flatten()  // Flatten and return the list of events
+        } else {
+            livelihoodEventMap[selectedLivelihood.value]  // Return the specific list if available
+        }
+    }
+
 
 }
