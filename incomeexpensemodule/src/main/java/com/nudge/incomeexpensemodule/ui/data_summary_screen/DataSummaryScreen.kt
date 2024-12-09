@@ -78,6 +78,7 @@ import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.didiDetailItemStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -95,6 +96,7 @@ import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.stepIconDisableColor
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
@@ -324,7 +326,11 @@ private fun DataSummaryView(
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
-
+    Text(
+        stringResource(R.string.livelihood),
+        style = didiDetailItemStyle.copy(color = stepIconDisableColor)
+    )
+    Spacer(modifier = Modifier.height(dimen_5_dp))
     DropDownContainer(viewModel.livelihoodDropdownList.toList()) {
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
     }
