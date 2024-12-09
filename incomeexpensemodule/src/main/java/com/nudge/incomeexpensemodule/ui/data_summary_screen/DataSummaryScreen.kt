@@ -329,7 +329,7 @@ private fun DataSummaryView(
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
     }
     Spacer(modifier = Modifier.height(16.dp))
-    HeaderSection(viewModel.incomeExpenseSummaryUiModel[viewModel.selectedLivelihood.value]!!) {
+    HeaderSection(viewModel.getLivelihood()) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     }
     Spacer(modifier = Modifier.height(16.dp))
@@ -379,7 +379,7 @@ fun DropDownContainer(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int
 
 @Composable
 fun HeaderSection(
-    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel,
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
     onAssetCountClicked: () -> Unit
 ) {
     Row(

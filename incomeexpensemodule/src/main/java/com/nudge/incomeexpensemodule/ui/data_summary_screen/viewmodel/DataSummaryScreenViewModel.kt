@@ -357,6 +357,7 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     private suspend fun createLivelihoodDropDownList() {
         _livelihoodDropdownList.clear()
+        _livelihoodDropdownList.add(ValuesDto(-1, "All", false))
         livelihoodModel.forEach {
             _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
         }
@@ -368,4 +369,45 @@ class DataSummaryScreenViewModel @Inject constructor(
             selectedEventsSubFilter.value
         )
     }
+
+    fun getLivelihood(): IncomeExpenseSummaryUiModel? {
+        if (selectedLivelihood.value == -1) {
+            val totalIncome = incomeExpenseSummaryUiModel.values.sumOf { it?.totalIncome ?: 0.0 }
+            val totalExpense = incomeExpenseSummaryUiModel.values.sumOf { it?.totalExpense ?: 0.0 }
+
+            val livelihoodAssetMap = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.livelihoodAssetMap }
+                .flatMap { it.entries }
+                .map { it.toPair() }
+                .toMap()
+
+            val totalAssetCountForLivelihood = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.totalAssetCountForLivelihood }
+                .flatMap { it.entries }
+                .map { it.toPair() }
+                .toMap()
+
+            val assetsCountWithValue = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.assetsCountWithValue }
+                .flatten()
+
+            val imageUriForLivelihood = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.imageUriForLivelihood }
+                .flatMap { it.entries }
+                .map { it.toPair() }
+                .toMap()
+            return IncomeExpenseSummaryUiModel(
+                subjectId = subjectId,
+                totalIncome = totalIncome,
+                totalExpense = totalExpense,
+                livelihoodAssetMap = livelihoodAssetMap,
+                totalAssetCountForLivelihood = totalAssetCountForLivelihood,
+                assetsCountWithValue = assetsCountWithValue,
+                imageUriForLivelihood = imageUriForLivelihood
+            )
+        }
+
+        return selectedLivelihood.value?.let { incomeExpenseSummaryUiModel[it] }
+    }
+
 }
