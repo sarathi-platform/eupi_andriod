@@ -121,6 +121,16 @@ fun SurveyScreen(
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
                     viewModel.updateTaskStatus(taskId)
+                    viewModel.updateSectionStatus(
+                        missionId,
+                        surveyId,
+                        sectionId,
+                        taskId,
+                        SurveyStatusEnum.INPROGRESS.name,
+                        callBack = {
+                            //No Implementation required here.
+                        }
+                    )
                 },
                 onViewSummaryClicked = { questionUiModel ->
                     onViewFormSummaryClicked(
