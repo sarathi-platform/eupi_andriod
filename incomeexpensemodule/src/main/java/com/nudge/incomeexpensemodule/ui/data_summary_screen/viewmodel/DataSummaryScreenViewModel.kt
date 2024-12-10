@@ -192,9 +192,15 @@ class DataSummaryScreenViewModel @Inject constructor(
         livelihoodFilter: Int,
         eventsSubFilter: Int
     ): List<SubjectLivelihoodEventSummaryUiModel> {
-        var result = if (livelihoodFilter == ALL_DATA)
-            subjectLivelihoodEventSummaryUiModelList
-        else subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
+        var result = if (livelihoodFilter == ALL_DATA) {
+            livelihoodModel.mapNotNull { _livelihoodModel ->
+                subjectLivelihoodEventSummaryUiModelList
+                    .filter { it.livelihoodId == _livelihoodModel.livelihoodId }
+                    .takeIf { it.isNotEmpty() }
+            }.flatten()
+        } else {
+            subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
+        }
 
         result =
             filterListForSelectedTab(if (selectedTabFilter == -1) 0 else selectedTabFilter, result)
@@ -414,11 +420,11 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     fun getEventsList(): List<LivelihoodEventUiModel>? {
         return if (selectedLivelihood.value == ALL_DATA) {
-            livelihoodEventMap.values.flatten()
+            livelihoodModel.flatMap { _livelihoodModel ->
+                livelihoodEventMap[_livelihoodModel.livelihoodId] ?: emptyList()
+            }
         } else {
             livelihoodEventMap[selectedLivelihood.value]
         }
     }
-
-
 }
