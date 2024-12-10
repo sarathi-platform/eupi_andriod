@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -28,6 +30,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.black100Percent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_300_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
@@ -44,6 +47,8 @@ fun ShowCustomDialog(
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     Dialog(
         onDismissRequest = { }, properties = DialogProperties(
             dismissOnClickOutside = dismissOnClickOutside ?: true,
@@ -79,14 +84,22 @@ fun ShowCustomDialog(
                             }
                             //Divider(thickness = 1.dp, color = greyBorder)
                         }
-                        Text(
-                            text = message,
-                            style = defaultTextStyle.copy(color = blueDark),
-                            textAlign = TextAlign.Start,
+                        Box(
                             modifier = Modifier
+                                .heightIn(max = dimen_300_dp)
                                 .padding(horizontal = dimen_5_dp)
-                                .wrapContentWidth()
-                        )
+                                .verticalScroll(scrollState)
+                        ) {
+                            Text(
+                                text = message,
+                                style = defaultTextStyle.copy(color = blueDark),
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = Int.MAX_VALUE, // Allow unlimited lines for scrolling
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Clip // Disable ellipsis when scrolling
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Row(modifier = Modifier.fillMaxWidth()) {
