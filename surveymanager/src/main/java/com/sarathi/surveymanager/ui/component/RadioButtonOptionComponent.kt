@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
@@ -46,7 +47,7 @@ fun RadioButtonOptionComponent(
             OutlineButtonWithIconComponent(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(if (isIconRequired) 110.dp else 50.dp),
+                    .heightIn(min = if (isIconRequired) 110.dp else 50.dp, max = 110.dp),
                 buttonTitle = optionsItem.description ?: "",
                 textColor = if (optionsItem.isSelected == true) Color.White else blueDark,
                 buttonBackgroundColor = if (optionsItem.isSelected != true) Color.White else blueDark,

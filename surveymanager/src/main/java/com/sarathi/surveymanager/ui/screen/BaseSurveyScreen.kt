@@ -49,8 +49,8 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -572,6 +572,7 @@ fun QuestionUiContent(
                     isMandatory = question.isMandatory,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    editNotAllowedMsg = stringResource(R.string.edit_disable_message),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
