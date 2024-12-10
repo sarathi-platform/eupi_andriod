@@ -30,6 +30,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.black100Percent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_300_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
@@ -86,7 +87,7 @@ fun ShowCustomDialog(
                         }
                         Box(
                             modifier = Modifier
-                                .heightIn(max = dimen_300_dp)
+                                .heightIn(max = dimen_300_dp, min = dimen_100_dp)
                                 .padding(horizontal = dimen_5_dp)
                                 .verticalScroll(scrollState)
                         ) {
