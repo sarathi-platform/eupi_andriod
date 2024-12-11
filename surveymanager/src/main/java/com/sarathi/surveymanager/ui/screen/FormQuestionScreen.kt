@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetState
@@ -36,6 +37,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.window.Dialog
+import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
@@ -50,12 +53,15 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
@@ -64,7 +70,9 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_PREPOPULATED
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
@@ -83,8 +91,10 @@ import com.sarathi.surveymanager.ui.description_component.presentation.ModelBott
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.utils.getMaxInputLength
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -150,6 +160,29 @@ fun FormQuestionScreen(
         )
     }
 
+    if (viewModel.showLoader.value) {
+        Dialog(
+            properties = DialogProperties(
+                dismissOnBackPress = false,
+                dismissOnClickOutside = false
+            ), onDismissRequest = {}
+        ) {
+            Box(
+                modifier = Modifier
+                    .background(white)
+                    .padding(dimen_16_dp)
+                    .size(dimen_45_dp),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(dimen_24_dp),
+                    color = textColorDark,
+                    backgroundColor = Color.Transparent
+                )
+            }
+        }
+    }
+
     ModelBottomSheetDescriptionContentComponent(
         modifier = Modifier
             .fillMaxSize(),
@@ -212,7 +245,18 @@ fun FormQuestionScreen(
                         buttonTitle = stringResource(R.string.submit),
                         onSubmitButtonClick = {
                             viewModel.saveAllAnswers {
-                            onNavigateBack()
+                                viewModel.updateTaskStatus(taskId)
+                                viewModel.updateSectionStatus(
+                                    missionId,
+                                    surveyId,
+                                    sectionId,
+                                    taskId,
+                                    SurveyStatusEnum.INPROGRESS.name
+                                )
+                                withContext(Dispatchers.Main) {
+                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                                    onNavigateBack()
+                                }
                             }
                         }
                     )
