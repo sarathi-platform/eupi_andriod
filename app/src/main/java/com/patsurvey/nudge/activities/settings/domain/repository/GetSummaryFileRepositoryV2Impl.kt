@@ -5,8 +5,8 @@ import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.model.SummaryFileDto
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.utils.FileManager
 import com.nudge.core.utils.FileType
+import com.nudge.core.utils.FileUtils
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
@@ -49,9 +49,9 @@ class GetSummaryFileRepositoryV2Impl @Inject constructor(
         mobileNo: String,
         fileNameWithExtension: String
     ) {
-        val fileDirectory = FileManager.getDirectory(mobileNo, FileType.DOCUMENTS)
+        val fileDirectory = FileUtils.getDirectory(mobileNo, FileType.DOCUMENTS)
 
-        FileManager.deleteFile(fileNameWithExtension, fileDirectory)
+        FileUtils.deleteFile(fileNameWithExtension, fileDirectory)
     }
 
     override fun writeFileForTheSummaryData(
@@ -61,12 +61,12 @@ class GetSummaryFileRepositoryV2Impl @Inject constructor(
         content: List<SummaryFileDto>,
         insertBlankRowForEmptyEntry: Boolean
     ): Pair<String, Uri?>? {
-        val summaryFile = FileManager.createFile(
+        val summaryFile = FileUtils.createFile(
             fileNameWithExtension,
-            FileManager.getDirectory(mobileNo, FileType.DOCUMENTS)
+            FileUtils.getDirectory(mobileNo, FileType.DOCUMENTS)
         )
 
-        return FileManager.writeToFile(
+        return FileUtils.writeToFile(
             fileNameWithoutExtension,
             summaryFile,
             content,
