@@ -1,6 +1,10 @@
 package com.nudge.incomeexpensemodule.ui.data_summary_screen
 
+import android.text.TextUtils
+import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateIntOffsetAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -17,9 +21,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,6 +38,7 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Divider
@@ -49,12 +56,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.DD_mmm_YY_FORMAT
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
@@ -89,12 +101,14 @@ import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.incomeCardBorderColor
+import com.nudge.core.ui.theme.lightGreenOnline
 import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
@@ -114,6 +128,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.find
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -126,10 +141,22 @@ fun DataSummaryScreen(
     subjectName: String,
     onSettingClick: () -> Unit,
 ) {
+    val stateHandle = navController.currentBackStackEntry?.savedStateHandle
+
+    // Listen for the result from ScreenB
+    val result = remember { stateHandle?.getLiveData<String>("EventMessage") }
+    val selectedLivelihoodId = remember { stateHandle?.getLiveData<Int>("selectedLivelihoodId") }
+    val selectedDate = remember { stateHandle?.getLiveData<Long>("selectedDate") }
+
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModel.setPreviousScreenData(subjectId)
+        viewModel.setPreviousScreenData(
+            subjectId,
+            selectedLivelihoodId?.value ?: 0,
+            selectedDate?.value
+        )
         viewModel.onEvent(InitDataEvent.InitDataSummaryScreenState(subjectId = subjectId))
+
     }
 
     val sheetState = rememberCustomDateRangePickerSheetState(
@@ -223,7 +250,9 @@ fun DataSummaryScreen(
                 }
             },
             onContentUI = { a, b, c ->
-
+                if (!TextUtils.isEmpty(result?.value)) {
+                    TaskCompletionMessageDemo()
+                }
                 Column(
                     modifier = Modifier
                         .padding(horizontal = 16.dp)
@@ -234,6 +263,8 @@ fun DataSummaryScreen(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             AddEventButton {
+                                result?.value = BLANK_STRING
+                                selectedLivelihoodId?.value = 0
                                 navigateToAddEventScreen(
                                     navController = navController,
                                     subjectName = subjectName,
@@ -274,7 +305,8 @@ fun DataSummaryScreen(
                                         navController = navController,
                                         transactionID = transactionId
                                     )
-                                }
+                                },
+                                highLightFirstItem = !TextUtils.isEmpty(result?.value)
                             )
                         }
                     }
@@ -295,7 +327,8 @@ private fun DataSummaryView(
     onEventItemClicked: (transactionId: String) -> Unit,
     dateRangePickerClicked: () -> Unit,
     onViewEditItemClicked: (transactionId: String) -> Unit,
-    onShowModeClicked: () -> Unit
+    onShowModeClicked: () -> Unit,
+    highLightFirstItem: Boolean
 ) {
     TabBarContainer(viewModel.tabs) {
         if (TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex) == viewModel.tabs.map { it.id }
@@ -352,7 +385,8 @@ private fun DataSummaryView(
         onViewEditItemClicked = onViewEditItemClicked,
         onShowModeClicked = {
             onShowModeClicked()
-        }
+        },
+        highLightFirstItem = highLightFirstItem
     )
     Spacer(modifier = Modifier.height(16.dp))
 }
@@ -371,7 +405,11 @@ fun TabBarContainer(tabs: List<SubTabs>, onClick: () -> Unit) {
 
 @Composable
 fun DropDownContainer(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int) -> Unit) {
-    SingleSelectDropDown(sources = livelihoodList, selectOptionText = livelihoodList.first().id) {
+    SingleSelectDropDown(
+        sources = livelihoodList,
+        selectOptionText = livelihoodList.find { it.isSelected == true }?.id
+            ?: livelihoodList.first()?.id ?: DEFAULT_ID
+    ) {
         onValueSelected(it)
     }
 
@@ -494,8 +532,22 @@ private fun EventView(
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
     onViewEditItemClicked: (transactionId: String) -> Unit,
-    onShowModeClicked: () -> Unit
+    onShowModeClicked: () -> Unit,
+    highLightFirstItem: Boolean = false
 ) {
+    val backgroundcolor = remember { Animatable(Color.White) }
+    val bordercolor = remember { Animatable(Color.White) }
+    LaunchedEffect(Unit) {
+        launch {
+            bordercolor.animateTo(greenOnline, animationSpec = tween(1000))
+            bordercolor.animateTo(Color.White, animationSpec = tween(1000))
+        }
+        launch {
+            backgroundcolor.animateTo(lightGreenOnline, animationSpec = tween(1000))
+            backgroundcolor.animateTo(Color.White, animationSpec = tween(1000))
+        }
+
+    }
 
     LazyColumn(
         verticalArrangement = Arrangement.spacedBy(dimen_10_dp), modifier = Modifier
@@ -507,24 +559,36 @@ private fun EventView(
             filteredSubjectLivelihoodEventSummaryUiModelList.toList()
                 .take(DEFAULT_EVENT_LIST_VIEW_SIZE)
         ) { index, subjectLivelihoodEventSummaryUiModel ->
-            Column {
-                EventHeader(subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
-                EventDetails(subjectLivelihoodEventSummaryUiModel) {
-                    if (subjectLivelihoodEventSummaryUiModel.status != 2) {
-                        onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+            val highlightedBackgroundColor =
+                if (index == 0 && highLightFirstItem) backgroundcolor.value else white
+            val highlightedBorderColor =
+                if (index == 0 && highLightFirstItem) bordercolor.value else white
+            Box(
+                Modifier
+                    .background(color = highlightedBackgroundColor)
+                    .border(width = 2.dp, color = highlightedBorderColor)
+            ) {
+                Column {
+                    EventHeader(
+                        subjectLivelihoodEventSummaryUiModel,
+                        eventsList[selectedLivelihoodId]
+                    )
+                    EventDetails(subjectLivelihoodEventSummaryUiModel) {
+                        if (subjectLivelihoodEventSummaryUiModel.status != 2) {
+                            onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                        }
+                    }
+                    ViewEditHistoryView(
+                        isEventDeleted = subjectLivelihoodEventSummaryUiModel.isEventNotActive(),
+                        onClick = {
+                            onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
+                        })
+                    CustomVerticalSpacer(size = dimen_5_dp)
+                    if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
+                        Divider(thickness = dimen_1_dp, color = borderGreyLight)
                     }
                 }
-                ViewEditHistoryView(
-                    isEventDeleted = subjectLivelihoodEventSummaryUiModel.isEventNotActive(),
-                    onClick = {
-                        onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
-                    })
-                CustomVerticalSpacer(size = dimen_5_dp)
-                if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
-                    Divider(thickness = dimen_1_dp, color = borderGreyLight)
-                }
             }
-
         }
 
         item {
@@ -746,3 +810,88 @@ fun DefaultPreview() {
     }
 }
 
+@Composable
+fun TaskCompletionMessageDemo() {
+    var showMessage by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp),
+        contentAlignment = Alignment.TopCenter,
+
+        ) {
+        // Trigger to simulate a completed task
+        TaskCompletionTrigger { showMessage = true }
+
+        if (showMessage) {
+            TaskCompletionMessage(
+                message = "Event added successfully!",
+                onDismiss = { showMessage = false }
+            )
+        }
+    }
+}
+
+@Composable
+fun TaskCompletionTrigger(onComplete: () -> Unit) {
+    LaunchedEffect(Unit) {
+        // Simulate a delay for task completion
+        delay(1000)
+        onComplete()
+    }
+}
+
+@Composable
+fun TaskCompletionMessage(
+    message: String,
+    onDismiss: () -> Unit,
+    durationMillis: Int = 3000
+) {
+    var startAnimation by remember { mutableStateOf(false) }
+    val animationOffset = animateIntOffsetAsState(
+        targetValue = if (startAnimation) IntOffset(0, 0) else IntOffset(0, -500),
+        animationSpec = tween(durationMillis / 2)
+    )
+
+    LaunchedEffect(Unit) {
+        launch {
+            startAnimation = true
+            delay(durationMillis.toLong()) // Display the message for a specific duration
+            startAnimation = false
+            delay(500) // Allow time for the animation to finish
+            onDismiss() // Notify that the message should be dismissed
+        }
+    }
+    AnimatedVisibility(
+        visible = startAnimation,
+        enter = fadeIn(tween(durationMillis / 2)),
+        exit = fadeOut(tween(durationMillis / 2))
+    ) {
+
+        Box(
+            modifier = Modifier
+                .offset { animationOffset.value }
+                .background(color = greenOnline, shape = RoundedCornerShape(10.dp))
+                .padding(5.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Icon(Icons.Filled.CheckCircle, "Tick icon", tint = white)
+                Text(
+                    text = message,
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(16.dp),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}

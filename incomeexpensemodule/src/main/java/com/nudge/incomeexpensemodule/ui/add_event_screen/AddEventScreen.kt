@@ -99,7 +99,7 @@ fun AddEventScreen(
         title = if (showDeleteButton) stringResource(R.string.edit_event) else stringResource(R.string.add_event),
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.navigateUp() },
+        onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
         onBottomUI = {
 
@@ -137,8 +137,21 @@ fun AddEventScreen(
                         isActive = viewModel.isSubmitButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
-                            viewModel.onSubmitButtonClick(subjectId, transactionId)
-                            navController.navigateUp()
+                            viewModel.onSubmitButtonClick(subjectId, transactionId) {
+                                navController.previousBackStackEntry?.savedStateHandle?.set(
+                                    "EventMessage",
+                                    "Event added successfully"
+                                )
+                                navController.previousBackStackEntry?.savedStateHandle?.set(
+                                    "selectedLivelihoodId",
+                                    viewModel.selectedLivelihoodId.value
+                                )
+                                navController.previousBackStackEntry?.savedStateHandle?.set(
+                                    "selectedDate",
+                                    viewModel.selectedDateInLong
+                                )
+                                navController.popBackStack()
+                            }
                         }
                     )
 
