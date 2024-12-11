@@ -40,6 +40,7 @@ object MissionActivityConstants {
     const val ARG_IS_FROM_SETTING_SCREEN = "isFromSettingScreen"
     const val ARG_MISSION_COMPLETED = "mission_completed"
     const val ARG_MISSION_NAME = "mission_name"
+    const val ARG_SUB_MISSION_NAME = "sub_mission_name"
     const val ARG_ACTIVITY_NAME = "activity_name"
     const val ARG_TASK_ID = "task_id"
     const val ARG_GRANT_ID = "grant_id"

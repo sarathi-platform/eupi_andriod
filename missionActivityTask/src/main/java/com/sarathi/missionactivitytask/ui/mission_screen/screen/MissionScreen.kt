@@ -179,6 +179,8 @@ fun MissionScreen(
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,
                                 needToShowProgressBar = true,
+                                livelihoodType = mission.livelihoodType,
+                                livelihoodOrder = mission.livelihoodOrder,
                                 primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
                                     viewModel.isMissionLoaded(

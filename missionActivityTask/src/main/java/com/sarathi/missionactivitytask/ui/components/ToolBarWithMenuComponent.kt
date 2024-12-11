@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.components
 
 import android.annotation.SuppressLint
+import android.text.TextUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
@@ -27,9 +29,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -40,6 +44,7 @@ import com.sarathi.missionactivitytask.R
 @Composable
 fun ToolBarWithMenuComponent(
     title: String,
+    subTitle: String = BLANK_STRING,
     modifier: Modifier,
     isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
@@ -73,11 +78,13 @@ fun ToolBarWithMenuComponent(
                                 tint = blueDark
                             )
                         }
-                        Row(
+                        Column(
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                                 .padding(bottom = 5.dp)
-                                .fillMaxWidth()
+                                .fillMaxWidth(),
+                            verticalArrangement = Arrangement.Center,
+                            horizontalAlignment = Alignment.Start
                         ) {
                             Text(
                                 text = title,
@@ -87,6 +94,13 @@ fun ToolBarWithMenuComponent(
                                 color = blueDark,
                                 textAlign = TextAlign.Center
                             )
+                            if (!TextUtils.isEmpty(subTitle)) {
+                                Spacer(modifier = Modifier.height(2.dp))
+                                Text(
+                                    text = subTitle,
+                                    style = defaultTextStyle.copy(color = grayColor)
+                                )
+                            }
                         }
                     }
                 },

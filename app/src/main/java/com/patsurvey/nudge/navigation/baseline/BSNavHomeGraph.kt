@@ -73,6 +73,9 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             },
             navArgument(name = ARG_MISSION_NAME) {
                 type = NavType.StringType
+            },
+            navArgument(name = ARG_MISSION_NAME) {
+                type = NavType.StringType
             }
         )) {
             MissionSummaryScreen(

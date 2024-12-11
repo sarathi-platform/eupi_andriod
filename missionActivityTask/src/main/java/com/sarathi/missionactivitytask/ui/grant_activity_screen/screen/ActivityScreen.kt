@@ -46,6 +46,7 @@ fun ActivityScreen(
     programId: Int,
     missionId: Int,
     missionName: String,
+    missionSubTitle: String,
     isMissionCompleted: Boolean,
     onSettingClick: () -> Unit
 ) {
@@ -71,6 +72,7 @@ fun ActivityScreen(
         })
     ToolBarWithMenuComponent(
         title = missionName,
+        subTitle = missionSubTitle,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
