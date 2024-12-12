@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_4_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.stepBoxActiveColor
@@ -33,7 +32,7 @@ fun TagComponent(text: String) {
                 color = grayColor,
                 shape = RoundedCornerShape(50)
             )
-            .padding(horizontal = dimen_8_dp, vertical = dimen_4_dp)
+            .padding(horizontal = dimen_10_dp, vertical = dimen_4_dp)
     ) {
         Text(
             text = text,
