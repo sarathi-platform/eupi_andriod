@@ -25,7 +25,7 @@ class SectionScreenViewModel @Inject constructor(
     private val getSectionListUseCase: GetSectionListUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    val auditTrailUseCase: AuditTrailUseCase
+    val auditTrailUseCase: AuditTrailUseCase,
     private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
 

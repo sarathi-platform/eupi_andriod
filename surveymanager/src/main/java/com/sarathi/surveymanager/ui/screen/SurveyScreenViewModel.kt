@@ -52,8 +52,7 @@ class SurveyScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase,
-    val auditTrailUseCase: AuditTrailUseCase
+    val auditTrailUseCase: AuditTrailUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
