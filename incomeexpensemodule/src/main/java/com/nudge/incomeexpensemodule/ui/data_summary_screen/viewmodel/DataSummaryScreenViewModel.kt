@@ -275,7 +275,7 @@ class DataSummaryScreenViewModel @Inject constructor(
         return resultAfterTabFilter
     }
 
-    fun setPreviousScreenData(mSubjectId: Int, selectedLivelihoodId: Int, value: Long?) {
+    fun setPreviousScreenData(mSubjectId: Int, selectedLivelihoodId: Int) {
         subjectId = mSubjectId
         selectedLivelihood?.value = selectedLivelihoodId
 
@@ -379,4 +379,9 @@ class DataSummaryScreenViewModel @Inject constructor(
             selectedEventsSubFilter.value
         )
     }
+
+    fun getDateFilterTabIndex() {
+
+    }
+
 }

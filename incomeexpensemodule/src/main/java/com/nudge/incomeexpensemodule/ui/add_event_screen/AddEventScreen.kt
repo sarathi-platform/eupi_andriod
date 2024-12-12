@@ -49,6 +49,9 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
+import com.nudge.incomeexpensemodule.utils.EVENT_MESSAGE
+import com.nudge.incomeexpensemodule.utils.NEWLY_ADDED_EVENT_TRANSACTION_ID
+import com.nudge.incomeexpensemodule.utils.SELECTED_LIVELIHOOD_ID
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.INFLOW
@@ -138,19 +141,12 @@ fun AddEventScreen(
                         isArrowRequired = false,
                         onClick = {
                             viewModel.onSubmitButtonClick(subjectId, transactionId) {
-                                navController.previousBackStackEntry?.savedStateHandle?.set(
-                                    "EventMessage",
-                                    "Event added successfully"
+                                popBackToPreviousScreen(
+                                    navController,
+                                    viewModel,
+                                    message = context.getString(R.string.event_added_successfully),
+                                    transactionId
                                 )
-                                navController.previousBackStackEntry?.savedStateHandle?.set(
-                                    "selectedLivelihoodId",
-                                    viewModel.selectedLivelihoodId.value
-                                )
-                                navController.previousBackStackEntry?.savedStateHandle?.set(
-                                    "selectedDate",
-                                    viewModel.selectedDateInLong
-                                )
-                                navController.popBackStack()
                             }
                         }
                     )
@@ -463,14 +459,40 @@ fun AddEventScreen(
                     },
                     onPositiveButtonClick = {
                         viewModel.onDeleteClick(transactionId, subjectId)
-                        navController.navigateUp()
                         viewModel.showDeleteDialog.value = false
+                        popBackToPreviousScreen(
+                            navController,
+                            viewModel,
+                            message = context.getString(R.string.event_deleted_successfully),
+                            transactionId
+                        )
+
 
                     }
                 )
             }
         }
     )
+}
+
+private fun popBackToPreviousScreen(
+    navController: NavHostController,
+    viewModel: AddEventViewModel,
+    message: String,
+    transactionId: String
+) {
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        EVENT_MESSAGE,
+        message
+    )
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        SELECTED_LIVELIHOOD_ID,
+        viewModel.selectedLivelihoodId.value
+    )
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        NEWLY_ADDED_EVENT_TRANSACTION_ID, transactionId
+    )
+    navController.popBackStack()
 }
 
 @Composable

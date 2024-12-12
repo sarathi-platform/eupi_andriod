@@ -56,12 +56,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
@@ -118,6 +116,9 @@ import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.component.SingleSelectDropDown
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
 import com.nudge.incomeexpensemodule.ui.data_summary_screen.viewmodel.DataSummaryScreenViewModel
+import com.nudge.incomeexpensemodule.utils.EVENT_MESSAGE
+import com.nudge.incomeexpensemodule.utils.NEWLY_ADDED_EVENT_TRANSACTION_ID
+import com.nudge.incomeexpensemodule.utils.SELECTED_LIVELIHOOD_ID
 import com.nudge.incomeexpensemodule.utils.findById
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
@@ -142,18 +143,17 @@ fun DataSummaryScreen(
     onSettingClick: () -> Unit,
 ) {
     val stateHandle = navController.currentBackStackEntry?.savedStateHandle
-
-    // Listen for the result from ScreenB
-    val result = remember { stateHandle?.getLiveData<String>("EventMessage") }
-    val selectedLivelihoodId = remember { stateHandle?.getLiveData<Int>("selectedLivelihoodId") }
-    val selectedDate = remember { stateHandle?.getLiveData<Long>("selectedDate") }
+    //Listen the result from Add event screen
+    val eventMessage = remember { stateHandle?.getLiveData<String>(EVENT_MESSAGE) }
+    val selectedLivelihoodId = remember { stateHandle?.getLiveData<Int>(SELECTED_LIVELIHOOD_ID) }
+    val newlyAddedEvent =
+        remember { stateHandle?.getLiveData<String>(NEWLY_ADDED_EVENT_TRANSACTION_ID) }
 
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(
             subjectId,
-            selectedLivelihoodId?.value ?: 0,
-            selectedDate?.value
+            selectedLivelihoodId?.value ?: 0
         )
         viewModel.onEvent(InitDataEvent.InitDataSummaryScreenState(subjectId = subjectId))
 
@@ -250,8 +250,8 @@ fun DataSummaryScreen(
                 }
             },
             onContentUI = { a, b, c ->
-                if (!TextUtils.isEmpty(result?.value)) {
-                    TaskCompletionMessageDemo()
+                if (!TextUtils.isEmpty(eventMessage?.value)) {
+                    TaskCompletionMessageDemo(eventMessage?.value ?: BLANK_STRING)
                 }
                 Column(
                     modifier = Modifier
@@ -263,7 +263,7 @@ fun DataSummaryScreen(
                             modifier = Modifier.fillMaxSize()
                         ) {
                             AddEventButton {
-                                result?.value = BLANK_STRING
+                                eventMessage?.value = BLANK_STRING
                                 selectedLivelihoodId?.value = 0
                                 navigateToAddEventScreen(
                                     navController = navController,
@@ -306,7 +306,7 @@ fun DataSummaryScreen(
                                         transactionID = transactionId
                                     )
                                 },
-                                highLightFirstItem = !TextUtils.isEmpty(result?.value)
+                                newlyAddedEvent = newlyAddedEvent?.value ?: BLANK_STRING
                             )
                         }
                     }
@@ -328,7 +328,7 @@ private fun DataSummaryView(
     dateRangePickerClicked: () -> Unit,
     onViewEditItemClicked: (transactionId: String) -> Unit,
     onShowModeClicked: () -> Unit,
-    highLightFirstItem: Boolean
+    newlyAddedEvent: String
 ) {
     TabBarContainer(viewModel.tabs) {
         if (TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex) == viewModel.tabs.map { it.id }
@@ -386,7 +386,7 @@ private fun DataSummaryView(
         onShowModeClicked = {
             onShowModeClicked()
         },
-        highLightFirstItem = highLightFirstItem
+        newlyAddedEvent = newlyAddedEvent
     )
     Spacer(modifier = Modifier.height(16.dp))
 }
@@ -485,8 +485,7 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-            }, horizontalArrangement = Arrangement.Center
+            .clickable {}, horizontalArrangement = Arrangement.Center
     ) {
         TextButton(
             onClick = {
@@ -495,9 +494,7 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
             modifier = Modifier
                 .height(48.dp)
                 .border(
-                    width = 1.dp,
-                    color = borderGreyLight,
-                    shape = RoundedCornerShape(8.dp)
+                    width = 1.dp, color = borderGreyLight, shape = RoundedCornerShape(8.dp)
                 ),
             shape = RoundedCornerShape(8.dp),
         ) {
@@ -533,7 +530,7 @@ private fun EventView(
     onEventItemClicked: (transactionId: String) -> Unit,
     onViewEditItemClicked: (transactionId: String) -> Unit,
     onShowModeClicked: () -> Unit,
-    highLightFirstItem: Boolean = false
+    newlyAddedEvent: String
 ) {
     val backgroundcolor = remember { Animatable(Color.White) }
     val bordercolor = remember { Animatable(Color.White) }
@@ -560,9 +557,9 @@ private fun EventView(
                 .take(DEFAULT_EVENT_LIST_VIEW_SIZE)
         ) { index, subjectLivelihoodEventSummaryUiModel ->
             val highlightedBackgroundColor =
-                if (index == 0 && highLightFirstItem) backgroundcolor.value else white
+                if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) backgroundcolor.value else white
             val highlightedBorderColor =
-                if (index == 0 && highLightFirstItem) bordercolor.value else white
+                if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) bordercolor.value else white
             Box(
                 Modifier
                     .background(color = highlightedBackgroundColor)
@@ -654,10 +651,7 @@ private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
                 painter = painterResource(id = R.drawable.ic_delete_stamp),
                 contentDescription = null,
             )
-//            Text(
-//                text = stringResource(R.string.delete),
-//                style = smallTextStyle.copy(redIconColor)
-//            )
+
         }
     }
 }
@@ -806,12 +800,11 @@ fun DefaultPreview() {
         modifier = Modifier
             .padding(horizontal = 16.dp)
     ) {
-//        DataSummaryView(navController = rememberNavController(), 0, "", countMap = countMap)
     }
 }
 
 @Composable
-fun TaskCompletionMessageDemo() {
+fun TaskCompletionMessageDemo(message: String) {
     var showMessage by remember { mutableStateOf(false) }
 
     Box(
@@ -826,7 +819,7 @@ fun TaskCompletionMessageDemo() {
 
         if (showMessage) {
             TaskCompletionMessage(
-                message = "Event added successfully!",
+                message = message,
                 onDismiss = { showMessage = false }
             )
         }
@@ -837,7 +830,7 @@ fun TaskCompletionMessageDemo() {
 fun TaskCompletionTrigger(onComplete: () -> Unit) {
     LaunchedEffect(Unit) {
         // Simulate a delay for task completion
-        delay(1000)
+        delay(10)
         onComplete()
     }
 }
@@ -871,27 +864,33 @@ fun TaskCompletionMessage(
 
         Box(
             modifier = Modifier
+                .padding(horizontal = 10.dp)
+                .fillMaxWidth()
                 .offset { animationOffset.value }
-                .background(color = greenOnline, shape = RoundedCornerShape(10.dp))
-                .padding(5.dp)
+                .background(color = greenOnline, shape = RoundedCornerShape(15.dp))
+                .padding(all = 15.dp),
+            contentAlignment = Alignment.Center
         ) {
             Row(
-                modifier = Modifier.padding(5.dp),
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.Center
             ) {
-                Icon(Icons.Filled.CheckCircle, "Tick icon", tint = white)
+                Icon(
+                    Icons.Filled.CheckCircle,
+                    "Tick icon",
+                    tint = white,
+                    modifier = Modifier.padding(horizontal = 10.dp)
+                )
                 Text(
                     text = message,
                     modifier = Modifier
-                        .wrapContentSize()
-                        .padding(16.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = Color.White,
-                    textAlign = TextAlign.Center
+                        .wrapContentSize(),
+                    style = defaultTextStyle
                 )
             }
         }
     }
 }
+
+
+
