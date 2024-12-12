@@ -53,11 +53,14 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.utils.ConnectionMonitor
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.DATA_PRODUCER_STRING
 import com.nudge.core.DATA_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.IMAGE_PRODUCER_STRING
 import com.nudge.core.IMAGE_STRING
+import com.nudge.core.SUCCESS
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
@@ -84,6 +87,7 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
@@ -257,10 +261,13 @@ fun SyncHomeContent(
         actions = {
             IconButton(
                 onClick = {
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Refresh"))
+
                     if (isOnline(context)) {
                         viewModel.isPullToRefreshVisible.value = true
                         viewModel.refreshConsumerStatus()
                     } else {
+                        auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Refresh Failed"))
                         Toast.makeText(
                             context,
                             context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
@@ -386,6 +393,7 @@ fun BottomContent(
                                 isArrowRequired = false,
                                 textColor = white,
                             ) {
+                                auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Export Failed Event"))
                                 viewModel.findFailedEventAndWriteIntoFile()
                             }
                         }
@@ -417,6 +425,7 @@ fun BottomContent(
                 isArrowRequired = false,
                 isActive = isSyncAllDataActive
             ) {
+                auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Sync all data"))
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
                 CoreLogger.d(
                     context,
@@ -607,6 +616,7 @@ private fun SyncDataCard(
         isImageSyncCard = false,
 
         onSyncButtonClick = {
+            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Sync only Data"))
             viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
             CoreLogger.d(
                 context,
@@ -648,7 +658,6 @@ private fun SyncImageCard(
             },
             onSyncButtonClick = {
                 if (viewModel.isSyncImageActive.value) {
-
                     viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_IMAGES.ordinal
                     CoreLogger.d(
                         context,
@@ -656,6 +665,7 @@ private fun SyncImageCard(
                         "Sync Only Images Click: ${viewModel.selectedSyncType.intValue}"
                     )
                     startSyncProcess(context, viewModel, isNetworkAvailable.value)
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Sync only Image"))
                 } else {
                     viewModel.isSyncDataFirstDialog.value = true
                     showCustomToast(context, context.getString(R.string.sync_data_first_message))
@@ -683,7 +693,17 @@ private fun startSyncProcess(
         )
     } else showCustomToast(context, context.getString(R.string.logout_no_internet_error_message))
 }
-
+fun auditTrailDetail(auditTrailUseCase: AuditTrailUseCase, msg:String) {
+    var auditTrailDetail = hashMapOf<String, Any>()
+    CoroutineScope(Dispatchers.IO).launch {
+        auditTrailUseCase.invoke(
+            auditTrailDetail,
+            AuditTrailEnum.SYNC.name,
+            SUCCESS,
+            msg
+        )
+    }
+}
 @Preview(showBackground = true)
 @Composable
 fun SyncHomeScreenPreview() {

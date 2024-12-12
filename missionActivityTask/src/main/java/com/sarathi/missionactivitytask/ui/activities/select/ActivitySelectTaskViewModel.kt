@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.activities.select
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
@@ -49,7 +50,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
-    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase
+    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    auditTrailUseCase: AuditTrailUseCase
 ) : TaskScreenViewModel(
     getActivityTaskUseCase,
     surveyAnswerUseCase,
@@ -59,7 +61,9 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    auditTrailUseCase
+
 ) {
 
     var referenceId: String = BLANK_STRING

@@ -550,6 +550,7 @@
     <string name="select_activity_for">"Select Activity for "</string>
     <string name="select_all">Select All</string>
     <string name="audit_trail">Audit Trail</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
 
 </resources>

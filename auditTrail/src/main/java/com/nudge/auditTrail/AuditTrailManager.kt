@@ -12,8 +12,6 @@ import javax.inject.Inject
 
 
 class AuditTrailSyncEventUseCase @Inject constructor(@ApplicationContext private val context: Context) {
-
-
     fun syncAuditEvents() {
         val workManagerBuilder = AuditTrailWorkManagerBuilder.Companion.Builder(context)
             .setWorkerClass(AuditUploadWorker::class.java)
@@ -25,13 +23,10 @@ class AuditTrailSyncEventUseCase @Inject constructor(@ApplicationContext private
                     .setRequiredNetworkType(NetworkType.CONNECTED)
                     .setRequiresBatteryNotLow(true)
                     .build()
-            )
-            .build()
+            ).build()
         WorkManager.getInstance(context).enqueueUniquePeriodicWork(
             "com.nudge.AuditTrailWorker",
             ExistingPeriodicWorkPolicy.UPDATE, workManagerBuilder.build()
         )
-
-
     }
 }

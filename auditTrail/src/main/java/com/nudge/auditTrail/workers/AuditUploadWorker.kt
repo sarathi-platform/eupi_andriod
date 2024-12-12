@@ -40,9 +40,7 @@ class AuditUploadWorker @AssistedInject constructor(
         }
         val auditEventList = auditTrailNetworkUseCase.getAuditTrailEventFromDb()
         try {
-
-
-            val response = auditTrailNetworkUseCase.auditTrailEventToServer(auditEventList)
+            auditTrailNetworkUseCase.auditTrailEventToServer(auditEventList)
 
         } catch (exception: Exception) {
             CoreLogger.e(
@@ -65,12 +63,12 @@ class AuditUploadWorker @AssistedInject constructor(
         )
     }
 
-    private suspend fun auditTrailDataEvent() {
-        val auditTrailEventList =
-            auditTrailNetworkUseCase.getAuditTrailEventFromDb()
-        auditTrailNetworkUseCase.auditTrailEventToServer(
-            auditTrailEventList
-        )
-    }
+//    private suspend fun auditTrailDataEvent() {
+//        val auditTrailEventList =
+//            auditTrailNetworkUseCase.getAuditTrailEventFromDb()
+//        auditTrailNetworkUseCase.auditTrailEventToServer(
+//            auditTrailEventList
+//        )
+//    }
 }
 

@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -100,6 +101,7 @@ import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
+import com.sarathi.surveymanager.ui.screen.auditTrailDetail
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
 
@@ -590,6 +592,7 @@ fun TaskRowView(
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
+    var context = LocalContext.current
     TaskCard(
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
@@ -610,6 +613,7 @@ fun TaskRowView(
                                     sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
                                         ?: DEFAULT_ID,
                                 )
+                                auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,subjectName+" GrantSurveySummary"))
                             }
                         }
                     }
@@ -622,6 +626,8 @@ fun TaskRowView(
                             missionId = viewModel.missionId,
                             subjectName = subjectName
                         )
+                        auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,subjectName+" LivelihoodPlanning"))
+
                     }
 
                     else -> {
@@ -651,6 +657,8 @@ fun TaskRowView(
                                     activityConfigId = it.activityConfigId,
                                     sanctionedAmount = sanctionedAmount,
                                 )
+                                auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,subjectName+" SectionScreen"))
+
                             }
                         }
                     }

@@ -66,6 +66,7 @@ import com.sarathi.surveymanager.ui.component.ComplexSearchComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.description_component.presentation.DescriptionContentComponent
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.sarathi.surveymanager.ui.screen.auditTrailDetail
 import com.sarathi.surveymanager.viewmodels.surveyScreen.SectionScreenViewModel
 import getColorForComponent
 import kotlinx.coroutines.launch
@@ -240,6 +241,7 @@ fun SectionScreen(
                 onClick = {
                     sectionScreenViewModel.updateTaskStatus(taskId)
                     navController.navigateUp()
+                    auditTrailDetail(sectionScreenViewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Complete Survey"))
                     //Change this to proper navigation
 //                    onNavigateSuccessScreen("Baseline for $subjectName")
                 }

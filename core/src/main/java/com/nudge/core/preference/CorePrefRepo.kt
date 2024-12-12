@@ -87,5 +87,6 @@ interface CorePrefRepo {
     fun setSyncDBMigrate(isSyncDbMigrate: Boolean)
     fun isSyncDBMigrate(): Boolean
     fun isUserBPC(): Boolean
-
+    fun saveIsAuditEnabled(isEnabled: Boolean)
+    fun  setAuditOptionEnabled(isEnabled: Boolean)
 }

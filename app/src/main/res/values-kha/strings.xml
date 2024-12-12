@@ -526,6 +526,7 @@
     <string name="select_all">Select All</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
     <string name="audit_trail">Audit Trail</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
     <!--    <string name="didi_already_exist">समान नाम, पति का नाम, टोला और मकान नंबर वाली एक दीदी पहले से मौजूद हैं।</string>-->
 

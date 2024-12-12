@@ -9,7 +9,9 @@ import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.PREF_BUILD_ENVIRONMENT
 import com.nudge.core.PREF_DATA_TAB_VISIBILITY
+import com.nudge.core.REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_AUDIT_TRAIL_ENABLED
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DATA_TAB_DATA_LOADED
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_DIDI_TAB_DATA_LOADED
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_IS_SYNC_DB_MIGRATE
@@ -261,6 +263,14 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         return prefs.getBoolean(PREF_KEY_SYNC_ENABLED, false)
 
     }
+    override fun saveIsAuditTrailEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_AUDIT_TRAIL_ENABLED, isEnabled).apply()
+    }
+
+    override fun getISAuditEnabled(): Boolean {
+        return prefs.getBoolean(PREF_KEY_AUDIT_TRAIL_ENABLED, false)
+
+    }
 
     override fun getPreviousUserMobile(): String {
         return prefs.getString(PREF_KEY_PREVIOUS_USER_MOBILE, "") ?: ""
@@ -299,10 +309,21 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
         prefs.edit().putBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, isEnabled).apply()
     }
 
+
     override fun iSSyncOptionEnabled(): Boolean {
         return prefs.getBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, false)
     }
+    override fun iSAuditTrailOptionEnabled(): Boolean {
+        return prefs.getBoolean(REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE, false)
+    }
 
+    override fun setAuditOptionEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE, isEnabled).apply()
+    }
+    override fun getISAuditTrailEnabled(): Boolean {
+        return prefs.getBoolean(REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE, false)
+
+    }
     override fun saveDataTabVisibility(isEnabled: Boolean) {
         savePref(PREF_DATA_TAB_VISIBILITY, isEnabled)
     }
@@ -332,4 +353,6 @@ class SharedPrefs @Inject constructor(@ApplicationContext private val ctx: Conte
     override fun isSyncDBMigrate(): Boolean {
         return prefs.getBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, false)
     }
+
+
 }

@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
@@ -69,7 +70,9 @@ open class TaskScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
-) : BaseViewModel() {
+    val auditTrailUseCase: AuditTrailUseCase,
+
+    ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
     var activityType: String? = null

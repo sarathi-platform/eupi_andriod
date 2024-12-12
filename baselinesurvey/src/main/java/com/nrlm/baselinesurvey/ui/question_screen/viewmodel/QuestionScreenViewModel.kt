@@ -55,6 +55,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nrlm.baselinesurvey.utils.updateOptionsForNoneCondition
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -69,7 +70,8 @@ import javax.inject.Inject
 @HiltViewModel
 class QuestionScreenViewModel @Inject constructor(
     private val questionScreenUseCase: QuestionScreenUseCase,
-    private val eventsWriterHelperImpl: EventWriterHelperImpl
+    private val eventsWriterHelperImpl: EventWriterHelperImpl,
+    val  auditTrailUseCase: AuditTrailUseCase
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())

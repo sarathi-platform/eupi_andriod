@@ -120,5 +120,6 @@
     <string name="years">বছর</string>
     <string name="minute">মিনিটের</string>
     <string name="month">মাস</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
 </resources>

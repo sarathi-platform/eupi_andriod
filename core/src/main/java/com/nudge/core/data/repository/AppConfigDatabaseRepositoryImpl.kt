@@ -1,6 +1,7 @@
 package com.nudge.core.data.repository
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.database.dao.ApiConfigDao
@@ -53,6 +54,14 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 data[AppConfigKeysEnum.MIX_PANEL_KEY.name].toString()
             )
         }
+
+        if (data.containsKey(AppConfigKeysEnum.AUDIT_TRAIL_ENABLED.name)) {
+            coreSharedPrefs.savePref(
+                REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE,
+                data[AppConfigKeysEnum.AUDIT_TRAIL_ENABLED.name].toBoolean()
+            )
+        }
+
 
         // TODO Uncomment code after navigation is fixed.
         /*if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {

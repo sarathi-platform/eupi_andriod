@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
@@ -41,6 +42,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     private val formUiConfigUseCase: GetFormUiConfigUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
+    auditTrailUseCase: AuditTrailUseCase
 ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
@@ -50,7 +52,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    auditTrailUseCase
 ) {
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     var isGenerateFormButtonEnable = mutableStateOf(false)

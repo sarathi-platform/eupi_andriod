@@ -120,4 +120,6 @@
     <string name="auto_sync">Auto Sync -  %s</string>
     <string name="sync_on">Auto Sync - On</string>
     <string name="sync_off">Auto Sync - Off</string>
+    <string name="audit_trail_action">the action of click %s</string>
+
 </resources>

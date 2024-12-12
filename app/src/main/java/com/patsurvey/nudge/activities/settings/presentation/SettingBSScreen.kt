@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.settings.presentation
 
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -7,10 +8,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.LifecycleOwner
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.SUCCESS
 import com.nudge.core.UPCM_USER
@@ -50,6 +54,7 @@ fun SettingBSScreen(
         viewModel.initOptions(context)
     }
 
+//    val title = remember { mutableStateOf("Audit Trail") }
 
     if (viewModel.showLogoutDialog.value) {
         if (viewModel.syncWorkerRunning().value()) {
@@ -124,38 +129,97 @@ fun SettingBSScreen(
                     SettingTagEnum.LANGUAGE.name -> {
                         viewModel.saveLanguagePageFrom()
                         navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.LANGUAGE.name
+                            )
+                        )
+
                     }
 
                     SettingTagEnum.PROFILE.name -> {
                         navController.navigate(SettingScreens.PROFILE_SCREEN.route)
-
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.PROFILE.name
+                            )
+                        )
                     }
 
                     SettingTagEnum.FORMS.name -> {
                         expanded.value = !expanded.value
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.FORMS.name
+                            )
+                        )
                     }
 
 
                     SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name -> {
                         navController.navigate(SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route)
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
+                            )
+                        )
 
 //                        viewModel.compressEventData(context.getString(R.string.share_export_file))
                     }
 
                     SettingTagEnum.TRAINING_VIDEOS.name -> {
                         navController.navigate(SettingScreens.VIDEO_LIST_SCREEN.route)
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.TRAINING_VIDEOS.name
+                            )
+                        )
                     }
 
                     SettingTagEnum.BACKUP_RECOVERY.name -> {
                         navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.BACKUP_RECOVERY.name
+                            )
+                        )
+
                     }
 
                     SettingTagEnum.EXPORT_BACKUP_FILE.name -> {
                         viewModel.compressEventData(context.getString(R.string.share_export_file))
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.EXPORT_BACKUP_FILE.name
+                            )
+                        )
+
                     }
 
                     SettingTagEnum.SHARE_LOGS.name -> {
                         viewModel.exportOnlyLogFile(context)
+                        auditTrailDetail(
+                            viewModel.auditTrailUseCase,
+                            context.getString(
+                                R.string.audit_trail_action,
+                                SettingTagEnum.EXPORT_BACKUP_FILE.name
+                            )
+                        )
+
                     }
 
                     SettingTagEnum.SYNC_DATA_NOW.name -> {
@@ -177,10 +241,21 @@ fun SettingBSScreen(
                             )
                         }
                     }
-                    SettingTagEnum.AUDIT_TRAIL.name ->{
+
+                    SettingTagEnum.AUDIT_TRAIL.name -> {
                         if (isOnline(context)) {
                             viewModel.syncAuditLogs()
                         }
+                        viewModel._optionList.value = viewModel._optionList.value?.map { item ->
+                            item.copy(
+                                title = if (item.title.contains(context.getString(R.string.audit_trail))) {
+                                    viewModel.stopAuditWorkManager()
+                                    context.getString(R.string.stop_audit_trail)
+                                } else {
+                                    item.title
+                                }
+                            )
+                        } ?: emptyList()
                     }
                 }
             },
@@ -250,9 +325,22 @@ fun SettingBSScreen(
     }
 }
 
+//fun auditTrailDetail(auditTrailUseCase: AuditTrailUseCase, msg:String) {
+//    var auditTrailDetail = hashMapOf<String, Any>()
+//    CoroutineScope(Dispatchers.IO).launch {
+//        auditTrailUseCase.invoke(
+//            auditTrailDetail,
+//            AuditTrailEnum.SELECT.name,
+//            SUCCESS,
+//            msg
+//        )
+//    }
+//}
+
 private fun isFromEAvailable(fomIndex: Int, pairFromEList: List<Pair<Int, Boolean>>): Boolean {
     val pairData = pairFromEList.filter { it.first == fomIndex && it.second }
     return pairData.isNotEmpty()
 
 }
+
 

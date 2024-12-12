@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
@@ -31,7 +32,8 @@ class ActivityScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
-    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    val auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false

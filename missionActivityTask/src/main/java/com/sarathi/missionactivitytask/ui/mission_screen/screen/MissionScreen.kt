@@ -188,7 +188,7 @@ fun MissionScreen(
                                 needToShowProgressBar = true,
                                 primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
-                                    auditTailDetail(viewModel.auditTrailUseCase)
+                                    auditTailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,mission.description))
                                     viewModel.isMissionLoaded(
                                         missionId = mission.missionId,
                                         programId = mission.programId,
@@ -226,14 +226,14 @@ fun MissionScreen(
     )
 }
 
-    fun  auditTailDetail(auditTrailUseCase: AuditTrailUseCase){
+    fun  auditTailDetail(auditTrailUseCase: AuditTrailUseCase,msg:String){
         var auditTrailDetail = hashMapOf<String, Any>()
         CoroutineScope(Dispatchers.IO).launch {
             auditTrailUseCase.invoke(
                 auditTrailDetail,
                 AuditTrailEnum.CREATE.name,
                 AUDIT_TRAIL_SUCCESS,
-                "the action of click the Baseline Start button"
+                msg
             )
         }
     }

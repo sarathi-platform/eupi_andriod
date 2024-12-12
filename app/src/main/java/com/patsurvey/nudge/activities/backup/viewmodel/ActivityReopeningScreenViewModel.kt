@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.usecase.BaselineV1CheckUseCase
@@ -30,7 +31,8 @@ class ActivityReopeningScreenViewModel @Inject constructor(
     private val getActivityUseCase: GetActivityUseCase,
     private val missionSummaryScreenUseCase: MissionSummaryScreenUseCase,
     private val fetchAppConfigFromCacheOrDbUseCase: FetchAppConfigFromCacheOrDbUsecase,
-    private val baselineV1CheckUseCase: BaselineV1CheckUseCase
+    private val baselineV1CheckUseCase: BaselineV1CheckUseCase,
+    val  auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel() {
 
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.question_screen.presentation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,6 +45,7 @@ import com.nrlm.baselinesurvey.ui.common_components.LoaderComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.questionComponent.NestedLazyList
 import com.nrlm.baselinesurvey.ui.question_screen.viewmodel.QuestionScreenViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
@@ -81,7 +84,7 @@ fun QuestionScreen(
 ) {
     val outerState= rememberLazyListState()
     val innerState= rememberLazyListState()
-
+val context = LocalContext.current
     val sectionDetails = viewModel.filterSectionList.value
     val loaderState = viewModel.loaderState.value
 
@@ -201,6 +204,7 @@ fun QuestionScreen(
                                     contentColor = if (viewModel.isSectionCompleted.value) white else inactiveTextBlue,
                                     onClick = {
                                         if (viewModel.isSectionCompleted.value) {
+                                            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,sectionDetails.sectionName))
                                             viewModel.onEvent(
                                                 QuestionScreenEvents.SectionProgressUpdated(
                                                     surveyId = sectionDetails.surveyId,
@@ -209,8 +213,6 @@ fun QuestionScreen(
                                                     SectionStatus.COMPLETED
                                                 )
                                             )
-//                                viewModel.onEvent(QuestionScreenEvents.SendAnswersToServer(surveyId = sectionDetails.surveyId, sectionId = sectionDetails.sectionId, surveyeeId))
-
                                             if (sectionDetails.sectionName.equals(
                                                     NO_SECTION,
                                                     true

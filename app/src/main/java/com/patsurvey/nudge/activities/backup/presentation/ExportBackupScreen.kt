@@ -8,6 +8,7 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.patsurvey.nudge.activities.backup.viewmodel.ExportBackupScreenViewModel
@@ -32,17 +33,22 @@ fun ExportBackupScreen(
                 SettingTagEnum.EXPORT_DATABASE.name -> {
                     viewModel.exportLocalDatabase(true) {
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                        auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,SettingTagEnum.EXPORT_DATABASE.name))
+
                     }
                 }
                 SettingTagEnum.EXPORT_IMAGES.name -> {
                     viewModel.exportLocalImages()
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action, SettingTagEnum.EXPORT_IMAGES.name))
                 }
 
                 SettingTagEnum.EXPORT_EVENT_FILE.name -> {
                     viewModel.compressEventData(context.getString(R.string.export_event_file))
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action, SettingTagEnum.EXPORT_EVENT_FILE.name))
                 }
                 SettingTagEnum.EXPORT_LOG_FILE.name -> {
                     viewModel.exportOnlyLogFile(context)
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,  SettingTagEnum.EXPORT_LOG_FILE.name))
                 }
             }
         },

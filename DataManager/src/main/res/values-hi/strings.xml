@@ -120,5 +120,6 @@
     <string name="years">साल</string>
     <string name="minute">मिनट</string>
     <string name="month">महीना</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
 </resources>

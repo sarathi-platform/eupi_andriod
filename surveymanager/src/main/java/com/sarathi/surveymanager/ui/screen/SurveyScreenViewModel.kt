@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
@@ -50,7 +51,8 @@ class SurveyScreenViewModel @Inject constructor(
     private val getConditionQuestionMappingsUseCase: GetConditionQuestionMappingsUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
-    private val validationUseCase: SurveyValidationUseCase
+    private val validationUseCase: SurveyValidationUseCase,
+    val auditTrailUseCase: AuditTrailUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,

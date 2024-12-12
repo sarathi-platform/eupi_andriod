@@ -32,12 +32,7 @@ fun AuditTrailEntity.toEventRequest() =
         deviceId = UUID.randomUUID().toString(),
         actionStatusType = this.actionStatus ?: BLANK_STRING,
         actionType = this.actionType ?: BLANK_STRING,
-        message = "SUCCESS",
-        dataChangeDetails = listOf(),
-
-
-
-
-        )
+        message = this.message.toString(),
+        dataChangeDetails = listOf())
 
 

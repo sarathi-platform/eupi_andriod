@@ -17,6 +17,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
@@ -50,6 +51,7 @@ class ExportBackupScreenViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
+    val auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
     val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())

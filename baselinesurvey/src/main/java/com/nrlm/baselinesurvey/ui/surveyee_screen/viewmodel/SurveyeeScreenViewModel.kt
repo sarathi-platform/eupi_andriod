@@ -29,6 +29,7 @@ import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,7 +42,8 @@ import javax.inject.Inject
 class SurveyeeScreenViewModel @Inject constructor(
     private val surveyeeScreenUseCase: SurveyeeScreenUseCase,
     private val eventWriterHelperImpl: EventWriterHelperImpl,
-    private val fetchDataUseCase: FetchDataUseCase
+    private val fetchDataUseCase: FetchDataUseCase,
+    val auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())

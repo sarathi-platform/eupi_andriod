@@ -151,6 +151,7 @@ const val REMOTE_CONFIG_SYNC_RETRY_COUNT = "sync_retry_count"
 const val REMOTE_CONFIG_MIX_PANEL_TOKEN = "mix_panel_token"
 const val PREF_SOFT_EVENT_LIMIT_THRESHOLD = "pref_soft_event_limit_threshold"
 const val PREF_HARD_EVENT_LIMIT_THRESHOLD = "pref_hard_event_limit_threshold"
+const val REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE = "isAuditTrailEnable"
 
 const val PRODUCER = "Producer"
 const val CONSUMER = "consumer"

@@ -14,6 +14,7 @@ import com.nudge.core.PREF_HARD_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.PREF_MIX_PANEL_TOKEN
 import com.nudge.core.PREF_SOFT_EVENT_LIMIT_THRESHOLD
 import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
+import com.nudge.core.REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
@@ -54,7 +55,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_SYNC_RETRY_COUNT = "sync_retry_count"
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
         const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
-
+        const val PREF_KEY_AUDIT_TRAIL_ENABLED = "audit_trail_enabled"
 
 
         @Volatile
@@ -285,6 +286,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun saveIsSyncEnabled(isEnabled: Boolean) {
         prefs.edit().putBoolean(PREF_KEY_SYNC_ENABLED, isEnabled).apply()
     }
+    override fun saveIsAuditEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_AUDIT_TRAIL_ENABLED, isEnabled).apply()
+    }
 
     override fun getBuildEnvironment(): String {
         return getPref(PREF_BUILD_ENVIRONMENT, DEFAULT_BUILD_ENVIRONMENT)
@@ -320,6 +324,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         prefs.edit().putBoolean(REMOTE_CONFIG_SYNC_OPTION_ENABLE, isEnabled).apply()
     }
 
+    override fun setAuditOptionEnabled(isEnabled: Boolean) {
+        prefs.edit().putBoolean(REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE, isEnabled).apply()
+    }
 
     override fun setSoftEventLimitThreshold(threshold: Int) {
         prefs.edit().putInt(PREF_SOFT_EVENT_LIMIT_THRESHOLD, threshold).apply()
@@ -349,4 +356,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun isUserBPC(): Boolean {
         return prefs.getBoolean(PREF_KEY_USER_BPC, false)
     }
+
+
 }

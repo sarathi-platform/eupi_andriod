@@ -52,7 +52,7 @@ fun SurveyeeCardWithTolaFilterComponent(
     primaryButtonText: String = stringResource(R.string.start_baseline),
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit,
-    buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit
+    buttonClicked: (buttonName: ButtonName, surveyeeId: Int,didiName:String) -> Unit
 ) {
     Column() {
         Row(
@@ -117,8 +117,8 @@ fun SurveyeeCardWithTolaFilterComponent(
                     checkBoxChecked = { surveyeeEntity, isChecked ->
                         checkBoxChecked(surveyeeEntity, isChecked)
                     },
-                    buttonClicked = { buttonName, surveyeeId ->
-                        buttonClicked(buttonName, surveyeeId)
+                    buttonClicked = { buttonName, surveyeeId,didiName ->
+                        buttonClicked(buttonName, surveyeeId,didiName)
                     },
                     moveDidiToThisWeek = { surveyeeEntity, isChecked ->
                         moveDidiToThisWeek(surveyeeEntity, isChecked)
@@ -194,7 +194,7 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
             moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
 
             },
-            buttonClicked = { buttonName, surveyeeId ->
+            buttonClicked = { buttonName, surveyeeId,didiName ->
 
             }
         )
@@ -209,7 +209,7 @@ fun SurveyeeCardWithTolaFilterComponentPreview() {
             moveDidiToThisWeek = { surveyeeCardState, moveToThisWeek ->
 
             },
-            buttonClicked = { buttonName, surveyeeId ->
+            buttonClicked = { buttonName, surveyeeId , didiName ->
 
             }
         )

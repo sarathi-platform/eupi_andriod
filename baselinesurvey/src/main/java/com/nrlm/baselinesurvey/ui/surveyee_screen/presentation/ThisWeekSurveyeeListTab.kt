@@ -186,7 +186,7 @@ fun ThisWeekSurvyeeListTab(
                                     )
                                     showMoveSurveyeeBannerVisibilityPair.value = Pair(true, surveyeeCardState.surveyeeDetails)
                                 },
-                                buttonClicked = { buttonName, surveyeeId ->
+                                buttonClicked = { buttonName, surveyeeId ,didiName ->
                                     handleButtonClick(
                                         buttonName,
                                         surveyeeId,
@@ -204,7 +204,7 @@ fun ThisWeekSurvyeeListTab(
                                     ?: emptyList(),
                                 showCheckBox = isSelectionEnabled.value,
                                 fromScreen = THIS_WEEK_TAB,
-                                buttonClicked = { buttonName, surveyeeId ->
+                                buttonClicked = { buttonName, surveyeeId,didiName ->
                                     handleButtonClick(
                                         buttonName,
                                         surveyeeId,

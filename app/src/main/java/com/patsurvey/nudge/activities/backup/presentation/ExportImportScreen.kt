@@ -20,6 +20,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
@@ -67,21 +68,29 @@ fun ExportImportScreen(
             when(settingOptionModel.tag){
                 SettingTagEnum.LOAD_SERVER_DATA.name -> {
                     viewModel.showLoadConfirmationDialog.value=true
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action, SettingTagEnum.LOAD_SERVER_DATA.name))
                 }
                 SettingTagEnum.IMPORT_DATA.name ->{
                     viewModel.showRestartAppDialog.value=true
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,SettingTagEnum.IMPORT_DATA.name))
                 }
 
                 SettingTagEnum.REGENERATE_EVENTS.name -> {
                     viewModel.regenerateEvents(context.getString(R.string.share_export_file))
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,SettingTagEnum.REGENERATE_EVENTS.name))
+
                 }
 
                 SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
                     viewModel.exportOldAndNewBaselineQnA(context)
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action, SettingTagEnum.EXPORT_BASELINE_QNA.name))
+
                 }
 
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
+                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action, SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name))
+
                 }
             }
         },

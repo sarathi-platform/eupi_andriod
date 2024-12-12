@@ -22,6 +22,9 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
+import com.nudge.core.AUDIT_TRAIL_SUCCESS
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.toInMillisec
 import com.nudge.core.ui.theme.NotoSans
@@ -38,6 +41,9 @@ import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.viewmodels.DisbursementSummaryScreenViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun DisbursementSummaryScreen(
@@ -156,6 +162,7 @@ fun DisbursementSummaryScreen(
                                 sanctionedAmount,
                                 viewModel.getTotalSubmittedAmount()
                             )
+                            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName))
                         },
                         isEditable = viewModel.isAddDisbursementButtonEnable.value,
                         onContentUI = {
@@ -248,4 +255,16 @@ fun DisbursementSummaryScreen(
         },
         onSettingClick = onSettingClick
     )
+}
+
+fun  auditTrailDetail(auditTrailUseCase: AuditTrailUseCase, msg:String){
+    var auditTrailDetail = hashMapOf<String, Any>()
+    CoroutineScope(Dispatchers.IO).launch {
+        auditTrailUseCase.invoke(
+            auditTrailDetail,
+            AuditTrailEnum.CREATE.name,
+            AUDIT_TRAIL_SUCCESS,
+            msg
+        )
+    }
 }

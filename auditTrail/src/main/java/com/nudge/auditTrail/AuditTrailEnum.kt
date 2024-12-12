@@ -4,5 +4,7 @@ enum class AuditTrailEnum {
     LOGIN,
     LOGOUT,
     SYNC,
-    CREATE
+    CREATE,
+    SELECT,
+    ERROR
 }

@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
 import com.nudge.core.valueAsMinusTwo
@@ -41,7 +42,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     fetchAllDataUseCase: FetchAllDataUseCase,
     var getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
     var getLivelihoodMappingUseCase: GetSubjectLivelihoodMappingFromUseCase,
-
+    auditTrailUseCase: AuditTrailUseCase
     ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
@@ -51,7 +52,8 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    auditTrailUseCase,
 ) {
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList
