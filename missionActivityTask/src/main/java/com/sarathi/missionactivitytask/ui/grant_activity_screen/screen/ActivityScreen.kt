@@ -25,6 +25,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.isOnline
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.download_manager.FileType
@@ -74,6 +75,7 @@ fun ActivityScreen(
     ToolBarWithMenuComponent(
         title = missionName,
         subTitle = missionSubTitle,
+        subTitleColorId = brownDark,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = { navController.popBackStack() },

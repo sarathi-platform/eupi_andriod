@@ -24,7 +24,7 @@ data class MissionUiModel(
         return if (tagLabel.isBlank() || this.livelihoodType.isNullOrBlank()) {
             BLANK_STRING
         } else {
-            "$tagLabel > ${this.livelihoodType}"
+            "$tagLabel | ${this.livelihoodType}"
         }
     }
     fun getSubTitleDetail(): String {
