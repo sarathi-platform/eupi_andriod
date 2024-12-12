@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.example.incomeexpensemodule.R
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.TabsCore
@@ -14,6 +15,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
@@ -365,7 +367,11 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     private suspend fun createLivelihoodDropDownList() {
         _livelihoodDropdownList.clear()
-        _livelihoodDropdownList.add(ValuesDto(-1, "All", false))
+        if (livelihoodModel.size > 1) {
+            CoreAppDetails.getContext()?.getString(R.string.all)?.let {
+                _livelihoodDropdownList.add(ValuesDto(-1, it, false))
+            }
+        }
         livelihoodModel.forEach {
             _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
         }
