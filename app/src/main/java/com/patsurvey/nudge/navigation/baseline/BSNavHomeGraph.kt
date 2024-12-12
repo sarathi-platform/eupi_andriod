@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -55,7 +56,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 navArgument(ARG_MISSION_NAME) {
                     type = NavType.StringType
                 },
-
+                navArgument(ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                }
                 )
         ) {
             DataLoadingScreenComponent(
@@ -64,7 +68,8 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME)
                     ?: com.patsurvey.nudge.utils.BLANK_STRING,
-
+                missionSubDescription = it.arguments?.getString(ARG_SUB_MISSION_NAME)
+                    ?: BLANK_STRING
                 )
         }
         composable(route = HomeScreens.MISSION_SUMMARY_SCREEN.route, arguments = listOf(
@@ -76,12 +81,18 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             },
             navArgument(name = ARG_MISSION_NAME) {
                 type = NavType.StringType
+            },
+            navArgument(name = ARG_SUB_MISSION_NAME) {
+                type = NavType.StringType
+                nullable = true
             }
         )) {
             MissionSummaryScreen(
                 navController = navController, missionId = it.arguments?.getInt(
                     ARG_MISSION_ID
-                ) ?: 0, missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: ""
+                ) ?: 0,
+                missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+                missionSubName = it.arguments?.getString(ARG_SUB_MISSION_NAME) ?: BLANK_STRING
             )
         }
 
@@ -92,7 +103,8 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 activityName = "",
                 missionId = 0,
                 activityDate = "",
-                activityId = 0
+                activityId = 0,
+                missionSubTitle = ""
             )
         }
 
@@ -259,7 +271,8 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 activityName = "",
                 missionId = 0,
                 activityDate = "",
-                activityId = 0
+                activityId = 0,
+                missionSubTitle = ""
             )
         }
         composable(
@@ -343,6 +356,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                     name = ARG_SURVEY_ID
                 ) {
                     type = NavType.IntType
+                },
+                navArgument(name = ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
                 }
             )
         ){
@@ -354,6 +371,7 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 ) ?: "",
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: 0,
                 activityDate = it.arguments?.getString(ARG_ACTIVITY_DATE) ?: "",
+                missionSubTitle = it.arguments?.getString(ARG_SUB_MISSION_NAME) ?: "",
                 activityId = it.arguments?.getInt(ARG_SURVEY_ID) ?: 0
             )
         }

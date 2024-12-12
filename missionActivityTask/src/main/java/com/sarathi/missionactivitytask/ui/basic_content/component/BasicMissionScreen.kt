@@ -95,7 +95,7 @@ fun BasicMissionCard(
                 title = title,
                 prefixIcon = prefixIcon
             )
-            if (livelihoodOrder != 0 && livelihoodType.isNullOrEmpty()) {
+            if (livelihoodOrder != 0 && !livelihoodType.isNullOrEmpty()) {
                 Row(
                     modifier = Modifier.padding(
                         start = dimen_40_dp,

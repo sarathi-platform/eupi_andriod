@@ -124,7 +124,8 @@ fun NavGraphBuilder.MatNavigation(
                             description = mission.description,
                             missionStatus = mission.missionStatus,
                             activityCount = mission.activityCount,
-                            pendingActivityCount = mission.pendingActivityCount
+                            pendingActivityCount = mission.pendingActivityCount,
+                            missionSubtitle = mission.getSubTitle()
                         )
                     )
                 } else {
@@ -190,6 +191,10 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
+                },
+                navArgument(name = ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
                 }
             )
         ) {
@@ -208,6 +213,9 @@ fun NavGraphBuilder.MatNavigation(
                 programId = it.arguments?.getInt(
                     ARG_PROGRAM_ID
                 ) ?: 0,
+                missionSubTitle = it.arguments?.getString(
+                    ARG_SUB_MISSION_NAME
+                ) ?: BLANK_STRING,
                 onSettingClick = onSettingIconClick
             )
         }
@@ -224,6 +232,10 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
+                },
+                navArgument(name = ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
                 }
             )
         ) {
@@ -239,6 +251,9 @@ fun NavGraphBuilder.MatNavigation(
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
+              missionSubTitle = it.arguments?.getString(
+                  ARG_ACTIVITY_NAME
+              ) ?: BLANK_STRING,
               programId = it.arguments?.getInt(
                   ARG_PROGRAM_ID
               ) ?: 0,
@@ -257,6 +272,10 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_ACTIVITY_NAME) {
                     type = NavType.StringType
                 },
+                navArgument(name = ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
                 }
@@ -273,6 +292,9 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
+                ) ?: BLANK_STRING,
+                missionSubTitle = it.arguments?.getString(
+                    ARG_SUB_MISSION_NAME
                 ) ?: BLANK_STRING,
                 programId = it.arguments?.getInt(
                     ARG_PROGRAM_ID
@@ -941,6 +963,10 @@ fun NavGraphBuilder.MatNavigation(
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
                 },
+                navArgument(name = ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                },
                 )
         ) {
             ActivitySelectTaskScreen(
@@ -954,6 +980,9 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
                 activityName = it.arguments?.getString(
                     ARG_ACTIVITY_NAME
+                ) ?: BLANK_STRING,
+                missionSubTitle = it.arguments?.getString(
+                    ARG_SUB_MISSION_NAME
                 ) ?: BLANK_STRING,
                 onSettingClick = onSettingIconClick,
                 programId = it.arguments?.getInt(ARG_PROGRAM_ID).value()
@@ -1404,18 +1433,24 @@ fun navigateToGrantTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
+    missionSubtitle: String
 ) {
-    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    var missionSubtitleWithNullable =
+        if (!TextUtils.isEmpty(missionSubtitle)) missionSubtitle else null
+    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId/$missionSubtitleWithNullable")
 }
 fun navigateToLivelihoodTaskScreen(
     navController: NavController,
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
+    missionSubtitle: String
 ) {
-    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    var missionSubtitleWithNullable =
+        if (!TextUtils.isEmpty(missionSubtitle)) missionSubtitle else null
+    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId/$missionSubtitleWithNullable")
 }
 
 fun navigateToSurveyTaskScreen(
@@ -1423,9 +1458,12 @@ fun navigateToSurveyTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
+    missionSubtitle: String
 ) {
-    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    var missionSubtitleWithNullable =
+        if (!TextUtils.isEmpty(missionSubtitle)) missionSubtitle else null
+    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId/$missionSubtitleWithNullable")
 }
 
 fun navigateToActivitySelectTaskScreen(
@@ -1433,9 +1471,12 @@ fun navigateToActivitySelectTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
+    missionSubtitle: String
 ) {
-    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    var missionSubtitleWithNullable =
+        if (!TextUtils.isEmpty(missionSubtitle)) missionSubtitle else null
+    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId/$missionSubtitleWithNullable")
 }
 
 fun navigateToFormQuestionScreen(

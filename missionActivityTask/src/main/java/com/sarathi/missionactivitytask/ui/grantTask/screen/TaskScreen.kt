@@ -123,6 +123,7 @@ fun TaskScreen(
     onSecondaryButtonClick: () -> Unit,
     isSecondaryButtonVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
+    missionSubTitle: String,
     onSettingClick: () -> Unit,
     taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit,
     taskScreenContentForGroup: LazyListScope.(groupKey: String, viewModel: TaskScreenViewModel, navController: NavController) -> Unit
@@ -263,6 +264,7 @@ fun TaskScreen(
         ) {
             ToolBarWithMenuComponent(
                 title = activityName,
+                subTitle = missionSubTitle,
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,
                 onBackIconClick = { navController.popBackStack() },

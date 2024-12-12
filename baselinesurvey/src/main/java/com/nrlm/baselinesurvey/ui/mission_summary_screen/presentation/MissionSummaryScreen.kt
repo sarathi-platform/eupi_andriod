@@ -34,6 +34,7 @@ fun MissionSummaryScreen(
     navController: NavController,
     missionId: Int = 0,
     missionName: String,
+    missionSubName: String,
     viewModel: MissionSummaryViewModel = hiltViewModel()
 ) {
     val activities =
@@ -44,6 +45,7 @@ fun MissionSummaryScreen(
     }
     ToolbarWithMenuComponent(
         title = missionName,
+        subTitle = missionSubName,
         modifier = Modifier.fillMaxSize(),
         navController=navController,
         onBackIconClick = { navController.popBackStack() },
@@ -133,7 +135,8 @@ fun MissionSummaryScreen(
                                         activityName =activity.activityName,
                                         activityDate =activity.endDate,
                                         surveyId =activity.activityId,
-                                        missionId =missionId
+                                        missionId = missionId,
+                                        missionSubTitle = missionSubName
                                     )
                                 })
                         }

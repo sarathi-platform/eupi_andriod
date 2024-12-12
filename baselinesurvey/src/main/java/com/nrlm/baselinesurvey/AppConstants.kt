@@ -289,6 +289,7 @@ const val ARG_ACTIVITY_DATE = "activity_date"
 const val ARG_MISSION_ID = "mission_id"
 const val ARG_PROGRAM_ID = "program_id"
 const val ARG_MISSION_NAME = "mission_name"
+const val ARG_SUB_MISSION_NAME = "sub_mission_name"
 const val ARG_MISSION_DATE = "mission_date"
 const val ARG_ACTIVITY_NAME = "activity_name"
 

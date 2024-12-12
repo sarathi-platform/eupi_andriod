@@ -41,6 +41,7 @@ sealed class NavigationParams (val value:String){
     object ARG_ACTIVITY_DATE : NavigationParams("activity_date")
     object ARG_MISSION_ID : NavigationParams("mission_id")
     object ARG_MISSION_NAME : NavigationParams("mission_name")
+    object ARG_SUB_MISSION_NAME : NavigationParams("sub_mission_name")
     object ARG_MISSION_DATE : NavigationParams("mission_date")
     object ARG_ACTIVITY_NAME : NavigationParams("activity_name")
 

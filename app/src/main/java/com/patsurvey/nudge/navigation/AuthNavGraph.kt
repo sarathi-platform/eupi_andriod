@@ -11,6 +11,7 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.SYNC_DATA
@@ -127,8 +128,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 navArgument(ARG_MISSION_NAME) {
                     type = NavType.StringType
                 },
-
-
+                navArgument(ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                }
                 )
         ) {
             DataLoadingScreenComponent(
@@ -138,6 +141,8 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                     ARG_MISSION_ID
                 ) ?: -1,
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+                missionSubDescription = it.arguments?.getString(ARG_SUB_MISSION_NAME)
+                    ?: BLANK_STRING
             )
         }
 

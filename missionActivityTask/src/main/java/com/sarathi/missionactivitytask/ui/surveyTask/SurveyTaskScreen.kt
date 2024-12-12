@@ -17,6 +17,7 @@ fun SurveyTaskScreen(
     viewModel: SurveyTaskScreenViewModel = hiltViewModel(),
     missionId: Int,
     activityName: String,
+    missionSubTitle: String,
     activityId: Int,
     programId: Int,
     onSettingClick: () -> Unit
@@ -28,6 +29,7 @@ fun SurveyTaskScreen(
 
     TaskScreen(
         missionId = missionId,
+        missionSubTitle = missionSubTitle,
         activityId = activityId,
         activityName = activityName,
         onSettingClick = onSettingClick,

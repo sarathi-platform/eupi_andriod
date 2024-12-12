@@ -69,6 +69,7 @@ fun SurveyeeListScreen(
     viewModel: SurveyeeScreenViewModel,
     missionId: Int,
     activityName: String,
+    missionSubTitle: String,
     activityDate: String,
     activityId: Int
 ) {
@@ -221,6 +222,7 @@ fun SurveyeeListScreen(
     ) {
         ToolbarWithMenuComponent(
             title = activityName,
+            subTitle = missionSubTitle,
             modifier = Modifier.fillMaxSize(),
             navController = navController,
             onBackIconClick = { navController.popBackStack() },
