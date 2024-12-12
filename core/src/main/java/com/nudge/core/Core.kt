@@ -50,8 +50,15 @@ class Core {
     fun getMainActivityContext(): Activity? {
         return mApplicationContext
     }
-
-
-
+//fun  auditTrailDetail(auditTrailUseCase:AuditTrailUseCase,auditTrailEnum:String,result:String) {
+//    var enum =  AuditTrailEnum.LOGIN.name
+//    CoroutineScope(Dispatchers.IO).launch {
+//        auditTrailUseCase.invoke(
+//            auditTrailDetail,
+//            auditTrailEnum , //AuditTrailEnum.LOGIN.name,
+//           result    // "SUCCESS"
+//        )
+//    }
+//}
 
 }

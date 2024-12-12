@@ -79,6 +79,7 @@ import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ComplexSearchComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.sarathi.surveymanager.ui.screen.auditTrailDetail
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.viewmodels.surveyScreen.SectionScreenViewModel
 import getColorForComponent
@@ -293,22 +294,23 @@ fun SectionScreen(
         sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp)
     ) {
 
-        ToolBarWithMenuComponent(
-            title = subjectName,
-            modifier = Modifier
-                .then(modifier),
-            paddingTop = dimen_8_dp,
-            onBackIconClick = { navController.navigateUp() },
-            onSearchValueChange = { },
-            onBottomUI = {
-                ButtonComponentWithVisibility(
-                    showButtonComponentState = showBottomButtonState,
-                    buttonTitle = "Complete Survey",
-                    isActive = sectionScreenViewModel.isButtonEnable.value,
-                    onClick = {
-                        sectionScreenViewModel.updateTaskStatus(taskId)
-                        navController.navigateUp()
-                        //Change this to proper navigation
+    ToolBarWithMenuComponent(
+        title = subjectName,
+        modifier = Modifier
+            .then(modifier),
+        paddingTop = dimen_8_dp,
+        onBackIconClick = { navController.navigateUp() },
+        onSearchValueChange = { },
+        onBottomUI = {
+            ButtonComponentWithVisibility(
+                showButtonComponentState = showBottomButtonState,
+                buttonTitle = "Complete Survey",
+                isActive = sectionScreenViewModel.isButtonEnable.value,
+                onClick = {
+                    sectionScreenViewModel.updateTaskStatus(taskId)
+                    navController.navigateUp()
+                    auditTrailDetail(sectionScreenViewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Complete Survey"))
+                    //Change this to proper navigation
 //                    onNavigateSuccessScreen("Baseline for $subjectName")
                     }
                 )

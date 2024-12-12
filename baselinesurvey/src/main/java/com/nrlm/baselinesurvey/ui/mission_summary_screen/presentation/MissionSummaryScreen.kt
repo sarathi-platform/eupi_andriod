@@ -12,6 +12,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -25,7 +26,13 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummar
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
+import com.nudge.core.SUCCESS
 import com.nudge.navigationmanager.graphs.navigateToSurveyListWithParamsScreen
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -36,6 +43,7 @@ fun MissionSummaryScreen(
     missionName: String,
     viewModel: MissionSummaryViewModel = hiltViewModel()
 ) {
+    var context = LocalContext.current
     val activities =
         viewModel.activities.value
 
@@ -129,13 +137,15 @@ fun MissionSummaryScreen(
                                 iconResourceId = R.drawable.ic_mission_inprogress,
                                 backgroundColor = inprogressYellow,
                                 onclick = {
+                                    auditTrailDetail(viewModel.auditTrailUseCase, context.getString(R.string.audit_trail_action,activity.activityName))
                                     navController.navigateToSurveyListWithParamsScreen(
                                         activityName =activity.activityName,
                                         activityDate =activity.endDate,
                                         surveyId =activity.activityId,
                                         missionId =missionId
                                     )
-                                })
+                                }
+                            )
                         }
 
                     }
@@ -144,4 +154,16 @@ fun MissionSummaryScreen(
             }
         }
     )
+}
+
+fun auditTrailDetail(auditTrailUseCase: AuditTrailUseCase,msg:String) {
+    var auditTrailDetail = hashMapOf<String, Any>()
+    CoroutineScope(Dispatchers.IO).launch {
+        auditTrailUseCase.invoke(
+            auditTrailDetail,
+            AuditTrailEnum.SELECT.name,
+            SUCCESS,
+            msg
+        )
+    }
 }

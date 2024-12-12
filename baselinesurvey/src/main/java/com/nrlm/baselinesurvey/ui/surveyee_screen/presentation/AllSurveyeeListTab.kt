@@ -64,7 +64,13 @@ import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
+import com.nudge.core.SUCCESS
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -267,7 +273,7 @@ fun AllSurveyeeListTab(
                                     },
                                     //Todo add proper tex
                                     primaryButtonText = primaryButtonText,
-                                    buttonClicked = { buttonName, surveyeeId ->
+                                    buttonClicked = { buttonName, surveyeeId,didiName ->
                                         if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
                                             BaselineCore.setCurrentActivityName(activityName)
                                             handleButtonClick(
@@ -320,8 +326,9 @@ fun AllSurveyeeListTab(
                                     showCheckBox = !isSelectionEnabled.value,
                                     fromScreen = ALL_TAB,
                                     primaryButtonText = primaryButtonText,
-                                    buttonClicked = { buttonName, surveyeeId ->
+                                    buttonClicked = { buttonName, surveyeeId ,didiName ->
                                         if (!buttonName.equals(ButtonName.NOT_AVAILABLE)) {
+                                            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,activityName)+"$didiName Start Baseline")
                                             BaselineCore.setCurrentActivityName(activityName)
                                             handleButtonClick(
                                                 buttonName,
@@ -331,6 +338,7 @@ fun AllSurveyeeListTab(
                                                 activityName
                                             )
                                         } else {
+                                            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,activityName)+"$didiName Not Available")
                                             viewModel.onEvent(
                                                 SurveyeeListEvents.UpdateSurveyeeStatusForUi(
                                                     surveyeeId = surveyeeId,
@@ -402,6 +410,18 @@ fun AllSurveyeeListTab(
                 .align(Alignment.TopCenter)
                 .padding(top = dimen_40_dp),
             contentColor = blueDark,
+        )
+    }
+}
+
+fun auditTrailDetail(auditTrailUseCase: AuditTrailUseCase, msg:String) {
+    var auditTrailDetail = hashMapOf<String, Any>()
+    CoroutineScope(Dispatchers.IO).launch {
+        auditTrailUseCase.invoke(
+            auditTrailDetail,
+            AuditTrailEnum.SELECT.name,
+            SUCCESS,
+            msg
         )
     }
 }

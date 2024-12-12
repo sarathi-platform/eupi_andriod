@@ -138,5 +138,6 @@
     <string name="sync_view_progress">প্রগ্রেস দেখুন</string>
     <string name="sync_worker_cancelled">সিঙ্ক কর্মী বাতিল হয়েছে</string>
     <string name="sync_already_cancelled">"সিঙ্ক আগে থেকে বাতিল করা রয়েছে "</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
 </resources>

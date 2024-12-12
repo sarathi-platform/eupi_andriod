@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -33,7 +34,8 @@ import javax.inject.Inject
 class SectionListScreenViewModel @Inject constructor(
     val sectionScreenUseCase: SectionListScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    val  auditTrailUseCase: AuditTrailUseCase
 ): BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())

@@ -87,6 +87,8 @@ interface PrefRepo {
 
    fun saveIsSyncEnabled(isEnabled: Boolean)
    fun getISSyncEnabled(): Boolean
+   fun saveIsAuditTrailEnabled(isEnabled: Boolean)
+   fun getISAuditEnabled(): Boolean
    fun getPreviousUserMobile(): String
    fun setPreviousUserMobile(mobileNumber: String)
 
@@ -109,7 +111,9 @@ interface PrefRepo {
 
    fun setSyncOptionEnabled(isEnabled: Boolean)
    fun iSSyncOptionEnabled(): Boolean
+   fun iSAuditTrailOptionEnabled():Boolean
    fun setSyncDBMigrate(isSyncDbMigrate: Boolean)
    fun isSyncDBMigrate(): Boolean
-
+   fun setAuditOptionEnabled(isEnabled: Boolean)
+   fun getISAuditTrailEnabled():Boolean
 }

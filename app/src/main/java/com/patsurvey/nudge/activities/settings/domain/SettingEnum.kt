@@ -21,4 +21,5 @@ enum class SettingTagEnum {
     APP_CONFIG,
     EXPORT_DATA_BACKUP_FILE,
     EXPORT_EVENT_FILE,
+    AUDIT_TRAIL
 }

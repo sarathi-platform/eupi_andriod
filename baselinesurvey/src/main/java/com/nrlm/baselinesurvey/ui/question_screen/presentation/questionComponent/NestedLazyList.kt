@@ -68,6 +68,7 @@ import com.nrlm.baselinesurvey.ui.common_components.GridTypeComponent
 import com.nrlm.baselinesurvey.ui.common_components.ListTypeQuestion
 import com.nrlm.baselinesurvey.ui.common_components.RadioQuestionBoxComponent
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionEntityState
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.QuestionScreenEvents
 import com.nrlm.baselinesurvey.ui.question_screen.presentation.handleOnMediaTypeDescriptionActions
@@ -734,6 +735,7 @@ fun NestedLazyList(
                                                 true
                                             )
                                         ) {
+                                            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,question.questionEntity.questionSummary))
                                             navController.navigateToBaseLineStartScreen(
                                                 surveyeeId = surveyeeId,
                                                 survyId = sectionDetails.surveyId,

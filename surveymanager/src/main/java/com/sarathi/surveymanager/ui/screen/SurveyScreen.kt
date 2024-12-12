@@ -4,6 +4,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -38,6 +39,7 @@ fun SurveyScreen(
     onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit,
     onViewFormSummaryClicked: (taskId: Int, surveyId: Int, sectionId: Int, formId: Int, activityConfigId: Int) -> Unit
 ) {
+    val context = LocalContext.current
     BaseSurveyScreen(
         viewModel = viewModel,
         navController = navController,
@@ -100,6 +102,7 @@ fun SurveyScreen(
                     navController.popBackStack()
                 }
             }
+            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Submit"))
         },
         surveyQuestionContent = { maxHeight ->
             SurveyScreenContent(

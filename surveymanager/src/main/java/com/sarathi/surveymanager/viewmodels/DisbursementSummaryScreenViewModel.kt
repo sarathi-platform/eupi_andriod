@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.viewmodels
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.sarathi.dataloadingmangement.DELEGATE_COMM_WITH_SPACE
@@ -50,7 +51,8 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
     private val activityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
     private val saveTransactionMoneyJournalUseCase: SaveTransactionMoneyJournalUseCase,
-    private val formUiConfigUseCase: GetFormUiConfigUseCase
+    private val formUiConfigUseCase: GetFormUiConfigUseCase,
+    val auditTrailUseCase: AuditTrailUseCase
 
     ) : BaseViewModel() {
     private val _taskList =

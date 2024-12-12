@@ -23,6 +23,8 @@ class GetUserDetailsUseCase(
 
     fun isSyncEnable() = repository.isSyncEnable()
 
+    fun  isAuditTrailEnable() = repository .isAuditTrailEnable()
+
     fun getStateId() = repository.getStateId()
 
 }

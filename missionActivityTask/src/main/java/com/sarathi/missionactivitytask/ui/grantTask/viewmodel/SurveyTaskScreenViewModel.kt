@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.CoreDispatchers
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -27,6 +28,7 @@ class SurveyTaskScreenViewModel @Inject constructor(
     eventWriterUseCase: MATStatusEventWriterUseCase,
     getActivityUseCase: GetActivityUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
+    auditTrailUseCase: AuditTrailUseCase
 ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
@@ -36,7 +38,8 @@ class SurveyTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    auditTrailUseCase
 ) {
 
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())

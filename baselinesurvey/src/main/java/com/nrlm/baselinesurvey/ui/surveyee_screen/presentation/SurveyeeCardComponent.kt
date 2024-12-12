@@ -78,7 +78,7 @@ fun SurveyeeCardComponent(
     fromScreen: String,
     primaryButtonText: String = stringResource(R.string.start_baseline),
     checkBoxChecked: (surveyeeEntity: SurveyeeEntity, isChecked: Boolean) -> Unit,
-    buttonClicked: (buttonName: ButtonName, surveyeeId: Int) -> Unit,
+    buttonClicked: (buttonName: ButtonName, surveyeeId: Int, didiName:String) -> Unit,
     moveDidiToThisWeek: (surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean) -> Unit
 ) {
 
@@ -262,7 +262,8 @@ fun SurveyeeCardComponent(
                                     surveyeeMarkedNotAvailable.value = true
                                     buttonClicked(
                                         ButtonName.NOT_AVAILABLE,
-                                        surveyeeState.surveyeeDetails.didiId ?: 0
+                                        surveyeeState.surveyeeDetails.didiId ?: 0,
+                                        surveyeeState.surveyeeDetails.didiName ?: BLANK_STRING
                                     )
                                 },
                                 enabled = true,
@@ -291,14 +292,17 @@ fun SurveyeeCardComponent(
                                 if (surveyeeState.surveyState == SurveyState.INPROGRESS)
                                     buttonClicked(
                                         ButtonName.CONTINUE_BUTTON,
-                                        surveyeeState.surveyeeDetails.didiId ?: 0
+                                        surveyeeState.surveyeeDetails.didiId ?: 0,
+                                        surveyeeState.surveyeeDetails.didiName ?: BLANK_STRING
                                     )
                                 else if (surveyeeState.surveyState == SurveyState.NOT_STARTED
                                     || surveyeeState.surveyState == SurveyState.NOT_AVAILABLE
                                 ) {
                                     buttonClicked(
                                         ButtonName.START_BUTTON,
-                                        surveyeeState.surveyeeDetails.didiId ?: 0
+                                        surveyeeState.surveyeeDetails.didiId ?: 0,
+                                        surveyeeState.surveyeeDetails.didiName ?: BLANK_STRING
+
                                     )
                                 }
                             },
@@ -397,7 +401,8 @@ fun SurveyeeCardComponent(
                             onClick = {
                                 buttonClicked(
                                     ButtonName.SHOW_BUTTON,
-                                    surveyeeState.surveyeeDetails.didiId ?: 0
+                                    surveyeeState.surveyeeDetails.didiId ?: 0,
+                                    surveyeeState.surveyeeDetails.didiName ?: BLANK_STRING
                                 )
                             },
                             enabled = true,
@@ -463,7 +468,7 @@ fun SurveyeeCardPreview() {
             moveDidiToThisWeek = { surveyeeCardState: SurveyeeCardState, moveToThisWeek: Boolean ->
             },
             primaryButtonText = "",
-            buttonClicked = { buttonName, surveyeeId ->
+            buttonClicked = { buttonName, surveyeeId,didiName ->
 
             }
         )

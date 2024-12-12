@@ -541,6 +541,8 @@
     <string name="sync_only_images">কেৱল ছবিসমূহ চিংক কৰক</string>
     <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।…</string>
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
+    <string name="audit_trail">Audit Trail</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
 
 </resources>

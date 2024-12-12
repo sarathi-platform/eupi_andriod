@@ -3,6 +3,7 @@ package com.sarathi.surveymanager.viewmodels.surveyScreen
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.Content
@@ -24,6 +25,7 @@ class SectionScreenViewModel @Inject constructor(
     private val getSectionListUseCase: GetSectionListUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
+    val auditTrailUseCase: AuditTrailUseCase,
     private val fetchContentUseCase: FetchContentUseCase
 ) : BaseViewModel() {
 

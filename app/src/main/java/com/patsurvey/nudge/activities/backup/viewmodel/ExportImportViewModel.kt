@@ -33,6 +33,7 @@ import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
@@ -100,7 +101,8 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    val auditTrailUseCase: AuditTrailUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 

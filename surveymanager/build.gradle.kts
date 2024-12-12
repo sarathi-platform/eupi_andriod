@@ -57,7 +57,6 @@ dependencies {
     androidTestImplementation("androidx.test.espresso:espresso-core:3.5.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
     val room_version = "2.6.1"
-
     implementation("androidx.room:room-runtime:$room_version")
     annotationProcessor("androidx.room:room-compiler:$room_version")
 
@@ -101,6 +100,8 @@ dependencies {
     //CSV Export
     implementation("com.opencsv:opencsv:5.3")
     implementation(project(":core"))
+    implementation(project(":auditTrail"))
+
     implementation(project(":ContentManager"))
     implementation(project(":navigationManager"))
     implementation("androidx.compose.material3:material3:1.0.0-alpha12")

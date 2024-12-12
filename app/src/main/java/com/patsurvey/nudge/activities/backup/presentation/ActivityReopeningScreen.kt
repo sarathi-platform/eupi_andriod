@@ -34,6 +34,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.CoreDispatchers
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
@@ -60,6 +61,7 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.backup.viewmodel.ActivityReopeningScreenViewModel
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -121,6 +123,9 @@ fun ActivityReopeningScreen(
                                     if (success) {
                                         showCustomToast(context, context.getString(R.string.activity_inprogress))
                                         navController.navigateUp()
+                                        auditTrailDetail(viewModel.auditTrailUseCase,context.getString(
+                                        R.string.audit_trail_action,"Activities marked In Progress"))
+
                                     }
                                 }
                             }

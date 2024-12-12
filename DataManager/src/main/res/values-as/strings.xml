@@ -139,4 +139,5 @@
     <string name="sync_worker_cancelled">চিংক কৰ্মী বাতিল কৰা হৈছে</string>
     <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
 
+    <string name="audit_trail_action">the action of click %s</string>
 </resources>

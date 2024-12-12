@@ -37,6 +37,7 @@ interface SettingBSRepository {
     fun getAllCasteForLanguage(languageId:Int):List<CasteEntity>
     fun clearSelectionLocalDB()
     fun isSyncEnable(): Boolean
+    fun isAuditTrailEnable(): Boolean
 
     fun getStateId(): Int
 

@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
-import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -10,7 +9,6 @@ import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummarySc
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.GrantTaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 
-@OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun GrantTaskScreen(
     navController: NavController = rememberNavController(),

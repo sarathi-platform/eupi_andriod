@@ -38,6 +38,9 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
+import com.nudge.core.AUDIT_TRAIL_SUCCESS
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.smallTextStyleWithUnderline
 import com.nudge.core.utils.CoreLogger
@@ -51,21 +54,25 @@ import com.patsurvey.nudge.activities.ui.theme.syncProgressBg
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.roundOffDecimalFloat
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @Composable
 fun EventTypeCard(
     title: String,
-    syncButtonTitle:String,
+    syncButtonTitle: String,
     progress: Float? = 0f,
     producerProgress: Float? = 0f,
     isProgressBarVisible: Boolean,
-    isStatusVisible: Boolean=true,
+    isStatusVisible: Boolean = true,
     isImageSyncCard: Boolean,
     isConsumerBarVisible: Boolean,
     onCardClick: () -> Unit,
     onSyncButtonClick: () -> Unit,
-    onViewProcessClick: () ->Unit,
-    isWorkerInfoState:String,
+    onViewProcessClick: () -> Unit,
+    isWorkerInfoState: String,
+    auditTrailUseCase: AuditTrailUseCase,
 ) {
     var context = LocalContext.current
     Card(
@@ -92,8 +99,8 @@ fun EventTypeCard(
                 style = mediumTextStyle,
                 color = blueDark,
                 modifier = Modifier.constrainAs(titleText) {
-                 start.linkTo(parent.start)
-                 top.linkTo(parent.top)
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
                     bottom.linkTo(circularProgressBar.bottom)
                 }
             )
@@ -119,7 +126,9 @@ fun EventTypeCard(
 
             if (isStatusVisible) {
                 Text(
-                    text = if(isWorkerInfoState==WorkInfo.State.RUNNING.name ||isWorkerInfoState==WorkInfo.State.ENQUEUED.name) stringResource(R.string.sync_on)  else stringResource(R.string.sync_off),
+                    text = if (isWorkerInfoState == WorkInfo.State.RUNNING.name || isWorkerInfoState == WorkInfo.State.ENQUEUED.name) stringResource(
+                        R.string.sync_on
+                    ) else stringResource(R.string.sync_off),
                     style = smallerTextStyleNormalWeight,
                     color = grayColor,
                     modifier = Modifier.constrainAs(statusText) {
@@ -291,24 +300,29 @@ fun EventTypeCard(
             }
         }
     }
-
 }
 
-@Preview(showBackground = true)
-@Composable
-fun CommonSyncScreenPreview() {
-    EventTypeCard(
-        title = "Sync Data",
-        progress = 1f,
-        producerProgress = .5f,
-        isProgressBarVisible = false,
-        onCardClick = {},
-        syncButtonTitle = "Sync Data",
-        isStatusVisible = true,
-        onSyncButtonClick = {},
-        onViewProcessClick = {},
-        isImageSyncCard = true,
-        isConsumerBarVisible = false,
-        isWorkerInfoState = BLANK_STRING
-    )
-}
+
+
+
+//
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun CommonSyncScreenPreview() {
+//    EventTypeCard(
+//        title = "Sync Data",
+//        syncButtonTitle = "Sync Data",
+//        progress = 1f,
+//        producerProgress = .5f,
+//        isProgressBarVisible = false,
+//        isStatusVisible = true,
+//        isImageSyncCard = true,
+//        isConsumerBarVisible = false,
+//        onCardClick = {},
+//        onSyncButtonClick = {},
+//        onViewProcessClick = {},
+//        isWorkerInfoState = BLANK_STRING,
+//        auditTrailUseCase = AuditTrailUseCase
+//    )
+//}

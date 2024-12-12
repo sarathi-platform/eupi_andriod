@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -22,6 +24,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
+    val auditTrailUseCase: AuditTrailUseCase
+
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
@@ -43,6 +47,15 @@ class OtpVerificationViewModel @Inject constructor(
                     getLastSyncDateTimeFromServer()
                     withContext(Dispatchers.Main) {
                         onOtpResponse(it.typeName?: CRP_USER_TYPE,true,response.message)
+                    }
+                    var auditTrailDetail = hashMapOf<String, Any>()
+                    CoroutineScope(Dispatchers.IO).launch {
+                        auditTrailUseCase.invoke(
+                            auditTrailDetail,
+                            AuditTrailEnum.LOGIN.name,
+                           SUCCESS,
+                            "the action of click the Login button "
+                        )
                     }
                 }
 

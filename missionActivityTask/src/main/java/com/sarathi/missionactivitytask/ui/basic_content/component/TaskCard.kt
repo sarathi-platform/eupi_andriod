@@ -409,6 +409,7 @@ fun PrimarySecondaryButtonView(
                 contentColor = blueDark
             ),
             onClick = {
+
                 if (!isActivityCompleted) {
                     taskMarkedNotAvailable.value = false
                 }

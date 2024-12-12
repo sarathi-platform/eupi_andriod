@@ -21,7 +21,6 @@ import kotlin.coroutines.EmptyCoroutineContext
 abstract class BaseViewModel : ViewModel() {
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
-
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default

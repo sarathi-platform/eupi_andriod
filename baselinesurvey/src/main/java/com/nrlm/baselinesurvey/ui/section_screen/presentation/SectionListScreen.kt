@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.section_screen.presentation
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandHorizontally
@@ -68,6 +69,7 @@ import com.nrlm.baselinesurvey.ui.common_components.emptySpacer
 import com.nrlm.baselinesurvey.ui.description_component.presentation.DescriptionContentComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ImageExpanderDialogComponent
 import com.nrlm.baselinesurvey.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nrlm.baselinesurvey.ui.section_screen.viewmode.SectionListScreenViewModel
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
@@ -397,7 +399,6 @@ fun SectionListScreen(
                         }
 
                         item {
-
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 linearProgress.value = calculateProgress(
                                     pendingCount = sectionsList.filter { it.sectionStatus == SectionStatus.COMPLETED }.size,
@@ -432,6 +433,7 @@ fun SectionListScreen(
                                 index,
                                 sectionStateItem = sectionStateItem,
                                 onclick = {
+                                    auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,sectionStateItem.section.sectionName))
                                     navController.navigateToQuestionScreen(
                                         didiId = didiId,
                                         sectionId = sectionStateItem.section.sectionId,

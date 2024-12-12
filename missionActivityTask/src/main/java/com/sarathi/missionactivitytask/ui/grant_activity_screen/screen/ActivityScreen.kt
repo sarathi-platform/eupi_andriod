@@ -121,6 +121,7 @@ fun ActivityScreen(
                         activities = viewModel.activityList.value,
                         programId = programId,
                         navController = navController,
+                        auditTrail= viewModel.auditTrailUseCase
                     ) { contentValue, contentKey, contentType, contentTitle ->
 
                         if (viewModel.isFilePathExists(contentValue) || contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {

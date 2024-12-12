@@ -29,6 +29,9 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.auditTrail.AuditTrailEnum
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
+import com.nudge.core.AUDIT_TRAIL_SUCCESS
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -45,6 +48,9 @@ import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreen
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -140,7 +146,8 @@ fun MissionScreen(
                 Column(
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimen_5_dp)) {
+                        .padding(horizontal = dimen_5_dp)
+                ) {
                     SearchWithFilterViewComponent(
                         placeholderString = stringResource(id = R.string.search),
                         filterSelected = false,
@@ -181,6 +188,7 @@ fun MissionScreen(
                                 needToShowProgressBar = true,
                                 primaryButtonText = context.getString(R.string.start),
                                 onPrimaryClick = {
+                                    auditTailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,mission.description))
                                     viewModel.isMissionLoaded(
                                         missionId = mission.missionId,
                                         programId = mission.programId,
@@ -216,6 +224,19 @@ fun MissionScreen(
         },
         onSettingClick = onSettingClick
     )
-
-
 }
+
+    fun  auditTailDetail(auditTrailUseCase: AuditTrailUseCase,msg:String){
+        var auditTrailDetail = hashMapOf<String, Any>()
+        CoroutineScope(Dispatchers.IO).launch {
+            auditTrailUseCase.invoke(
+                auditTrailDetail,
+                AuditTrailEnum.CREATE.name,
+                AUDIT_TRAIL_SUCCESS,
+                msg
+            )
+        }
+    }
+
+
+

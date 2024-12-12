@@ -1,0 +1,25 @@
+package com.nudge.auditTrail.database
+
+import androidx.room.Database
+import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
+import com.nudge.auditTrail.database.dao.AuditTrailDao
+import com.nudge.auditTrail.entities.AuditTrailEntity
+import com.nudge.core.database.converters.DateConverter
+import com.nudge.core.database.converters.ListConvertor
+
+const val AUDIT_TRAIL_DATABASE_VERSION = 1
+const val AUDIT_TRAIL_DATABASE_NAME = "auditTrail"
+
+@Database(
+    entities = [
+        AuditTrailEntity::class,
+
+    ],
+    version = AUDIT_TRAIL_DATABASE_VERSION,
+    exportSchema = false
+)
+@TypeConverters(DateConverter::class, ListConvertor::class)
+abstract class AuditTrailDatabase : RoomDatabase() {
+    abstract  fun auditTrailDao():AuditTrailDao
+}

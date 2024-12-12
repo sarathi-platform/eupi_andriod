@@ -511,6 +511,8 @@
     <string name="select_mission">मिसनखौ सायख\'</string>
     <string name="select_activity_for">हाबाफारिफोरनि थाखाय सायख\'</string>
     <string name="select_all">गासैखौबो सायख\'</string>
+    <string name="audit_trail">Audit Trail</string>
+    <string name="audit_trail_action">the action of click %s</string>
     <string name="activity_inprogress">Activities marked In Progress</string>
     <string name="sync_all_data">Sync गासैबो data</string>
     <string name="sync_failed_message">"माखासे data एबा सावगारि फोरा synced जायाखै। अन्नानै \'Failed Events' फाइलखौ एक्सपर्ट खालाम / admin जों सोमोन्दो लाखि।"</string>

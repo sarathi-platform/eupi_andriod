@@ -23,6 +23,7 @@ import com.sarathi.missionactivitytask.ui.basic_content.component.LivelihoodTask
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.LivelihoodTaskScreenViewModel
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
+import com.sarathi.surveymanager.ui.screen.auditTrailDetail
 
 @Composable
 fun LivelihoodTaskScreen(
@@ -128,6 +129,7 @@ fun LivelihoodTaskRowView(
                                 context.getString(R.string.activity_completed_unable_to_edit)
                             )
                         }
+                        auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,ActivityTypeEnum.LIVELIHOOD.name))
                     }
 
                     else -> {}
@@ -153,6 +155,7 @@ fun LivelihoodTaskRowView(
 
             }
             viewModel.getActivityList(viewModel.missionId)
+            auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,ActivityTypeEnum.LIVELIHOOD.name+  "Not Available"))
 
         },
         imagePath = viewModel.getFilePathUri(

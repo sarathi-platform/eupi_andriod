@@ -21,6 +21,7 @@ const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
 const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
 
+const val AUDIT_TRAIL_TABLE = "audit_trail_table"
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
 const val SYNC_MANAGER_DB_VERSION = 2
@@ -75,6 +76,9 @@ const val DEFAULT_LANGUAGE_NAME = "English"
 const val DEFAULT_LANGUAGE_LOCAL_NAME = "English"
 const val KOKBOROK_LANGUAGE_CODE="ky"
 const val IMAGE_EVENT_STRING = "IMAGE"
+
+const val  AUDIT_TRAIL_SUCCESS= "SUCCESS"
+const val  AUDIT_TRAIL_FAILED= "FAILED"
 
 // Header Constant
 const val KEY_HEADER_AUTH = "authorization"
@@ -148,6 +152,7 @@ const val REMOTE_CONFIG_SYNC_RETRY_COUNT = "sync_retry_count"
 const val REMOTE_CONFIG_MIX_PANEL_TOKEN = "mix_panel_token"
 const val PREF_SOFT_EVENT_LIMIT_THRESHOLD = "pref_soft_event_limit_threshold"
 const val PREF_HARD_EVENT_LIMIT_THRESHOLD = "pref_hard_event_limit_threshold"
+const val REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE = "isAuditTrailEnable"
 
 const val PRODUCER = "Producer"
 const val CONSUMER = "consumer"

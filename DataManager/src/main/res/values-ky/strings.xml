@@ -140,5 +140,6 @@
     <string name="sync_view_progress">Ung tongjak naidi</string>
     <string name="sync_worker_cancelled">Sync worker cancelled</string>
     <string name="sync_already_cancelled">Sync cancelled ungjak se.</string>
+    <string name="audit_trail_action">the action of click %s</string>
 
 </resources>

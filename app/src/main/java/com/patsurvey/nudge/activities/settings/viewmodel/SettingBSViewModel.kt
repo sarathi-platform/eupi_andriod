@@ -8,6 +8,7 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
+import androidx.lifecycle.MutableLiveData
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -18,6 +19,9 @@ import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
+import com.nudge.auditTrail.AuditTrailSyncEventUseCase
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
+import com.nudge.auditTrail.workers.WorkerKeys.AUDIT_TRAIL_WORKER_TAG
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.IMAGE
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
@@ -102,13 +106,17 @@ class SettingBSViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
+    val auditTrailUseCase: AuditTrailUseCase,
+    val auditManager: AuditTrailSyncEventUseCase
 ) : BaseViewModel() {
-    val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
+
+    var _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
     var applicationId = mutableStateOf(BLANK_STRING)
     lateinit var mAppContext: Context
+    val title = MutableLiveData<String>("Initial Title")
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     var userType: String = BLANK_STRING
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
@@ -229,8 +237,16 @@ class SettingBSViewModel @Inject constructor(
                 )
             )
         }
-
-
+if (settingBSUserCase.getUserDetailsUseCase.isAuditTrailEnable()) {
+    list.add(
+        SettingOptionModel(
+            8,
+            context.getString(appRes.string.audit_trail),
+            BLANK_STRING,
+            SettingTagEnum.AUDIT_TRAIL.name
+        )
+    )
+}
         _optionList.value=list
         fetchEventCount()
         if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
@@ -740,6 +756,23 @@ class SettingBSViewModel @Inject constructor(
             fetchAppConfigFromNetworkUseCase.invoke()
             showLoader.value = false
 
+        }
+    }
+
+    fun syncAuditLogs() {
+        auditManager.syncAuditEvents()
+
+
+    }
+    fun  stopAuditWorkManager(){
+        CoroutineScope(CoreDispatchers.mainDispatcher).launch {
+//            delay(5000)
+            workManager.cancelAllWorkByTag(AUDIT_TRAIL_WORKER_TAG)
+            CoreLogger.d(
+                CoreAppDetails.getApplicationContext(),
+                "SettingBSViewModel",
+                "CancelAuditUploadWorker :: Worker Cancelled with TAG : $AUDIT_TRAIL_WORKER_TAG"
+            )
         }
     }
 }

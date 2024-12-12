@@ -10,6 +10,7 @@ import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.ui.common_components.common_events.EventWriterEvents
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.MissionSummaryScreenUseCase
+import com.nudge.auditTrail.domain.usecase.AuditTrailUseCase
 import com.nudge.core.enums.EventType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,9 @@ import javax.inject.Inject
 @HiltViewModel
 class MissionSummaryViewModel @Inject constructor(
     private val missionSummaryScreenUseCase: MissionSummaryScreenUseCase,
-    private val eventWriterHelperImpl: EventWriterHelperImpl
+    private val eventWriterHelperImpl: EventWriterHelperImpl,
+    val auditTrailUseCase: AuditTrailUseCase
+
 ) : BaseViewModel() {
     private val _activities = mutableStateOf<List<MissionActivityEntity>>(emptyList())
     public val activities: State<List<MissionActivityEntity>> get() = _activities
