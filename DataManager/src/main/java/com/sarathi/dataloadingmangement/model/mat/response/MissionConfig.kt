@@ -1,13 +1,13 @@
 package com.sarathi.dataloadingmangement.model.mat.response
 
 import com.google.gson.annotations.SerializedName
-import com.sarathi.dataloadingmangement.model.mat.response.revamp.LivelihoodConfigResponse
+import com.sarathi.dataloadingmangement.model.mat.response.revamp.LivelihoodConfigLanguageResponse
 
 data class MissionConfig(
     @SerializedName("content")
     val contents: List<ContentResponse>,
-    @SerializedName("mission_type")
+    @SerializedName("missionType")
     val missionType: String?,
-    @SerializedName("livelihood_config")
-    val livelihoodConfig: List<LivelihoodConfigResponse>?
+    @SerializedName("livelihoodConfig")
+    val livelihoodConfig: List<LivelihoodConfigLanguageResponse>?
 )
