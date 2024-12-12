@@ -29,21 +29,21 @@ import java.util.logging.Level
 
 object CoreLogger {
 
-    fun d(context: Context = CoreAppDetails.getContext()!!, tag: String, msg: String) {
+    fun d(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.FINE.intValue(), tag, msg)
             Log.d(tag, msg)
         }
     }
 
-    fun i(context: Context = CoreAppDetails.getContext()!!, tag: String, msg: String) {
+    fun i(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.INFO.intValue(), tag, msg)
             if (DEBUG) Log.i(tag, msg)
         }
     }
 
-    fun e(context: Context, tag: String, msg: String) {
+    fun e(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.SEVERE.intValue(), tag, msg)
             if (DEBUG) Log.e(tag, msg)
@@ -51,7 +51,7 @@ object CoreLogger {
     }
 
     fun e(
-        context: Context = CoreAppDetails.getContext()!!,
+        context: Context = CoreAppDetails.getApplicationContext(),
         tag: String,
         msg: String,
         ex: Throwable?,
@@ -59,18 +59,27 @@ object CoreLogger {
         lineCount: Int = 60
     ) {
         CoroutineScope(Dispatchers.IO).launch {
-            var trace = ""
-            if (stackTrace) {
-                trace = " STACKTRACE\n"
-                var line = 0
-                ex?.stackTrace?.forEach {
-                    line = line.inc()
-                    if (line >= lineCount) return@forEach
-                    trace += "${it.className}(${it.fileName}:${it.lineNumber})}\n"
-                }
-            }
+            var trace = getStackTraceForLogs(stackTrace, ex, lineCount)
             e(context, tag, "$msg${execeptionStr(ex)}$trace")
         }
+    }
+
+    fun getStackTraceForLogs(
+        stackTrace: Boolean = true,
+        ex: Throwable?,
+        lineCount: Int = 30
+    ): String {
+        var trace = ""
+        if (stackTrace) {
+            trace = " STACKTRACE\n"
+            var line = 0
+            ex?.stackTrace?.forEach {
+                line = line.inc()
+                if (line >= lineCount) return@forEach
+                trace += "${it.className}(${it.fileName}:${it.lineNumber})}\n"
+            }
+        }
+        return trace
     }
 
     fun execeptionStr(ex: Throwable?): String {

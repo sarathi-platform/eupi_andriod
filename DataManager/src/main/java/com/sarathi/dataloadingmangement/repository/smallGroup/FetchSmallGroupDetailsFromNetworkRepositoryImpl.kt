@@ -73,7 +73,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                 )
             )
             CoreLogger.e(
-                CoreAppDetails.getContext()!!,
+                CoreAppDetails.getApplicationContext(),
                 TAG,
                 "fetchSmallGroupDetails -> exception = ${ex.message}",
                 ex

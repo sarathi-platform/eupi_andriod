@@ -6,6 +6,9 @@ import android.os.Build
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.nrlm.baselinesurvey.network.interfaces.BaseLineApiService
+import com.nudge.core.KEY_HEADER_AUTH
+import com.nudge.core.KEY_HEADER_MOBILE
+import com.nudge.core.KEY_HEADER_TYPE
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.network.ErrorInterceptor

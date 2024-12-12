@@ -13,10 +13,12 @@ import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.core.SYNC_DATA
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
@@ -24,6 +26,8 @@ import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
+import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
+import com.patsurvey.nudge.activities.sync.home.presentation.SyncHomeScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
@@ -147,28 +151,30 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
 
+        composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
+            SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
+        }
         composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
             ActivityReopeningScreen(navController = navController)
         }
 
+        composable(route = SettingScreens.SYNC_HISTORY_SCREEN.route,
+            arguments = listOf(
+                navArgument(NavigationParams.ARG_SYNC_TYPE.value){
+                    type=NavType.StringType
+                }
+            )
+        ){
+            SyncHistoryScreen(
+                navController = navController,
+                syncType = it.arguments?.getString(NavigationParams.ARG_SYNC_TYPE.value)
+                    ?: SYNC_DATA,
+                viewModel = hiltViewModel()
+            )
+        }
     }
+
 //    settingNavGraph(navController)
 //   logoutGraph(navController =navController)
 }
-
-/*
-sealed class AuthScreen(val route: String) {
-    object START_SCREEN : AuthScreen(route = "start_screen")
-    object LANGUAGE_SCREEN : AuthScreen(route = "language_screen")
-    object BUG_LOGGING_SCREEN : AuthScreen(route = "Bug_Logging")
-    object LOGIN : AuthScreen(route = "login_screen")
-    object VILLAGE_SELECTION_SCREEN : AuthScreen(route = "village_selection_screen")
-    object OTP_VERIFICATION : AuthScreen(route = "otp_verification_screen/{$ARG_MOBILE_NUMBER}")
-    object AUTH_SETTING_SCREEN : AuthScreen(route = "setting_screen")
-    object PROFILE_SCREEN : AuthScreen(route = "profile_screen")
-    object VIDEO_LIST_SCREEN : AuthScreen(route = "video_list_screen")
-    object VIDEO_PLAYER_SCREEN : AuthScreen(route = "video_player_screen/{$ARG_VIDEO_ID}")
-    object MatDataLoadingScreen : AuthScreen(route = "mat_data_loading_screen")
-}
-*/
 

@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities
 import android.annotation.SuppressLint
 import android.text.TextUtils
 import android.util.Log
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -51,6 +52,8 @@ import com.patsurvey.nudge.utils.TYPE_INCLUSION
 import com.patsurvey.nudge.utils.VO_ENDORSEMENT_COMPLETE_FOR_VILLAGE_
 import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.getPatScoreEventName
+import com.patsurvey.nudge.utils.getSortedList
+import com.patsurvey.nudge.utils.getSortedMap
 import com.patsurvey.nudge.utils.getUniqueIdForEntity
 import com.patsurvey.nudge.utils.longToString
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -94,6 +97,7 @@ class AddDidiViewModel @Inject constructor(
 
     var filterDidiList by mutableStateOf(listOf<DidiEntity>())
         private set
+    val selectedSortIndex : MutableState<Int> = mutableStateOf(0)
 
     private lateinit var castList : List<CasteEntity>
 
@@ -161,6 +165,17 @@ class AddDidiViewModel @Inject constructor(
             isTolaSynced.value = it
         }
 
+    }
+
+    fun didiSortedList(didiSortIndex: Int,tolaFilterSelected:Boolean) {
+
+        if (tolaFilterSelected)
+        {
+            filterTolaMapList= getSortedMap(didiSortIndex,tolaMapList)
+        }
+        else{
+            filterDidiList= getSortedList(didiSortIndex,filterDidiList)
+        }
     }
 
     fun getValidDidisFromDB(isComingFromSocialPage: Boolean = false) {
@@ -563,13 +578,22 @@ class AddDidiViewModel @Inject constructor(
                     localUniqueId = getUniqueIdForEntity(),
                     ableBodiedFlag = AbleBodiedFlag.NOT_MARKED.value
                 )
-                addDidiRepository.insertDidi(didiEntity)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Adding Didi ${didiEntity.name} and guardian Name: ${didiEntity.guardianName}"
+                )
 
                 addDidiRepository.saveEvent(
                     didiEntity,
                     EventName.ADD_DIDI,
                     EventType.STATEFUL
                 )
+                addDidiRepository.insertDidi(didiEntity)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Added Didi ${didiEntity.name} and guardian Name: ${didiEntity.guardianName}"
+                )
+
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
                 setSocialMappingINProgress(
@@ -662,12 +686,22 @@ class AddDidiViewModel @Inject constructor(
                 )
                 val selectedTolaEntity =
                     addDidiRepository.fetchSingleTolaFromServerId(selectedTola.value.first)
-                addDidiRepository.insertDidi(updatedDidi)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Updatingf Didi ${updatedDidi.name} and guardian Name: ${updatedDidi.guardianName}"
+                )
+
                 addDidiRepository.saveEvent(
                     updatedDidi,
                     EventName.UPDATE_DIDI,
                     EventType.STATEFUL
                 )
+                addDidiRepository.insertDidi(updatedDidi)
+                NudgeLogger.d(
+                    "AddDidiViewModel",
+                    "-----Updated Didi ${updatedDidi.name} and guardian Name: ${updatedDidi.guardianName}"
+                )
+
 
                 _didiList.value = addDidiRepository.getAllDidisForVillage(villageId)
                 filterDidiList = addDidiRepository.getAllDidisForVillage(villageId)
@@ -1025,11 +1059,12 @@ class AddDidiViewModel @Inject constructor(
     }
 
     override fun onServerError(error: ErrorModel?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.e("AddDidiViewModel", "onServerError -> ${error}")
+
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        /*TODO("Not yet implemented")*/
+        NudgeLogger.e("AddDidiViewModel", "onServerError -> ${errorModel}")
     }
 
     /*private fun updateTolaListWithIds(newDidiList: StateFlow<List<DidiEntity>>, villageId: Int) {
@@ -1423,6 +1458,11 @@ class AddDidiViewModel @Inject constructor(
                 didiId,
                 addDidiRepository.getSelectedVillage().id
             )
+            NudgeLogger.d(
+                "AddDidiViewModel",
+                "-----Didi Unavaliable Didi ${updatedDidiEntity.name} and guardian Name: ${updatedDidiEntity.guardianName}"
+            )
+
             //TODO @Anupam check why not available case is not working.
             addDidiRepository.saveEvent(
                 eventItem = updatedDidiEntity,
@@ -1503,16 +1543,25 @@ class AddDidiViewModel @Inject constructor(
         networkCallbackListener: NetworkCallbackListener
     ) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            addDidiRepository.deleteDidiOffline(
-                id = didi.id,
-                activeStatus = DidiStatus.DIID_DELETED.ordinal,
-                needsToPostDeleteStatus = didi.serverId != 0
+
+            NudgeLogger.d(
+                "AddDidiViewModel",
+                "-----Deleting Didi ${didi.name} and guardian Name: ${didi.guardianName}"
             )
 
             addDidiRepository.saveEvent(
                 didi,
                 EventName.DELETE_DIDI,
                 EventType.STATEFUL
+            )
+            addDidiRepository.deleteDidiOffline(
+                id = didi.id,
+                activeStatus = DidiStatus.DIID_DELETED.ordinal,
+                needsToPostDeleteStatus = didi.serverId != 0
+            )
+            NudgeLogger.d(
+                "AddDidiViewModel",
+                "-----Deleted Didi ${didi.name} and guardian Name: ${didi.guardianName}"
             )
 
             if (didi.serverId == 0)

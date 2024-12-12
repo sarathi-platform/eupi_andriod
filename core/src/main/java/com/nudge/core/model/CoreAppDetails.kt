@@ -16,10 +16,12 @@ object CoreAppDetails {
     }
 
     fun getContext() = mApplicationDetails?.activity?.applicationContext
+    fun getApplicationContext() = mApplicationDetails?.activity?.applicationContext!!
 
     data class ApplicationDetails(
         val packageName: String,
         val applicationID: String,
         val activity: Activity,
+        val buildVersion: String
     )
 }

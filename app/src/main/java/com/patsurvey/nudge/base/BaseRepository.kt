@@ -5,7 +5,9 @@ import com.google.gson.JsonSyntaxException
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventFormatterName
@@ -87,7 +89,11 @@ abstract class BaseRepository{
     @Inject
     lateinit var eventDependencyDao: EventDependencyDao
 
+    @Inject
+    lateinit var eventStatusDao: EventStatusDao
 
+    @Inject
+    lateinit var imageStatusDao: ImageStatusDao
 
     open fun onServerError(error: ErrorModel?){
 
@@ -182,11 +188,9 @@ abstract class BaseRepository{
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),
             request_payload = requestPayload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
             payloadLocalId = patSummarySaveRequest.deviceId,
-            consumer_status = BLANK_STRING,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
                 depends_on = listOf(),
@@ -212,10 +216,8 @@ abstract class BaseRepository{
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),
             request_payload = requestPayload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = patScoreSaveEvent.deviceId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -274,10 +276,8 @@ abstract class BaseRepository{
             createdBy = prefRepo.getUserId(),
             mobile_number = prefRepo.getMobileNumber(),
             request_payload = requestPayload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = "",
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -418,7 +418,9 @@ abstract class BaseRepository{
             NudgeCore.getAppContext(),
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 
@@ -526,10 +528,8 @@ abstract class BaseRepository{
                     createdBy = userID,
                     mobile_number = mobileNumber,
                     request_payload = payload,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = "",
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -561,10 +561,8 @@ abstract class BaseRepository{
             createdBy = userID,
             mobile_number = mobileNumber,
             request_payload = payload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = payloadlocalId,
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,

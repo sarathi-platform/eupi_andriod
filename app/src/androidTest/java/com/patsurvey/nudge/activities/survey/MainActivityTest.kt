@@ -6,6 +6,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.launchActivity
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainActivityViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -96,6 +97,9 @@ class MainActivityTest {
 
     @Mock
     private lateinit var context: Context
+
+    @Mock
+    private lateinit var updateBaselineStatusOnInitUseCase: UpdateBaselineStatusOnInitUseCase
 
     private lateinit var viewModel: MainActivityViewModel
 

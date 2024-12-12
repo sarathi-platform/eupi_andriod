@@ -97,7 +97,7 @@ fun TextWithReadMore(
     }
 }
 
-@Preview(showBackground = true)
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun DefaultPreview() {
     Surface(color = Color.White) {

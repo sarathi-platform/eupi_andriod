@@ -77,6 +77,7 @@ import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
@@ -100,6 +101,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val baselineDatabase: NudgeBaselineDatabase,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     val apiStatusDao: ApiStatusDao,
+    val corePrefRepo: CorePrefRepo,
     val downloaderManager: DownloaderManager
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
@@ -421,6 +423,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         BaselineLogger.d("User Details        ","Mobile Number: ${prefBSRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
         prefBSRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        corePrefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         prefBSRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
         prefBSRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
         prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")

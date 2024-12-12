@@ -93,6 +93,7 @@ fun SplashScreen(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
+                viewModel.fetchAppConfigForProperties()
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
@@ -223,8 +224,7 @@ fun SplashScreen(
 
 fun openUserHomeScreen(userType:String,navController: NavController) {
     try {
-        if (userType.equals(UPCM_USER)
-        ) {
+        if (userType==UPCM_USER) {
             if(navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true){
                 navController.navigate(route = HomeScreens.DATA_LOADING_SCREEN.route) {
                     launchSingleTop = true

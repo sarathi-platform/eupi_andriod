@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.text.TextUtils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
@@ -128,6 +129,7 @@ open class TaskScreenViewModel @Inject constructor(
     var filterTaskMap by mutableStateOf(mapOf<String?, List<MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>>>())
     var taskUiModel: List<TaskUiModel>? = null
     var showDialog = mutableStateOf<Boolean>(false)
+    var isSearchEnable = mutableStateOf<Boolean>(false)
 
     private val _filterByList: SnapshotStateList<String?> = mutableStateListOf()
     val filterByList: SnapshotStateList<String?> get() = _filterByList
@@ -480,7 +482,7 @@ open class TaskScreenViewModel @Inject constructor(
     private fun performSearchQuery(
         queryTerm: String, isGroupingApplied: Boolean, isFilterApplied: Boolean
     ) {
-
+        isSearchEnable.value = !TextUtils.isEmpty(queryTerm)
         val sortedList = taskList.value
 
         val taskListForAppliedFilter = if (isFilterApplied) {
@@ -519,7 +521,7 @@ open class TaskScreenViewModel @Inject constructor(
         var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId
-        ) && !isActivityCompleted.value
+        ) && !isActivityCompleted.value && filterList.value.isNotEmpty()
         updateValueInMainThread(isButtonEnable, isButtonEnablee)
     }
 

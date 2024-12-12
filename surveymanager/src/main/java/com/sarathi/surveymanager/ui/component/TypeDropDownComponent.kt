@@ -33,18 +33,24 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
 @Composable
 fun TypeDropDownComponent(
+    contests: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
+    showCardView: Boolean = false,
     questionNumber: String = BLANK_STRING,
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -62,6 +68,9 @@ fun TypeDropDownComponent(
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 
     DropDownComponent(items = defaultSourceList,
+        isFromTypeQuestion = isFromTypeQuestion,
+        content = contests,
+        showCardView = showCardView,
         modifier = Modifier.fillMaxWidth(),
         mTextFieldSize = textFieldSize,
         expanded = expanded,
@@ -70,6 +79,10 @@ fun TypeDropDownComponent(
         questionNumber = questionNumber,
         isMandatory = isMandatory,
         selectedItem = selectedOptionText,
+        navigateToMediaPlayerScreen = { contentList ->
+            navigateToMediaPlayerScreen(contentList)
+        },
+        onDetailIconClicked = { onDetailIconClicked() },
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it
@@ -101,12 +114,17 @@ fun TypeDropDownComponent(
 
 @Composable
 fun TypeDropDownWithCardComponent(
+    contests: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
+    showCardView: Boolean = false,
     questionNumber: String = BLANK_STRING,
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
@@ -122,7 +140,6 @@ fun TypeDropDownWithCardComponent(
                 .fillMaxWidth()
                 .background(white)
                 .clickable {
-
                 }
         ) {
 
@@ -136,18 +153,26 @@ fun TypeDropDownWithCardComponent(
                     .clip(RoundedCornerShape(roundedCornerRadiusDefault))
             ) {
                 TypeDropDownComponent(
+                    isFromTypeQuestion = isFromTypeQuestion,
+                    showCardView = showCardView,
+                    contests = contests,
                     title = title,
                     hintText = hintText,
                     sources = sources,
                     isMandatory = isMandatory,
                     isEditAllowed = isEditAllowed,
                     questionNumber = questionNumber,
+                    navigateToMediaPlayerScreen = { contentList ->
+                        navigateToMediaPlayerScreen(contentList)
+                    },
+                    onDetailIconClicked = {
+                        onDetailIconClicked()
+                    },
                     onAnswerSelection = { selectedValuesDto ->
                         onAnswerSelection(selectedValuesDto)
                     }
                 )
             }
-
         }
         CustomVerticalSpacer()
     }
@@ -157,6 +182,7 @@ fun TypeDropDownWithCardComponent(
 
 @Composable
 fun DropDownTypeComponent(
+    contents: List<ContentList?>? = listOf(),
     questionIndex: Int,
     title: String = BLANK_STRING,
     hintText: String = stringResource(R.string.select),
@@ -164,17 +190,26 @@ fun DropDownTypeComponent(
     isMandatory: Boolean = false,
     showQuestionInCard: Boolean = false,
     isEditAllowed: Boolean = true,
+    isFromTypeQuestion: Boolean = false,
+    onDetailIconClicked: () -> Unit = {},
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
 
     if (showQuestionInCard) {
         TypeDropDownWithCardComponent(
+            onDetailIconClicked = { onDetailIconClicked() },
+            contests = contents,
+            showCardView = showQuestionInCard,
             title = title,
             hintText = hintText,
             sources = sources,
             isMandatory = isMandatory,
             isEditAllowed = isEditAllowed,
             questionNumber = getQuestionNumber(questionIndex),
+            navigateToMediaPlayerScreen = { imageContent ->
+                navigateToMediaPlayerScreen(imageContent)
+            },
             onAnswerSelection = { selectedValuesDto ->
                 onAnswerSelection(selectedValuesDto)
             }
@@ -185,11 +220,17 @@ fun DropDownTypeComponent(
         ) {
             TypeDropDownComponent(
                 title = title,
+                isFromTypeQuestion = isFromTypeQuestion,
+                contests = contents,
                 hintText = hintText,
                 sources = sources,
                 isMandatory = isMandatory,
                 isEditAllowed = isEditAllowed,
                 questionNumber = BLANK_STRING,
+                onDetailIconClicked = { onDetailIconClicked() },
+                navigateToMediaPlayerScreen = { contentList ->
+                    navigateToMediaPlayerScreen(contentList)
+                },
                 onAnswerSelection = { selectedValuesDto ->
                     onAnswerSelection(selectedValuesDto)
                 }

@@ -29,7 +29,6 @@ class MissionViewModel @Inject constructor(
     private val missionScreenUseCase: MissionScreenUseCase,
     private val fetchDataUseCase: FetchDataUseCase,
     private val eventWriterHelperImpl: EventWriterHelperImpl
-
     ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionEntity>>(emptyList())
     private val missionList: State<List<MissionEntity>> get() = _missionList
@@ -75,6 +74,7 @@ class MissionViewModel @Inject constructor(
 
     fun init() {
         initMissionScreenList()
+
     }
 
     private fun initMissionScreenList() {

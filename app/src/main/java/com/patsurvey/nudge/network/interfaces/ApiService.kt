@@ -3,6 +3,9 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.KEY_HEADER_MOBILE
+import com.nudge.core.KEY_HEADER_TYPE
+import com.nudge.core.model.response.LastSyncResponseModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
@@ -36,8 +39,6 @@ import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.TransactionResponseModel
 import com.patsurvey.nudge.model.response.UserDetailsResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
-import com.patsurvey.nudge.utils.KEY_HEADER_MOBILE
-import com.patsurvey.nudge.utils.KEY_HEADER_TYPE
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -180,7 +181,6 @@ interface ApiService {
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun saveMatchSummary(@Body saveMatchSummaryRequest: ArrayList<SaveMatchSummaryRequest>): ApiResponseModel<ArrayList<SaveMatchSummaryResponse>>
 
-    //https://uat.eupi-sarthi.in/write-api/beneficiary/upload-image
     @Multipart
     @POST("/write-api/beneficiary/upload-image")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
@@ -215,5 +215,8 @@ interface ApiService {
     @POST("/read-api/custom/log")
     suspend fun addLogs(@Body logsBody: String): JsonObject?
 
+    @GET("/sync-server/lastSync/status")
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchLastSyncStatus(@Query("mobile") mobileNumber: String): ApiResponseModel<LastSyncResponseModel>
 
 }

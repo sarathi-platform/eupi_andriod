@@ -90,6 +90,7 @@ import com.nudge.core.KEY_PARENT_ENTITY_DIDI_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_ID
 import com.nudge.core.KEY_PARENT_ENTITY_TOLA_NAME
 import com.nudge.core.KEY_PARENT_ENTITY_VILLAGE_ID
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.enums.EventName
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
@@ -139,6 +140,7 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 import java.util.regex.Pattern
+import javax.annotation.meta.When
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
@@ -196,6 +198,8 @@ fun getStepStatusFromOrdinal(status: Int): String {
         }
     }
 }
+
+
 
 fun Context.findActivity(): ComponentActivity? = when (this) {
     is ComponentActivity -> this
@@ -950,7 +954,7 @@ fun BulletList(
 fun compressImage(imageUri: String, activity: Context, name: String): String? {
     var filename: String? = ""
     try {
-        val filePath = imageUri /*getRealPathFromURI(imageUri, activity)*/
+        val filePath = imageUri
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         options.inJustDecodeBounds = true
@@ -1576,6 +1580,28 @@ fun restartApp(context: Context) {
 fun isFilePathExists(context: Context, filePath: String): Boolean {
     val fileName = getFileNameFromURL(filePath)
     return File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}").exists()
+}
+
+fun getSortedList(index:Int, didiList:List<DidiEntity>):List<DidiEntity>{
+    return  when(index) {
+        0->didiList.sortedBy { it.createdDate }
+        1->didiList.sortedByDescending { it.createdDate }
+        2->didiList.sortedBy { it.modifiedDate }
+        3->didiList.sortedByDescending { it.modifiedDate }
+        4->didiList.sortedBy { it.name.lowercase() }
+        5->didiList.sortedByDescending { it.name.lowercase() }
+        else -> {
+            didiList
+        }
+    }
+}
+
+fun getSortedMap(didiSortedIndex:Int,tolaMapList:Map<String,List<DidiEntity>>):Map<String,List<DidiEntity>>{
+    var fMapList= mutableMapOf<String,List<DidiEntity>>()
+
+    tolaMapList.forEach(){ mapEntry-> fMapList.put(mapEntry.key, getSortedList(didiSortedIndex,mapEntry.value))
+    }
+   return fMapList
 }
 
 

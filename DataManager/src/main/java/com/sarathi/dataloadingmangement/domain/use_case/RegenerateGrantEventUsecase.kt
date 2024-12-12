@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.util.Log
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.getFileNameFromURL
@@ -142,7 +143,10 @@ class RegenerateGrantEventUsecase @Inject constructor(
             subjectId = surveyAnswer.subjectId,
             referenceId = surveyAnswer.referenceId,
             activityConfigId = taskEntity?.activityId ?: -1,
-            grantId = surveyAnswer.grantId
+            grantId = surveyAnswer.grantId,
+            activityId = taskEntity?.activityId.value(DEFAULT_ID),
+            missionId = taskEntity?.missionId.value(DEFAULT_ID),
+            isFromRegenerate = true
         )
         val subjectType = regenerateGrantEventRepositoryImpl.getSubjectTypeForActivity(
             activityId = taskEntity?.activityId ?: -1,
@@ -167,13 +171,15 @@ class RegenerateGrantEventUsecase @Inject constructor(
                 val taskEntity =
                     regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
                 taskEntity?.let { task ->
-                    val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
+                    var (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
                         surveyAnswer,
                         taskEntity
                     )
+                    questionUiModel =
+                        questionUiModel.filter { it.options?.any { it.isSelected == true } == true }
 
                     val eventList = arrayListOf<BaseSaveAnswerEventDto>()
-                    questionUiModel.find { it.questionId == surveyAnswer.questionId && it.sectionId == surveyAnswer.sectionId && it.surveyId == surveyAnswer.surveyId }
+                    findQuestionFromSurveySectionQuestionAndFormId(questionUiModel, surveyAnswer)
                         ?.let {
                             val event = surveyAnswerEventWriterUseCase.fetchQuestionAnswerEventList(
                                 questionUiModel = it,
@@ -202,6 +208,16 @@ class RegenerateGrantEventUsecase @Inject constructor(
             exception.printStackTrace()
         }
         return null
+    }
+
+    private fun findQuestionFromSurveySectionQuestionAndFormId(
+        questionUiModel: List<QuestionUiModel>,
+        surveyAnswer: SurveyAnswerEntity
+    ) = questionUiModel.find {
+        it.questionId == surveyAnswer.questionId
+                && it.sectionId == surveyAnswer.sectionId
+                && it.surveyId == surveyAnswer.surveyId
+                && it.formId == surveyAnswer.formId
     }
 
     private suspend fun writeFormUpdateEvent() {

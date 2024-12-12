@@ -8,6 +8,8 @@ import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.R
@@ -25,10 +27,10 @@ import com.nudge.core.SARATHI
 import com.nudge.core.SARATHI_DIRECTORY_NAME
 import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
-import com.nudge.core.exportDbFile
 import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
 import com.nudge.core.findImagesExistInPictureFolder
@@ -41,8 +43,11 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
+import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
+import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
@@ -99,6 +104,7 @@ class SettingBSViewModel @Inject constructor(
     val selectionVillageUseCase: SelectionVillageUseCase,
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
+    val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
     var applicationId = mutableStateOf(BLANK_STRING)
@@ -112,6 +118,7 @@ class SettingBSViewModel @Inject constructor(
     val formCAvailable = mutableStateOf(false)
     val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
+    val workManager = WorkManager.getInstance(MyApplication.applicationContext())
     val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
@@ -212,21 +219,38 @@ class SettingBSViewModel @Inject constructor(
             )
         )
 
-        _optionList.value = list
-        if (userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
+        if (settingBSUserCase.getUserDetailsUseCase.isSyncEnable()) {
+            list.add(
+                SettingOptionModel(
+                    7,
+                    context.getString(R.string.sync_your_data),
+                    BLANK_STRING,
+                    SettingTagEnum.SYNC_DATA_NOW.name
+                )
+            )
+        }
+
+
+        _optionList.value=list
+        fetchEventCount()
+        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
+        }
+    }
+
+    fun fetchEventCount() {
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            syncEventCount.value = settingBSUserCase.getSyncEventsUseCase.getTotalEventCount()
         }
     }
 
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-            if (userType != UPCM_USER) {
-                exportLocalData(context)
-            }
             delay(2000)
+            cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
-                showLoader.value = false
+               showLoader.value=false
                 onLogout(settingUseCaseResponse)
             }
         }
@@ -267,7 +291,11 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 if (userType == UPCM_USER) {
-                    getSummaryFile()?.let { fileAndDbZipList.add(it) }
+                    getSummaryFile()?.let {
+                        if (it.second != Uri.EMPTY) {
+                            fileAndDbZipList.add(it)
+                        }
+                    }
                 }
 
                 val zipFileName = generateZipFileName()
@@ -339,36 +367,24 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private suspend fun processDatabaseFiles(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        if (userType != UPCM_USER) {
-            val dbUri = exportDbFile(
-                appContext = mAppContext,
-                applicationID = applicationId.value,
-                databaseName = NUDGE_DATABASE
+        val dbUrisList = exportDbFiles(
+            mAppContext,
+            applicationId.value,
+            if (userType == UPCM_USER) listOf(
+                NUDGE_BASELINE_DATABASE,
+                NUDGE_GRANT_DATABASE,
+                SYNC_MANAGER_DATABASE
             )
-            if (dbUri != Uri.EMPTY) {
-                dbUri?.let {
+            else listOf(NUDGE_DATABASE, SYNC_MANAGER_DATABASE)
+        )
+        if (dbUrisList.isNotEmpty()) {
+            dbUrisList.forEach { dbUri ->
+                dbUri.second?.let {
                     NudgeLogger.d(
                         "SettingBSViewModel",
                         "Database File Uri: ${it.path}---------------"
                     )
-                    fileAndDbZipList.add(Pair(NUDGE_DATABASE, it))
-                }
-            }
-        } else {
-            val dbUrisList = exportDbFiles(
-                mAppContext,
-                applicationId.value,
-                listOf(NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE)
-            )
-            if (dbUrisList.isNotEmpty()) {
-                dbUrisList.forEach { dbUri ->
-                    dbUri.second?.let {
-                        NudgeLogger.d(
-                            "SettingBSViewModel",
-                            "Database File Uri: ${it.path}---------------"
-                        )
-                        fileAndDbZipList.add(Pair(dbUri.first, it))
-                    }
+                    fileAndDbZipList.add(Pair(dbUri.first, it))
                 }
             }
         }
@@ -486,15 +502,15 @@ class SettingBSViewModel @Inject constructor(
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
 
-        if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
-        ) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formBAvailable.value = true
-            }
-        } else {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formBAvailable.value = false
-            }
+            if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
+            ) {
+                withContext(CoreDispatchers.mainDispatcher) {
+                    formBAvailable.value = true
+                }
+            } else {
+                withContext(CoreDispatchers.mainDispatcher) {
+                    formBAvailable.value = false
+                }
 
         }
     }
@@ -534,7 +550,10 @@ class SettingBSViewModel @Inject constructor(
             userId = prefBSRepo.getUniqueUserIdentifier(),
             mobileNo = getUserMobileNumber(),
             fileNameWithoutExtension = summaryFileNameWithoutExtension,
-            fileNameWithExtension = summaryFileNameWithExtension
+            fileNameWithExtension = summaryFileNameWithExtension,
+            isBaselineV2 = settingBSUserCase.baselineV1CheckUseCase.isBaselineV2(
+                stateId = settingBSUserCase.getUserDetailsUseCase.getStateId().toString()
+            )
         )
     }
 
@@ -697,6 +716,22 @@ class SettingBSViewModel @Inject constructor(
         } else {
             formEAvailableList.value = emptyList()
         }
+    }
+
+    private fun cancelSyncUploadWorker() {
+                workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
+                CoreLogger.d(
+                    CoreAppDetails.getApplicationContext(),
+                    "SettingBSViewModel",
+                    "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
+                )
+    }
+
+    fun syncWorkerRunning(): Boolean {
+        val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
+            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
+                return it.state == WorkInfo.State.RUNNING
+           }?:return false
     }
 
     fun fetchhAppConfig() {

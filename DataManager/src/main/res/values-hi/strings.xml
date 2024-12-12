@@ -68,6 +68,10 @@
     <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
     <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="data_send_to_server">डेटा सर्वर पर भेजा गया</string>
+    <string name="images_send_to_server">छवियाँ सर्वर पर भेजी गईं</string>
+    <string name="data_processes_by_server">सर्वर द्वारा संसाधित डेटा</string>
+    <string name="images_processes_by_server">छवियाँ सर्वर द्वारा संसाधित की गईं</string>
     <string name="decrease_in_number">decrease in Number</string>
     <string name="save_text">सेव करें</string>
     <string name="proceed">आगे बढ़ें</string>
@@ -103,9 +107,36 @@
     <string name="search_by_small_groups">Search by small groups</string>
     <string name="total_didis">Total Didis - %1$s</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
+    <string name="created_date">Created Date : Ascending</string>
+    <string name="created_date_descending">Created Date : Descending</string>
+    <string name="modified_date">Modified Date : Ascending</string>
+    <string name="modified_date_decending">Modified Date : Descending</string>
+    <string name="name_ascending">Name: A to Z</string>
+    <string name="name_descending">Name: Z to A</string>
+    <string-array name="didi_sorted_array">
+        <item>@string/created_date</item>
+        <item>@string/created_date_descending</item>
+        <item>@string/modified_date</item>
+        <item>@string/modified_date_decending</item>
+        <item>@string/name_ascending</item>
+        <item>@string/name_descending</item>
+    </string-array>
+    <string name="edit_event">"पिछला संपादन (एडिट ) "</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"संपत्ति "</string>
+    <string name="last_updated_days_ago">"अंतिम अपडेट  %1$s दिन पहले किया गया  "</string>
+    <string name="last_1_month">"पिछला एक महिना "</string>
+    <string name="auto_sync">स्वतः सिंक  -  %s</string>
+    <string name="sync_on">स्वतः सिंक ओंन करें </string>
+    <string name="sync_off">स्वतः सिंक ऑफ  करें </string>
     <string name="hours">घंटे</string>
     <string name="years">साल</string>
     <string name="minute">मिनट</string>
     <string name="month">महीना</string>
+    <string name="synced">सिंक कर लिया गया</string>
+    <string name="sync_view_progress">प्रगति को देखें </string>
+    <string name="sync_worker_cancelled">सिंक कार्यकर्ता रद्द कर दिया गया</string>
+    <string name="sync_already_cancelled">"सिंक पहले से ही रद्ध कर दिया गया है "</string>
 
 </resources>

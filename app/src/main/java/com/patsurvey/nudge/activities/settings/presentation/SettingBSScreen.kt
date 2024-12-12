@@ -13,6 +13,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.UPCM_USER
 import com.nudge.core.isOnline
+import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
@@ -46,36 +47,48 @@ fun SettingBSScreen(
 
 
     if (viewModel.showLogoutDialog.value) {
-        showCustomDialog(
-            title = context.getString(com.patsurvey.nudge.R.string.logout),
-            message = context.getString(R.string.logout_confirmation),
-            positiveButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.logout),
-            negativeButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.cancel),
-            onNegativeButtonClick = {
-                viewModel.showLogoutDialog.value = false
-            },
-            onPositiveButtonClick = {
-                viewModel.showLogoutDialog.value = false
-                viewModel.showLoader.value = true
-                viewModel.performLogout(context) {
-                    if (it) {
-                        if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
-                            navController.navigate(AuthScreen.LOGIN.route)
-                        } else {
-                            if (navController.graph.route == NudgeNavigationGraph.ROOT) {
+        if (viewModel.syncWorkerRunning().value())
+        {
+            showCustomDialog(
+                title = context.getString(R.string.logout),
+                message = context.getString(R.string.sync_running),
+                positiveButtonTitle = stringResource(id = R.string.ok),
+                onPositiveButtonClick = {
+                    viewModel.showLogoutDialog.value = false
+                },
+                onNegativeButtonClick = {}
+            )
+        }else {
+            showCustomDialog(
+                title = context.getString(com.patsurvey.nudge.R.string.logout),
+                message = context.getString(R.string.logout_confirmation),
+                positiveButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.logout),
+                negativeButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.cancel),
+                onNegativeButtonClick = {
+                    viewModel.showLogoutDialog.value = false
+                },
+                onPositiveButtonClick = {
+                    viewModel.showLogoutDialog.value = false
+                    viewModel.showLoader.value = true
+                    viewModel.performLogout(context) {
+                        if (it) {
+                            if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
                                 navController.navigate(AuthScreen.LOGIN.route)
                             } else {
-                                navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                                if (navController.graph.route == NudgeNavigationGraph.ROOT) {
+                                    navController.navigate(AuthScreen.LOGIN.route)
+                                } else {
+                                    navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                                }
                             }
-                        }
-                    } else showCustomToast(
-                        context,
-                        context.getString(R.string.something_went_wrong)
-                    )
-                }
-            })
+                        } else showCustomToast(
+                            context,
+                            context.getString(R.string.something_went_wrong)
+                        )
+                    }
+                })
 
-
+        }
     }
 
     if (!loaderState.value.isLoaderVisible) {
@@ -128,6 +141,15 @@ fun SettingBSScreen(
 
                     SettingTagEnum.SHARE_LOGS.name -> {
                         viewModel.exportOnlyLogFile(context)
+                    }
+
+                    SettingTagEnum.SYNC_DATA_NOW.name -> {
+                        if (viewModel.syncEventCount.value > 0)
+                            navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
+                        else showCustomToast(
+                            context,
+                            context.getString(R.string.data_is_not_available_for_sync_please_perform_some_action)
+                        )
                     }
                     SettingTagEnum.APP_CONFIG.name -> {
                         if (isOnline(context)) {

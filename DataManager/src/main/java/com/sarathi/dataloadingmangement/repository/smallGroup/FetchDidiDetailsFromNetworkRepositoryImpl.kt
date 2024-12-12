@@ -12,6 +12,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.SUBPATH_GET_DIDI_LIST
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
+import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -20,7 +21,8 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
     private val corePrefRepo: CoreSharedPrefs,
     private val dataLoadingApiService: DataLoadingApiService,
     private val subjectEntityDao: SubjectEntityDao,
-    private val apiStatusDao: ApiStatusDao
+    private val apiStatusDao: ApiStatusDao,
+    private val downloaderManager: DownloaderManager
 ) : FetchDidiDetailsFromNetworkRepository {
 
     private val TAG = FetchDidiDetailsFromNetworkRepositoryImpl::class.java.simpleName
@@ -70,12 +72,21 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
 
         val subjectList = ArrayList<SubjectEntity>()
         beneficiaryApiResponse.didiList.forEach {
+            val fileLocalPath =
+                if (it.crpImageName.isNullOrEmpty()) BLANK_STRING else downloaderManager.getFilePath(
+                    it.crpImageName ?: BLANK_STRING
+                ).path
+
             subjectList.add(
                 SubjectEntity.getSubjectEntityFromResponse(
                     it,
-                    uniqueUserId
+                    uniqueUserId,
+                    crpImageLocalPath = fileLocalPath
                 )
             )
+            if (!it.crpImageName.isNullOrEmpty()) {
+                downloaderManager.downloadItem(it.crpImageName ?: BLANK_STRING)
+            }
         }
 
         subjectEntityDao.addAllSubjects(subjectList)

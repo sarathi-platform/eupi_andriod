@@ -33,6 +33,17 @@
     <string name="end_date_label">শেষের দিন</string>
     <string name="reopen_activity_step_1">ধাপ 1</string>
     <string name="reopen_activity_step_2">ধাপ 2</string>
+    <string name="warning_title">Warning</string>
+    <string name="warning_text">Warning</string>
+    <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
+    <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
+    <string name="all">"সব "</string>
+    <string name="no_entry_this_month">"এই মাসে কোন ডেটা এন্ট্রি নেই "</string>
+    <string name="no_entry_this_week">"এই সপ্তাহে কোনো ডাটা এন্ট্রি নেই "</string>
+    <string name="last_week">"গত সপ্তাহে "</string>
+    <string name="last_month">"গত মাসে "</string>
+    <string name="last_3_months">"গত 3 মাস "</string>
+    <string name="custom_date">"কাস্টম তারিখ "</string>
     <string name="small_group_filter_label">"ছোট গ্রুপ দ্বারা ফিল্টার: "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
@@ -47,4 +58,7 @@
     <string name="village_filter_label">"গ্রাম অনুসারে ফিল্টার করুন: "</string>
     <string name="empty_task_list_placeholder">এই কার্যকলাপের জন্য কোন টাস্ক পাওয়া যায়নি!</string>
     <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
+    <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
+    <string name="proceed">এগিয়ে যান</string>
+    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
 </resources>

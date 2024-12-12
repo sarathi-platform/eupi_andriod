@@ -20,14 +20,19 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,9 +49,11 @@ import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.nudge.core.ARG_FROM_SECTION_SCREEN
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomButtonVisibilityState
 import com.nudge.core.ui.theme.blueDark
@@ -54,10 +61,16 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -65,10 +78,11 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ComplexSearchComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
-import com.sarathi.surveymanager.ui.description_component.presentation.DescriptionContentComponent
 import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.viewmodels.surveyScreen.SectionScreenViewModel
 import getColorForComponent
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -98,14 +112,13 @@ fun SectionScreen(
     ) -> Unit,
     onNavigateSuccessScreen: (msg: String) -> Unit,
     onSettingClick: () -> Unit,
-    onNavigateToMediaScreen: (
-        navController: NavController, contentKey: String,
-        contentType: String,
-        contentTitle: String
-    ) -> Unit,
+    onNavigateToMediaScreen: (contentList: ContentList) -> Unit,
     onNavigateToQuestionScreen: (surveyId: Int, sectionId: Int, taskId: Int, sectionName: String, subjectType: String, activityConfigIs: Int, missionId: Int, activityId: Int, activityType: String, surveyFlow: SurveyFlow) -> Unit,
     onNavigateToComplexSearchScreen: (surveyId: Int, sectionId: Int, taskId: Int, activityConfigIs: Int, fromScreen: String, subjectType: String, activityType: String) -> Unit
 ) {
+    val selectedSectionDescription = remember {
+        mutableStateOf(DescriptionContentState())
+    }
 
     val context = LocalContext.current
 
@@ -226,156 +239,186 @@ fun SectionScreen(
             showBottomButtonState.hide()
     }
 
-
-    ToolBarWithMenuComponent(
-        title = subjectName,
+    ModelBottomSheetDescriptionContentComponent(
         modifier = Modifier
-            .then(modifier),
-        paddingTop = dimen_8_dp,
-        onBackIconClick = { navController.navigateUp() },
-        onSearchValueChange = { },
-        onBottomUI = {
-            ButtonComponentWithVisibility(
-                showButtonComponentState = showBottomButtonState,
-                buttonTitle = "Complete Survey",
-                isActive = sectionScreenViewModel.isButtonEnable.value,
-                onClick = {
-                    sectionScreenViewModel.updateTaskStatus(taskId)
-                    navController.navigateUp()
-                    //Change this to proper navigation
-//                    onNavigateSuccessScreen("Baseline for $subjectName")
+            .fillMaxSize(),
+        sheetContent = {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        sheetState.hide()
+                    }
+                }) {
+                    androidx.compose.material3.Icon(
+                        painter = painterResource(id = R.drawable.info_icon),
+                        contentDescription = "question info button",
+                        Modifier.size(dimen_18_dp),
+                        tint = blueDark
+                    )
                 }
-            )
+                if (sheetState.isVisible) {
+                    Divider(
+                        thickness = dimen_1_dp,
+                        color = lightGray2,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
+                com.sarathi.surveymanager.ui.component.DescriptionContentComponent(
+                    buttonClickListener = {
+                        coroutineScope.launch {
+                            sheetState.hide()
+                        }
+                    },
+                    navigateToMediaPlayerScreen = { contentList ->
+                        if (sectionScreenViewModel.isFilePathExists(
+                                contentList.contentValue ?: BLANK_STRING
+                            )
+                        ) {
+                            onNavigateToMediaScreen(contentList)
+                        } else {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.file_not_exists),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    },
+                    descriptionContentState = selectedSectionDescription.value
+                )
+            }
         },
-        onSettingClick = onSettingClick,
-        onContentUI = { paddingValues ->
+        sheetState = sheetState,
+        sheetElevation = dimen_20_dp,
+        sheetBackgroundColor = Color.White,
+        sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp)
+    ) {
 
-            Column {
-                ModelBottomSheetDescriptionContentComponent(
+        ToolBarWithMenuComponent(
+            title = subjectName,
+            modifier = Modifier
+                .then(modifier),
+            paddingTop = dimen_8_dp,
+            onBackIconClick = { navController.navigateUp() },
+            onSearchValueChange = { },
+            onBottomUI = {
+                ButtonComponentWithVisibility(
+                    showButtonComponentState = showBottomButtonState,
+                    buttonTitle = "Complete Survey",
+                    isActive = sectionScreenViewModel.isButtonEnable.value,
+                    onClick = {
+                        sectionScreenViewModel.updateTaskStatus(taskId)
+                        navController.navigateUp()
+                        //Change this to proper navigation
+//                    onNavigateSuccessScreen("Baseline for $subjectName")
+                    }
+                )
+            },
+            onSettingClick = onSettingClick,
+            onContentUI = { paddingValues ->
+
+                Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(paddingValues),
-                    sheetContent = {
-
-                        DescriptionContentComponent(
-                            contentList = sectionScreenViewModel.contentList.value,
-                            onMediaContentClick = { contentKey ->
-                                coroutineScope.launch {
-                                    sheetState.hide()
-                                }
-                                sectionScreenViewModel.handleMediaContentClick(contentKey) { contentType, contentTitle ->
-                                    onNavigateToMediaScreen(
-                                        navController,
-                                        contentKey,
-                                        contentType,
-                                        contentTitle
-                                    )
-                                }
-
-                            },
-                            onCloseListener = {
-                                coroutineScope.launch {
-                                    sheetState.hide()
-                                }
-
-                            }
-                        )
-                    },
-                    sheetState = sheetState,
-                    sheetElevation = dimen_20_dp,
-                    sheetBackgroundColor = Color.White,
-                    sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp)
+                        .pullRefresh(pullRefreshState)
                 ) {
-
-                    Box(
+                    PullRefreshIndicator(
+                        refreshing = sectionScreenViewModel.loaderState.value.isLoaderVisible,
+                        state = pullRefreshState,
                         modifier = Modifier
-                            .fillMaxSize()
-                            .pullRefresh(pullRefreshState)
-                    ) {
+                            .align(Alignment.TopCenter)
+                            .zIndex(1f),
+                        contentColor = blueDark,
+                    )
 
-                        PullRefreshIndicator(
-                            refreshing = sectionScreenViewModel.loaderState.value.isLoaderVisible,
-                            state = pullRefreshState,
+                    if (!sectionScreenViewModel.loaderState.value.isLoaderVisible) {
+                        LazyColumn(
+                            verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
                             modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .zIndex(1f),
-                            contentColor = blueDark,
-                        )
+                                .padding(
+                                    top = dimen_16_dp,
+                                    start = dimen_16_dp,
+                                    end = dimen_16_dp,
+                                    bottom = dimen_50_dp
+                                )
+                        ) {
 
-                        if (!sectionScreenViewModel.loaderState.value.isLoaderVisible) {
-                            LazyColumn(
-                                verticalArrangement = Arrangement.spacedBy(dimen_14_dp),
-                                modifier = Modifier
-                                    .padding(
-                                        horizontal = dimen_16_dp
+                            item {
+                                CustomVerticalSpacer(size = dimen_50_dp)
+                            }
+                            item {
+                                ComplexSearchComponent {
+                                    onNavigateToComplexSearchScreen(
+                                        surveyId,
+                                        NUMBER_ZERO,
+                                        taskId,
+                                        activityConfigId,
+                                        ARG_FROM_SECTION_SCREEN,
+                                        subjectType,
+                                        activityType
                                     )
-                            ) {
+                                }
+                            }
 
-                                item {
-                                    ComplexSearchComponent {
-                                        onNavigateToComplexSearchScreen(
+                            // TODO handle progress correctly.
+                            /*item {
+                                CustomLinearProgressIndicator(
+                                    progressState = linearProgressState
+                                )
+                            }*/
+
+                            itemsIndexed(sectionScreenViewModel.sectionList.value) { index, section ->
+
+                                SectionItemComponent(
+                                    sectionId = section.sectionId,
+                                    sectionUiEntity = section,
+                                    sectionStatus = sectionScreenViewModel.sectionStatusMap.value[section.sectionId]
+                                        ?: SurveyStatusEnum.INPROGRESS.name,
+                                    onDetailIconClicked = { sectionId ->
+                                        coroutineScope.launch {
+                                            selectedSectionDescription.value =
+                                                selectedSectionDescription.value.copy(
+                                                    contentDescription = section.contentEntities
+                                                )
+
+                                            delay(100)
+                                            if (!sheetState.isVisible) {
+                                                sheetState.show()
+                                            } else {
+                                                sheetState.hide()
+                                            }
+                                        }
+
+                                    },
+                                    onSectionItemClicked = { sectionId ->
+                                        onNavigateToQuestionScreen(
                                             surveyId,
-                                            NUMBER_ZERO,
+                                            sectionId,
                                             taskId,
-                                            activityConfigId,
-                                            ARG_FROM_SECTION_SCREEN,
+                                            section.sectionName,
                                             subjectType,
-                                            activityType
+                                            activityConfigId,
+                                            missionId,
+                                            activityId,
+                                            activityType,
+                                            SurveyFlow.SurveyScreen
                                         )
                                     }
-                                }
+                                )
 
-                                // TODO handle progress correctly.
-                                /*item {
-                                    CustomLinearProgressIndicator(
-                                        progressState = linearProgressState
-                                    )
-                                }*/
-
-                                itemsIndexed(sectionScreenViewModel.sectionList.value) { index, section ->
-
-                                    SectionItemComponent(
-                                        sectionId = section.sectionId,
-                                        sectionUiEntity = section,
-                                        sectionStatus = sectionScreenViewModel.sectionStatusMap.value[section.sectionId]
-                                            ?: SurveyStatusEnum.INPROGRESS.name,
-                                        onDetailIconClicked = { sectionId ->
-                                            coroutineScope.launch {
-                                                sheetState.show()
-                                            }
-                                        },
-                                        onSectionItemClicked = { sectionId ->
-                                            onNavigateToQuestionScreen(
-                                                surveyId,
-                                                sectionId,
-                                                taskId,
-                                                section.sectionName,
-                                                subjectType,
-                                                activityConfigId,
-                                                missionId,
-                                                activityId,
-                                                activityType,
-                                                SurveyFlow.SurveyScreen
-                                            )
-                                        }
-                                    )
-
-                                }
-
-                                customVerticalSpacer()
                             }
-                        }
 
+                            customVerticalSpacer(size = dimen_50_dp)
+                        }
                     }
 
                 }
+            })
 
-            }
 
-        }
-    )
+    }
 
 }
+
 
 @Composable
 fun SectionItemComponent(
@@ -386,6 +429,7 @@ fun SectionItemComponent(
     onDetailIconClicked: (sectionId: Int) -> Unit,
     onSectionItemClicked: (sectionId: Int) -> Unit
 ) {
+
 
     ConstraintLayout(
         modifier = Modifier
@@ -434,7 +478,7 @@ fun SectionItemComponent(
                     .padding(end = dimen_16_dp, start = dimen_8_dp),
             ) {
 
-                val (textContainer, buttonContainer, iconContainer) = createRefs()
+                val (textContainer, buttonContainer, iconContainer, infoIconContainer) = createRefs()
                 if (!TextUtils.isEmpty(sectionUiEntity.sectionIcon)) {
                     //Make icon dynamic from Server
                     AsyncImage(
@@ -460,7 +504,6 @@ fun SectionItemComponent(
 
                 Column(
                     modifier
-                        .padding(horizontal = 14.dp)
                         .constrainAs(textContainer) {
                             top.linkTo(iconContainer.top)
                             start.linkTo(iconContainer.end)
@@ -469,6 +512,7 @@ fun SectionItemComponent(
                             width = Dimension.fillToConstraints
                         }
                         .fillMaxWidth()
+                        .padding(start = dimen_16_dp, end = dimen_8_dp)
                 ) {
 
                     Text(
@@ -503,12 +547,12 @@ fun SectionItemComponent(
 
                 }
 
-                /*if (sectionUiEntity.contentEntities.isNotEmpty()) {
+                if (sectionUiEntity.contentEntities.isNotEmpty()) {
 
                     IconButton(
                         onClick = { onDetailIconClicked(sectionId) },
                         modifier = Modifier
-                            .constrainAs(buttonContainer) {
+                            .constrainAs(infoIconContainer) {
                                 bottom.linkTo(textContainer.bottom)
                                 top.linkTo(textContainer.top)
                                 end.linkTo(parent.end)
@@ -523,11 +567,7 @@ fun SectionItemComponent(
 
                     }
 
-                } else {
-
-                    CustomSpacer(size = dimen_30_dp)
-
-                }*/
+                }
 
             }
 

@@ -213,7 +213,7 @@ interface SurveyAnswersDao {
 
 
     @Query("SELECT * from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
-    fun getSurveyAnswersForQuestionIds(
+    suspend fun getSurveyAnswersForQuestionIds(
         userId: String,
         surveyId: Int,
         taskId: Int,

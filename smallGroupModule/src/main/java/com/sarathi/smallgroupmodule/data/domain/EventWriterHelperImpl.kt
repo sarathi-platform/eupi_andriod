@@ -7,7 +7,9 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.Core
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -31,7 +33,7 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.nudge.syncmanager.EventWriterHelper
-import com.nudge.syncmanager.getParentEntityMapForEvent
+import com.nudge.syncmanager.utils.getParentEntityMapForEvent
 import com.sarathi.dataloadingmangement.data.dao.SubjectEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
@@ -48,7 +50,9 @@ class EventWriterHelperImpl @Inject constructor(
     private val eventsDao: EventsDao,
     private val eventDependencyDao: EventDependencyDao,
     private val subjectEntityDao: SubjectEntityDao,
-    private val smallGroupDidiMappingDao: SmallGroupDidiMappingDao
+    private val smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
+    private val imageStatusDao: ImageStatusDao,
+    private val eventStatusDao: EventStatusDao
 ) : EventWriterHelper {
 
     val context = Core.getContext()
@@ -71,10 +75,8 @@ class EventWriterHelperImpl @Inject constructor(
                     createdBy = coreSharedPrefs.getUserName(),
                     mobile_number = coreSharedPrefs.getMobileNo() ?: BLANK_STRING,
                     request_payload = requestPayload.json(),
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = getCurrentTimeInMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = "SMALL_GROUP_ATTENDANCE" ?: BLANK_STRING,
@@ -142,7 +144,9 @@ class EventWriterHelperImpl @Inject constructor(
             context!!,
             EventFormatterName.JSON_FORMAT_EVENT,
             eventsDao = eventsDao,
-            eventDependencyDao
+            eventDependencyDao,
+            imageStatusDao = imageStatusDao,
+            eventStatusDao = eventStatusDao
         )
     }
 

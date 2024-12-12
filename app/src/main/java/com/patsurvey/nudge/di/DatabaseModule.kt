@@ -33,6 +33,8 @@ object DatabaseModule {
     @Singleton
     fun provideSyncDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
+            .addMigrations(SyncManagerDatabase.MIGRATION_1_2)
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -103,5 +105,21 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
+
+    @Provides
+    @Singleton
+    fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
+
+    @Provides
+    @Singleton
+    fun providesEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.eventStatusDao()
+
+    @Provides
+    @Singleton
+    fun provideImageEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.imageStatusDao()
+
+    @Provides
+    @Singleton
+    fun provideRequestEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.requestStatusDao()
 
 }

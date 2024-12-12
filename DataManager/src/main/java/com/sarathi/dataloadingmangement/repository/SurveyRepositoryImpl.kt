@@ -1,20 +1,30 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.MODE_TAG
 import com.sarathi.dataloadingmangement.NATURE_TAG
+import com.sarathi.dataloadingmangement.data.dao.ContentDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SectionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiEntity
@@ -28,7 +38,9 @@ class SurveyRepositoryImpl @Inject constructor(
     private val surveyEntityDao: SurveyEntityDao,
     private val grantConfigDao: GrantConfigDao,
     private val sectionEntityDao: SectionEntityDao,
-    val coreSharedPrefs: CoreSharedPrefs
+    val coreSharedPrefs: CoreSharedPrefs,
+    val contentDao: ContentDao,
+    private val surveyConfigDao: SurveyConfigEntityDao,
 ) : ISurveyRepository {
     override suspend fun getQuestion(
         surveyId: Int,
@@ -36,7 +48,10 @@ class SurveyRepositoryImpl @Inject constructor(
         sectionId: Int,
         referenceId: String,
         activityConfigId: Int,
-        grantId: Int
+        grantId: Int,
+        missionId: Int,
+        activityId: Int,
+        isFromRegenerate: Boolean
     ): List<QuestionUiModel> {
 
 
@@ -46,7 +61,7 @@ class SurveyRepositoryImpl @Inject constructor(
             surveyId,
         )?.surveyName
         val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_ID.toString() else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             referenceType = LanguageAttributeReferenceType.OPTION.name,
@@ -65,13 +80,21 @@ class SurveyRepositoryImpl @Inject constructor(
         )
 
         val questionList = questionDao.getSurveySectionQuestionForLanguage(
-            languageId = coreSharedPrefs.getAppLanguage(),
+            languageId = if (isFromRegenerate) DEFAULT_LANGUAGE_CODE else coreSharedPrefs.getAppLanguage(),
             sectionId = sectionId,
             surveyId = surveyId,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             referenceType = LanguageAttributeReferenceType.QUESTION.name
         )
+        val surveyConfigList = surveyConfigDao.getSurveyConfigForSurvey(
+            surveyId = surveyId,
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
+            activityId = activityId,
+            missionId = missionId,
+            language = DEFAULT_LANGUAGE_CODE
+        )
         questionList.forEach {
+
 
             val questionUiModel = QuestionUiModel(
                 questionId = it.questionId ?: DEFAULT_ID,
@@ -91,14 +114,80 @@ class SurveyRepositoryImpl @Inject constructor(
                 formId = it.formId ?: DEFAULT_ID,
                 order = it.order.value(0),
                 isConditional = it.isConditional,
-                sectionName = sectionEntity.sectionName
+                sectionName = sectionEntity.sectionName,
+                formDescriptionInEnglish = getFormDescription(surveyConfigList, it),
+                contentEntities = setQuestionContentData(questionEntity = it),
+                formOrder = it.formOrder,
+                sortingKey = it.formOrder + it.order!!,
+                formContent = setFormContentData(questionEntity = it)
             )
-            questionUiList.add(questionUiModel)
+
+            questionUiList.add(checkAndGetResponseForEncryptedValue(questionUiModel))
 
         }
 
         return questionUiList.sortedBy { it.order }
     }
+
+    private fun getFormDescription(
+        surveyConfigList: List<SurveyConfigEntity>,
+        questionUiEntity: QuestionUiEntity
+    ) = surveyConfigList.filter { it.key == "FORM_QUESTION_CARD_TITLE" }
+        .find { surveyConfigFormId -> surveyConfigFormId.formId == questionUiEntity.formId }?.value
+
+    suspend fun setQuestionContentData(questionEntity: QuestionUiEntity): List<ContentList> {
+        val contentList = mutableListOf<ContentList>()
+        questionEntity.contentEntities?.forEach { data ->
+            // Fetch content from database based on content key and language ID
+            val contentKey = data.contentKey ?: BLANK_STRING
+            val languageId = coreSharedPrefs.getSelectedLanguageCode()
+
+            val contentData = contentDao.getContentFromIds(
+                contentkey = contentKey,
+                languageId = languageId
+            )
+
+            // Add to the content list if contentData is not null
+            if (contentData != null) {
+                contentList.add(
+                    ContentList(
+                        contentValue = contentData.contentValue ?: "",
+                        contentType = contentData.contentType ?: "",
+                        contentKey = contentKey
+                    )
+                )
+            }
+        }
+        return contentList
+    }
+
+    fun setFormContentData(questionEntity: QuestionUiEntity): List<ContentList> {
+        val contentList = ArrayList<ContentList>()
+        questionEntity.formContents.forEach { data ->
+            // Fetch content from database based on content key and language ID
+            val contentKey = data.contentKey ?: BLANK_STRING
+            val languageId = coreSharedPrefs.getSelectedLanguageCode()
+
+            val contentData = contentDao.getContentFromIds(
+                contentkey = contentKey,
+                languageId = languageId
+            )
+
+            // Add to the content list if contentData is not null
+            if (contentData != null) {
+                contentList.add(
+                    ContentList(
+                        contentValue = contentData.contentValue ?: "",
+                        contentType = contentData.contentType ?: "",
+                        contentKey = contentKey
+                    )
+                )
+            }
+        }
+
+        return contentList
+    }
+
 
     override suspend fun getFormQuestion(
         surveyId: Int,
@@ -107,7 +196,9 @@ class SurveyRepositoryImpl @Inject constructor(
         referenceId: String,
         activityConfigId: Int,
         grantId: Int,
-        formId: Int
+        formId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
         return getQuestion(
             surveyId = surveyId,
@@ -115,7 +206,10 @@ class SurveyRepositoryImpl @Inject constructor(
             subjectId = subjectId,
             referenceId = referenceId,
             activityConfigId = activityConfigId,
-            grantId = grantId
+            grantId = grantId,
+            missionId = missionId,
+            activityId = activityId,
+            isFromRegenerate = false
         ).filter { it.formId == formId }
     }
 
@@ -183,4 +277,22 @@ class SurveyRepositoryImpl @Inject constructor(
     }
 
 
+    private fun checkAndGetResponseForEncryptedValue(question: QuestionUiModel): QuestionUiModel {
+        val secretKeyPass = String(
+            Base64.decode(
+                coreSharedPrefs.getPref(
+                    AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                    com.nudge.core.BLANK_STRING
+                ), Base64.DEFAULT
+            )
+        )
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) {
+            question.options?.firstOrNull()?.selectedValue = AESHelper.decrypt(
+                question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                secretKeyPass
+            )
+
+        }
+        return question
+    }
 }

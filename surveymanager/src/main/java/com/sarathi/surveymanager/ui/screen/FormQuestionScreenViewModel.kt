@@ -11,23 +11,33 @@ import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
+import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.surveymanager.utils.conditions.ConditionsUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +57,14 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
+    private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -81,11 +98,18 @@ open class FormQuestionScreenViewModel @Inject constructor(
     var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
 
     val formTitle = mutableStateOf(BLANK_STRING)
+    private val _contentList = mutableStateOf<List<Content>>(emptyList())
+    val contentList: State<List<Content>> get() = _contentList
 
+    val showLoader = mutableStateOf(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
                 loadFormQuestionData()
+            }
+
+            is LoaderEvent.UpdateLoaderState -> {
+                showLoader.value = event.showLoader
             }
         }
     }
@@ -99,7 +123,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 subjectId = taskEntity?.subjectId ?: DEFAULT_ID,
                 activityConfigId = activityConfigId,
                 referenceId = referenceId,
-                grantId = 0
+                grantId = 0,
+                missionId = taskEntity?.missionId.value(DEFAULT_ID),
+                activityId = taskEntity?.activityId.value(DEFAULT_ID)
             )
             _questionUiModel.value = question.filter { it.formId == formId }
 
@@ -302,9 +328,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
         }
     }
 
-    fun saveAllAnswers() {
+    fun saveAllAnswers(onSaveComplete: suspend () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
+            onEvent(LoaderEvent.UpdateLoaderState(true))
             questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
                 .forEach { questionUiModel ->
                     saveSingleAnswerIntoDb(questionUiModel)
@@ -338,11 +364,83 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 }
                 checkAndUpdateNonVisibleQuestionResponseInDb(question = it)
             }
+            onSaveComplete()
         }
+    }
+
+    suspend fun updateTaskStatus(taskId: Int) {
+        taskEntity?.let { task ->
+            val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
+            surveyEntity?.let { survey ->
+                taskStatusUseCase.markTaskInProgress(taskId = taskId)
+                matStatusEventWriterUseCase.updateTaskStatus(
+                    taskEntity = task,
+                    surveyName = survey.surveyName,
+                    subjectType = subjectType
+                )
+            }
+        }
+
+    }
+
+    suspend fun updateSectionStatus(
+        missionId: Int,
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        status: String
+    ) {
+        sectionStatusUpdateUseCase.invoke(
+            missionId = missionId,
+            surveyId = surveyId,
+            sectionId = sectionId,
+            taskId = taskId,
+            status = status
+        )
+        sectionStatusEventWriterUserCase.invoke(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            taskId = taskId,
+            status = status, isFromRegenerate = false
+        )
     }
 
     fun getPrefixFileName(question: QuestionUiModel): String {
         return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
+    }
+
+    fun handleMediaContentClick(
+        contentKey: String, callNavigation: (
+            contentType: String,
+            contentTitle: String
+        ) -> Unit
+    ) {
+        val content = contentList.value.find { it.contentKey == contentKey }
+        content?.let {
+            callNavigation(content.contentType, content.contentValue)
+        }
+    }
+
+    fun getContentData(
+        contents: List<ContentList?>?,
+        contentType: String
+    ): ContentList? {
+        contents?.let { contentsData ->
+            for (content in contentsData) {
+                if (content?.contentType.equals(contentType, true)) {
+                    return content!!
+                }
+            }
+        }
+        return null
+    }
+
+    fun isFilePathExists(filePath: String): Boolean {
+        return fetchContentUseCase.isFilePathExists(filePath)
+    }
+
+    fun getAESSecretKey(): String {
+        return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
 }

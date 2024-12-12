@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.data.database
 
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
+import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
@@ -11,6 +12,7 @@ import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
+import com.sarathi.dataloadingmangement.QUESTION_TABLE
 import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
 import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
@@ -233,12 +235,25 @@ object MigrationQueries {
                 ");"
 
     val ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID =
-        "ALTER TABLE $ANSWER_TABLE ADD COLUMN formId INTEGER NOT NULL"
+        "ALTER TABLE $ANSWER_TABLE ADD COLUMN formId INTEGER DEFAULT 0  NOT NULL"
 
     val ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE =
-        "ALTER TABLE $ANSWER_TABLE ADD COLUMN createdDate INTEGER NOT NULL"
+        "ALTER TABLE $ANSWER_TABLE ADD COLUMN createdDate INTEGER DEFAULT 0  NOT NULL"
 
     val ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE =
-        "ALTER TABLE $ANSWER_TABLE ADD COLUMN modifiedDate INTEGER NOT NULL"
+        "ALTER TABLE $ANSWER_TABLE ADD COLUMN modifiedDate INTEGER DEFAULT 0  NOT NULL"
+
+    val ALTER_QUESTION_ENTITY_ADD_FORM_ORDER =
+        "ALTER TABLE $QUESTION_TABLE ADD COLUMN formOrder INTEGER DEFAULT 0  NOT NULL"
+
+    val ALTER_QUESTION_TABLE_ADD_FORM_CONTENT =
+        "ALTER TABLE $QUESTION_TABLE ADD COLUMN formContents TEXT NOT NULL DEFAULT ''"
+
+    val ALTER_MISSION_TABLE_ADD_MISSION_ORDER =
+        "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN missionOrder INTEGER DEFAULT 1 NOT NULL"
+
+    val ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER =
+        "ALTER TABLE $ACTIVITY_TABLE_NAME ADD COLUMN activityOrder INTEGER DEFAULT 1 NOT NULL"
+
 }
 

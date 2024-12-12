@@ -141,4 +141,12 @@ class SettingBSRepositoryImpl(
            NudgeLogger.d("SettingBSRepositoryImpl","clearSelectionLocalDB: ${ex.message}")
        }
     }
+
+    override fun isSyncEnable(): Boolean {
+        return prefRepo.iSSyncOptionEnabled()
+    }
+
+    override fun getStateId(): Int {
+        return prefRepo.getStateId()
+    }
 }
