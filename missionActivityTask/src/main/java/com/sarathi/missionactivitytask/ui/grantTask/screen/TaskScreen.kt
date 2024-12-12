@@ -65,6 +65,7 @@ import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_150_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_180_dp
