@@ -138,7 +138,6 @@ class SectionScreenViewModel @Inject constructor(
     }
 
     fun checkButtonValidation() {
-//
         buttonVisibilityKey.value =
             sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name }
         isButtonEnable.value =

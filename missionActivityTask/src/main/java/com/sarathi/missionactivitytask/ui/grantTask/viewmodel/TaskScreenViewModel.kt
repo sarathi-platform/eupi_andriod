@@ -566,8 +566,6 @@ open class TaskScreenViewModel @Inject constructor(
             updateProgress()
         }
     }
-    //
-
     fun isActivityCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
