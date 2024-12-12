@@ -65,8 +65,10 @@ import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_150_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_16_sp
+import com.nudge.core.ui.theme.dimen_180_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_250_dp
 import com.nudge.core.ui.theme.dimen_48_dp
@@ -178,7 +180,7 @@ fun TaskScreen(
             sheetContent = {
                 Box(
                     modifier = Modifier
-                        .height(dimen_250_dp)
+                        .height(dimen_180_dp)
                         .fillMaxWidth()
                 ) {
                     LazyColumn(
