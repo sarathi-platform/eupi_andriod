@@ -18,6 +18,7 @@ import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_QUESTION_ID
 import com.nrlm.baselinesurvey.ARG_SECTION_ID
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_DETAIL_NAME
 import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ARG_SURVEY_ID
 import com.nrlm.baselinesurvey.ARG_VIDEO_PATH
@@ -59,6 +60,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 navArgument(ARG_SUB_MISSION_NAME) {
                     type = NavType.StringType
                     nullable = true
+                },
+                navArgument(ARG_SUB_MISSION_DETAIL_NAME) {
+                    type = NavType.StringType
+                    nullable = true
                 }
                 )
         ) {
@@ -69,6 +74,8 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME)
                     ?: com.patsurvey.nudge.utils.BLANK_STRING,
                 missionSubDescription = it.arguments?.getString(ARG_SUB_MISSION_NAME)
+                    ?: BLANK_STRING,
+                missionSubDescriptionDetail = it.arguments?.getString(ARG_SUB_MISSION_DETAIL_NAME)
                     ?: BLANK_STRING
                 )
         }
@@ -85,6 +92,10 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             navArgument(name = ARG_SUB_MISSION_NAME) {
                 type = NavType.StringType
                 nullable = true
+            },
+            navArgument(name = ARG_SUB_MISSION_DETAIL_NAME) {
+                type = NavType.StringType
+                nullable = true
             }
         )) {
             MissionSummaryScreen(
@@ -92,7 +103,9 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
                     ARG_MISSION_ID
                 ) ?: 0,
                 missionName = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
-                missionSubName = it.arguments?.getString(ARG_SUB_MISSION_NAME) ?: BLANK_STRING
+                missionSubName = it.arguments?.getString(ARG_SUB_MISSION_NAME) ?: BLANK_STRING,
+                missionSubNameDetail = it.arguments?.getString(ARG_SUB_MISSION_DETAIL_NAME)
+                    ?: BLANK_STRING
             )
         }
 

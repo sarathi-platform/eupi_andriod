@@ -47,6 +47,7 @@ fun ActivityScreen(
     missionId: Int,
     missionName: String,
     missionSubTitle: String,
+    missionTitleDetail: String,
     isMissionCompleted: Boolean,
     onSettingClick: () -> Unit
 ) {
@@ -123,7 +124,7 @@ fun ActivityScreen(
                         activities = viewModel.activityList.value,
                         programId = programId,
                         navController = navController,
-                        missionSubTitle = missionSubTitle
+                        missionSubTitle = missionTitleDetail
                     ) { contentValue, contentKey, contentType, contentTitle ->
 
                         if (viewModel.isFilePathExists(contentValue) || contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {

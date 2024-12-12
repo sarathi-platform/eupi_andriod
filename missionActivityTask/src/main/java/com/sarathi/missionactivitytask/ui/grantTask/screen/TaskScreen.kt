@@ -63,6 +63,7 @@ import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -265,6 +266,7 @@ fun TaskScreen(
             ToolBarWithMenuComponent(
                 title = activityName,
                 subTitle = missionSubTitle,
+                subTitleColorId = brownDark,
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,
                 onBackIconClick = { navController.popBackStack() },

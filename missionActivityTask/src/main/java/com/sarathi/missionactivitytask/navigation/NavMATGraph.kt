@@ -54,6 +54,7 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SA
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUB_MISSION_DETAIL_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUB_MISSION_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SURVEY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_TASK_ID
@@ -125,7 +126,8 @@ fun NavGraphBuilder.MatNavigation(
                             missionStatus = mission.missionStatus,
                             activityCount = mission.activityCount,
                             pendingActivityCount = mission.pendingActivityCount,
-                            missionSubtitle = mission.getSubTitle()
+                            missionSubtitle = mission.getSubTitle(),
+                            missionSubTitleDetail = mission.getSubTitleDetail()
                         )
                     )
                 } else {
@@ -135,7 +137,8 @@ fun NavGraphBuilder.MatNavigation(
                         missionId = mission.missionId,
                         isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name,
                         programId = mission.programId,
-                        missionSubtitle = mission.getSubTitle() ?: BLANK_STRING
+                        missionSubtitle = mission.getSubTitle() ?: BLANK_STRING,
+                        missionSubTitleDetail = mission.getSubTitleDetail() ?: BLANK_STRING
                     )
                 }
             }
@@ -175,7 +178,9 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_PROGRAM_ID
                 ) ?: 0,
                 onSettingClick = onSettingIconClick,
-                missionSubTitle = it.arguments?.getString(ARG_SUB_MISSION_NAME) ?: BLANK_STRING
+                missionSubTitle = it.arguments?.getString(ARG_SUB_MISSION_NAME) ?: BLANK_STRING,
+                missionTitleDetail = it.arguments?.getString(ARG_SUB_MISSION_DETAIL_NAME)
+                    ?: BLANK_STRING,
             )
         }
         composable(
@@ -1408,12 +1413,15 @@ fun navigateToActivityScreen(
     missionId: Int,
     missionName: String,
     missionSubtitle: String,
+    missionSubTitleDetail: String,
     isMissionCompleted: Boolean,
     programId: Int
 ) {
     var missionSubtitleWithNullable =
         if (!TextUtils.isEmpty(missionSubtitle)) missionSubtitle else null
-    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted/$programId/$missionSubtitleWithNullable")
+    var missionSubtitleDetailWithNullable =
+        if (!TextUtils.isEmpty(missionSubTitleDetail)) missionSubTitleDetail else null
+    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted/$programId/$missionSubtitleWithNullable/$missionSubtitleDetailWithNullable")
 }
 
 fun navigateToAddImageScreen(

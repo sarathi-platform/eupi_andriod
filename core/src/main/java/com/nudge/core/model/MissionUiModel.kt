@@ -6,5 +6,6 @@ data class MissionUiModel(
     val missionStatus: String,
     val activityCount: Int,
     val pendingActivityCount: Int,
-    val missionSubtitle: String
+    val missionSubtitle: String,
+    val missionSubTitleDetail: String
 )

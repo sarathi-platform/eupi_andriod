@@ -45,6 +45,7 @@ import com.sarathi.missionactivitytask.R
 fun ToolBarWithMenuComponent(
     title: String,
     subTitle: String = BLANK_STRING,
+    subTitleColorId: Color = grayColor,
     modifier: Modifier,
     isSearch: Boolean = false,
     iconResId: Int = R.drawable.arrow_left,
@@ -98,7 +99,7 @@ fun ToolBarWithMenuComponent(
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = subTitle,
-                                    style = defaultTextStyle.copy(color = grayColor)
+                                    style = defaultTextStyle.copy(color = subTitleColorId)
                                 )
                             }
                         }

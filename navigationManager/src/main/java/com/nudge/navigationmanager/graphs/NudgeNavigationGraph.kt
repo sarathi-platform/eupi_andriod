@@ -194,7 +194,7 @@ sealed class HomeScreens(val route: String) {
     object MISSION_SCREEN : HomeScreens(route = MISSION_SCREEN_ROUTE_NAME)
     object BS_DIDI_DETAILS_SCREEN : HomeScreens(route = BASELINE_DIDI_DETAILS_ROUTE_NAME)
     object MISSION_SUMMARY_SCREEN :
-        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_SUB_MISSION_NAME.value}}")
+        HomeScreens(route = "$MISSION_SUMMARY_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_SUB_MISSION_NAME.value}}/{${NavigationParams.ARG_SUB_MISSION_DETAIL_NAME.value}}")
 
     object Final_StepComplitionScreen :
         HomeScreens(route = "$Final_Step_Complition_Screen_ROUTE_NAME/{${NavigationParams.ARG_COMPLETION_MESSAGE.value}}")
@@ -239,7 +239,7 @@ sealed class LogoutScreens(val route: String){
     object LOG_LOGIN_SCREEN : LogoutScreens(route = LOGIN_SCREEN_ROUTE_NAME)
     object LOG_VILLAGE_SELECTION_SCREEN : LogoutScreens(route = VILLAGE_SELECTION_ROUTE_NAME)
     object LOG_DATA_LOADING_SCREEN :
-        LogoutScreens(route = "$DATA_LOADING_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_SUB_MISSION_NAME.value}}")
+        LogoutScreens(route = "$DATA_LOADING_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_MISSION_ID.value}}/{${NavigationParams.ARG_MISSION_NAME.value}}/{${NavigationParams.ARG_SUB_MISSION_NAME.value}}/{${NavigationParams.ARG_SUB_MISSION_DETAIL_NAME.value}}")
     object LOG_HOME_SCREEN : LogoutScreens(route = LOGOUT_HOME_ROUTE_NAME)
 
     object LOG_OTP_VERIFICATION : LogoutScreens(route = "$OTP_VERIFICATION_ROUTE_NAME/{${NavigationParams.ARG_MOBILE_NUMBER.value}}")

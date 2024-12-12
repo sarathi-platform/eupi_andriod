@@ -41,6 +41,7 @@ import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 fun ToolbarWithMenuComponent(
     title: String,
     subTitle: String = BLANK_STRING,
+    subTitleColorId: Color = grayColor,
     modifier: Modifier,
     navController: NavController? = rememberNavController(),
     isMenuIconRequired: Boolean? = true,
@@ -102,7 +103,7 @@ fun ToolbarWithMenuComponent(
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = subTitle,
-                                    style = defaultTextStyle.copy(color = grayColor)
+                                    style = defaultTextStyle.copy(color = subTitleColorId)
                                 )
                             }
                         }

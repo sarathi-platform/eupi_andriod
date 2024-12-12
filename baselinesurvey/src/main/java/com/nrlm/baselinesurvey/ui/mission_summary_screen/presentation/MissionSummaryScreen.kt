@@ -35,6 +35,7 @@ fun MissionSummaryScreen(
     missionId: Int = 0,
     missionName: String,
     missionSubName: String,
+    missionSubNameDetail: String,
     viewModel: MissionSummaryViewModel = hiltViewModel()
 ) {
     val activities =
@@ -136,7 +137,7 @@ fun MissionSummaryScreen(
                                         activityDate =activity.endDate,
                                         surveyId =activity.activityId,
                                         missionId = missionId,
-                                        missionSubTitle = missionSubName
+                                        missionSubTitle = missionSubNameDetail
                                     )
                                 })
                         }
