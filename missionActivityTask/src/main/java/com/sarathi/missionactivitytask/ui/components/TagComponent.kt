@@ -10,7 +10,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_4_dp
@@ -36,7 +35,7 @@ fun TagComponent(text: String) {
     ) {
         Text(
             text = text,
-            style = smallerTextStyle.copy(fontSize = 10.sp, color = brownDark),
+            style = smallerTextStyle.copy(color = brownDark),
         )
     }
 
