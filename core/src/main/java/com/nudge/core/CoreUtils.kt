@@ -934,6 +934,8 @@ fun Int?.value(defaultValue: Int) = this ?: defaultValue
 
 fun Long?.value() = this ?: -1
 
+fun Long?.value(defaultValue: Long = -1) = this ?: defaultValue
+
 fun Boolean?.value() = this ?: false
 
 fun Boolean?.value(defaultValue: Boolean) = this ?: defaultValue
@@ -1151,7 +1153,7 @@ fun formatToIndianRupee(amount: String): String {
         }
     } catch (ex: Exception) {
         CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1421,5 +1423,21 @@ fun findUserTypeForMetadata(userType: String): String {
         else -> {
             UPCM
         }
+    }
+}
+
+fun calculateProgress(pendingCount: Int, totalCount: Int): Float {
+    return if (totalCount <= 0)
+        0F
+    else {
+        pendingCount.intToFloat() / totalCount.intToFloat()
+    }
+}
+
+fun Int.intToFloat(): Float {
+    return try {
+        this.toFloat()
+    } catch (e: Exception) {
+        0F
     }
 }

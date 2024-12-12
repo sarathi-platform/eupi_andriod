@@ -37,6 +37,9 @@ abstract class BaseViewModel : ViewModel() {
         onCatchError(e)
     }
 
+
+
+
     open fun onCatchError(e: Throwable) {
         CoreAppDetails.getContext()?.applicationContext?.let {
             CoreLogger.d(
@@ -71,5 +74,6 @@ abstract class BaseViewModel : ViewModel() {
             block()
         }
     }
+
 
 }

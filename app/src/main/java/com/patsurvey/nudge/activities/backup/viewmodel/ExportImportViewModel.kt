@@ -39,11 +39,12 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.EXCEL_TYPE
 import com.nudge.core.NUDGE_DATABASE
-import com.nudge.core.SYNC_MANAGER_DATABASE
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.SUBJECT_ADDRESS
 import com.nudge.core.SUBJECT_COHORT_NAME
 import com.nudge.core.SUBJECT_DADA_NAME
 import com.nudge.core.SUBJECT_NAME
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.VILLAGE_NAME
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
@@ -51,8 +52,6 @@ import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.exportDatabase
-import com.nudge.core.exportOldData
-import com.nudge.core.exportLogFile
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
@@ -67,6 +66,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
@@ -74,6 +74,7 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventQuestionItemDto
@@ -110,7 +111,6 @@ class ExportImportViewModel @Inject constructor(
 
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
-    private val userUniqueKey = mutableStateOf(BLANK_STRING)
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
@@ -342,12 +342,14 @@ class ExportImportViewModel @Inject constructor(
                 val baseLineQnATableCSV: ArrayList<BaseLineQnATableCSV> = arrayListOf()
 
                 val quesAnswerList = regenerateGrantEventUsecase.fetchSurveyAnswerEvents()
+                    ?.filter { it.question.questionType != QuestionTypeNew.MultiImage.name && it.question.questionType != QuestionTypeNew.SingleImage.name }
 
                 quesAnswerList?.let { quesList ->
                     quesList.forEach { survey ->
                         val task = getTaskUseCase.getSubjectAttributes(survey.taskId)
+                        //This method need to print the multiple options in seperate row in  CSV
                         val responsePair = findResponseAndSubQuestion(survey.question)
-
+                        responsePair.forEach { pair ->
                         baseLineQnATableCSV.add(
                             BaseLineQnATableCSV(
                                 id = survey.question.questionId.toString(),
@@ -359,14 +361,17 @@ class ExportImportViewModel @Inject constructor(
                                 section = survey.sectionName,
                                 dadaName = task.find { it.key == SUBJECT_DADA_NAME }?.value.value(),
                                 didiName = task.find { it.key == SUBJECT_NAME }?.value.value(),
-                                question = survey.question.questionDesc,
-                                response = responsePair.first,
+                                question = if (survey.question.formId != NUMBER_ZERO) survey.question.formDescription else survey.question.questionDesc,
+                                response = pair.first,
                                 cohortName = task.find { it.key == SUBJECT_COHORT_NAME }?.value.value(),
-                                subQuestion = responsePair.second,
+                                subQuestion = if (survey.question.formId != NUMBER_ZERO) survey.question.questionDesc else pair.second,
                                 villageName = task.find { it.key == VILLAGE_NAME }?.value.value(),
-                                referenceId = survey.referenceId
+                                referenceId = survey.referenceId,
+                                formOder = survey.question.formOder,
+                                sortKey = survey.question.sortKey
                             )
                         )
+                    }
                     }
                 }
 
@@ -394,20 +399,22 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
-    private suspend fun findResponseAndSubQuestion(question: SaveAnswerEventQuestionItemDto): Pair<String, String> {
-        var response = BLANK_STRING
-        var optionDesc = BLANK_STRING
-        val optionDescList = arrayListOf<String>()
-        val responseList = arrayListOf<String>()
-        question.options.forEach { option ->
-            if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase()))
-                optionDescList.add(option.optionDesc)
-            responseList.add(option.selectedValue ?: BLANK_STRING)
-
+    private suspend fun findResponseAndSubQuestion(question: SaveAnswerEventQuestionItemDto): List<Pair<String, String>> {
+        val responsePairList = ArrayList<Pair<String, String>>()
+        //sorting the options using order by key
+        question.options.sortedBy { it.order }.forEach { option ->
+            var response = BLANK_STRING
+            var optionDesc = BLANK_STRING
+            if (QuestionTypeNew.optionDescriptionAllowInExport.contains(question.questionType.toLowerCase())) {
+                optionDesc = option.optionDesc
+            }
+            response = if (question.tag.contains(SENSITIVE_INFO_TAG_ID)) AESHelper.decrypt(
+                option.selectedValue.value(),
+                fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
+            ) else option.selectedValue.value()
+            responsePairList.add(Pair(response, optionDesc))
         }
-        optionDesc = optionDescList.joinToString("\n")
-        response = responseList.joinToString("\n")
-        return Pair(response, optionDesc)
+        return responsePairList
     }
     private suspend fun getSaveAnswerEvents(): List<SaveAnswerEventDto> {
         val eventsList = eventWriterHelperImpl.generateResponseEvent()
@@ -480,12 +487,16 @@ class ExportImportViewModel @Inject constructor(
         surveyId: Int
     ): List<BaseLineQnATableCSV> {
         val filteredList = baseLineQnATableCSV.filter { it.surveyId == surveyId }
-        val groupedAndSorted = filteredList
-            .groupBy { Pair(it.referenceId, it.sectionId) }
-            .toList()
-            .sortedBy { it.first.second }
-            .flatMap { it.second.sortedBy { it.orderId } }
-        return groupedAndSorted.groupBy { it.subjectId }.flatMap { it.value }
+        return filteredList
+            .sortedWith(
+                compareBy(
+                    { it.subjectId },   // First, sort by subjectId
+                    { it.sectionId },   // Then, sort by sectionId
+                    { it.formOder },    // Then, sort by formOder
+                    { it.referenceId }, // Then, sort by referenceId
+                    { it.orderId }// Finally, sort by sortKey
+                )
+            )
     }
 
     private fun generateTitle(): String {

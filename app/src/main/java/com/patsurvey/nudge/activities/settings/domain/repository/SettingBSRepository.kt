@@ -39,4 +39,6 @@ interface SettingBSRepository {
     fun isSyncEnable(): Boolean
     fun isAuditTrailEnable(): Boolean
 
+    fun getStateId(): Int
+
 }

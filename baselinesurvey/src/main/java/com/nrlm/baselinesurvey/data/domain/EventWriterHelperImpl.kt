@@ -831,7 +831,7 @@ class EventWriterHelperImpl @Inject constructor(
                     referenceId = didiInfoEntity.didiId.toString(),
                     tag = it.optionTag,
                     optionDesc = optionItemEntityList.find { option -> option.optionId == it.optionId }?.display
-                        ?: BLANK_STRING
+                        ?: BLANK_STRING,
                 )
                 saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
             }

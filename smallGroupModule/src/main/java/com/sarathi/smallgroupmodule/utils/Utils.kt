@@ -6,12 +6,13 @@ import com.nudge.core.BLANK_STRING
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
+import java.util.Locale
 
 fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
     if (this == null)
         return BLANK_STRING
 
-    val formatter = SimpleDateFormat(pattern)
+    val formatter = SimpleDateFormat(pattern, Locale.ENGLISH)
     return formatter.format(Date(this))
 }
 

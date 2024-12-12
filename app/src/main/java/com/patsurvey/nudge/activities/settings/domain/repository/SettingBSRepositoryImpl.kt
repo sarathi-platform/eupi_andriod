@@ -145,6 +145,10 @@ class SettingBSRepositoryImpl(
     override fun isSyncEnable(): Boolean {
         return prefRepo.iSSyncOptionEnabled()
     }
+
+    override fun getStateId(): Int {
+        return prefRepo.getStateId()
+    }
     override fun isAuditTrailEnable(): Boolean {
         return prefRepo.iSAuditTrailOptionEnabled()
     }

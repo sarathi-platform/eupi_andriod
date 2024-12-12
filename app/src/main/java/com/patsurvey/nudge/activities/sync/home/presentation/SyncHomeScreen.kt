@@ -91,6 +91,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -286,6 +287,7 @@ fun SyncHomeContent(
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
             BottomContent(
+                isWorkerInfoState = viewModel.workerState.value,
                 context = context,
                 viewModel = viewModel,
                 isNetworkAvailable = isNetworkAvailable
@@ -314,14 +316,17 @@ fun SyncHomeContent(
                         .fillMaxSize()
                 ) {
                     item {
-                        LastSyncTime(viewModel) {
-                            CoreLogger.d(
-                                context,
-                                "SyncHomeScreen",
-                                "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
-                            )
-                            if (viewModel.isSyncStarted.value)
-                                viewModel.cancelSyncUploadWorker()
+                        LastSyncTime(
+                            viewModel.lastSyncTime.longValue,
+                            viewModel.getUserPhoneNumber()
+                        ) {
+                            viewModel.onLastSyncTimeClick {
+                                showCustomToast(
+                                    context = context,
+                                    msg = context.getString(it)
+                                )
+                            }
+
                         }
                     }
                     item {
@@ -366,6 +371,7 @@ fun SyncHomeContent(
 
 @Composable
 fun BottomContent(
+    isWorkerInfoState: String,
     context: Context,
     viewModel: SyncHomeViewModel,
     isNetworkAvailable: MutableState<Boolean>
@@ -423,7 +429,7 @@ fun BottomContent(
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.sync_all_data),
                 isArrowRequired = false,
-                isActive = isSyncAllDataActive
+                isActive = isSyncAllDataActive && isWorkerInfoState != WorkInfo.State.RUNNING.name,
             ) {
                 auditTrailDetail(viewModel.auditTrailUseCase,context.getString(R.string.audit_trail_action,"Sync all data"))
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
@@ -439,21 +445,15 @@ fun BottomContent(
 }
 
 @Composable
-fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
-    val context = LocalContext.current
-    if (viewModel.lastSyncTime.longValue != 0L) {
+fun LastSyncTime(lastSyncTime: Long, mobileNumber: String, onCancelWorker: () -> Unit) {
+    if (lastSyncTime != 0L) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
                     .clickable {
-                        viewModel.onLastSyncTimeClick {
-                            showCustomToast(
-                                context = context,
-                                msg = context.getString(it)
-                            )
-                        }
+                        onCancelWorker()
                     },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
@@ -464,7 +464,9 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
                 )
 
                 Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+                        lastSyncTime
+                    ),
                     style = syncMediumTextStyle,
                     color = textColorDark
                 )
@@ -472,15 +474,7 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_10_dp)
-                    .clickable {
-                        viewModel.onLastSyncTimeClick {
-                            showCustomToast(
-                                context = context,
-                                msg = context.getString(it)
-                            )
-                        }
-                    },
+                    .padding(dimen_10_dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
@@ -490,7 +484,7 @@ fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
                 )
 
                 Text(
-                    text = viewModel.getUserPhoneNumber(),
+                    text = mobileNumber,
                     style = syncMediumTextStyle,
                     color = textColorDark
                 )

@@ -22,6 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.calculateProgress
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -97,7 +98,10 @@ fun BasicMissionCard(
                         .padding(start = dimen_50_dp, end = dimen_16_dp)
                 ) {
                     LinearProgressBarComponent(
-                        progress = pendingCount.toFloat() / totalCount,
+                        progress = calculateProgress(
+                            pendingCount = pendingCount,
+                            totalCount = totalCount
+                        ),
                     )
                     Text(
                         text = "$pendingCount / $totalCount $countStatusText",

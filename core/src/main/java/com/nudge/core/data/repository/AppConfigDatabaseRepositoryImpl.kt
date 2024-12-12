@@ -1,5 +1,6 @@
 package com.nudge.core.data.repository
 
+import android.util.Base64
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.REMOTE_CONFIG_AUDIT_TRAIL_OPTION_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
@@ -52,6 +53,15 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
         if (data.containsKey(AppConfigKeysEnum.MIX_PANEL_KEY.name)) {
             coreSharedPrefs.saveMixPanelToken(
                 data[AppConfigKeysEnum.MIX_PANEL_KEY.name].toString()
+            )
+        }
+        if (data.containsKey(AppConfigKeysEnum.SENSITIVE_INFO_KEY.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                Base64.encodeToString(
+                    data[AppConfigKeysEnum.SENSITIVE_INFO_KEY.name].toString().toByteArray(),
+                    Base64.DEFAULT
+                )
             )
         }
 

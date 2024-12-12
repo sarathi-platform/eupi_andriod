@@ -37,7 +37,6 @@
     <string name="warning_text">Warning</string>
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
-    <string name="small_group_filter_label">"Filter by Small group: "</string>
     <string name="all">"সব "</string>
     <string name="no_entry_this_month">"এই মাসে কোন ডেটা এন্ট্রি নেই "</string>
     <string name="no_entry_this_week">"এই সপ্তাহে কোনো ডাটা এন্ট্রি নেই "</string>
@@ -45,10 +44,21 @@
     <string name="last_month">"গত মাসে "</string>
     <string name="last_3_months">"গত 3 মাস "</string>
     <string name="custom_date">"কাস্টম তারিখ "</string>
+    <string name="small_group_filter_label">"ছোট গ্রুপ দ্বারা ফিল্টার: "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
     <string name="view_summary">সারসংক্ষেপ দেখুন</string>
     <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">যেহেতু আপনি সমস্ত কাজ সম্পন্ন করেছেন, অনুগ্রহ করে কার্যকলাপটি সম্পূর্ণ করুন।</string>
     <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*কার্যকলাপ সম্পূর্ণ করার পরে, আপনি ডাটা এডিট করতে করতে পারবেন না।</string>
+
+    <string name="all_tab_title">সব</string>
+    <string name="questions_data_tab_title">প্রশ্ন</string>
+    <string name="section_information_tab_title">বিভাগসমূহ</string>
+    <string name="village_filter_label">"গ্রাম অনুসারে ফিল্টার করুন: "</string>
+    <string name="empty_task_list_placeholder">এই কার্যকলাপের জন্য কোন টাস্ক পাওয়া যায়নি!</string>
+    <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
+    <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
+    <string name="proceed">এগিয়ে যান</string>
+    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
 </resources>

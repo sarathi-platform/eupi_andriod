@@ -55,6 +55,7 @@ import com.nudge.core.ui.theme.redDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.surveymanager.R
 import java.io.File
 
@@ -69,6 +70,9 @@ fun SingleImageComponent(
     filePaths: String,
     fileNamePrefix: String,
     subtitle: String? = null,
+    isFromTypeQuestion: Boolean = true,
+    content: List<ContentList?>? = listOf(),
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onImageSelection: (selectValue: String, isDeleted: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -101,48 +105,51 @@ fun SingleImageComponent(
     Column(modifier = Modifier.padding(bottom = dimen_30_dp, start = dimen_5_dp)) {
         if (title.isNotBlank()) {
             QuestionComponent(
+                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
+                onDetailIconClicked = { onDetailIconClicked() },
                 title = title,
                 isRequiredField = isMandatory,
-                subTitle = subtitle ?: "Signed & Sealed Physical Format D"
+                subTitle = BLANK_STRING
             )
         }
 
         BoxWithConstraints(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .height(dimen_300_dp)
         ) {
             Box(
                 modifier =
-                        boxModifier
-                            .clickable(
-                                enabled = isEditable
-                            ) {
+                boxModifier
+                    .clickable(
+                        enabled = isEditable
+                    ) {
 
-                                requestCameraPermission(context as Activity) {
-                                    shouldRequestPermission.value = it
+                        requestCameraPermission(context as Activity) {
+                            shouldRequestPermission.value = it
 
-                                    if (!it) {
-                                        currentImageUri = getSingleImageUri(
-                                            context, "${fileNamePrefix}${
-                                                System.currentTimeMillis()
-                                            }.png",
-                                            true
-                                        )
+                            if (!it) {
+                                currentImageUri = getSingleImageUri(
+                                    context, "${fileNamePrefix}${
+                                        System.currentTimeMillis()
+                                    }.png",
+                                    true
+                                )
 
-                                        cameraLauncher.launch(
-                                            currentImageUri
-                                        )
-                                    }
-                                }
-
-
+                                cameraLauncher.launch(
+                                    currentImageUri
+                                )
                             }
-                            .background(white)
-                            .dottedBorder(
-                                dotSpacing = 16f,
-                                dotRadius = 6f,
-                                dotColor = dotedBorderColor
-                            ),
+                        }
+
+
+                    }
+                    .background(white)
+                    .dottedBorder(
+                        dotSpacing = 16f,
+                        dotRadius = 6f,
+                        dotColor = dotedBorderColor
+                    ),
                         contentAlignment = Alignment.Center
                     ) {
 
@@ -155,7 +162,8 @@ fun SingleImageComponent(
                         }else
                         {
                             Box(
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier
+                                    .fillMaxSize()
                                     .height(dimen_150_dp)
                                     .padding(dimen_5_dp)
                             ) {
@@ -175,8 +183,11 @@ fun SingleImageComponent(
                                         .padding(dimen_10_dp)
                                         .align(Alignment.BottomEnd)
                                         .clickable(enabled = isEditable) {
-                                            image=null
-                                            onImageSelection(currentImageUri?.path ?: BLANK_STRING, true)
+                                            image = null
+                                            onImageSelection(
+                                                currentImageUri?.path ?: BLANK_STRING,
+                                                true
+                                            )
                                         }
                                         .size(dimen_24_dp),
                                     colorFilter = ColorFilter.tint(redDark)

@@ -277,10 +277,11 @@ fun EventTypeCard(
                         onClick = {
                             onSyncButtonClick()
                         },
-                        colors = if (producerProgress != 1.0f) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
-                            languageItemInActiveBorderBg
-                        ),
-                        enabled = if (producerProgress != 1.0f) true else false,
+                        colors = if (producerProgress != 1.0f && isWorkerInfoState != WorkInfo.State.RUNNING.name) ButtonDefaults.buttonColors(
+                            blueDark
+                        ) else ButtonDefaults.buttonColors(
+                            languageItemInActiveBorderBg) ,
+                        enabled = producerProgress != 1.0f && isWorkerInfoState != WorkInfo.State.RUNNING.name,
                         modifier = Modifier
                             .padding(top = dimen_10_dp)
                             .constrainAs(syncButton) {

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nudge.core.CoreDispatchers
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.presentation.auditTrailDetail
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
@@ -120,7 +121,7 @@ fun ActivityReopeningScreen(
                             onClick = {
                                 viewModel.reopenActivities { success ->
                                     if (success) {
-                                        showCustomToast(context, "Activities marked In Progress")
+                                        showCustomToast(context, context.getString(R.string.activity_inprogress))
                                         navController.navigateUp()
                                         auditTrailDetail(viewModel.auditTrailUseCase,context.getString(
                                         R.string.audit_trail_action,"Activities marked In Progress"))

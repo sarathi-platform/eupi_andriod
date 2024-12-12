@@ -93,6 +93,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DescriptionContentState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.calculateProgress
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.navigateToQuestionScreen
 import com.nudge.navigationmanager.graphs.navigateToSearchScreen
@@ -399,11 +400,12 @@ fun SectionListScreen(
 
                         item {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                linearProgress.value =
-                                    (sectionsList.filter { it.sectionStatus == SectionStatus.COMPLETED }.size.toFloat()
-                                            /*.coerceIn(0.0F, 1.0F)*/ / if (sectionsList.isNotEmpty()) sectionsList.size.toFloat() else 0.0F
-                                            /*.coerceIn(0.0F, 1.0F)*/)
+                                linearProgress.value = calculateProgress(
+                                    pendingCount = sectionsList.filter { it.sectionStatus == SectionStatus.COMPLETED }.size,
+                                    totalCount = sectionsList.size
+                                )
                                 LinearProgressIndicator(
+                                    progress = linearProgress.value,
                                     modifier = Modifier
                                         .weight(1f)
                                         .height(dimen_8_dp)
@@ -411,7 +413,6 @@ fun SectionListScreen(
                                         .clip(RoundedCornerShape(14.dp)),
                                     color = progressIndicatorColor,
                                     trackColor = trackColor,
-                                    progress = linearProgress.value
                                 )
                                 Spacer(modifier = Modifier.width(dimen_8_dp))
                                 androidx.compose.material3.Text(

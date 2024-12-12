@@ -31,19 +31,25 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.MASKED_CHAR
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultCardElevation
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
@@ -63,6 +69,7 @@ fun FormResponseCard(
     surveyConfig: Map<String, List<SurveyCardModel>>,
     isPictureRequired: Boolean = true,
     isEditAllowed: Boolean = true,
+    secretKeyPass: String,
     onDelete: (referenceId: Pair<String, Int>) -> Unit,
     onUpdate: (referenceId: Pair<String, Int>) -> Unit
 ) {
@@ -130,6 +137,8 @@ fun FormResponseCard(
                         }.forEach { surveyCardModel ->
                             SubContainerView(
                                 surveyCardModel,
+                                labelStyle = newMediumTextStyle.copy(fontWeight = FontWeight.Medium),
+                                valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
                                 isNumberFormattingRequired = false
                             )
                         }
@@ -139,11 +148,14 @@ fun FormResponseCard(
                             val response =
                                 getSavedAnswerValueForSummaryField(
                                     surveyAnswerFormSummaryUiModelList,
-                                    map.entries.firstOrNull()!!
+                                    map.entries.firstOrNull(),
+                                    secretKeyPass
                                 )
                                 if (response != BLANK_STRING) {
                                     SubContainerView(
                                         surveyCardModel.copy(value = response),
+                                        labelStyle = newMediumTextStyle.copy(fontWeight = FontWeight.Medium),
+                                        valueStyle = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
                                         isNumberFormattingRequired = false
                                     )
                                 }
@@ -244,11 +256,12 @@ fun getFormSummaryCardImageUri(
 @Composable
 private fun getSavedAnswerValueForSummaryField(
     surveyAnswerFormSummaryUiModelList: List<SurveyAnswerFormSummaryUiModel>,
-    mapEntry: Map.Entry<String, SurveyCardModel>
+    mapEntry: Map.Entry<String, SurveyCardModel>?,
+    secretKeyPass: String
 ): String {
     var response = BLANK_STRING
     val question = surveyAnswerFormSummaryUiModelList
-        .find { it.tagId.contains(mapEntry.value.tagId) }
+        .find { it.tagId.contains(mapEntry?.value?.tagId) }
     val optionsUiModelList =
         question?.optionItems
             ?.filter { it.isSelected == true }
@@ -258,7 +271,7 @@ private fun getSavedAnswerValueForSummaryField(
     }
 
     if (optionsUiModelList.size == 1) {
-        response = getResponseForSingleOptions(optionsUiModelList, question)
+        response = getResponseForSingleOptions(optionsUiModelList, question, secretKeyPass)
     } else {
         response = optionsUiModelList.map { it.description }.value().joinToString(PIPE_DELIMITER)
 
@@ -270,6 +283,7 @@ private fun getSavedAnswerValueForSummaryField(
 private fun getResponseForSingleOptions(
     optionsUiModelList: List<OptionsUiModel>,
     question: SurveyAnswerFormSummaryUiModel,
+    secretKeyPass: String
 ): String {
     var response = BLANK_STRING
     val firstItem = optionsUiModelList.firstOrNull()
@@ -288,7 +302,11 @@ private fun getResponseForSingleOptions(
             question.questionType.value(true)
         )
     ) {
-        response = firstItem?.selectedValue.value()
+        response = checkAndGetMaskedResponseForEncryptedValue(
+            firstItem?.selectedValue.value(),
+            question,
+            secretKeyPass
+        )
     }
 
     if (QuestionType.multipleResponseQuestionTypeQuestions.contains(question.questionType.value(true))) {
@@ -303,5 +321,24 @@ private fun getResponseForSingleOptions(
 
     }
     return response
+}
+
+fun checkAndGetMaskedResponseForEncryptedValue(
+    value: String,
+    question: SurveyAnswerFormSummaryUiModel,
+    secretKeyPass: String
+): String {
+    return if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) {
+        with(value) {
+            var responseValue = this
+            responseValue = AESHelper.decrypt(this, secretKeyPass)
+            if (responseValue.length > 4)
+                (MASKED_CHAR.repeat(responseValue.length - 4) + responseValue.takeLast(4))
+            else
+                responseValue
+        }
+    } else {
+        value
+    }
 }
 

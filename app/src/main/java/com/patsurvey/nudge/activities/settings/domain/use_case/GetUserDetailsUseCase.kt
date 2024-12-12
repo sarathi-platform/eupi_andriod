@@ -25,4 +25,6 @@ class GetUserDetailsUseCase(
 
     fun  isAuditTrailEnable() = repository .isAuditTrailEnable()
 
+    fun getStateId() = repository.getStateId()
+
 }
