@@ -38,7 +38,6 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Divider
@@ -86,26 +85,32 @@ import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.borderGreen
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
+import com.nudge.core.ui.theme.dimen_15_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.h6Bold
 import com.nudge.core.ui.theme.incomeCardBorderColor
-import com.nudge.core.ui.theme.lightGreenOnline
+import com.nudge.core.ui.theme.lightGreen
 import com.nudge.core.ui.theme.newBoldTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.taskCompletionBannerBgColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
@@ -536,20 +541,19 @@ private fun EventView(
     val bordercolor = remember { Animatable(Color.White) }
     LaunchedEffect(Unit) {
         launch {
-            bordercolor.animateTo(greenOnline, animationSpec = tween(1000))
-            bordercolor.animateTo(Color.White, animationSpec = tween(1000))
+            bordercolor.animateTo(borderGreen, animationSpec = tween(2000))
+            bordercolor.animateTo(Color.White, animationSpec = tween(2000))
         }
         launch {
-            backgroundcolor.animateTo(lightGreenOnline, animationSpec = tween(1000))
-            backgroundcolor.animateTo(Color.White, animationSpec = tween(1000))
+            backgroundcolor.animateTo(lightGreen, animationSpec = tween(2000))
+            backgroundcolor.animateTo(Color.White, animationSpec = tween(2000))
         }
 
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimen_10_dp), modifier = Modifier
+        verticalArrangement = Arrangement.spacedBy(dimen_5_dp), modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = dimen_10_dp)
     ) {
 
         itemsIndexed(
@@ -562,8 +566,16 @@ private fun EventView(
                 if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) bordercolor.value else white
             Box(
                 Modifier
-                    .background(color = highlightedBackgroundColor)
-                    .border(width = 2.dp, color = highlightedBorderColor)
+                    .background(
+                        color = highlightedBackgroundColor,
+                        shape = RoundedCornerShape(dimen_6_dp)
+                    )
+                    .border(
+                        width = dimen_1_dp,
+                        color = highlightedBorderColor,
+                        shape = RoundedCornerShape(dimen_6_dp)
+                    )
+                    .padding(horizontal = dimen_8_dp, vertical = dimen_5_dp)
             ) {
                 Column {
                     EventHeader(
@@ -584,6 +596,7 @@ private fun EventView(
                     if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
                         Divider(thickness = dimen_1_dp, color = borderGreyLight)
                     }
+                    CustomVerticalSpacer(size = dimen_8_dp)
                 }
             }
         }
@@ -598,6 +611,12 @@ private fun EventView(
                     filteredSubjectLivelihoodEventSummaryUiModelList.toList().drop(
                         DEFAULT_EVENT_LIST_VIEW_SIZE
                     ).forEachIndexed { index, subjectLivelihoodEventSummaryUiModel ->
+                        Box(
+                            Modifier
+                                .background(color = white)
+                                .border(width = dimen_1_dp, color = white)
+                                .padding(horizontal = dimen_8_dp, vertical = dimen_10_dp)
+                        ) {
                         Column {
                             EventHeader(
                                 subjectLivelihoodEventSummaryUiModel,
@@ -615,8 +634,12 @@ private fun EventView(
                                 })
                             CustomVerticalSpacer(size = dimen_5_dp)
                             Divider(thickness = dimen_1_dp, color = borderGreyLight)
+
                         }
-                    }
+                        }
+
+
+                }
                 }
             }
         }
@@ -664,7 +687,9 @@ private fun EventHeader(
     livelihoodEventUiModels: List<LivelihoodEventUiModel>?
 ) {
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = dimen_8_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row {
@@ -680,7 +705,7 @@ private fun EventHeader(
         }
         StrikethroughText(
             text = item.date.getDate(pattern = DD_mmm_YY_FORMAT),
-            textStyle = getTextColor(smallTextStyle, color = eventTextColor),
+            textStyle = getTextColor(smallTextStyle, color = blueDark),
             isStrikethrough = item.isEventNotActive()
         )
     }
@@ -692,7 +717,9 @@ private fun EventDetails(
     onClick: () -> Unit
 ) {
     Row(
-        Modifier.fillMaxWidth(),
+        Modifier
+            .fillMaxWidth()
+            .padding(bottom = dimen_8_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         item.transactionAmount?.let {
@@ -839,7 +866,7 @@ fun TaskCompletionTrigger(onComplete: () -> Unit) {
 fun TaskCompletionMessage(
     message: String,
     onDismiss: () -> Unit,
-    durationMillis: Int = 3000
+    durationMillis: Int = 4000
 ) {
     var startAnimation by remember { mutableStateOf(false) }
     val animationOffset = animateIntOffsetAsState(
@@ -864,11 +891,14 @@ fun TaskCompletionMessage(
 
         Box(
             modifier = Modifier
-                .padding(horizontal = 10.dp)
+                .padding(horizontal = dimen_10_dp)
                 .fillMaxWidth()
                 .offset { animationOffset.value }
-                .background(color = greenOnline, shape = RoundedCornerShape(15.dp))
-                .padding(all = 15.dp),
+                .background(
+                    color = taskCompletionBannerBgColor,
+                    shape = RoundedCornerShape(dimen_5_dp)
+                )
+                .padding(all = dimen_15_dp),
             contentAlignment = Alignment.Center
         ) {
             Row(
@@ -876,16 +906,16 @@ fun TaskCompletionMessage(
                 horizontalArrangement = Arrangement.Center
             ) {
                 Icon(
-                    Icons.Filled.CheckCircle,
-                    "Tick icon",
-                    tint = white,
-                    modifier = Modifier.padding(horizontal = 10.dp)
+                    painter = painterResource(id = R.drawable.ic_check_circle),
+                    tint = Color.White,
+                    contentDescription = "Completed tick",
+                    modifier = Modifier.padding(horizontal = dimen_10_dp)
                 )
                 Text(
                     text = message,
                     modifier = Modifier
                         .wrapContentSize(),
-                    style = defaultTextStyle
+                    style = h6Bold
                 )
             }
         }
