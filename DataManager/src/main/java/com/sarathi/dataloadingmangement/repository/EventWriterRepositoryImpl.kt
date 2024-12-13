@@ -3,6 +3,10 @@ package com.sarathi.dataloadingmangement.repository
 import android.content.Context
 import android.net.Uri
 import com.nudge.core.EventSyncStatus
+import com.nudge.core.LIVELIHOOD_ORDER
+import com.nudge.core.LIVELIHOOD_TYPE
+import com.nudge.core.MISSION_ID
+import com.nudge.core.MISSION_TYPE
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -198,7 +202,7 @@ class EventWriterRepositoryImpl @Inject constructor(
 
     private fun getMissionId(requestPayload: String): Int {
         val jsonObject = JSONObject(requestPayload)
-        return jsonObject.optInt("missionId", 0)
+        return jsonObject.optInt(MISSION_ID, 0)
     }
 
     private fun getMissionConfig(missionId: Int): Map<String, Any> {
@@ -215,10 +219,10 @@ class EventWriterRepositoryImpl @Inject constructor(
             return emptyMap()
         }
         return hashMapOf<String, Any>().apply {
-            put("missionType", missionLivelihoodType)
+            put(MISSION_TYPE, missionLivelihoodType)
             missionLivelihood?.let {
-                put("livelihoodOrder", "${it.livelihoodOrder}")
-                put("livelihoodType", it.livelihoodType)
+                put(LIVELIHOOD_ORDER, "${it.livelihoodOrder}")
+                put(LIVELIHOOD_TYPE, it.livelihoodType)
             }
         }
     }
