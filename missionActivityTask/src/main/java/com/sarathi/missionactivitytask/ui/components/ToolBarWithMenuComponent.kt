@@ -99,7 +99,9 @@ fun ToolBarWithMenuComponent(
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = subTitle,
-                                    style = defaultTextStyle.copy(color = subTitleColorId)
+                                    style = defaultTextStyle.copy(color = subTitleColorId),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis  // This will add an ellipsis if the text exceeds the width
                                 )
                             }
                         }

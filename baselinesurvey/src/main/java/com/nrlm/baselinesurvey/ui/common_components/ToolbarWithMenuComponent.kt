@@ -27,10 +27,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.mediumTextStyle
@@ -103,7 +103,9 @@ fun ToolbarWithMenuComponent(
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
                                     text = subTitle,
-                                    style = defaultTextStyle.copy(color = subTitleColorId)
+                                    style = defaultTextStyle.copy(color = subTitleColorId),
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis  // This will add an ellipsis if the text exceeds the width
                                 )
                             }
                         }
