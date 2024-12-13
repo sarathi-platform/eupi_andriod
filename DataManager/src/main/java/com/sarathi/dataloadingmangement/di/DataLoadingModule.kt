@@ -775,7 +775,9 @@ class DataLoadingModule {
         eventDependencyDao: EventDependencyDao,
         coreSharedPrefs: CoreSharedPrefs,
         eventStatusDao: EventStatusDao,
-        imageStatusDao: ImageStatusDao
+        imageStatusDao: ImageStatusDao,
+        missionConfigEntityDao: MissionConfigEntityDao,
+        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
 
     ): IEventWriterRepository {
         return EventWriterRepositoryImpl(
@@ -784,7 +786,9 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             context = context,
             eventStatusDao = eventStatusDao,
-            imageStatusDao = imageStatusDao
+            imageStatusDao = imageStatusDao,
+            missionConfigEntityDao = missionConfigEntityDao,
+            livelihoodConfigEntityDao = livelihoodConfigEntityDao
         )
     }
 

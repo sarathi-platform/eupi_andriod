@@ -18,10 +18,13 @@ import com.nudge.core.eventswriter.IEventFormatter
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.MetadataDto
+import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
@@ -39,6 +42,7 @@ import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveAssetJour
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveLivelihoodEventDto
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveMoneyJournalEventDto
 import dagger.hilt.android.qualifiers.ApplicationContext
+import org.json.JSONObject
 import javax.inject.Inject
 
 class EventWriterRepositoryImpl @Inject constructor(
@@ -47,7 +51,9 @@ class EventWriterRepositoryImpl @Inject constructor(
     private val eventDependencyDao: EventDependencyDao,
     val coreSharedPrefs: CoreSharedPrefs,
     private val eventStatusDao: EventStatusDao,
-    private val imageStatusDao: ImageStatusDao
+    private val imageStatusDao: ImageStatusDao,
+    private val missionConfigEntityDao: MissionConfigEntityDao,
+    private val livelihoodConfigEntityDao: LivelihoodConfigEntityDao
 ) :
     IEventWriterRepository {
     override suspend fun <T> createAndSaveEvent(
@@ -147,12 +153,12 @@ class EventWriterRepositoryImpl @Inject constructor(
 
 
             else -> {
-                requestPayload = ""
+                requestPayload = BLANK_STRING
             }
 
 
         }
-        val event = Events(
+        var event = Events(
             name = eventName.name,
             type = eventName.topicName,
             createdBy = coreSharedPrefs.getUserName(),
@@ -169,8 +175,54 @@ class EventWriterRepositoryImpl @Inject constructor(
                 parentEntity = emptyMap()
             ).json()
         )
+        event = applyMetaDataChanges(
+            event = event,
+            getMissionConfig(getMissionId(requestPayload = requestPayload))
+        )
         return event
     }
+
+
+    private fun applyMetaDataChanges(event: Events, dataMap: Map<String, Any>): Events {
+        if (dataMap.isEmpty() || event.request_payload.isNullOrEmpty()) {
+            return event
+        }
+        val metadata = event.metadata?.getMetaDataDtoFromString()?.let { metadataDto ->
+            val updatedData = metadataDto.data.toMutableMap().apply {
+                putAll(dataMap)
+            }
+            metadataDto.copy(data = updatedData)
+        }
+        return event.copy(metadata = metadata?.json())
+    }
+
+    private fun getMissionId(requestPayload: String): Int {
+        val jsonObject = JSONObject(requestPayload)
+        return jsonObject.optInt("missionId", 0)
+    }
+
+    private fun getMissionConfig(missionId: Int): Map<String, Any> {
+        if (missionId == 0) return emptyMap()
+        val userId = coreSharedPrefs.getUniqueUserIdentifier()
+        val languageCode = coreSharedPrefs.getSelectedLanguageCode()
+        val missionLivelihoodType = missionConfigEntityDao.getMissionConfigLivelihood(
+            missionId = missionId, uniqueUserIdentifier = userId
+        )
+        val missionLivelihood = livelihoodConfigEntityDao.getLivelihoodConfigForMission(
+            missionId = missionId, uniqueUserIdentifier = userId, language = languageCode
+        )
+        if (missionLivelihoodType.isNullOrEmpty() || missionLivelihood?.livelihoodType.isNullOrEmpty()) {
+            return emptyMap()
+        }
+        return hashMapOf<String, Any>().apply {
+            put("missionType", missionLivelihoodType)
+            missionLivelihood?.let {
+                put("livelihoodOrder", "${it.livelihoodOrder}")
+                put("livelihoodType", it.livelihoodType)
+            }
+        }
+    }
+
 
     override suspend fun saveEventToMultipleSources(
         event: Events,
