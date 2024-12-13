@@ -20,7 +20,7 @@ data class LivelihoodConfigEntity(
     var missionType: String,
     var livelihoodType: String,
     var livelihoodOrder: Int,
-    var languageId: String
+    var languageCode: String
 ) {
     companion object {
 
@@ -38,7 +38,7 @@ data class LivelihoodConfigEntity(
                 missionType = missionType,
                 livelihoodType = livelihoodType,
                 livelihoodOrder = livelihoodOrder,
-                languageId = languageId ?: "en",
+                languageCode = languageId ?: "en",
                 userId = userId
             )
         }

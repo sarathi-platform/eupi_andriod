@@ -116,7 +116,7 @@ class MissionRepositoryImpl @Inject constructor(
                     missionOrder = mission.order ?: 1
                 )
             }
-            if (mission.missionConfig != null) {
+            mission.missionConfig?.let {
                 deleteMissionConfig(missionId = mission.id)
                 saveMissionConfig(
                     missionId = mission.id,
@@ -124,6 +124,7 @@ class MissionRepositoryImpl @Inject constructor(
                     missionConfig = mission.missionConfig
                 )
             }
+
             deleteContentConfig(mission.id, ContentCategoryEnum.MISSION.ordinal)
             saveContentConfig(
                 mission.id,
@@ -616,16 +617,14 @@ class MissionRepositoryImpl @Inject constructor(
         )
         missionConfig.livelihoodConfig?.let { livelihoodList ->
             deleteLivelihoodConfig(missionId = missionId)
-            val livelihoodEntities = livelihoodList.flatMap { livelihood ->
-                listOf(
-                    LivelihoodConfigEntity.getLivelihoodConfigEntity(
-                        missionId = missionId,
-                        missionType = missionConfig.missionType ?: BLANK_STRING,
-                        livelihoodType = livelihood?.livelihoodType ?: BLANK_STRING,
-                        livelihoodOrder = livelihood?.livelihoodOrder ?: 0,
-                        languageId = livelihood?.languageCode ?: BLANK_STRING,
-                        userId = userId
-                    )
+            val livelihoodEntities = livelihoodList.map { livelihood ->
+                LivelihoodConfigEntity.getLivelihoodConfigEntity(
+                    missionId = missionId,
+                    missionType = missionConfig.missionType ?: BLANK_STRING,
+                    livelihoodType = livelihood?.livelihoodType ?: BLANK_STRING,
+                    livelihoodOrder = livelihood?.livelihoodOrder ?: 0,
+                    languageId = livelihood?.languageCode ?: BLANK_STRING,
+                    userId = userId
                 )
             }
             livelihoodConfigEntityDao.insertLivelihoodConfigs(livelihoodEntities)

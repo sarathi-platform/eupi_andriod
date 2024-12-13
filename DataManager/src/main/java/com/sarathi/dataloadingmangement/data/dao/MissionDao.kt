@@ -30,7 +30,7 @@ interface MissionDao {
                 "\n" +
                 "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
                 "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
-                "left join livelihood_config_table on mission_table.missionId = livelihood_config_table.missionId and livelihood_config_table.userId=:userId and livelihood_config_table.languageId=:languageCode\n" +
+                "left join livelihood_config_table on mission_table.missionId = livelihood_config_table.missionId and livelihood_config_table.userId=:userId and livelihood_config_table.languageCode=:languageCode\n" +
                 " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId and activity_table.userId=:userId and mission_language_table.userId=:userId " +
                 "group by mission_table.missionId \n" +
                 "ORDER BY mission_table.missionOrder ASC"

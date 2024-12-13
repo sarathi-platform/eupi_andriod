@@ -5,7 +5,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.revamp.LivelihoodConf
 
 data class MissionConfig(
     @SerializedName("content")
-    val contents: List<ContentResponse>,
+    val contents: List<ContentResponse>?,
     @SerializedName("missionType")
     val missionType: String?,
     @SerializedName("livelihoodConfig")

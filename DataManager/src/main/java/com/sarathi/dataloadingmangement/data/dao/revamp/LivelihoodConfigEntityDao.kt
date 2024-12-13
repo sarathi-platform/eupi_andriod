@@ -9,18 +9,16 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEnt
 
 @Dao
 interface LivelihoodConfigEntityDao {
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertLivelihoodConfig(livelihoodConfigEntity: LivelihoodConfigEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLivelihoodConfigs(livelihoodConfigEntities: List<LivelihoodConfigEntity>)
 
-    @Query("SELECT * FROM $LIVELIHOOD_CONFIG_TABLE_NAME WHERE missionId = :missionId AND userId = :uniqueUserIdentifier AND languageId = :language")
+    @Query("SELECT * FROM $LIVELIHOOD_CONFIG_TABLE_NAME WHERE missionId = :missionId AND userId = :uniqueUserIdentifier AND languageCode = :language")
     fun getLivelihoodConfigForMission(
         missionId: Int,
         uniqueUserIdentifier: String,
         language: String
-    ): List<LivelihoodConfigEntity>
+    ): LivelihoodConfigEntity?
 
     @Query("Delete from $LIVELIHOOD_CONFIG_TABLE_NAME where  missionId=:missionId and userId=:uniqueUserIdentifier")
     fun deleteLivelihoodConfig(

@@ -18,6 +18,14 @@ interface MissionConfigEntityDao {
         uniqueUserIdentifier: String
     )
 
+    @Query("select missionType from $MISSION_CONFIG_TABLE_NAME where  missionId=:missionId and userId=:uniqueUserIdentifier")
+    fun getMissionConfigLivelihood(
+        missionId: Int,
+        uniqueUserIdentifier: String
+    ): String?
+
+
+
     @Query("Delete from $MISSION_CONFIG_TABLE_NAME where userId=:uniqueUserIdentifier")
     fun deleteMissionConfigForUser(
         uniqueUserIdentifier: String

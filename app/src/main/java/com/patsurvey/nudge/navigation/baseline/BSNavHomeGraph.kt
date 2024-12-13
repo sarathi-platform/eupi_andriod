@@ -281,11 +281,11 @@ fun NavGraphBuilder.BSNavHomeGraph(navController: NavHostController) {
             SurveyeeListScreen(
                 viewModel = hiltViewModel(),
                 navController = navController,
-                activityName = "",
+                activityName = BLANK_STRING,
                 missionId = 0,
-                activityDate = "",
+                activityDate = BLANK_STRING,
                 activityId = 0,
-                missionSubTitle = ""
+                missionSubTitle = BLANK_STRING
             )
         }
         composable(
