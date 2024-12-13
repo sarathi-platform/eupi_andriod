@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.data.database
 
 import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
+import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
@@ -248,7 +249,13 @@ object MigrationQueries {
         "ALTER TABLE $QUESTION_TABLE ADD COLUMN formOrder INTEGER DEFAULT 0  NOT NULL"
 
     val ALTER_QUESTION_TABLE_ADD_FORM_CONTENT =
-        "ALTER TABLE $QUESTION_TABLE ADD COLUMN formContents TEXT NOT NULL"
+        "ALTER TABLE $QUESTION_TABLE ADD COLUMN formContents TEXT NOT NULL DEFAULT ''"
+
+    val ALTER_MISSION_TABLE_ADD_MISSION_ORDER =
+        "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN missionOrder INTEGER DEFAULT 1 NOT NULL"
+
+    val ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER =
+        "ALTER TABLE $ACTIVITY_TABLE_NAME ADD COLUMN activityOrder INTEGER DEFAULT 1 NOT NULL"
 
     val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
 }

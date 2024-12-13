@@ -111,7 +111,6 @@ class ExportImportViewModel @Inject constructor(
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
-    private val userUniqueKey = mutableStateOf(BLANK_STRING)
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
@@ -493,7 +492,8 @@ class ExportImportViewModel @Inject constructor(
                 compareBy(
                     { it.subjectId },   // First, sort by subjectId
                     { it.sectionId },   // Then, sort by sectionId
-                    { it.formOder },
+                    { it.formOder },    // Then, sort by formOder
+                    { it.referenceId }, // Then, sort by referenceId
                     { it.orderId }// Finally, sort by sortKey
                 )
             )

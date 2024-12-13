@@ -32,7 +32,7 @@ fun SubContainerView(
     Row(
         modifier = Modifier
             .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.Top
     ) {
 
         if (!TextUtils.isEmpty(surveyCard?.label)) {

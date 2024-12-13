@@ -104,8 +104,9 @@ class MissionRepositoryImpl @Inject constructor(
                 )
             } else {
                 missionDao.updateMissionActiveStatus(
-                    mission.id,
-                    sharedPrefs.getUniqueUserIdentifier()
+                    missionId = mission.id,
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    missionOrder = mission.order ?: 1
                 )
             }
             deleteContentConfig(mission.id, ContentCategoryEnum.MISSION.ordinal)
@@ -188,7 +189,8 @@ class MissionRepositoryImpl @Inject constructor(
                         missionId = missionId,
                         userId = sharedPrefs.getUniqueUserIdentifier(),
                         isActive = 1,
-                        activityId = missionActivityModel.id
+                        activityId = missionActivityModel.id,
+                        order = missionActivityModel.order ?: 1
                     )
                 }
 
@@ -550,6 +552,16 @@ class MissionRepositoryImpl @Inject constructor(
         return activityConfigDao.getActivityType(
             missionId = missionId,
             userId = sharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    override suspend fun saveActivityOrderStatus(missionId: Int, activityId: Int, order: Int) {
+        missionActivityDao.updateActivityActiveStatus(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            isActive = 1,
+            activityId = activityId,
+            order = order
         )
     }
 

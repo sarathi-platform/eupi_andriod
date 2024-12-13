@@ -291,7 +291,11 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 if (userType == UPCM_USER) {
-                    getSummaryFile()?.let { fileAndDbZipList.add(it) }
+                    getSummaryFile()?.let {
+                        if (it.second != Uri.EMPTY) {
+                            fileAndDbZipList.add(it)
+                        }
+                    }
                 }
 
                 val zipFileName = generateZipFileName()
@@ -546,7 +550,10 @@ class SettingBSViewModel @Inject constructor(
             userId = prefBSRepo.getUniqueUserIdentifier(),
             mobileNo = getUserMobileNumber(),
             fileNameWithoutExtension = summaryFileNameWithoutExtension,
-            fileNameWithExtension = summaryFileNameWithExtension
+            fileNameWithExtension = summaryFileNameWithExtension,
+            isBaselineV2 = settingBSUserCase.baselineV1CheckUseCase.isBaselineV2(
+                stateId = settingBSUserCase.getUserDetailsUseCase.getStateId().toString()
+            )
         )
     }
 
