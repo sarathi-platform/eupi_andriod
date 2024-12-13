@@ -100,6 +100,8 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
             sourceTargetQuestionMappingEntityDao().deleteSourceTargetQuestionMappingForUser(userId)
             surveyConfigEntityDao().deleteSurveyConfigForUser(userId)
             conditionsEntityDao().clearAllConditionsForUser(userId)
+            missionConfigEntityDao().deleteMissionConfigForUser(userId)
+            livelihoodConfigEntityDao().deleteLivelihoodConfigForUser(userId)
         }
     }
 }
