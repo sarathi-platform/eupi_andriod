@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
 import android.text.TextUtils
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -77,6 +78,14 @@ fun AddEventScreen(
     LaunchedEffect(Unit) {
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
     }
+    BackHandler {
+        popBackToPreviousScreen(
+            navController,
+            viewModel,
+            message = BLANK_STRING,
+            transactionId = BLANK_STRING
+        )
+    }
     val context = LocalContext.current
 
 
@@ -102,7 +111,14 @@ fun AddEventScreen(
         title = if (showDeleteButton) stringResource(R.string.edit_event) else stringResource(R.string.add_event),
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.popBackStack() },
+        onBackIconClick = {
+            popBackToPreviousScreen(
+                navController,
+                viewModel,
+                message = BLANK_STRING,
+                transactionId = BLANK_STRING
+            )
+        },
         onSearchValueChange = {},
         onBottomUI = {
 
