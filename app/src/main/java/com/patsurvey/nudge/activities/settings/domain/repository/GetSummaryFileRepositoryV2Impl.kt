@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.settings.domain.repository
 
 import android.net.Uri
-import com.nudge.core.BASELINE_MISSION_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.model.SummaryFileDto
 import com.nudge.core.preference.CoreSharedPrefs
@@ -40,9 +39,9 @@ class GetSummaryFileRepositoryV2Impl @Inject constructor(
         )
     }
 
-    override suspend fun getBaselineMissionForUser(userId: String): MissionUiModel? {
+    override suspend fun getMissionForUser(userId: String): List<MissionUiModel> {
         return missionDao.getMissions(userId, DEFAULT_LANGUAGE_CODE)
-            .find { it.description == BASELINE_MISSION_NAME }
+
     }
 
     override fun deleteOldSummaryFile(

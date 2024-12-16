@@ -48,13 +48,22 @@ class GetSummaryFileUseCase @Inject constructor(
         fileNameWithExtension: String,
         fileNameWithoutExtension: String
     ): Pair<String, Uri?>? {
-        val mission = getSummaryFileRepositoryV2.getBaselineMissionForUser(userId)
-        mission?.missionId?.let {
-            val activities = getSummaryFileRepositoryV2.getActivitiesForUser(it)
+        val mission = getSummaryFileRepositoryV2.getMissionForUser(userId)
+        mission.forEach {
+            content.add(
+                SummaryFileDto(
+                    it.description,
+                    BLANK_STRING
+                )
+            )
+            val activities = getSummaryFileRepositoryV2.getActivitiesForUser(it.missionId)
 
             activities.forEach { activity ->
                 val taskForActivity =
-                    getSummaryFileRepositoryV2.getTaskSummaryByStatus(it, activity.activityId)
+                    getSummaryFileRepositoryV2.getTaskSummaryByStatus(
+                        it.missionId,
+                        activity.activityId
+                    )
 
                 content.add(
                     SummaryFileDto(
@@ -68,13 +77,14 @@ class GetSummaryFileUseCase @Inject constructor(
 
             getSummaryFileRepositoryV2.deleteOldSummaryFile(mobileNo, fileNameWithExtension)
 
-            return getSummaryFileRepositoryV2.writeFileForTheSummaryData(
-                mobileNo,
-                fileNameWithoutExtension,
-                fileNameWithExtension,
-                content
-            )
-        } ?: return Pair(fileNameWithoutExtension, Uri.EMPTY)
+        }
+
+        return getSummaryFileRepositoryV2.writeFileForTheSummaryData(
+            mobileNo,
+            fileNameWithoutExtension,
+            fileNameWithExtension,
+            content
+        )
     }
 
     private suspend fun writeFileForBaselineV1(

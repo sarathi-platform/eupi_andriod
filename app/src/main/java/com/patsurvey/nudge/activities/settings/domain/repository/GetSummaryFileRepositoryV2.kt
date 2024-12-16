@@ -14,7 +14,7 @@ interface GetSummaryFileRepositoryV2 {
 
     suspend fun getActivitiesForUser(missionId: Int): List<ActivityUiModel>
 
-    suspend fun getBaselineMissionForUser(userId: String): MissionUiModel?
+    suspend fun getMissionForUser(userId: String): List<MissionUiModel>
 
     fun deleteOldSummaryFile(
         mobileNo: String,
