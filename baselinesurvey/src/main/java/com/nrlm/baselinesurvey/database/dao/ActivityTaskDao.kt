@@ -8,8 +8,9 @@ import androidx.room.Query
 import androidx.room.Transaction
 import com.nrlm.baselinesurvey.TASK_TABLE_NAME
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
-import com.nrlm.baselinesurvey.model.datamodel.SummaryFileDto
 import com.nrlm.baselinesurvey.utils.states.SurveyState
+import com.nudge.core.model.SummaryFileDto
+
 
 @Dao
 interface ActivityTaskDao {

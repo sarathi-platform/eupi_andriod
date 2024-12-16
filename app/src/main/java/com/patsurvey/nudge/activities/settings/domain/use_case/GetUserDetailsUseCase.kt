@@ -23,4 +23,6 @@ class GetUserDetailsUseCase(
 
     fun isSyncEnable() = repository.isSyncEnable()
 
+    fun getStateId() = repository.getStateId()
+
 }

@@ -22,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.formatProgressNumber
 import com.nudge.core.calculateProgress
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
