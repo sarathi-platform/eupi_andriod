@@ -79,7 +79,7 @@ class DataSummaryScreenViewModel @Inject constructor(
         mutableStateMapOf()
     val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
-    private val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
+    val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
 
     val eventsSubFilterList: List<ValuesDto> =
@@ -98,7 +98,8 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     private val _dateRangeFilter: MutableState<Pair<Long, Long>> = mutableStateOf(
         Pair(
-            getDayPriorCurrentTimeMillis(DEFAULT_DATE_RANGE_DURATION), System.currentTimeMillis()
+            getDayPriorCurrentTimeMillis(DEFAULT_DATE_RANGE_DURATION),
+            System.currentTimeMillis()
         )
     )
 
@@ -284,8 +285,10 @@ class DataSummaryScreenViewModel @Inject constructor(
         return resultAfterTabFilter
     }
 
-    fun setPreviousScreenData(mSubjectId: Int) {
+    fun setPreviousScreenData(mSubjectId: Int, selectedLivelihoodId: Int) {
         subjectId = mSubjectId
+        selectedLivelihood?.value = selectedLivelihoodId
+
     }
     //Todo UNCOMENT After livelihood Mapping Refactor
 
@@ -373,9 +376,17 @@ class DataSummaryScreenViewModel @Inject constructor(
             }
         }
         livelihoodModel.forEach {
-            _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
+            _livelihoodDropdownList.add(
+                ValuesDto(
+                    it.livelihoodId,
+                    it.name,
+                    selectedLivelihood.value == it.livelihoodId
+                )
+            )
         }
-        selectedLivelihood.value = livelihoodDropdownList.first().id
+        if (selectedLivelihood.value == 0) {
+            selectedLivelihood.value = livelihoodDropdownList.first().id
+        }
         selectedEventsSubFilter.value = eventsSubFilterList.first().id
         filtersTuple = Triple(
             TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex),

@@ -11,12 +11,14 @@ import com.nrlm.baselinesurvey.ui.common_components.common_domain.common_use_cas
 import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMissionStatusUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
@@ -49,6 +51,8 @@ import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLim
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
+import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryV2
+import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryV2Impl
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.SettingBSRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.use_case.ClearSelectionDBExportUseCase
@@ -85,6 +89,7 @@ import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
+import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -124,7 +129,9 @@ object UseCaseModule {
     fun providesSettingScreenUseCase(
         repository: SettingBSRepository,
         getSummaryFileRepository: GetSummaryFileRepository,
-        syncHomeRepository: SyncHomeRepository
+        syncHomeRepository: SyncHomeRepository,
+        baselineV1CheckRepository: BaselineV1CheckRepository,
+        getSummaryFileRepositoryV2: GetSummaryFileRepositoryV2
     ): SettingBSUserCase {
         return SettingBSUserCase(
             getSettingOptionListUseCase = GetSettingOptionListUseCase(repository),
@@ -133,10 +140,14 @@ object UseCaseModule {
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(repository),
             exportHandlerSettingUseCase = ExportHandlerSettingUseCase(repository),
             getUserDetailsUseCase = GetUserDetailsUseCase(repository),
-            getSummaryFileUseCase = GetSummaryFileUseCase(getSummaryFileRepository),
+            getSummaryFileUseCase = GetSummaryFileUseCase(
+                getSummaryFileRepository,
+                getSummaryFileRepositoryV2
+            ),
             getCasteUseCase = GetCasteUseCase(repository),
             clearSelectionDBExportUseCase = ClearSelectionDBExportUseCase(repository),
-            getSyncEventsUseCase = GetSyncEventsUseCase(syncHomeRepository)
+            getSyncEventsUseCase = GetSyncEventsUseCase(syncHomeRepository),
+            baselineV1CheckUseCase = BaselineV1CheckUseCase(baselineV1CheckRepository = baselineV1CheckRepository)
 
         )
     }
@@ -433,6 +444,17 @@ object UseCaseModule {
             eventsDao = eventsDao,
             eventStatusDao = eventStatusDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesGetSummaryFileRepositoryV2(
+        coreSharedPrefs: CoreSharedPrefs,
+        taskDao: TaskDao,
+        activityDao: ActivityDao,
+        missionDao: MissionDao
+    ): GetSummaryFileRepositoryV2 {
+        return GetSummaryFileRepositoryV2Impl(coreSharedPrefs, taskDao, activityDao, missionDao)
     }
 
 }
