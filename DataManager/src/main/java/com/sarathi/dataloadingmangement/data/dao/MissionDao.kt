@@ -29,7 +29,8 @@ interface MissionDao {
                 "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
                 "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
                 " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId and activity_table.userId=:userId and mission_language_table.userId=:userId " +
-                "group by mission_table.missionId"
+                "group by mission_table.missionId \n" +
+                "ORDER BY mission_table.missionOrder ASC"
     )
     fun getMissions(
         userId: String,
@@ -40,8 +41,8 @@ interface MissionDao {
     @Query("Update $MISSION_TABLE_NAME set isActive=0 where userId=:userId ")
     fun softDeleteMission(userId: String)
 
-    @Query("Update $MISSION_TABLE_NAME set isActive=1 where userId=:userId  and missionId=:missionId")
-    fun updateMissionActiveStatus(missionId: Int, userId: String)
+    @Query("Update $MISSION_TABLE_NAME set isActive=1,missionOrder =:missionOrder where userId=:userId  and missionId=:missionId")
+    fun updateMissionActiveStatus(missionId: Int, userId: String, missionOrder: Int)
 
     @Query("SELECT count(*) FROM $MISSION_TABLE_NAME where  userId=:userId and missionId=:missionId ")
     suspend fun getMissionCount(userId: String, missionId: Int): Int

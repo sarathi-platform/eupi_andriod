@@ -38,4 +38,6 @@ interface SettingBSRepository {
     fun clearSelectionLocalDB()
     fun isSyncEnable(): Boolean
 
+    fun getStateId(): Int
+
 }

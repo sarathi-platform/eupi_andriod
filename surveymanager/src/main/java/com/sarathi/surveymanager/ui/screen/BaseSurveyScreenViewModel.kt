@@ -457,54 +457,49 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             autoCalculateQuestionResultMap
         )
         ioViewModelScope {
-            updateNonVisibleQuestionsResponse()
+            updateNonVisibleQuestionsResponse(sourceQuestion)
         }
     }
 
-    private suspend fun updateNonVisibleQuestionsResponse() {
+    private suspend fun updateNonVisibleQuestionsResponse(sourceQuestion: QuestionUiModel) {
         val notVisibleQuestion = visibilityMap.filter { !it.value }
         questionUiModel.value.filter { notVisibleQuestion.containsKey(it.questionId) }
             .let { questionUiModelList ->
                 questionUiModelList.forEach { it ->
-                it.options = it.options?.map {
-                    it.copy(
-                        isSelected = false,
-                        selectedValue = BLANK_STRING
-                    )
-                }
-                if (saveSurveyAnswerUseCase.isAnswerAvailableInDb(
-                        it,
-                        taskEntity?.subjectId ?: DEFAULT_ID,
-                        taskId = taskId,
-                        referenceId = referenceId,
-                        grantId = grantID,
-                        grantType = granType
-                    ) && it.formId == NUMBER_ZERO
-                ) {
-                    saveQuestionAnswerIntoDb(it)
-                    saveSurveyAnswerEvent(it.copy(options = emptyList()))
-                }
-                    removeFormResponses(questionUiModelList)
+                    it.options = it.options?.map {
+                        it.copy(
+                            isSelected = false,
+                            selectedValue = BLANK_STRING
+                        )
+                    }
+                    if (saveSurveyAnswerUseCase.isAnswerAvailableInDb(
+                            it,
+                            taskEntity?.subjectId ?: DEFAULT_ID,
+                            taskId = taskId,
+                            referenceId = referenceId,
+                            grantId = grantID,
+                            grantType = granType
+                        ) && it.formId == NUMBER_ZERO
+                    ) {
+                        saveQuestionAnswerIntoDb(it)
+                        saveSurveyAnswerEvent(it.copy(options = emptyList()))
+                    }
+                    removeFormResponses(questionUiModelList, sourceQuestion)
                 }
             }
-        /*formResponseMap.flatMap { it.value }.let { surveyAnswerEntityList ->
-            surveyAnswerEntityList
-                .groupBy { it.referenceId }
-                .forEach { (refId, surveyAnswerEntity) ->
-                    surveyAnswerEntity.forEach { answer ->
-                        val questionUiModel = questionUiModel.value.find { it.questionId == answer.questionId }
-                        questionUiModel?.let {
-                            removeAnswersFromDb(it, refId)
-                        }
-                    }
-                }
-        }*/
+
     }
 
     private suspend fun removeFormResponses(
-        questionUiModelList: List<QuestionUiModel>
+        questionUiModelList: List<QuestionUiModel>,
+        sourceQuestion: QuestionUiModel
     ) {
         val formQuestions = questionUiModelList.filter { it.formId != NUMBER_ZERO }
+
+        if (!conditionsUtils.checkIfTargetQuestionIsFormType(sourceQuestion, formQuestions)) {
+            return
+        }
+
         if (formQuestions.isNotEmpty()) {
             val formIdMap = formQuestions.map { it.formId }
             formIdMap.forEach { formId ->

@@ -1,27 +1,28 @@
 package com.patsurvey.nudge.activities.settings.domain.repository
 
 import android.net.Uri
-import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nudge.core.model.SummaryFileDto
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 
-interface GetSummaryFileRepository {
+interface GetSummaryFileRepositoryV2 {
 
     fun getTaskSummaryByStatus(
-        userId: String,
         missionId: Int,
         activityId: Int
     ): List<SummaryFileDto>
 
-    suspend fun getActivitiesForUser(userId: String): List<MissionActivityEntity>
+    suspend fun getActivitiesForUser(missionId: Int): List<ActivityUiModel>
+
+    suspend fun getMissionForUser(userId: String): List<MissionUiModel>
 
     fun deleteOldSummaryFile(
-        uniqueUserIdentifier: String,
         mobileNo: String,
         fileNameWithExtension: String
     )
 
     fun writeFileForTheSummaryData(
-        uniqueUserIdentifier: String,
+
         mobileNo: String,
         fileNameWithoutExtension: String,
         fileNameWithExtension: String,
