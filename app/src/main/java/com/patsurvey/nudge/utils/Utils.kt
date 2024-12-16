@@ -138,7 +138,6 @@ import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
 import java.util.regex.Pattern
-import javax.annotation.meta.When
 import kotlin.math.roundToInt
 import kotlin.system.exitProcess
 
@@ -1286,90 +1285,6 @@ fun updateStepStatus(
     }
 }
 
-//fun addDefaultLanguage(
-//    languageListDao: LanguageListDao,
-//    baselineLanguageDao: com.nrlm.baselinesurvey.database.dao.LanguageListDao
-//) {
-//    languageListDao.insertAll(
-//        listOf(
-//            LanguageEntity(
-//                id = 2,
-//                language = "English",
-//                langCode = "en",
-//                orderNumber = 1,
-//                localName = "English"
-//            ),
-//            LanguageEntity(
-//                1,
-//                language = "Hindi",
-//                langCode = "hi",
-//                orderNumber = 2,
-//                localName = "हिंदी"
-//            ),
-//            LanguageEntity(
-//                3,
-//                language = "Bengali",
-//                langCode = "bn",
-//                orderNumber = 3,
-//                localName = "বাংলা"
-//            ),
-//            LanguageEntity(
-//                4,
-//                language = "Assamese",
-//                langCode = "as",
-//                orderNumber = 4,
-//                localName = "অসমীয়া"
-//            ),
-//            LanguageEntity(
-//                5,
-//                language = "Bodo",
-//                langCode = "be",
-//                orderNumber = 5,
-//                localName = "बर'"
-//            )
-//        )
-//    )
-//
-//    baselineLanguageDao.insertAll(
-//        listOf(
-//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-//                id = 2,
-//                language = "English",
-//                langCode = "en",
-//                orderNumber = 1,
-//                localName = "English"
-//            ),
-//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-//                1,
-//                language = "Hindi",
-//                langCode = "hi",
-//                orderNumber = 2,
-//                localName = "हिंदी"
-//            ),
-//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-//                3,
-//                language = "Bengali",
-//                langCode = "bn",
-//                orderNumber = 3,
-//                localName = "বাংলা"
-//            ),
-//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-//                4,
-//                language = "Assamese",
-//                langCode = "as",
-//                orderNumber = 4,
-//                localName = "অসমীয়া"
-//            ),
-//            com.nrlm.baselinesurvey.database.entity.LanguageEntity(
-//                5,
-//                language = "Bodo",
-//                langCode = "be",
-//                orderNumber = 5,
-//                localName = "बर'"
-//            )
-//        )
-//    )
-//}
 
 fun getFormSubPath(formName: String, pageNumber: Int): String {
     return "${formName}_page_$pageNumber"
