@@ -88,6 +88,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreen
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.didiDetailItemStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_15_dp
@@ -110,6 +111,7 @@ import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.stepIconDisableColor
 import com.nudge.core.ui.theme.taskCompletionBannerBgColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
@@ -186,7 +188,7 @@ fun DataSummaryScreen(
 
     if (viewModel.showAssetDialog.value) {
         AssetsDialog(
-            viewModel.incomeExpenseSummaryUiModel[viewModel.selectedLivelihood.value],
+            viewModel.getLivelihood(),
             viewModel.livelihoodModel,
             onDismissRequest = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -362,12 +364,16 @@ private fun DataSummaryView(
         }
         Spacer(modifier = Modifier.height(16.dp))
     }
-
+    Text(
+        stringResource(R.string.livelihood),
+        style = didiDetailItemStyle.copy(color = stepIconDisableColor)
+    )
+    Spacer(modifier = Modifier.height(dimen_5_dp))
     DropDownContainer(viewModel.livelihoodDropdownList.toList()) {
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
     }
     Spacer(modifier = Modifier.height(16.dp))
-    HeaderSection(viewModel.incomeExpenseSummaryUiModel[viewModel.selectedLivelihood.value]!!) {
+    HeaderSection(viewModel.getLivelihood()) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     }
     Spacer(modifier = Modifier.height(16.dp))
@@ -383,8 +389,7 @@ private fun DataSummaryView(
     EventView(
         viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.toList()
             .sortedByDescending { it.date },
-        viewModel.livelihoodEventMap,
-        viewModel.selectedLivelihood.value,
+        eventsList = viewModel.getEventsList(),
         showMoreItems = showMoreItems,
         onEventItemClicked = onEventItemClicked,
         onViewEditItemClicked = onViewEditItemClicked,
@@ -422,7 +427,7 @@ fun DropDownContainer(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int
 
 @Composable
 fun HeaderSection(
-    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel,
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
     onAssetCountClicked: () -> Unit
 ) {
     Row(
@@ -529,8 +534,7 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
 @Composable
 private fun EventView(
     filteredSubjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel>,
-    eventsList: Map<Int, List<LivelihoodEventUiModel>>,
-    selectedLivelihoodId: Int,
+    eventsList: List<LivelihoodEventUiModel>?,
     showMoreItems: Boolean,
     onEventItemClicked: (transactionId: String) -> Unit,
     onViewEditItemClicked: (transactionId: String) -> Unit,
@@ -580,7 +584,7 @@ private fun EventView(
                 Column {
                     EventHeader(
                         subjectLivelihoodEventSummaryUiModel,
-                        eventsList[selectedLivelihoodId]
+                        eventsList
                     )
                     EventDetails(subjectLivelihoodEventSummaryUiModel) {
                         if (subjectLivelihoodEventSummaryUiModel.status != 2) {
@@ -620,7 +624,7 @@ private fun EventView(
                         Column {
                             EventHeader(
                                 subjectLivelihoodEventSummaryUiModel,
-                                eventsList[selectedLivelihoodId]
+                                eventsList
                             )
                             EventDetails(
                                 subjectLivelihoodEventSummaryUiModel,
