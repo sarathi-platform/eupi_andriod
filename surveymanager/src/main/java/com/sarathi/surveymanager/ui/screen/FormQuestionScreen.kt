@@ -127,7 +127,7 @@ fun FormQuestionScreen(
 
     val showAlertDialog = remember { mutableStateOf(false) }
     val stateHandle = navController.currentBackStackEntry?.savedStateHandle
-    //Listen the result from Add event screen
+    //Listen the result from Media screen
     val isFromBackStack = remember { stateHandle?.getLiveData<Boolean>(ARG_IS_FROM_BACKSTACK) }
 
     LaunchedEffect(key1 = Unit) {
