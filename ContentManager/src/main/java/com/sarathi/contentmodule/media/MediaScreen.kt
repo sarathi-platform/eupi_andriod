@@ -93,7 +93,7 @@ fun MediaScreen(
                                     ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                             }
                             navController.previousBackStackEntry?.savedStateHandle?.set(
-                                "isFromBackStack", true
+                                ARG_IS_FROM_BACKSTACK, true
                             )
                             navController.popBackStack()
                         }
