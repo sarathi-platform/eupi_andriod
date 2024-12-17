@@ -331,13 +331,13 @@ open class FormQuestionScreenViewModel @Inject constructor(
     fun saveAllAnswers(onSaveComplete: suspend () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             onEvent(LoaderEvent.UpdateLoaderState(true))
-            questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+            questionUiModel.value.filter { visibilityMap.get(it.questionId) == true }
                 .forEach { questionUiModel ->
                     saveSingleAnswerIntoDb(questionUiModel)
                 }
             surveyAnswerEventWriterUseCase.writeFormResponseEvent(
                 questionUiModels = questionUiModel.value.filter {
-                    it.isMandatory && visibilityMap.get(
+                    visibilityMap.get(
                         it.questionId
                     ) == true
                 },

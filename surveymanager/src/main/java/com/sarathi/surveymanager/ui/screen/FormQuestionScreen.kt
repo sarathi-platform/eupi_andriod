@@ -41,6 +41,7 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nudge.core.ARG_IS_FROM_BACKSTACK
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
@@ -125,21 +126,25 @@ fun FormQuestionScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val showAlertDialog = remember { mutableStateOf(false) }
+    val stateHandle = navController.currentBackStackEntry?.savedStateHandle
+    //Listen the result from Add event screen
+    val isFromBackStack = remember { stateHandle?.getLiveData<Boolean>(ARG_IS_FROM_BACKSTACK) }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.setPreviousScreenData(
-            taskId,
-            sectionId,
-            surveyId,
-            formId,
-            activityId,
-            activityConfigId,
-            missionId,
-            referenceId,
-            subjectType = subjectType
-        )
-        viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
-
+        if (isFromBackStack?.value != true) {
+            viewModel.setPreviousScreenData(
+                taskId,
+                sectionId,
+                surveyId,
+                formId,
+                activityId,
+                activityConfigId,
+                missionId,
+                referenceId,
+                subjectType = subjectType
+            )
+            viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
+        }
     }
 
     BackHandler {
