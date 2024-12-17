@@ -248,3 +248,4 @@ const val AES_SALT = "T&CNu7Zs"
 const val MASKED_CHAR = "*"
 
 const val BASELINE_ACTIVITY_NAME_PREFIX = "Conduct "
+const val ARG_IS_FROM_BACKSTACK = "isFromBackstack"
