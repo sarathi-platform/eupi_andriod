@@ -102,6 +102,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     val contentList: State<List<Content>> get() = _contentList
 
     val showLoader = mutableStateOf(false)
+    val isSubmitButtonClicked = mutableStateOf(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {

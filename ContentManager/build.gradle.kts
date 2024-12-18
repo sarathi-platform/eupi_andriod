@@ -94,9 +94,9 @@ dependencies {
     implementation(project(":core"))
 
 
-    implementation("androidx.media3:media3-exoplayer:1.0.2")
-    implementation("androidx.media3:media3-exoplayer-dash:1.0.2")
-    implementation("androidx.media3:media3-ui:1.0.2")
+    implementation("androidx.media3:media3-exoplayer:1.1.1")
+    implementation("androidx.media3:media3-exoplayer-dash:1.1.1")
+    implementation("androidx.media3:media3-ui:1.1.1")
     implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.3")
     implementation("com.google.accompanist:accompanist-coil:0.15.0")
     implementation("io.coil-kt:coil-compose:2.1.0")
