@@ -4,6 +4,8 @@ import android.app.Activity
 import android.content.pm.ActivityInfo
 import android.content.res.Configuration
 import android.net.Uri
+import android.view.ViewGroup
+import android.widget.FrameLayout
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
@@ -172,6 +174,10 @@ fun VideoPlayer(uri: Uri, onPlayerViewClick: () -> Unit) {
         AndroidView(factory = {
             PlayerView(context).apply {
                 player = exoPlayer
+                layoutParams = FrameLayout.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
                 setOnClickListener {
                     onPlayerViewClick()
                     exoPlayer.playWhenReady = !exoPlayer.playWhenReady
