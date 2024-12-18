@@ -603,8 +603,12 @@ private fun EventView(
                     .padding(horizontal = dimen_8_dp, vertical = dimen_5_dp)
             ) {
             Column {
-                EventHeader(viewModel = viewModel,subjectLivelihoodEventSummaryUiModel, eventsList[selectedLivelihoodId])
-                EventDetails(viewModel = viewModel,subjectLivelihoodEventSummaryUiModel) {
+                EventHeader(
+                    viewModel = viewModel,
+                    subjectLivelihoodEventSummaryUiModel,
+                    eventsList
+                )
+                EventDetails(viewModel = viewModel, subjectLivelihoodEventSummaryUiModel) {
                     if (subjectLivelihoodEventSummaryUiModel.status != 2) {
                         onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                     }
