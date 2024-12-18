@@ -21,6 +21,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.DialogState
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.toTimeDateString
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -31,7 +32,8 @@ import javax.inject.Inject
 @HiltViewModel
 class DataLoadingScreenViewModel @Inject constructor(
     val fetchDataUseCase: FetchDataUseCase,
-    val updateBaselineStatusOnInitUseCase: UpdateBaselineStatusOnInitUseCase
+    val updateBaselineStatusOnInitUseCase: UpdateBaselineStatusOnInitUseCase,
+    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
 ) : BaseViewModel() {
 
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState())
@@ -114,9 +116,12 @@ class DataLoadingScreenViewModel @Inject constructor(
         }
     }
 
-    private fun fetchCasteData(fetchDataUseCase: FetchDataUseCase, callBack: () -> Unit) {
+    private fun fetchCasteData(
+        fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+        callBack: () -> Unit
+    ) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(true)
+            fetchCasteConfigNetworkUseCase.invoke()
             baseCurrentApiCount++
             updateLoaderEvent(callBack)
         }
@@ -186,7 +191,7 @@ class DataLoadingScreenViewModel @Inject constructor(
                 //TODO need to be 7 make it dynamic
                 TOTAL_API_CALL = 7 + languagesSize
                 if (fetchUserDetailData(fetchDataUseCase) {}) {
-                    fetchCasteData(fetchDataUseCase) {}
+                    fetchCasteData(fetchCasteConfigNetworkUseCase) {}
                     fetchMissionData(fetchDataUseCase) { callBack() }
                     fetchSurveyeeData(fetchDataUseCase) { callBack() }
                     fetchContentData(fetchDataUseCase) { callBack() }

@@ -6,6 +6,7 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.nudge.core.CASTE_TABLE
 import com.nudge.core.NUDGE_DATABASE_VERSION
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
@@ -13,7 +14,6 @@ import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
@@ -30,7 +30,7 @@ import java.sql.SQLException
 
 
 @Database(
-    entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class, CasteEntity::class,
+    entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class,
         TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class, QuestionEntity::class, SectionAnswerEntity::class, NumericAnswerEntity::class, TrainingVideoEntity::class,
         BpcSummaryEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class],
     version = NUDGE_DATABASE_VERSION,
@@ -48,7 +48,6 @@ abstract class NudgeDatabase : RoomDatabase() {
     abstract fun languageListDao(): LanguageListDao
     abstract fun stepsListDao(): StepsListDao
     abstract fun tolaDao(): TolaDao
-    abstract fun casteListDao(): CasteListDao
     abstract fun didiDao(): DidiDao
     abstract fun lastSelectedTola(): LastSelectedTolaDao
     abstract fun questionListDao(): QuestionListDao
@@ -79,6 +78,16 @@ abstract class NudgeDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 NudgeLogger.d("NudgeDatabase", "MIGRATION_2_3")
                 migration(db, listOf(ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN))
+            }
+        }
+
+        val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
+
+        // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                Log.d("NudgeDatabase", "MIGRATION_3_4")
+                migration(database, listOf(DROP_CASTE_TABLE))
             }
         }
 
