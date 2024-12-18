@@ -65,12 +65,10 @@ import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_150_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_180_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_250_dp
 import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -429,12 +427,14 @@ fun TaskScreen(
 
                             message?.let {
                                 // Display message when applicable
-                                Text(
-                                    text = it,
-                                    style = defaultTextStyle,
-                                    color = textColorDark,
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
+                                if (!viewModel.loaderState.value.isLoaderVisible) {
+                                    Text(
+                                        text = it,
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
                             } ?: LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
 
                                 stickyHeader {
