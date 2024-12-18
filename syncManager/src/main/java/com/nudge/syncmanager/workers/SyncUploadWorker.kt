@@ -1,8 +1,14 @@
 package com.nudge.syncmanager.workers
 
+import android.app.Notification
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.Context
+import android.content.pm.ServiceInfo
+import androidx.core.app.NotificationCompat
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
+import androidx.work.ForegroundInfo
 import androidx.work.WorkerParameters
 import androidx.work.workDataOf
 import com.facebook.network.connectionclass.ConnectionClassManager
@@ -55,6 +61,7 @@ import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.core.value
+import com.nudge.syncmanager.R
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.utils.SUCCESS
 import com.nudge.syncmanager.utils.WORKER_ARG_SYNC_TYPE
@@ -91,6 +98,7 @@ class SyncUploadWorker @AssistedInject constructor(
         var mPendingEventList = listOf<Events>()
         val selectedSyncType = inputData.getInt(WORKER_ARG_SYNC_TYPE, SyncType.SYNC_ALL.ordinal)
         return try {
+            setForeground(createForegroundInfo())
             connectionQuality = ConnectionClassManager.getInstance().currentBandwidthQuality
             batchLimit =
                 syncManagerUseCase.fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.SYNC_BATCH_SIZE.name)
@@ -709,70 +717,78 @@ class SyncUploadWorker @AssistedInject constructor(
             val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
             var uploadedBlobUrl = BLANK_STRING
             try {
-                syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
-                    filePath = picturePath,
-                    fileName = imageDetail.fileName ?: BLANK_STRING,
-                    postSelectionContainerName = postSelectionContainerName,
-                    selectionContainerName = selectionContainerName,
-                    blobConnectionUrl = blobConnectionUrl
-                ) { message, isExceptionOccur ->
-                    if (!isExceptionOccur) {
-                        uploadedBlobUrl = message
-                    }
-                    syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
-                        imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
-                        isBlobUploaded = isExceptionOccur,
-                        blobUrl = if (isExceptionOccur) BLANK_STRING else message,
-                        errorMessage = if (isExceptionOccur) message else BLANK_STRING,
-                        eventId = imageDetail.eventId ?: BLANK_STRING,
-                        requestId = BLANK_STRING,
-                        status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
-                        else EventSyncStatus.OPEN.eventSyncStatus
-                    )
-                }
-
-                val file = File(picturePath)
-                if (uploadedBlobUrl.isNotEmpty()) {
-                    var metaDataMap = hashMapOf<String, Any>(
-                        FILE_PATH to file.path,
-                        FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
-                        CONTENT_TYPE to getFileMimeType(file).toString(),
-                        IS_ONLY_DATA to true,
-                        BLOB_URL to uploadedBlobUrl,
-                        DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
-                            SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
-                    )
-                    imageDetail.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
-                        metaDataMap.putAll(
-                            it1
+                if (imageDetail.fileName?.isNotEmpty() == true) {
+                    syncManagerUseCase.syncBlobUploadUseCase.uploadImageOnBlob(
+                        filePath = picturePath,
+                        fileName = imageDetail.fileName ?: BLANK_STRING,
+                        postSelectionContainerName = postSelectionContainerName,
+                        selectionContainerName = selectionContainerName,
+                        blobConnectionUrl = blobConnectionUrl
+                    ) { message, isExceptionOccur ->
+                        if (!isExceptionOccur) {
+                            uploadedBlobUrl = message
+                        }
+                        syncManagerUseCase.syncBlobUploadUseCase.updateImageBlobStatus(
+                            imageStatusId = imageDetail.imageStatusId ?: BLANK_STRING,
+                            isBlobUploaded = isExceptionOccur,
+                            blobUrl = if (isExceptionOccur) BLANK_STRING else message,
+                            errorMessage = if (isExceptionOccur) message else BLANK_STRING,
+                            eventId = imageDetail.eventId ?: BLANK_STRING,
+                            requestId = BLANK_STRING,
+                            status = if (isExceptionOccur) EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus
+                            else EventSyncStatus.OPEN.eventSyncStatus
                         )
                     }
-                    val imageEvent = Events(
-                        id = imageDetail.id,
-                        name = imageDetail.name,
-                        type = EventName.BLOB_UPLOAD_TOPIC.topicName,
-                        createdBy = imageDetail.createdBy,
-                        modified_date = System.currentTimeMillis().toDate(),
-                        request_payload = imageDetail.request_payload,
-                        status = imageDetail.status,
-                        metadata = SyncImageMetadataRequest(
-                            data = metaDataMap,
-                            dependsOn = emptyList()
-                        ).json(),
-                        mobile_number = imageDetail.mobile_number,
-                        payloadLocalId = imageDetail.payloadLocalId
-                    )
 
-                    val apiResponse =
-                        syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
-                            events = listOf(imageEvent),
+                    val file = File(picturePath)
+                    if (uploadedBlobUrl.isNotEmpty()) {
+                        var metaDataMap = hashMapOf<String, Any>(
+                            FILE_PATH to file.path,
+                            FILE_NAME to (imageDetail.fileName ?: BLANK_STRING),
+                            CONTENT_TYPE to getFileMimeType(file).toString(),
+                            IS_ONLY_DATA to true,
+                            BLOB_URL to uploadedBlobUrl,
+                            DRIVE_TYPE to if (syncManagerUseCase.getUserDetailsSyncUseCase.getLoggedInUserType() == UPCM_USER)
+                                SYNC_POST_SELECTION_DRIVE else SYNC_SELECTION_DRIVE
                         )
-                    onAPIResponse(apiResponse)
+                        imageDetail.metadata?.getMetaDataDtoFromString()?.data?.let { it1 ->
+                            metaDataMap.putAll(
+                                it1
+                            )
+                        }
+                        val imageEvent = Events(
+                            id = imageDetail.id,
+                            name = imageDetail.name,
+                            type = EventName.BLOB_UPLOAD_TOPIC.topicName,
+                            createdBy = imageDetail.createdBy,
+                            modified_date = System.currentTimeMillis().toDate(),
+                            request_payload = imageDetail.request_payload,
+                            status = imageDetail.status,
+                            metadata = SyncImageMetadataRequest(
+                                data = metaDataMap,
+                                dependsOn = emptyList()
+                            ).json(),
+                            mobile_number = imageDetail.mobile_number,
+                            payloadLocalId = imageDetail.payloadLocalId
+                        )
+
+                        val apiResponse =
+                            syncManagerUseCase.syncAPIUseCase.syncProducerEventToServer(
+                                events = listOf(imageEvent),
+                            )
+                        onAPIResponse(apiResponse)
+                    } else {
+                        handleFailedImageStatus(
+                            imageEventDetail = imageDetail,
+                            errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message,
+                            eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+                        )
+                    }
                 } else {
                     handleFailedImageStatus(
                         imageEventDetail = imageDetail,
-                        errorMessage = SyncException.BLOB_URL_NOT_FOUND_EXCEPTION.message,
-                        eventStatus = EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+                        errorMessage = SyncException.IMAGE_FILE_IS_NOT_EXIST_EXCEPTION.message,
+                        eventStatus = EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
                     )
                 }
             } catch (storageException: StorageException) {
@@ -886,7 +902,47 @@ class SyncUploadWorker @AssistedInject constructor(
         )
         return null
     }
+
+    override suspend fun getForegroundInfo(): ForegroundInfo {
+        return createForegroundInfo()
+    }
+
+    private fun createForegroundInfo(): ForegroundInfo {
+        val channelId = "sync_worker_notification"
+        val notificationId = 1
+
+        // Create the NotificationChannel if necessary (for Android O and above)
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Sync Notification",
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            val notificationManager =
+                applicationContext.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        // Build the notification
+        val notification: Notification = NotificationCompat.Builder(applicationContext, channelId)
+            .setContentTitle("Sarathi")
+            .setContentText("Syncing is in progress.....")
+            .setSmallIcon(R.drawable.ic_sarathi_logo)
+            .setPriority(NotificationCompat.PRIORITY_MAX)
+
+            .build()
+
+        // Return the ForegroundInfo object
+        val foreGroundInfo =
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) ForegroundInfo(
+                notificationId,
+                notification,
+                ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC
+            ) else ForegroundInfo(notificationId, notification)
+        return foreGroundInfo
+    }
 }
+
 
 fun createEventResponseList(
     eventList: List<Events>,
@@ -912,4 +968,5 @@ fun createEventResponseList(
         )
     }
     return failedEventList
+
 }

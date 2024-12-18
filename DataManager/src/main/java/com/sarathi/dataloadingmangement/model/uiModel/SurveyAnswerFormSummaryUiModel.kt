@@ -29,7 +29,7 @@ data class SurveyAnswerFormSummaryUiModel(
     var taskId: Int,
     @SerializedName("tagId")
     @TypeConverters(TagConverter::class)
-    var tagId: List<Int>,
+    var tagId: List<Int> = emptyList(),
     @SerializedName("optionItems")
     @TypeConverters(QuestionsOptionsConverter::class)
     var optionItems: List<OptionsUiModel>,
@@ -40,5 +40,15 @@ data class SurveyAnswerFormSummaryUiModel(
 
     var isFormGenerated: Boolean,
 
+    @SerializedName("formId")
+    @Expose
+    var formId: Int = 0,
 
-    )
+    @SerializedName("createdDate")
+    @Expose
+    val createdDate: Long = System.currentTimeMillis(),
+
+    @SerializedName("modifiedDate")
+    @Expose
+    var modifiedDate: Long = System.currentTimeMillis()
+)

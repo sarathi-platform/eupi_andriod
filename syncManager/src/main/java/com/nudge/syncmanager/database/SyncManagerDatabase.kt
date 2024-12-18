@@ -5,6 +5,9 @@ import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.MIGRATION_BACKUP
+import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.SYNC_MANAGER_DB_VERSION
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
@@ -20,12 +23,13 @@ import com.nudge.core.database.entities.EventStatusEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.ImageStatusEntity
 import com.nudge.core.database.entities.RequestStatusEntity
+import com.nudge.core.exportDatabase
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.nudge.syncmanager.database.SyncMigrationQueries.ADD_EVENT_ID_IN_EVENT_TABLE
 import com.nudge.syncmanager.database.SyncMigrationQueries.ADD_REQUEST_ID_IN_EVENT_TABLE
-import com.nudge.syncmanager.database.SyncMigrationQueries.ALTER_EVENT_TABLE_COLUMN_CONSUMER_STATUS_DROP
-import com.nudge.syncmanager.database.SyncMigrationQueries.ALTER_EVENT_TABLE_COLUMN_RESULT_DROP
 import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_EVENT_STATUS_TABLE
 import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_IMAGE_STATUS_TABLE
 import com.nudge.syncmanager.database.SyncMigrationQueries.CREATE_REQUEST_STATUS_TABLE
@@ -45,7 +49,6 @@ import java.sql.SQLException
 )
 @TypeConverters(DateConverter::class, ListConvertor::class)
 abstract class SyncManagerDatabase : RoomDatabase() {
-
     abstract fun eventsDao(): EventsDao
 
     abstract fun eventsDependencyDao(): EventDependencyDao
@@ -61,11 +64,34 @@ abstract class SyncManagerDatabase : RoomDatabase() {
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
+                val applicationContext = CoreAppDetails.getApplicationContext()
+                val coreSharedPrefs = CoreSharedPrefs.getInstance(applicationContext)
+                exportDatabase(
+                    appContext = applicationContext,
+                    applicationID = CoreAppDetails.getApplicationDetails()?.applicationID
+                        ?: BLANK_STRING,
+                    mobileNo = coreSharedPrefs.getMobileNo(),
+                    databaseName = listOf(
+                        SYNC_MANAGER_DATABASE
+                    ),
+                    userName = coreSharedPrefs.getUserName(),
+                    moduleName = MIGRATION_BACKUP
+                ) { uri ->
+                    CoreLogger.e(
+                        CoreAppDetails.getApplicationContext().applicationContext,
+                        "SyncManagerDatabase",
+                        uri.path ?: BLANK_STRING
+                    )
+                    coreSharedPrefs.setSyncDBMigrate(true)
+                }
+                CoreLogger.e(
+                    CoreAppDetails.getApplicationContext().applicationContext,
+                    "SyncManagerDatabase",
+                    "Migration Start"
+                )
                 migration(
                     db,
                     listOf(
-                        ALTER_EVENT_TABLE_COLUMN_RESULT_DROP,
-                        ALTER_EVENT_TABLE_COLUMN_CONSUMER_STATUS_DROP,
                         ADD_REQUEST_ID_IN_EVENT_TABLE,
                         ADD_EVENT_ID_IN_EVENT_TABLE,
                         CREATE_EVENT_STATUS_TABLE,
@@ -77,6 +103,11 @@ abstract class SyncManagerDatabase : RoomDatabase() {
         }
 
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
+            CoreLogger.e(
+                CoreAppDetails.getApplicationContext().applicationContext,
+                "SyncManagerDatabase",
+                "Migration Rules: ${execSqls.json()}"
+            )
             for (sql in execSqls) {
                 try {
                     database.execSQL(sql)

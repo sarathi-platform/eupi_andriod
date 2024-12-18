@@ -1,5 +1,6 @@
 package com.nudge.core.data.repository
 
+import android.util.Base64
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
@@ -53,7 +54,15 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 data[AppConfigKeysEnum.MIX_PANEL_KEY.name].toString()
             )
         }
-
+        if (data.containsKey(AppConfigKeysEnum.SENSITIVE_INFO_KEY.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                Base64.encodeToString(
+                    data[AppConfigKeysEnum.SENSITIVE_INFO_KEY.name].toString().toByteArray(),
+                    Base64.DEFAULT
+                )
+            )
+        }
         // TODO Uncomment code after navigation is fixed.
         /*if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {
             data[AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {
@@ -72,6 +81,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 coreSharedPrefs.savePref(AppConfigKeysEnum.USE_BASELINE_V1.name, it)
             }
         }
+        if (data.containsKey(AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name,
+                data[AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name].toBoolean()
+            )
+        }
 
     }
 
@@ -85,6 +100,4 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
     override fun getAppConfigFromPref(key: String): String {
         return coreSharedPrefs.getPref(key, BLANK_STRING)
     }
-
-
 }

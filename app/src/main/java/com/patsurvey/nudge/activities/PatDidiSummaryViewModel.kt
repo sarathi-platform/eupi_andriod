@@ -6,6 +6,8 @@ import android.os.Environment
 import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
+import androidx.lifecycle.viewModelScope
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.json
@@ -14,7 +16,6 @@ import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatDidiSummaryRepository
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -117,11 +118,14 @@ class PatDidiSummaryViewModel @Inject constructor(
         uri: Uri,
         photoPath: String,
         locationCoordinates: LocationCoordinates,
-        didiEntity: DidiEntity
+        didiEntity: DidiEntity,
+        isActivityRestart: Boolean
     ) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             NudgeLogger.d("PatDidiSummaryViewModel", "saveFilePathInDb -> start")
-
+            if (isActivityRestart) {
+                delay(400)
+            }
             didiImageLocation.value = "{${locationCoordinates.lat}, ${locationCoordinates.long}}"
             val finalPathWithCoordinates =
                 "$photoPath|(${locationCoordinates.lat}, ${locationCoordinates.long})"
@@ -207,12 +211,14 @@ class PatDidiSummaryViewModel @Inject constructor(
     fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             patDidiSummaryRepository.updateDidiSHGFlag(didiId = didiId,shgFlag = flagStatus.value)
+            addDidiFlagEvent()
         }
     }
 
     fun updateDidiAbleBodiedFlag(didiId: Int, flagStatus: AbleBodiedFlag) {
         job = appScopeLaunch(Dispatchers.IO + exceptionHandler) {
             patDidiSummaryRepository.updateDidiAbleBodiedFlag(didiId = didiId, ableBodiedFlag = flagStatus.value)
+            addDidiFlagEvent(true)
         }
     }
 
@@ -300,5 +306,52 @@ class PatDidiSummaryViewModel @Inject constructor(
             patDidiSummaryRepository.updateNeedToPostImage(didiId = didiEntity.value.id, needsToPostImage = needToPostImage)
         }
     }
+
+    fun addDidiFlagEvent(isAbleBodiedFlag: Boolean = false) {
+
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            val villageId = patDidiSummaryRepository.prefRepo.getSelectedVillage().id
+
+            val didiEntity = patDidiSummaryRepository.getDidiFromDB(didiId = didiEntity.value.id)
+
+            val tolaDeviceIdMap: Map<Int, String> =
+                patDidiSummaryRepository.getTolaDeviceIdMap(
+                    villageId,
+                    patDidiSummaryRepository.tolaDao
+                )
+
+            val addDidiFlagEditEventList =
+                if (isAbleBodiedFlag) {
+                    patDidiSummaryRepository.createAbleBodiedFlagEvent(
+                        didiEntity = didiEntity,
+                        tolaDeviceIdMap = tolaDeviceIdMap,
+                        mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber()
+                            ?: BLANK_STRING,
+                        userID = patDidiSummaryRepository.prefRepo.getUserId()
+                    )
+                } else {
+                    patDidiSummaryRepository.createShgFlagEvent(
+                        didiEntity = didiEntity,
+                        tolaDeviceIdMap = tolaDeviceIdMap,
+                        mobileNumber = patDidiSummaryRepository.prefRepo.getMobileNumber()
+                            ?: BLANK_STRING,
+                        userID = patDidiSummaryRepository.prefRepo.getUserId()
+                    )
+                }
+
+
+            patDidiSummaryRepository.saveEventToMultipleSources(addDidiFlagEditEventList, listOf())
+
+        }
+
+    }
+
+
+    fun saveTempCrpFilePath(filePath: String) {
+        patDidiSummaryRepository.saveTempImagePath(filePath)
+    }
+
+    fun getTempCrpFilePath() = patDidiSummaryRepository.getTempImagePath()
+
 
 }

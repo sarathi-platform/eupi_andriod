@@ -39,22 +39,36 @@ interface SurveyAnswersDao {
     ): Int
 
     @Query(
-        "select ques_answer_table.subjectId\n," +
-                "ques_answer_table.taskId,\n" +
-                "ques_answer_table.questionId,\n" +
-                "ques_answer_table.referenceId,\n" +
-                "ques_answer_table.sectionId,\n" +
-                "ques_answer_table.surveyId,\n" +
-                " group_concat(tag_reference_table.value,',') as tagId," +
-                "ques_answer_table.optionItems,\n" +
-                "ques_answer_table.questionSummary,\n" +
-                "ques_answer_table.questionType,\n" +
-                "form_table.isFormGenerated\n" +
-                " from ques_answer_table " +
-                "left join form_table on ques_answer_table.referenceId =form_table.localReferenceId" +
-                "  left join tag_reference_table on ques_answer_table.questionId= tag_reference_table.referenceId " +
-                "  where ques_answer_table.userId =:userId and ques_answer_table.taskId=:taskId and ques_answer_table.sectionId=:sectionId and ques_answer_table.surveyId=:surveyId " +
-                "and tag_reference_table.userId=:userId and tag_reference_table.referenceType=:referenceType group by ques_answer_table.id"
+        "SELECT \n" +
+                "    ques_answer_table.subjectId,\n" +
+                "    ques_answer_table.taskId,\n" +
+                "    ques_answer_table.questionId,\n" +
+                "    ques_answer_table.referenceId,\n" +
+                "    ques_answer_table.sectionId,\n" +
+                "    ques_answer_table.surveyId,\n" +
+                "    GROUP_CONCAT(tag_reference_table.value, ',') AS tagId, \n" +
+                "    ques_answer_table.optionItems,\n" +
+                "    ques_answer_table.questionSummary,\n" +
+                "    ques_answer_table.questionType,\n" +
+                "    form_table.isFormGenerated,\n" +
+                "    ques_answer_table.formId, \n" +
+                "    ques_answer_table.createdDate, \n" +
+                "    ques_answer_table.modifiedDate\n" +
+                "FROM \n" +
+                "    ques_answer_table  \n" +
+                "LEFT JOIN \n" +
+                "    form_table ON ques_answer_table.referenceId = form_table.localReferenceId \n" +
+                "LEFT JOIN \n" +
+                "    tag_reference_table ON ques_answer_table.questionId = tag_reference_table.referenceId \n" +
+                "                        AND tag_reference_table.userId = :userId \n" +
+                "                        AND tag_reference_table.referenceType = :referenceType \n" +
+                "WHERE \n" +
+                "    ques_answer_table.userId = :userId \n" +
+                "    AND ques_answer_table.taskId = :taskId \n" +
+                "    AND ques_answer_table.sectionId = :sectionId \n" +
+                "    AND ques_answer_table.surveyId = :surveyId \n" +
+                "GROUP BY \n" +
+                "    ques_answer_table.id;"
     )
     fun getSurveyAnswersForSummary(
         userId: String,
@@ -64,7 +78,7 @@ interface SurveyAnswersDao {
         referenceType: String = LanguageAttributeReferenceType.QUESTION.name
     ): List<SurveyAnswerFormSummaryUiModel>
 
-    @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId and referenceId=:referenceId")
+    @Query("Update $ANSWER_TABLE set optionItems = :optionItems,answerValue =:answerValue, questionType=:questionType, questionSummary=:questionSummary, modifiedDate = :modifiedDate where userId=:userId and subjectId = :subjectId AND questionId = :questionId AND sectionId = :sectionId AND surveyId = :surveyId and referenceId=:referenceId")
     fun updateAnswer(
         userId: String,
         subjectId: Int,
@@ -75,7 +89,8 @@ interface SurveyAnswersDao {
         questionType: String,
         questionSummary: String,
         answerValue: String,
-        referenceId: String
+        referenceId: String,
+        modifiedDate: Long = System.currentTimeMillis()
     )
 
     @Transaction
@@ -100,7 +115,7 @@ interface SurveyAnswersDao {
                 subjectId = surveyAnswerEntity.subjectId,
                 optionItems = surveyAnswerEntity.optionItems,
                 answerValue = surveyAnswerEntity.answerValue,
-                referenceId = surveyAnswerEntity.referenceId
+                referenceId = surveyAnswerEntity.referenceId,
             )
         }
     }
@@ -184,4 +199,53 @@ interface SurveyAnswersDao {
     fun deleteSurveyAnswerForUser(
         userId: String,
     ): Int
+
+    @Query("SELECT DISTINCT referenceId from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds) and formId = :formId")
+    fun getTotalSavedFormResponsesCount(
+        userId: String,
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        grantId: Int = 0,
+        questionIds: List<Int>,
+        formId: Int
+    ): List<String>
+
+
+    @Query("SELECT * from ques_answer_table where userId = :userId and surveyId = :surveyId and sectionId = :sectionId and taskId = :taskId and grantId = :grantId and questionId in (:questionIds)")
+    suspend fun getSurveyAnswersForQuestionIds(
+        userId: String,
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        grantId: Int = 0,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity>
+
+    @Transaction
+    fun checkAndUpdateNonVisibleQuestionResponseInDb(surveyAnswerEntity: SurveyAnswerEntity) {
+
+        if (getSurveyAnswers(
+                surveyAnswerEntity.userId ?: BLANK_STRING,
+                surveyAnswerEntity.subjectId,
+                surveyAnswerEntity.sectionId,
+                surveyAnswerEntity.questionId,
+                surveyAnswerEntity.referenceId
+            ) != 0
+        ) {
+            updateAnswer(
+                userId = surveyAnswerEntity.userId ?: BLANK_STRING,
+                surveyId = surveyAnswerEntity.surveyId,
+                questionId = surveyAnswerEntity.questionId,
+                questionType = surveyAnswerEntity.questionType,
+                questionSummary = surveyAnswerEntity.questionSummary ?: BLANK_STRING,
+                sectionId = surveyAnswerEntity.sectionId,
+                subjectId = surveyAnswerEntity.subjectId,
+                optionItems = surveyAnswerEntity.optionItems,
+                answerValue = surveyAnswerEntity.answerValue,
+                referenceId = surveyAnswerEntity.referenceId
+            )
+        }
+
+    }
 }

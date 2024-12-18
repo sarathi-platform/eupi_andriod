@@ -107,9 +107,38 @@
     <string name="save_text">চেভ</string>
     <string name="proceed">আগবাঢ়ক</string>
     <string name="cancel_text">বাতিল কৰক</string>
+    <string name="created_date">Created Date : Ascending</string>
+    <string name="created_date_descending">Created Date : Descending</string>
+    <string name="modified_date">Modified Date : Ascending</string>
+    <string name="modified_date_decending">Modified Date : Descending</string>
+    <string name="name_ascending">Name: A to Z</string>
+    <string name="name_descending">Name: Z to A</string>
+    <string-array name="didi_sorted_array">
+        <item>@string/created_date</item>
+        <item>@string/created_date_descending</item>
+        <item>@string/modified_date</item>
+        <item>@string/modified_date_decending</item>
+        <item>@string/name_ascending</item>
+        <item>@string/name_descending</item>
+    </string-array>
+    <string name="edit_event">Edit Event</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"সম্পদ "</string>
+    <string name="last_updated_days_ago">"অন্তিম আপডেট:  %1$s দিন আগতে "</string>
+    <string name="last_1_month">Last 1 Month</string>
+    <string name="auto_sync">স্বয়ং-চিংক -  %s</string>
+    <string name="sync_on">স্বয়ং-চিংক : সক্ৰিয়</string>
+    <string name="sync_off">স্বয়ং-চিংক: বন্ধ</string>
+    <string name="hours">ঘণ্টা</string>
+    <string name="years">বছৰ</string>
+    <string name="minute">মিনিট</string>
+    <string name="month">মাহ</string>
+    <string name="synced">সংমিহলি কৰা হৈছে</string>
+    <string name="sync_view_progress">প্ৰগতি দৰ্শন কৰক</string>
+    <string name="sync_worker_cancelled">চিংক কৰ্মী বাতিল কৰা হৈছে</string>
+    <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
     <string name="income">"উপাৰ্জন "</string>
     <string name="expense">"খৰচ "</string>
-    <string name="last_updated_days_ago">"অন্তিম আপডেট: %1$s দিন আগতে "</string>
-    <string name="edit_event">Edit Event</string>
 
 </resources>

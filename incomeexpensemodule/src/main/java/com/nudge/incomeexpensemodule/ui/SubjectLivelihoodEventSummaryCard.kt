@@ -150,7 +150,7 @@ fun SubjectLivelihoodEventSummaryCard(
                     )
                     Spacer(modifier = Modifier.width(dimen_4_dp))
                     Text(
-                        text = "Last 1 Month",
+                        text = stringResource(R.string.last_1_month),
                         style = getTextColor(smallTextStyleMediumWeight2)
                     )
                 }

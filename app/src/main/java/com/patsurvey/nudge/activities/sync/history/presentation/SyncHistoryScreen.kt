@@ -32,6 +32,7 @@ import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nudge.core.SYNC_DATA
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
+import com.patsurvey.nudge.activities.sync.home.presentation.LastSyncTime
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 
@@ -48,7 +49,9 @@ fun SyncHistoryScreen(
         viewModel.getAllEventStatusForUser(context)
     }
     ToolbarWithMenuComponent(
-        title = stringResource(id = R.string.sync_data_history),
+        title = stringResource(
+            id = R.string.sync_data_history
+        ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = false,
         onBackIconClick = { navController.popBackStack() },
@@ -60,7 +63,10 @@ fun SyncHistoryScreen(
                 .fillMaxWidth()
 
         ) {
-
+            LastSyncTime(
+                lastSyncTime = viewModel.lastSyncTime.longValue,
+                mobileNumber = viewModel.getUserMobileNumber()
+            ) {}
             CreateEventUIList(viewModel, screenHeight)
         }
     }

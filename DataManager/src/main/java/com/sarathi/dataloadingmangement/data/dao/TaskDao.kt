@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
+import com.nudge.core.model.SummaryFileDto
 import com.sarathi.dataloadingmangement.TASK_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModelV1
@@ -124,4 +125,13 @@ interface TaskDao {
         statuses: List<String>
     ): Int
 
+    @Query("select taskId from task_table where localTaskId=:localTaskId and userId=:userId")
+    suspend fun getTaskIdFromLocalTaskId(localTaskId: String, userId: String): Int?
+
+    @Query("SELECT status as summaryKey, count(*) as summaryCount from $TASK_TABLE_NAME where userId = :userId and missionId = :missionId and activityId = :activityId and isActive = 1 group by status")
+    fun getTaskSummaryByStatus(
+        userId: String,
+        missionId: Int,
+        activityId: Int
+    ): List<SummaryFileDto>
 }

@@ -7,9 +7,9 @@ import android.graphics.Typeface
 import android.os.Environment
 import android.print.PrintAttributes
 import android.text.Layout
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.toDateInMMDDYYFormat
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.VillageEntity
@@ -146,13 +146,22 @@ object PdfUtils {
                                     mDataCellWidth
                                 )
                             )
+                            try {
+                                val casteName = casteList[casteList.map { it.id }
+                                    .indexOf(didiEntity.castId)].casteName
+
+
+
                             add(
                                 TextCell(
-                                    "${casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName}",
+                                    casteName,
                                     cellDataTextProperties,
                                     mDataCellWidth
                                 )
                             )
+                            } catch (exception: Exception) {
+                                NudgeLogger.d("PdfUtil", exception.stackTraceToString())
+                            }
                         }
                     )
                 }
@@ -486,9 +495,20 @@ object PdfUtils {
                         add(
                             TextCell(didiEntity.cohortName, cellDataTextProperties, dataCellWidth)
                         )
-                        add(
-                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
-                        )
+                        try {
+                            add(
+                                TextCell(
+                                    casteList[casteList.map { it.id }
+                                        .indexOf(didiEntity.castId)].casteName,
+                                    cellDataTextProperties,
+                                    dataCellWidth
+                                )
+                            )
+                        } catch (exception: Exception) {
+                            NudgeLogger.d("PdfUtil", exception.stackTraceToString())
+
+                        }
+
                         add(
                             TextCell(
                                 SHGFlag.fromInt(didiEntity.shgFlag).toString(),
@@ -597,9 +617,20 @@ object PdfUtils {
                         add(
                             TextCell(if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}", cellDataTextProperties, dataCellWidth)
                         )
-                        add(
-                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
-                        )
+
+                        try {
+                            add(
+                                TextCell(
+                                    casteList[casteList.map { it.id }
+                                        .indexOf(didiEntity.castId)].casteName,
+                                    cellDataTextProperties,
+                                    dataCellWidth
+                                )
+                            )
+                        } catch (exception: Exception) {
+                            NudgeLogger.d("PdfUtil", exception.stackTraceToString())
+
+                        }
                         add(
                             TextCell(
                                 SHGFlag.fromInt(didiEntity.shgFlag).toString(),
@@ -706,9 +737,19 @@ object PdfUtils {
                         add(
                             TextCell(if (didiEntity.cohortName == EMPTY_TOLA_NAME) "${villageEntity.name}" else "${didiEntity.cohortName}", cellDataTextProperties, dataCellWidth)
                         )
-                        add(
-                            TextCell(casteList[casteList.map { it.id }.indexOf(didiEntity.castId)].casteName, cellDataTextProperties, dataCellWidth)
-                        )
+                        try {
+                            add(
+                                TextCell(
+                                    casteList[casteList.map { it.id }
+                                        .indexOf(didiEntity.castId)].casteName,
+                                    cellDataTextProperties,
+                                    dataCellWidth
+                                )
+                            )
+                        } catch (exception: Exception) {
+                            NudgeLogger.d("PdfUtil", exception.stackTraceToString())
+
+                        }
                         add(
                             TextCell(
                                 SHGFlag.fromInt(didiEntity.shgFlag).toString(),

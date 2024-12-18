@@ -9,7 +9,7 @@ plugins {
     id("org.sonarqube")
 
 }
-def version = "2.0.97"
+def version = "2.0.112"
 def prodVersion = version
 android {
     compileSdk 34
@@ -18,7 +18,7 @@ android {
         applicationId "com.nrlm.sarathi"
         minSdk 24
         targetSdk 34
-        versionCode 100
+        versionCode 115
         versionName version
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
@@ -229,9 +229,9 @@ dependencies {
     implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-okhttp:$exoplayer_version"
 
-    implementation "androidx.media3:media3-exoplayer:1.0.2"
-    implementation "androidx.media3:media3-exoplayer-dash:1.0.2"
-    implementation "androidx.media3:media3-ui:1.0.2"
+    implementation "androidx.media3:media3-exoplayer:1.1.1"
+    implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
+    implementation "androidx.media3:media3-ui:1.1.1"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.1"
 
     implementation "io.coil-kt:coil-compose:2.0.0-rc01"
@@ -250,7 +250,7 @@ dependencies {
     implementation "com.google.android.gms:play-services-auth:19.0.0"
     implementation "com.google.android.gms:play-services-auth-api-phone:17.5.0"
 
-    implementation "com.github.barteksc:android-pdf-viewer:3.2.0-beta.1"
+    implementation "com.github.mhiew:android-pdf-viewer:3.2.0-beta.3"
     implementation "com.airbnb.android:lottie-compose:6.1.0"
 
     androidTestImplementation "androidx.arch.core:core-testing:2.1.0"

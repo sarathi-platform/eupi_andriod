@@ -901,6 +901,31 @@ fun String?.value(): String {
     return this ?: BLANK_STRING
 }
 
+fun String?.value(defaultValue: String): String {
+    return this ?: defaultValue
+}
+
+fun String?.value(ignoreCase: Boolean): String {
+    return (this ?: BLANK_STRING).toLowerCase()
+}
+
+fun String?.value(defaultValue: String, ignoreCase: Boolean): String {
+    return (this ?: defaultValue).toLowerCase()
+}
+
+fun String?.toSafeInt(defaultValue: String = "0"): Int {
+    return try {
+        this.value(defaultValue).toInt()
+    } catch (ex: Exception) {
+        CoreLogger.e(
+            tag = "CoreUtils",
+            msg = "String?.toSafeInt -> Exception: ${ex.message}",
+            ex = ex
+        )
+        defaultValue.toInt()
+    }
+}
+
 fun Int?.value() = this ?: -1
 
 fun Int?.valueAsMinusTwo() = this ?: DEFAULT_LIVELIHOOD_ID
@@ -909,7 +934,11 @@ fun Int?.value(defaultValue: Int) = this ?: defaultValue
 
 fun Long?.value() = this ?: -1
 
+fun Long?.value(defaultValue: Long = -1) = this ?: defaultValue
+
 fun Boolean?.value() = this ?: false
+
+fun Boolean?.value(defaultValue: Boolean) = this ?: defaultValue
 
 fun Double?.value() = this ?: 0.0
 
@@ -1124,7 +1153,7 @@ fun formatToIndianRupee(amount: String): String {
         }
     } catch (ex: Exception) {
         CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1238,7 +1267,8 @@ fun onlyNumberField(value: String): Boolean {
 }
 
 fun getQuestionNumber(questionIndex: Int): String {
-    return "${questionIndex + 1}. "
+//    return "${questionIndex + 1}. "
+    return BLANK_STRING // TODO remove this line and uncomment the above once correct question number logic is figured out
 }
 
 fun String.stringToInt(): Int {
@@ -1353,4 +1383,61 @@ fun String.parseStringToList(): List<Int?> {
     val type = object :
         TypeToken<List<Int?>?>() {}.type
     return gson.fromJson<List<Int>>(this, type)
+}
+
+fun extractSubstrings(input: String): List<String> {
+    // Define the regex pattern
+    val pattern = "\\{[^%]+%[^}]+\\}".toRegex()
+
+    // Find all matches in the input string
+    return pattern.findAll(input).map { it.value }.toList()
+}
+
+//TEMP Code to be removed when CasteEntity is moved to core.
+val casteMap = mapOf(
+    "en" to mapOf(
+        1 to "GEN- General",
+        2 to "OBC- Other Backward Class",
+        3 to "SC- Scheduled Caste",
+        4 to "ST- Scheduled Tribes"
+    ),
+    "hi" to mapOf(
+        1 to "GEN- सामान्य जाति",
+        2 to "OBC- अन्य पिछड़ी जाति",
+        3 to "SC- अनुसूचित जाति",
+        4 to "ST- अनुसूचित जनजाति"
+    ),
+    "bn" to mapOf(
+        1 to "GEN- সাধারণ",
+        2 to "OBC- অন্যান্য অনগ্রসর শ্রেণী",
+        3 to "SC- তফসিলি জাতি",
+        4 to "ST- তফসিলি উপজাতি"
+    ),
+)
+
+fun findUserTypeForMetadata(userType: String): String {
+    return when (userType) {
+        UPCM_USER -> UPCM
+        CRP_USER_TYPE -> CRP
+        BPC_USER_TYPE -> BPC
+        else -> {
+            UPCM
+        }
+    }
+}
+
+fun calculateProgress(pendingCount: Int, totalCount: Int): Float {
+    return if (totalCount <= 0)
+        0F
+    else {
+        pendingCount.intToFloat() / totalCount.intToFloat()
+    }
+}
+
+fun Int.intToFloat(): Float {
+    return try {
+        this.toFloat()
+    } catch (e: Exception) {
+        0F
+    }
 }

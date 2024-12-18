@@ -1,20 +1,16 @@
 package com.nudge.syncmanager.database
 
 import com.nudge.core.EVENT_STATUS_TABLE_NAME
+import com.nudge.core.EventsTable
 import com.nudge.core.IMAGE_STATUS_TABLE_NAME
 import com.nudge.core.REQUEST_STATUS_TABLE_NAME
 
 object SyncMigrationQueries {
-    val ALTER_EVENT_TABLE_COLUMN_RESULT_DROP =
-        "ALTER TABLE 'events_table' DROP COLUMN result"
-
-    val ALTER_EVENT_TABLE_COLUMN_CONSUMER_STATUS_DROP =
-        "ALTER TABLE 'events_table' DROP COLUMN consumer_status"
 
     const val ADD_REQUEST_ID_IN_EVENT_TABLE =
-        "ALTER TABLE 'events_table' ADD COLUMN 'requestId' TEXT"
+        "ALTER TABLE $EventsTable ADD COLUMN requestId TEXT\n"
     const val ADD_EVENT_ID_IN_EVENT_TABLE =
-        "ALTER TABLE 'events_table' ADD COLUMN 'eventId' TEXT"
+        "ALTER TABLE $EventsTable ADD COLUMN eventId TEXT\n"
 
     const val CREATE_EVENT_STATUS_TABLE =
         "CREATE TABLE IF NOT EXISTS $EVENT_STATUS_TABLE_NAME (\n" +

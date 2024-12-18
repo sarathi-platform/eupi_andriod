@@ -523,6 +523,7 @@
     <string name="network_not_available_message">Network not available, Please try again later!</string>
     <string name="total_members_can_not_be_less_than_earning_members">Total family members can not be less than Earning members.</string>
     <string name="logout_confirmation">Are you sure you want to logout?</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
     <string name="warning">Warning!</string>
     <string name="data_lost_message">Another User ID detected. If you proceed, you will lose data for the previously logged in User ID.</string>
     <string name="proceed">Proceed</string>
@@ -540,9 +541,9 @@
     <string name="change_language">Change Language</string>
     <string name="sync_data">Data</string>
     <string name="sync_images">Images</string>
-    <string name="sync_all_data" translatable="false">Sync All Data</string>
+    <string name="sync_all_data">Sync All Data</string>
     <string name="export_failed_event" translatable="false">Export Failed Event</string>
-    <string name="sync_data_history" translatable="false">Sync Data History</string>
+    <string name="sync_data_history">Sync Data History</string>
     <string name="sync_image_history" translatable="false">Sync Image History</string>
     <string name="consumer_success_event_count" translatable="false">Consumer Success Event Count</string>
     <string name="producer_success_event_count" translatable="false">Producer Success Event Count</string>
@@ -551,11 +552,11 @@
     <string name="consumer_failed_event_count" translatable="false">Consumer Failed Event Count</string>
     <string name="producer_failed_event_count" translatable="false">Producer Failed Event Count</string>
     <string name="history_is_not_available_because_data_is_not_synced" translatable="false">History is not available right not because data is not synced</string>
-    <string name="sync_started" translatable="false">Sync Started. Please wait...</string>
+    <string name="sync_started">Sync Started. Please wait...</string>
     <string name="select_date">Select Date</string>
     <string name="no_history_available_right_now">No History Available Right Now</string>
-    <string name="sync_only_data" translatable="false">Sync Only Data</string>
-    <string name="sync_only_images" translatable="false">Sync Only Images</string>
+    <string name="sync_only_data">Sync Only Data</string>
+    <string name="sync_only_images">Sync Only Images</string>
 
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="mission">Missions</string>
@@ -565,9 +566,10 @@
     <string name="select_activity_for">Select Activity for </string>
     <string name="select_all">Select All</string>
     <string name="refresh_config">Refresh app config</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
 
     <string name="last_sync_date_time">Last Sync Time:</string>
-    <string name="sync_failed_message">Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin.</string>
+    <string name="sync_failed_message">"Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin."</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
     <string name="sync_data_first_message">Data sync is required before image sync\n</string>
 </resources>

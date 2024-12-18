@@ -1,0 +1,84 @@
+package com.nudge.core.utils
+
+import android.text.TextUtils
+import android.util.Base64
+import com.nudge.core.AES_SALT
+import com.nudge.core.BLANK_STRING
+import javax.crypto.Cipher
+import javax.crypto.spec.SecretKeySpec
+
+
+object AESHelper {
+    fun generateSecretKey(secretKeyPass: String): SecretKeySpec {
+        /*** The customSecretKey can be 16, 24 or 32 depending on algorithm you are using* i.e AES-128, AES-192 or AES-256 ***/
+        val secretKey = SecretKeySpec("$secretKeyPass$AES_SALT".toByteArray(), "AES")
+        return secretKey
+    }
+
+    fun encrypt(
+        textToEncrypt: String,
+        secretKeyPass: String,
+    ): String {
+        try {
+            if (isAlreadyEncrypted(textToEncrypt, secretKeyPass)) {
+                CoreLogger.e(tag = "Encryption", msg = "Already Encrypted string ${textToEncrypt}")
+                return textToEncrypt
+            }
+
+            val plainText = textToEncrypt.toByteArray()
+
+            val cipher = Cipher.getInstance("AES")
+            cipher.init(Cipher.ENCRYPT_MODE, generateSecretKey(secretKeyPass))
+
+            val encrypt = cipher.doFinal(plainText)
+            return Base64.encodeToString(encrypt, Base64.DEFAULT)
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "AES", msg = exception.stackTraceToString(), ex = exception)
+            return textToEncrypt
+        }
+    }
+
+    fun isAlreadyEncrypted(
+        encryptedText: String,
+        secretKeyPass: String
+    ): Boolean {
+        try {
+            runDecryption(encryptedText, secretKeyPass = secretKeyPass)
+            return true
+
+        } catch (exception: Exception) {
+            return false
+        }
+    }
+
+    fun decrypt(
+        encryptedText: String,
+        secretKeyPass: String
+
+    ): String {
+        if (TextUtils.isEmpty(encryptedText) || TextUtils.equals(encryptedText, "0")) {
+            return BLANK_STRING
+        }
+        try {
+
+
+            return runDecryption(encryptedText, secretKeyPass)
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "AES", msg = exception.stackTraceToString(), ex = exception)
+
+            return encryptedText
+        }
+    }
+
+    private fun runDecryption(encryptedText: String, secretKeyPass: String): String {
+        val textToDecrypt = Base64.decode(encryptedText, Base64.DEFAULT)
+
+        val cipher = Cipher.getInstance("AES")
+
+        cipher.init(Cipher.DECRYPT_MODE, generateSecretKey(secretKeyPass))
+
+        val decrypt = cipher.doFinal(textToDecrypt)
+        return String(decrypt)
+    }
+
+}

@@ -15,5 +15,53 @@ enum class QuestionType {
     DropDown,
     TextField,
     NumericField,
-    InputText
+    InputText,
+    IncrementDecrementList,
+    InputHrsMinutes,
+    InputYrsMonths,
+    SingleImage;
+
+    companion object {
+        val singleResponseQuestionTypeQuestions = listOf(
+            SingleSelectDropDown.name.toLowerCase(),
+            RadioButton.name.toLowerCase(),
+            Toggle.name.toLowerCase(),
+            DropDown.name.toLowerCase()
+        )
+
+        val multipleResponseQuestionTypeQuestions = listOf(
+            MultiSelectDropDown.name.toLowerCase(),
+            MultiSelect.name.toLowerCase(),
+            ToggleGrid.name.toLowerCase(),
+            Grid.name.toLowerCase(),
+            IncrementDecrementList.name.toLowerCase()
+        )
+
+        val userInputQuestionTypeList = listOf(
+            InputNumber.name.toLowerCase(),
+            DateType.name.toLowerCase(),
+            TextField.name.toLowerCase(),
+            InputText.name.toLowerCase(),
+            NumericField.name.toLowerCase(),
+            InputHrsMinutes.name.toLowerCase(),
+            InputYrsMonths.name.toLowerCase()
+        )
+
+        val numericUseInputQuestionTypeList = listOf(
+            InputNumber.name.toLowerCase(),
+            NumericField.name.toLowerCase(),
+            IncrementDecrementList.name.toLowerCase()
+        )
+
+        val autoCalculateQuestionType = listOf(
+            AutoCalculation.name.toLowerCase()
+        )
+        val optionDescriptionAllowInExport = listOf(
+            IncrementDecrementList.name.toLowerCase()
+        )
+    }
+}
+
+enum class OptionType {
+    None;
 }

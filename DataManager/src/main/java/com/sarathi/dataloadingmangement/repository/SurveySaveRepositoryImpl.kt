@@ -1,9 +1,13 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Base64
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.nudge.core.SENSITIVE_INFO_TAG_ID
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.stringToInt
+import com.nudge.core.utils.AESHelper
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.DELEGATE_COMM_WITH_SPACE
@@ -39,9 +43,10 @@ class SurveySaveRepositoryImpl @Inject constructor(
         grantType: String
     ) {
 
+
         surveyAnswersDao.insertOrModifySurveyAnswer(
             SurveyAnswerEntity.getSurveyAnswerEntity(
-                question = question,
+                question = getEncryptedResponseForSensistiveInfo(question),
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 subjectId = subjectId,
                 referenceId = referenceId,
@@ -192,25 +197,67 @@ class SurveySaveRepositoryImpl @Inject constructor(
                                 optionItem.description
                         }
                     }
+                } else {
+                    getSelectedOptionForLanguage(
+                        sectionId,
+                        surveyId,
+                        surveyAnswerData,
+                        surveyAnswers,
+                        index
+                    )
                 }
             } else {
-                val questionOptions = getSurveySectionQuestionOptionsForLanguage(
-                    sectionId = sectionId,
-                    surveyId = surveyId,
-                    referenceType = surveyAnswerData.referenceId
+                getSelectedOptionForLanguage(
+                    sectionId,
+                    surveyId,
+                    surveyAnswerData,
+                    surveyAnswers,
+                    index
                 )
-                surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
-                    val optionItem =
-                        questionOptions.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
-                    if (optionItem != null) {
-                        surveyAnswers[index].optionItems[optionIndex].description =
-                            optionItem.description
-                    }
-                }
             }
 
         }
         return surveyAnswers
+    }
+
+    private fun getSelectedOptionForLanguage(
+        sectionId: Int,
+        surveyId: Int,
+        surveyAnswerData: SurveyAnswerFormSummaryUiModel,
+        surveyAnswers: List<SurveyAnswerFormSummaryUiModel>,
+        index: Int
+    ) {
+        val questionOptions = getSurveySectionQuestionOptionsForLanguage(
+            sectionId = sectionId,
+            surveyId = surveyId,
+            referenceType = LanguageAttributeReferenceType.OPTION.name
+        )
+        surveyAnswerData.optionItems.forEachIndexed { optionIndex, option ->
+            val optionItem =
+                questionOptions.find { it.questionId == surveyAnswerData.questionId && it.optionId == option.optionId }
+            if (optionItem != null) {
+                surveyAnswers[index].optionItems[optionIndex].description =
+                    optionItem.description
+            }
+            option.optionType = surveyAnswerData.questionType
+        }
+    }
+
+    override fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>,
+        formId: Int
+    ): List<String> {
+        return surveyAnswersDao.getTotalSavedFormResponsesCount(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            surveyId = surveyId,
+            taskId = taskId,
+            sectionId = sectionId,
+            questionIds = questionIds,
+            formId = formId
+        )
     }
 
     private fun getSurveySectionQuestionOptionsForLanguage(
@@ -223,7 +270,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
             sectionId = sectionId,
             surveyId = surveyId,
             referenceType = referenceType,
-            languageId = coreSharedPrefs.getSelectedLanguageCode()
+            languageId = coreSharedPrefs.getAppLanguage()
         )
     }
 
@@ -281,5 +328,87 @@ class SurveySaveRepositoryImpl @Inject constructor(
 
         return modeOrNatureOptions
 
+    }
+
+    override fun isAnswerAvailableInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean {
+        val surveyAnswerEntity = SurveyAnswerEntity.getSurveyAnswerEntity(
+            question = question,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId,
+            referenceId = referenceId,
+            taskId = taskId,
+            grantId = grantId,
+            grantType = grantType
+        )
+        return surveyAnswersDao.getSurveyAnswers(
+            surveyAnswerEntity.userId ?: BLANK_STRING,
+            surveyAnswerEntity.subjectId,
+            surveyAnswerEntity.sectionId,
+            surveyAnswerEntity.questionId,
+            surveyAnswerEntity.referenceId
+        ) > 0
+    }
+
+    override suspend fun getFormResponseMap(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        questionIds: List<Int>
+    ): List<SurveyAnswerEntity> {
+        return surveyAnswersDao.getSurveyAnswersForQuestionIds(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            surveyId = surveyId,
+            taskId = taskId,
+            sectionId = sectionId,
+            questionIds = questionIds
+        )
+
+    }
+
+    override suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int,
+        referenceId: String,
+        grantId: Int,
+        grantType: String
+    ) {
+        surveyAnswersDao.checkAndUpdateNonVisibleQuestionResponseInDb(
+            SurveyAnswerEntity.getSurveyAnswerEntity(
+                question = getEncryptedResponseForSensistiveInfo(question),
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                subjectId = subjectId,
+                referenceId = referenceId,
+                taskId = taskId,
+                grantId = grantId,
+                grantType = grantType
+            )
+        )
+    }
+
+    private fun getEncryptedResponseForSensistiveInfo(question: QuestionUiModel): QuestionUiModel {
+        val secretKeyPass = String(
+            Base64.decode(
+                coreSharedPrefs.getPref(
+                    AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                    com.nudge.core.BLANK_STRING
+                ), Base64.DEFAULT
+            )
+        )
+        if (question.tagId.contains(SENSITIVE_INFO_TAG_ID)) {
+            question.options?.firstOrNull()?.selectedValue = AESHelper.encrypt(
+                question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
+                secretKeyPass
+            )
+
+        }
+        return question
     }
 }

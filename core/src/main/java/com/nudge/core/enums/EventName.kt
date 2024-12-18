@@ -54,7 +54,9 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     DELETE_RESPONSE_EVENT(40, topicName = "DELETE_RESPONSE_TOPIC"),
     BLOB_UPLOAD_TOPIC(41, topicName = "BLOB_UPLOAD_TOPIC"),
     UPLOAD_IMAGE_EVENT(42, topicName = "UPLOAD_IMAGE_EVENT"),
-    RANKING_FLAG_EDIT_NEW(43, topicName = "RANKING_FLAG_EDIT_NEW_TOPIC");
+    RANKING_FLAG_EDIT_NEW(43, topicName = "RANKING_FLAG_EDIT_NEW_TOPIC"),
+    SHG_FLAG_EVENT(44, topicName = "SHG_FLAG_TOPIC"),
+    ABLE_BODIED_FLAG_EVENT(45, topicName = "ABLE_BODIED_FLAG_TOPIC");
 
 }
 

@@ -15,8 +15,10 @@ import com.sarathi.dataloadingmangement.model.response.LivelihoodSaveEventRespon
 import com.sarathi.dataloadingmangement.model.response.MoneyJournalApiResponse
 import com.sarathi.dataloadingmangement.model.response.SmallGroupMappingResponseModel
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
+import com.sarathi.dataloadingmangement.model.survey.request.SectionStatusRequest
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.model.survey.response.QuestionAnswerResponseModel
+import com.sarathi.dataloadingmangement.model.survey.response.SectionStatusResponseModel
 import com.sarathi.dataloadingmangement.model.survey.response.SurveyResponseModel
 import com.sarathi.dataloadingmangement.network.request.AttendanceHistoryRequest
 import com.sarathi.dataloadingmangement.network.request.ContentRequest
@@ -95,5 +97,9 @@ interface DataLoadingApiService {
 
     @GET(SUBPATH_GET_LIVELIHOOD_CONFIG)
     suspend fun fetchLivelihoodConfigData(@Query("userId") userId: Int): ApiResponseModel<List<LivelihoodResponse>>
+
+    @POST(GET_SECTION_STATUS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
 
 }

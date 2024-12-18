@@ -8,6 +8,7 @@
     <string name="gujrati" translatable="false">હિન્દી</string>
     <string name="kannada" translatable="false">ಹಿಂದಿ</string>
     <string name="location_not_enable">Location not enabled.</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
 
     <plurals name="didis_added">
         <item quantity="one">दीदी ज़ोड दी गई है</item>
@@ -400,6 +401,7 @@
     <string name="vo_endorsement_not_started">वीओ अनुमोदन प्रारंभ नहीं हुआ है</string>
     <string name="export_data_test">डेटा निर्यात करें</string>
     <string name="network_not_available_message">नेटवर्क उपलब्ध नहीं है, कृपया बाद में पुनः प्रयास करें!</string>
+    <string name="last_sync_date_time">सिंक का अंतिम समय:</string>
     <string name="export_file">एक्सपोर्ट फ़ाइल</string>
 
     <string name="total_members_can_not_be_less_than_earning_members">परिवार के कुल सदस्य कमाऊ सदस्यों से कम नहीं हो सकते।</string>
@@ -417,7 +419,7 @@
     <string name="change_language">भाषा बदलें</string>
     <string name="no_history_available_right_now">अभी कोई इतिहास उपलब्ध नहीं है</string>
     <string name="sync_data">डेटा</string>
-    <string name="sync_images">इमेजिस</string>
+    <string name="sync_images">छबी</string>
 
     <plurals name="seletc_village_screen_text">
         <item quantity="one">Select Village &amp; CLF</item>
@@ -530,5 +532,13 @@
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">"Select Activity for "</string>
     <string name="select_all">Select All</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
 
+    <string name="sync_all_data">"सारे डाटा को सिंक करें "</string>
+    <string name="sync_failed_message">क"ुछ डाटा और छबी सिंक नहीं है . कृपया एडमिन से संपर्क करें . असफल घटनाओं को एक्सपोर्ट करे और एडमिन को कांटेक्ट करें" </string>
+    <string name="sync_only_data">केवल डाटा को सिंक किया गया </string>
+    <string name="sync_data_first_message">"डाटा सिंक छबी सिंक होने के पहले  आवश्यक है "</string>
+    <string name="sync_only_images">केवल डाटा को सिंक करें </string>
+    <string name="sync_started">सिंक सुरु हो गया, कृपया इंतज़ार करें…</string>
+    <string name="sync_data_history">डाटा हिस्ट्री को सिंक करें </string>
 </resources>

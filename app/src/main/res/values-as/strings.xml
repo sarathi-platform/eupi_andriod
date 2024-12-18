@@ -527,7 +527,20 @@
     <string name="select_mission">মিছন বাছক</string>
     <string name="select_activity_for">ইয়াৰ বাবে কাৰ্যকলাপ সমূহ বাছক</string>
     <string name="select_all">সকলো বাছক</string>
+    <string name="activity_inprogress">Activities marked In Progress</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Sync ৰ বাবে তথ্য উপলব্ধ নহয়। অনুগ্ৰহ কৰি ছিঙ্কৰ আগতে কিছু কাৰ্য্য কৰক।</string>
+    <string name="sync_running">Sync is in-progress. Please wait</string>
+    <string name="no_history_available_right_now">এতিয়া কোনো ইতিহাস উপলব্ধ নাই</string>
+    <string name="sync_data">তথ্য</string>
+    <string name="sync_images">ছবিসমূহ</string>
+    <string name="last_sync_date_time">অন্তিম চিংক সময়:</string>
+    <string name="sync_all_data">সকলো তথ্য চিংক কৰক</string>
+    <string name="sync_failed_message">ক"িছুমান ডাটা বা ছবি চিংক কৰা হোৱা নাই। অনুগ্ৰহ কৰি \'বিফল কাৰ্য্য" ফাইল ৰপ্তানি কৰক / প্ৰশাসকৰ সৈতে যোগাযোগ কৰক।."</string>
+    <string name="sync_only_data">কেৱল তথ্য চিংক কৰক</string>
+    <string name="sync_data_first_message">ছবি চিংক কৰাৰ আগতে ডাটা চিংক ৰ প্ৰয়োজন</string>
+    <string name="sync_only_images">কেৱল ছবিসমূহ চিংক কৰক</string>
+    <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।…</string>
+    <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
 
 
 </resources>

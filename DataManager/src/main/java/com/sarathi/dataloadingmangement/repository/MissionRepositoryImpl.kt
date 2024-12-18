@@ -4,6 +4,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -16,6 +17,7 @@ import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.ProgrammeDao
 import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
+import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -30,6 +32,7 @@ import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
+import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
 import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
@@ -41,6 +44,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.FormConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.GrantConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
+import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
@@ -63,7 +67,8 @@ class MissionRepositoryImpl @Inject constructor(
     val subjectAttributeDao: SubjectAttributeDao,
     val attributeValueReferenceDao: AttributeValueReferenceDao,
     val missionDao: MissionDao,
-    val grantConfigDao: GrantConfigDao
+    val grantConfigDao: GrantConfigDao,
+    val surveyConfigEntityDao: SurveyConfigEntityDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -99,8 +104,9 @@ class MissionRepositoryImpl @Inject constructor(
                 )
             } else {
                 missionDao.updateMissionActiveStatus(
-                    mission.id,
-                    sharedPrefs.getUniqueUserIdentifier()
+                    missionId = mission.id,
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    missionOrder = mission.order ?: 1
                 )
             }
             deleteContentConfig(mission.id, ContentCategoryEnum.MISSION.ordinal)
@@ -183,7 +189,8 @@ class MissionRepositoryImpl @Inject constructor(
                         missionId = missionId,
                         userId = sharedPrefs.getUniqueUserIdentifier(),
                         isActive = 1,
-                        activityId = missionActivityModel.id
+                        activityId = missionActivityModel.id,
+                        order = missionActivityModel.order ?: 1
                     )
                 }
 
@@ -249,7 +256,19 @@ class MissionRepositoryImpl @Inject constructor(
             missionId,
             missionActivityModel.activityConfig?.uiConfig ?: listOf()
         )
+
+        if (!missionActivityModel.activityConfig?.surveyConfig.isNullOrEmpty()) {
+            deleteSurveyConfig(activityId = missionActivityModel.id, missionId)
+            saveSurveyConfig(
+                activityId = missionActivityModel.id,
+                missionId = missionId,
+                surveyId = missionActivityModel.activityConfig?.surveyId.value(0),
+                surveyConfig = missionActivityModel.activityConfig?.surveyConfig ?: listOf()
+            )
+        }
     }
+
+
 
     override suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
 
@@ -536,4 +555,42 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun saveActivityOrderStatus(missionId: Int, activityId: Int, order: Int) {
+        missionActivityDao.updateActivityActiveStatus(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            isActive = 1,
+            activityId = activityId,
+            order = order
+        )
+    }
+
+    private fun saveSurveyConfig(
+        activityId: Int,
+        missionId: Int,
+        surveyId: Int,
+        surveyConfig: List<SurveyConfigAttributeResponse>,
+    ) {
+
+        surveyConfig.forEach { attribute ->
+            surveyConfigEntityDao.insertUiConfig(
+                SurveyConfigEntity.getSurveyConfigEntity(
+                    missionId = missionId,
+                    activityId = activityId,
+                    surveyId = surveyId,
+                    userId = sharedPrefs.getUniqueUserIdentifier(),
+                    attributes = attribute
+                )
+            )
+        }
+
+    }
+
+    private fun deleteSurveyConfig(activityId: Int, missionId: Int) {
+        surveyConfigEntityDao.deleteSurveyConfig(
+            missionId = missionId,
+            activityId = activityId,
+            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
+        )
+    }
 }

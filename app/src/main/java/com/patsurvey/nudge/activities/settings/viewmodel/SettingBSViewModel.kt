@@ -30,6 +30,7 @@ import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
@@ -42,17 +43,18 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.utils.CoreLogger
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
+import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
+import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
@@ -98,7 +100,8 @@ class SettingBSViewModel @Inject constructor(
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
-    val formUiConfigUseCase: GetFormUiConfigUseCase
+    val formUiConfigUseCase: GetFormUiConfigUseCase,
+    val selectionVillageUseCase: SelectionVillageUseCase,
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
@@ -116,8 +119,6 @@ class SettingBSViewModel @Inject constructor(
     val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
     val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
-    var syncWorkerInfoState: WorkInfo.State? = null
-
     val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
@@ -183,7 +184,6 @@ class SettingBSViewModel @Inject constructor(
                 SettingTagEnum.LANGUAGE.name
             )
         )
-
         list.add(
             SettingOptionModel(
                 5,
@@ -195,11 +195,20 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 6,
+                context.getString(R.string.export_data),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                7,
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
                 SettingTagEnum.BACKUP_RECOVERY.name
             )
         )
+
         list.add(
             SettingOptionModel(
                 8,
@@ -238,9 +247,6 @@ class SettingBSViewModel @Inject constructor(
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
-            if (userType != UPCM_USER) {
-                exportLocalData(context)
-            }
             delay(2000)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
@@ -285,7 +291,11 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 if (userType == UPCM_USER) {
-                    getSummaryFile()?.let { fileAndDbZipList.add(it) }
+                    getSummaryFile()?.let {
+                        if (it.second != Uri.EMPTY) {
+                            fileAndDbZipList.add(it)
+                        }
+                    }
                 }
 
                 val zipFileName = generateZipFileName()
@@ -394,24 +404,45 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private suspend fun processCRPForms(fileAndDbZipList: ArrayList<Pair<String, Uri?>>) {
-        val selectedVillageId = prefRepo.getSelectedVillage().id
+        selectionVillageUseCase.getVillageListFromDb().distinctBy { it.id }
+            .forEach { villageEntity ->
+                val selectedVillageId = villageEntity.id
         val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
             prefRepo.getAppLanguageId() ?: 2
         )
         val didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(selectedVillageId)
+            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageEntity.id)
         val formAFilePath =
-            generateFormA(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormA(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity = villageEntity
+            )
         addFormToUriList(formAFilePath, fileAndDbZipList)
 
         val formBFilePath =
-            generateFormB(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormB(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formBFilePath, fileAndDbZipList)
 
         val formCFilePath =
-            generateFormc(prefRepo.getStateId(), casteList, selectedVillageId, didiList)
+            generateFormc(
+                prefRepo.getStateId(),
+                casteList,
+                selectedVillageId,
+                didiList,
+                villageEntity
+            )
         addFormToUriList(formCFilePath, fileAndDbZipList)
 
+    }
     }
 
     private fun generateZipFileName(): String {
@@ -519,7 +550,10 @@ class SettingBSViewModel @Inject constructor(
             userId = prefBSRepo.getUniqueUserIdentifier(),
             mobileNo = getUserMobileNumber(),
             fileNameWithoutExtension = summaryFileNameWithoutExtension,
-            fileNameWithExtension = summaryFileNameWithExtension
+            fileNameWithExtension = summaryFileNameWithExtension,
+            isBaselineV2 = settingBSUserCase.baselineV1CheckUseCase.isBaselineV2(
+                stateId = settingBSUserCase.getUserDetailsUseCase.getStateId().toString()
+            )
         )
     }
 
@@ -564,11 +598,12 @@ class SettingBSViewModel @Inject constructor(
         stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
     ) = PdfUtils.getFormAPdf(
         mAppContext,
         stateId,
-        villageEntity = prefRepo.getSelectedVillage(),
+        villageEntity = villageEntity,
         casteList = casteList,
         didiDetailList = didiList,
         completionDate = changeMilliDateToDate(
@@ -583,12 +618,13 @@ class SettingBSViewModel @Inject constructor(
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
         didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
 
         ) =
         PdfUtils.getFormBPdf(
             mAppContext,
             stateId,
-            villageEntity = prefRepo.getSelectedVillage(),
+            villageEntity = villageEntity,
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.patEdit },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -603,12 +639,13 @@ class SettingBSViewModel @Inject constructor(
         stateId: Int,
         casteList: List<CasteEntity>,
         selectedVillageId: Int,
-        didiList: List<DidiEntity>
+        didiList: List<DidiEntity>,
+        villageEntity: VillageEntity,
     ) =
         PdfUtils.getFormCPdf(
             mAppContext,
             stateId,
-            villageEntity = prefRepo.getSelectedVillage(),
+            villageEntity = villageEntity,
             didiDetailList = didiList.filter { it.forVoEndorsement == 1 && it.section2Status == PatSurveyStatus.COMPLETED.ordinal && it.voEndorsementStatus == DidiEndorsementStatus.ENDORSED.ordinal && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal },
             casteList = casteList,
             completionDate = changeMilliDateToDate(
@@ -682,21 +719,19 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private fun cancelSyncUploadWorker() {
-        syncWorkerInfoState?.let {
-            if (it == WorkInfo.State.RUNNING || it == WorkInfo.State.ENQUEUED) {
-                CoreLogger.d(
-                    CoreAppDetails.getApplicationContext(),
-                    "SyncHomeViewModel",
-                    "CancelSyncUploadWorker :: Worker Status: $it"
-                )
                 workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
                 CoreLogger.d(
                     CoreAppDetails.getApplicationContext(),
-                    "SyncHomeViewModel",
+                    "SettingBSViewModel",
                     "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
                 )
-            }
-        }
+    }
+
+    fun syncWorkerRunning(): Boolean {
+        val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
+            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
+                return it.state == WorkInfo.State.RUNNING
+           }?:return false
     }
 
     fun fetchhAppConfig() {

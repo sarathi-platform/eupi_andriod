@@ -81,4 +81,82 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
     ): List<SurveyAnswerEntity>? {
         return repository.getSurveyAnswerImageKeys(questionType = questionType)
     }
+
+    suspend fun getTotalSavedFormResponsesCount(
+        surveyId: Int,
+        taskId: Int,
+        sectionId: Int,
+        formQuestionMap: Map<Int, List<Int>>
+    ): Map<Int, Int> {
+        val map = mutableMapOf<Int, Int>()
+
+        formQuestionMap.forEach { mapEntry ->
+            repository.getTotalSavedFormResponsesCount(
+                surveyId,
+                taskId,
+                sectionId,
+                mapEntry.value,
+                mapEntry.key
+            )
+                .apply {
+                    map.put(mapEntry.key, this.size)
+                }
+
+        }
+
+        return map
+    }
+
+
+    suspend fun isAnswerAvailableInDb(
+        questionUiModel: QuestionUiModel,
+        subjectId: Int,
+        referenceId: String,
+        taskId: Int,
+        grantId: Int,
+        grantType: String
+    ): Boolean {
+        return repository.isAnswerAvailableInDb(
+            questionUiModel,
+            subjectId,
+            referenceId,
+            taskId,
+            grantId,
+            grantType
+        )
+    }
+
+    suspend fun getFormResponseMap(
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        formQuestionMap: MutableMap<Int, List<Int>>
+    ): Map<Int, List<SurveyAnswerEntity>> {
+        val map = mutableMapOf<Int, List<SurveyAnswerEntity>>()
+
+        formQuestionMap.forEach { mapEntry ->
+            repository.getFormResponseMap(surveyId, taskId, sectionId, mapEntry.value).let {
+                map[mapEntry.key] = it
+            }
+        }
+        return map
+    }
+
+    suspend fun checkAndUpdateNonVisibleQuestionResponseInDb(
+        question: QuestionUiModel,
+        subjectId: Int,
+        taskId: Int, referenceId: String,
+        grantId: Int,
+        grantType: String
+    ) {
+        repository.checkAndUpdateNonVisibleQuestionResponseInDb(
+            question,
+            subjectId,
+            taskId,
+            referenceId,
+            grantId,
+            grantType
+        )
+    }
+
 }

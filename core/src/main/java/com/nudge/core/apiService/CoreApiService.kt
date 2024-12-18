@@ -1,6 +1,7 @@
 package com.nudge.core.apiService
 
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.CasteModel
 import com.nudge.core.model.request.AppConfigApiRequest
 import com.nudge.core.model.response.TranslationModel
 import retrofit2.http.Body
@@ -14,4 +15,9 @@ interface CoreApiService {
 
     @GET("/registry-service/translations/fetch")
     suspend fun fetchTranslationConfigData(@Query("stateId") stateId: Int): ApiResponseModel<List<TranslationModel>>
+    // Get CasteList
+    @GET("/read-api/config/caste/get")
+    suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
+
+
 }

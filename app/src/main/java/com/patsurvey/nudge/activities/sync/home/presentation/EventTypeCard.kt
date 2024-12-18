@@ -21,10 +21,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.work.WorkInfo
 import com.nrlm.baselinesurvey.ui.theme.dimen_0_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_18_dp
@@ -38,6 +40,7 @@ import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.smallTextStyleWithUnderline
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.greenDark
@@ -56,12 +59,15 @@ fun EventTypeCard(
     progress: Float? = 0f,
     producerProgress: Float? = 0f,
     isProgressBarVisible: Boolean,
-    isStatusVisible: Boolean,
+    isStatusVisible: Boolean=true,
     isImageSyncCard: Boolean,
+    isConsumerBarVisible: Boolean,
     onCardClick: () -> Unit,
     onSyncButtonClick: () -> Unit,
-    onViewProcessClick: () -> Unit
+    onViewProcessClick: () ->Unit,
+    isWorkerInfoState:String,
 ) {
+    var context = LocalContext.current
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -113,7 +119,7 @@ fun EventTypeCard(
 
             if (isStatusVisible) {
                 Text(
-                    text = stringResource(id = R.string.in_progress),
+                    text = if(isWorkerInfoState==WorkInfo.State.RUNNING.name ||isWorkerInfoState==WorkInfo.State.ENQUEUED.name) stringResource(R.string.sync_on)  else stringResource(R.string.sync_off),
                     style = smallerTextStyleNormalWeight,
                     color = grayColor,
                     modifier = Modifier.constrainAs(statusText) {
@@ -122,6 +128,7 @@ fun EventTypeCard(
                         bottom.linkTo(circularProgressBar.bottom)
                     }
                 )
+                CoreLogger.d(context, "SyncHomeScreen", "Sync Worker Info: ${isWorkerInfoState}")
             }
 
             Text(
@@ -169,56 +176,58 @@ fun EventTypeCard(
                         start.linkTo(parent.start)
                     }
             )
+            if (isConsumerBarVisible) {
+                Text(
+                    text = stringResource(
+                        id = if (isImageSyncCard) R.string.images_processes_by_server
+                        else R.string.data_processes_by_server
+                    ),
+                    style = smallerTextStyleNormalWeight,
+                    color = blueDark,
+                    modifier = Modifier
+                        .padding(top = dimen_10_dp)
+                        .constrainAs(dataProcessedText) {
+                            top.linkTo(producerProgressBar.bottom)
+                            start.linkTo(parent.start)
+                        }
+                )
+                LinearProgressIndicator(
+                    progress = animateFloatAsState(
+                        targetValue = progress ?: 0f,
+                        animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec,
+                        label = BLANK_STRING
+                    ).value,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_2_dp)
+                        .height(dimen_24_dp)
+                        .constrainAs(progressBar) {
+                            top.linkTo(dataProcessedText.bottom)
+                            start.linkTo(parent.start)
+                        },
+                    backgroundColor = syncProgressBg,
+                    color = greenDark,
+                )
 
-            Text(
-                text = stringResource(
-                    id = if (isImageSyncCard) R.string.images_processes_by_server
-                    else R.string.data_processes_by_server
-                ),
-                style = smallerTextStyleNormalWeight,
-                color = blueDark,
-                modifier = Modifier
-                    .padding(top = dimen_10_dp)
-                    .constrainAs(dataProcessedText) {
-                        top.linkTo(producerProgressBar.bottom)
-                        start.linkTo(parent.start)
-                    }
-            )
-            LinearProgressIndicator(
-                progress = animateFloatAsState(
-                    targetValue = progress ?: 0f,
-                    animationSpec = ProgressIndicatorDefaults.ProgressAnimationSpec, label = BLANK_STRING
-                ).value,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimen_2_dp)
-                    .height(dimen_24_dp)
-                    .constrainAs(progressBar) {
-                        top.linkTo(dataProcessedText.bottom)
-                        start.linkTo(parent.start)
-                    },
-                backgroundColor = syncProgressBg,
-                color = greenDark,
-            )
-
-            Text(
-                text = "${roundOffDecimalFloat((progress ?: 0f) * 100)}%",
-                style = syncItemCountStyle,
-                textAlign = TextAlign.Center,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = dimen_5_dp)
-                    .constrainAs(countText) {
-                        top.linkTo(dataProcessedText.bottom)
-                        end.linkTo(progressBar.end)
-                        start.linkTo(parent.start)
-                    }
-            )
+                Text(
+                    text = "${roundOffDecimalFloat((progress ?: 0f) * 100)}%",
+                    style = syncItemCountStyle,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_5_dp)
+                        .constrainAs(countText) {
+                            top.linkTo(dataProcessedText.bottom)
+                            end.linkTo(progressBar.end)
+                            start.linkTo(parent.start)
+                        }
+                )
+            }
             Row(modifier = Modifier
                 .fillMaxWidth()
                 .padding(dimen_8_dp)
                 .constrainAs(descRow) {
-                    top.linkTo(progressBar.bottom)
+                    top.linkTo(if (isConsumerBarVisible) progressBar.bottom else producerProgressBar.bottom)
                     start.linkTo(parent.start)
                 }) {
 
@@ -259,14 +268,16 @@ fun EventTypeCard(
                         onClick = {
                             onSyncButtonClick()
                         },
-                        colors = if(producerProgress!=1.0f) ButtonDefaults.buttonColors(blueDark) else  ButtonDefaults.buttonColors(
+                        colors = if (producerProgress != 1.0f && isWorkerInfoState != WorkInfo.State.RUNNING.name) ButtonDefaults.buttonColors(
+                            blueDark
+                        ) else ButtonDefaults.buttonColors(
                             languageItemInActiveBorderBg) ,
-                        enabled = if (producerProgress!=1.0f ) true else false,
+                        enabled = producerProgress != 1.0f && isWorkerInfoState != WorkInfo.State.RUNNING.name,
                         modifier = Modifier
                             .padding(top = dimen_10_dp)
                             .constrainAs(syncButton) {
                                 end.linkTo(parent.end)
-                                top.linkTo(progressBar.bottom)
+                                top.linkTo(if (isConsumerBarVisible) progressBar.bottom else producerProgressBar.bottom)
                             }
                     ) {
                         Text(
@@ -278,8 +289,6 @@ fun EventTypeCard(
                     }
                 }
             }
-
-
         }
     }
 
@@ -298,6 +307,8 @@ fun CommonSyncScreenPreview() {
         isStatusVisible = true,
         onSyncButtonClick = {},
         onViewProcessClick = {},
-        isImageSyncCard = true
+        isImageSyncCard = true,
+        isConsumerBarVisible = false,
+        isWorkerInfoState = BLANK_STRING
     )
 }

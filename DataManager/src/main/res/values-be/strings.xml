@@ -107,8 +107,38 @@
     <string name="save_text">सेभ</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">दानगारनाय</string>
+    <string name="created_date">Created Date : Ascending</string>
+    <string name="created_date_descending">Created Date : Descending</string>
+    <string name="modified_date">Modified Date : Ascending</string>
+    <string name="modified_date_decending">Modified Date : Descending</string>
+    <string name="name_ascending">Name: A to Z</string>
+    <string name="name_descending">Name: Z to A</string>
+    <string-array name="didi_sorted_array">
+        <item>@string/created_date</item>
+        <item>@string/created_date_descending</item>
+        <item>@string/modified_date</item>
+        <item>@string/modified_date_decending</item>
+        <item>@string/name_ascending</item>
+        <item>@string/name_descending</item>
+    </string-array>
+    <string name="hours">घन्टाफोर</string>
+    <string name="years">बोसोरफोर</string>
+    <string name="minute">मिनिट</string>
+    <string name="month">दान</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"सम्फथिफोर "</string>
+    <string name="last_updated_days_ago">"जोबथा आपदेटेद:  %1$s सानसे सिगां "</string>
+    <string name="last_1_month">Last 1 Month</string>
+    <string name="auto_sync">Auto Sync -  %s</string>
+    <string name="sync_on">Auto Sync - On</string>
+    <string name="sync_off">Auto Sync - Off</string>
+    <string name="synced">Synced</string>
+    <string name="sync_view_progress">दावगानायखौ नाय।</string>
+    <string name="sync_worker_cancelled">Sync worker खौ केनसेल खालामबाय</string>
+    <string name="sync_already_cancelled">Sync आ सिगांनिफ्रायनो केनसेल जाखाबाय।</string>
     <string name="income">"आय "</string>
     <string name="expense">"खरसा "</string>
-    <string name="last_updated_days_ago">"जोबथा आपदेटेद: %1$s सानसे सिगां "</string>
-    <string name="edit_event">Edit Event</string>
+
 </resources>

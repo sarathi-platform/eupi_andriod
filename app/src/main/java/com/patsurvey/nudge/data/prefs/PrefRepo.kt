@@ -109,6 +109,7 @@ interface PrefRepo {
 
    fun setSyncOptionEnabled(isEnabled: Boolean)
    fun iSSyncOptionEnabled(): Boolean
-
+   fun setSyncDBMigrate(isSyncDbMigrate: Boolean)
+   fun isSyncDBMigrate(): Boolean
 
 }

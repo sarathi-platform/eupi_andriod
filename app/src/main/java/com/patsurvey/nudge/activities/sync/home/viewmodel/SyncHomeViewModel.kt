@@ -31,6 +31,7 @@ import com.nudge.core.ZIP_EXTENSION
 import com.nudge.core.analytics.mixpanel.CommonEventParams
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.EventType
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.exportDbFile
@@ -74,6 +75,7 @@ class SyncHomeViewModel @Inject constructor(
     val totalImageEventCount = mutableIntStateOf(0)
     val isDataPBVisible = mutableStateOf(false)
     val isImagePBVisible = mutableStateOf(false)
+    val isConsumerBarVisible = mutableStateOf(false)
     val isDataStatusVisible = mutableStateOf(false)
     val isImageStatusVisible = mutableStateOf(false)
     val isSyncStarted = mutableStateOf(false)
@@ -85,6 +87,7 @@ class SyncHomeViewModel @Inject constructor(
     private val _loaderState = mutableStateOf(LoaderState(false))
     val loaderState: State<LoaderState> get() = _loaderState
     val isSyncImageActive = mutableStateOf(false)
+    val workerState = mutableStateOf(BLANK_STRING)
     val isSyncDataFirstDialog = mutableStateOf(false)
     var isPullToRefreshVisible= mutableStateOf(false)
     var clickCount =   0
@@ -97,6 +100,11 @@ class SyncHomeViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun fetchConsumerBarStatus() {
+        isConsumerBarVisible.value =
+            corePrefRepo.getPref(AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name, false)
     }
 
    @SuppressLint("SuspiciousIndentation")
@@ -368,4 +376,6 @@ class SyncHomeViewModel @Inject constructor(
             }
         }
     }
+    fun getUserPhoneNumber() =
+        syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()
 }

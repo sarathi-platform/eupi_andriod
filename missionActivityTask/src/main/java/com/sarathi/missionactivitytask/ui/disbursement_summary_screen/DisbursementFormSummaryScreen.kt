@@ -61,7 +61,9 @@ import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_150_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
@@ -75,6 +77,7 @@ import com.nudge.core.ui.theme.lightBg
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
 import com.sarathi.dataloadingmangement.ui.component.TextWithReadMoreComponent
@@ -226,7 +229,8 @@ fun DisbursementFormSummaryScreen(
                                             navController = navController,
                                             activityId = activityId,
                                             taskIdList = taskList,
-                                            missionId = missionId
+                                            missionId = missionId,
+                                            activityType = viewModel.activityConfigUiModelWithoutSurvey?.activityType.value()
                                         )
                                     }
                                 )
@@ -299,7 +303,7 @@ fun DisbursementFormSummaryScreen(
                                 .padding(
                                     start = dimen_16_dp,
                                     end = dimen_16_dp,
-                                    bottom = if (isFormSettingScreen) dimen_10_dp else 150.dp
+                                    bottom = if (isFormSettingScreen) dimen_100_dp else dimen_150_dp
                                 ),
                             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                         ) {

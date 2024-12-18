@@ -26,6 +26,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
@@ -71,12 +72,13 @@ import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
+import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.syncmanager.utils.PRODUCER_WORKER_TAG
+import com.nudge.syncmanager.utils.SYNC_UNIQUE_NAME
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
-import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
+import com.patsurvey.nudge.activities.ui.theme.syncMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -85,6 +87,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
@@ -94,12 +97,15 @@ fun SyncHomeScreen(
 ) {
     val scope = rememberCoroutineScope()
     val context = LocalContext.current
-    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(PRODUCER_WORKER_TAG)
+    val workInfo = viewModel.workManager.getWorkInfosForUniqueWorkLiveData(SYNC_UNIQUE_NAME)
         .observeAsState().value
     val lifeCycleOwner = LocalLifecycleOwner.current
 
     val uploadWorkerInfo = rememberUploadWorkerInfo(context, workInfo, viewModel)
     val isNetworkAvailable = remember { mutableStateOf(false) }
+    LaunchedEffect(key1 = Unit) {
+        viewModel.fetchConsumerBarStatus()
+    }
 
     ObserveNetworkState(viewModel, isNetworkAvailable, lifeCycleOwner)
     ObserveEventCounts(viewModel, lifeCycleOwner)
@@ -244,7 +250,9 @@ fun SyncHomeContent(
         )
     }
     ToolbarWithMenuComponent(
-        title = stringResource(id = R.string.sync_all_data),
+        title = stringResource(
+            id = R.string.sync_all_data
+        ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = true,
         actions = {
@@ -272,6 +280,7 @@ fun SyncHomeContent(
         onBackIconClick = { navController.popBackStack() },
         onBottomUI = {
             BottomContent(
+                isWorkerInfoState = viewModel.workerState.value,
                 context = context,
                 viewModel = viewModel,
                 isNetworkAvailable = isNetworkAvailable
@@ -293,8 +302,6 @@ fun SyncHomeContent(
                     contentColor = blueDark,
                 )
 
-
-
                 LazyColumn(
                     modifier = Modifier
                         .background(Color.White)
@@ -302,14 +309,17 @@ fun SyncHomeContent(
                         .fillMaxSize()
                 ) {
                     item {
-                        LastSyncTime(viewModel) {
-                            CoreLogger.d(
-                                context,
-                                "SyncHomeScreen",
-                                "LastSyncTime Click: Worker Cancel ${viewModel.isSyncStarted.value}"
-                            )
-                            if (viewModel.isSyncStarted.value)
-                                viewModel.cancelSyncUploadWorker()
+                        LastSyncTime(
+                            viewModel.lastSyncTime.longValue,
+                            viewModel.getUserPhoneNumber()
+                        ) {
+                            viewModel.onLastSyncTimeClick {
+                                showCustomToast(
+                                    context = context,
+                                    msg = context.getString(it)
+                                )
+                            }
+
                         }
                     }
                     item {
@@ -354,12 +364,14 @@ fun SyncHomeContent(
 
 @Composable
 fun BottomContent(
+    isWorkerInfoState: String,
     context: Context,
     viewModel: SyncHomeViewModel,
     isNetworkAvailable: MutableState<Boolean>
 ) {
     Box(
-        modifier = Modifier.background(white)
+        modifier = Modifier
+            .background(white)
             .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
             .padding(vertical = dimensionResource(id = R.dimen.dp_15))
     ) {
@@ -386,11 +398,30 @@ fun BottomContent(
                     }
                 }
             }
+            var isSyncAllDataActive=true
+            if (viewModel.dataProducerEventProgress.floatValue==1.0F)
+            {
+                if (viewModel.totalImageEventCount.intValue > 0 &&  viewModel.imageProducerEventProgress.floatValue==1.0F )
+                {
+
+                    isSyncAllDataActive=false
+                }
+                else{
+                    if (viewModel.totalImageEventCount.intValue == 0)
+                    {
+                        isSyncAllDataActive =false
+
+                    }
+                }
+            }
+            else{
+                isSyncAllDataActive =true
+            }
+
             ButtonPositive(
                 buttonTitle = stringResource(id = R.string.sync_all_data),
                 isArrowRequired = false,
-                isActive = if( viewModel.dataProducerEventProgress.floatValue==1.0F && viewModel.imageProducerEventProgress.floatValue==1.0F ) false else true
-
+                isActive = isSyncAllDataActive && isWorkerInfoState != WorkInfo.State.RUNNING.name,
             ) {
                 viewModel.selectedSyncType.intValue = SyncType.SYNC_ALL.ordinal
                 CoreLogger.d(
@@ -405,32 +436,50 @@ fun BottomContent(
 }
 
 @Composable
-fun LastSyncTime(viewModel: SyncHomeViewModel, onCancelWorker: () -> Unit) {
-    val context = LocalContext.current
-    if (viewModel.lastSyncTime.longValue != 0L) {
+fun LastSyncTime(lastSyncTime: Long, mobileNumber: String, onCancelWorker: () -> Unit) {
+    if (lastSyncTime != 0L) {
+        Column(modifier = Modifier.fillMaxWidth()) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(dimen_10_dp)
                     .clickable {
-                        viewModel.onLastSyncTimeClick { showCustomToast(context = context,msg= context.getString(it)) }
+                        onCancelWorker()
                     },
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
                     text = stringResource(id = R.string.last_sync_date_time),
-                    style = mediumTextStyle,
+                    style = syncMediumTextStyle,
                     color = textColorDark
                 )
 
                 Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT).format(viewModel.lastSyncTime.longValue),
-                    style = mediumTextStyle,
+                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+                        lastSyncTime
+                    ),
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = stringResource(id = R.string.profile_phone),
+                    style = syncMediumTextStyle,
                     color = textColorDark
                 )
 
-
-
+                Text(
+                    text = mobileNumber,
+                    style = syncMediumTextStyle,
+                    color = textColorDark
+                )
+            }
         }
     }
 }
@@ -458,9 +507,12 @@ fun HandleWorkerState(
     uploadWorkerInfo: WorkInfo?, viewModel: SyncHomeViewModel, context: Context,
     scope: CoroutineScope
 ) {
+    viewModel.workerState.value= uploadWorkerInfo?.state?.name.value()
     when (uploadWorkerInfo?.state) {
         WorkInfo.State.RUNNING -> {
+
             if (viewModel.isSyncStarted.value) {
+
                 when (viewModel.selectedSyncType.intValue) {
                     SyncType.SYNC_ONLY_DATA.ordinal -> viewModel.isDataPBVisible.value = true
                     SyncType.SYNC_ONLY_IMAGES.ordinal -> viewModel.isImagePBVisible.value = true
@@ -557,10 +609,11 @@ private fun SyncDataCard(
             )
             startSyncProcess(context, viewModel, isNetworkAvailable.value)
         },
-        isStatusVisible = viewModel.isDataStatusVisible.value,
         onCardClick = {
 
         },
+        isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
+        isWorkerInfoState = viewModel.workerState.value,
         onViewProcessClick = {
             onViewProcessClick()
         }
@@ -598,9 +651,10 @@ private fun SyncImageCard(
                 }
             },
             syncButtonTitle = stringResource(id = R.string.sync_only_images),
-            isStatusVisible = viewModel.isImageStatusVisible.value,
+            isWorkerInfoState =viewModel.workerState.value ,
             onCardClick = {
             },
+            isConsumerBarVisible = viewModel.isConsumerBarVisible.value,
             onViewProcessClick = {
                 onViewProcessClick()
             }
