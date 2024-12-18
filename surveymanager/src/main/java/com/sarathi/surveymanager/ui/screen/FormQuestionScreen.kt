@@ -42,6 +42,7 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -91,7 +92,6 @@ import com.sarathi.surveymanager.ui.description_component.presentation.ModelBott
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.utils.getMaxInputLength
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -255,9 +255,8 @@ fun FormQuestionScreen(
                                     taskId,
                                     SurveyStatusEnum.INPROGRESS.name
                                 )
-                                withContext(Dispatchers.Main) {
+                                withContext(CoreDispatchers.mainDispatcher) {
                                     onNavigateBack()
-                                    delay(500)
                                     viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
 
                                 }
