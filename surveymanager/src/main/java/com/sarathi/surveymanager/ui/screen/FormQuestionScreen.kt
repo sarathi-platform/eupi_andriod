@@ -241,9 +241,11 @@ fun FormQuestionScreen(
                         .fillMaxWidth()
                 ) {
                     SubmitButtonBottomUi(
-                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value && !viewModel.isSubmitButtonClicked.value,
                         buttonTitle = stringResource(R.string.submit),
                         onSubmitButtonClick = {
+                            if (!viewModel.isSubmitButtonClicked.value) {
+                                viewModel.isSubmitButtonClicked.value = true
                             viewModel.saveAllAnswers {
                                 viewModel.updateTaskStatus(taskId)
                                 viewModel.updateSectionStatus(
@@ -254,9 +256,12 @@ fun FormQuestionScreen(
                                     SurveyStatusEnum.INPROGRESS.name
                                 )
                                 withContext(Dispatchers.Main) {
-                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                                     onNavigateBack()
+                                    delay(500)
+                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+
                                 }
+                            }
                             }
                         }
                     )
