@@ -48,10 +48,11 @@ import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.CASTE_TABLE
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_BASELINE_DATABASE_VERSION = 2
+const val NUDGE_BASELINE_DATABASE_VERSION = 3
 
 @Database(
     entities = [
@@ -121,11 +122,21 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
         private const val ALTER_FORM_RESPONSE_TABLE =
             "ALTER TABLE form_question_response_table ADD selectedValueId TEXT NOT NULL DEFAULT '';"
 
+
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Log.d("NudgeDatabase", "MIGRATION_42_43")
+                Log.d("NudgeDatabase", "MIGRATION_1_2")
                 migration(database, listOf(ALTER_FORM_RESPONSE_TABLE))
+            }
+        }
+        val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
+
+        // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                Log.d("NudgeDatabase", "MIGRATION_2_3")
+                migration(database, listOf(DROP_CASTE_TABLE))
             }
         }
 

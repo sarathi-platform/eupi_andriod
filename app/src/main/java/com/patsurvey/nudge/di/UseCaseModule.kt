@@ -17,6 +17,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -81,7 +82,6 @@ import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillag
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao

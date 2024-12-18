@@ -6,12 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.gson.Gson
 import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
-import com.patsurvey.nudge.analytics.AnalyticsHelper
-import com.patsurvey.nudge.analytics.EventParams
-import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
@@ -23,7 +22,6 @@ import com.patsurvey.nudge.database.SectionAnswerEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
@@ -898,24 +896,15 @@ object RetryHelper {
 
                     }
                     ApiType.CAST_LIST_API -> {
-                        crpPatQuestionApiLanguageId.forEach { language ->
                             try {
-                                val casteResponse = apiService?.getCasteList(language)
+                                val casteEntityList = arrayListOf<CasteEntity>()
+                                val casteResponse = apiService?.getCasteList()
                                 if (casteResponse?.status.equals(SUCCESS, true)) {
-                                    casteResponse?.data?.let { casteList ->
-                                        casteList.forEach { casteEntity ->
-                                            casteEntity.languageId = language
-                                        }
-                                        castListDao?.insertAll(casteList)
-                                        AnalyticsHelper.logEvent(
-                                            Events.CASTE_LIST_WRITE,
-                                            mapOf(
-                                                EventParams.LANGUAGE_ID to language,
-                                                EventParams.CASTE_LIST to "$casteList",
-                                                EventParams.FROM_SCREEN to "RetryHelper"
-                                            )
-                                        )
+                                    castListDao?.deleteCasteTable()
+                                    casteResponse?.data?.forEach { casteModel ->
+                                        casteEntityList.add(CasteEntity.getCasteEntity(casteModel))
                                     }
+                                    castListDao?.insertAll(casteEntityList)
                                 } else {
                                     val ex = ApiResponseFailException(casteResponse?.message!!)
 
@@ -924,7 +913,6 @@ object RetryHelper {
                             } catch (ex: Exception) {
                                 onCatchError(ex, ApiType.CAST_LIST_API)
                             }
-                        }
                     }
                     ApiType.BPC_POOR_DIDI_LIST_API -> {
                         stepListApiVillageId.forEach { id ->

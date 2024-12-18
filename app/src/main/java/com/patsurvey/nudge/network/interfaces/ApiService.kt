@@ -3,13 +3,13 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.model.CasteModel
 import com.nudge.core.KEY_HEADER_MOBILE
 import com.nudge.core.KEY_HEADER_TYPE
 import com.nudge.core.model.response.LastSyncResponseModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.activities.settings.TransactionIdResponseForPatStatus
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.model.request.AddWorkFlowRequest
@@ -106,7 +106,7 @@ interface ApiService {
 
     // Get CasteList
     @GET("/read-api/config/caste/get")
-    suspend fun getCasteList(@Query("languageId") languageId: Int): ApiResponseModel<List<CasteEntity>>
+    suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
 
     // Add WorkFlow
     @POST("/write-api/workflow/add")
