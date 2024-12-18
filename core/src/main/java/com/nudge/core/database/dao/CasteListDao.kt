@@ -1,11 +1,11 @@
-package com.patsurvey.nudge.database.dao
+package com.nudge.core.database.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.patsurvey.nudge.database.CasteEntity
-import com.patsurvey.nudge.utils.CASTE_TABLE
+import com.nudge.core.CASTE_TABLE
+import com.nudge.core.database.entities.CasteEntity
 
 @Dao
 interface CasteListDao {
@@ -14,10 +14,10 @@ interface CasteListDao {
     fun getAllCaste(): List<CasteEntity>
 
     @Query("SELECT * FROM $CASTE_TABLE where languageId = :languageId order by id")
-    fun getAllCasteForLanguage(languageId:Int): List<CasteEntity>
+    fun getAllCasteForLanguage(languageId: Int): List<CasteEntity>
 
     @Query("Select * FROM $CASTE_TABLE where id = :id AND languageId=:languageId")
-    fun getCaste(id: Int,languageId:Int): CasteEntity
+    fun getCaste(id: Int, languageId: Int): CasteEntity
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCaste(caste: CasteEntity)

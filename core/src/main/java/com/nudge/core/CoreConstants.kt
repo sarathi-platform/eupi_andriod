@@ -20,6 +20,7 @@ const val ApiStatusTable = "api_status_table"
 const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
 const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
+const val CASTE_TABLE = "caste_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -31,7 +32,7 @@ const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
-const val NUDGE_DATABASE_VERSION = 3
+const val NUDGE_DATABASE_VERSION = 4
 const val NUDGE_GRANT_DATABASE = "NudgeGrantDatabase"
 
 const val SELECTION_MISSION = "Selection"
@@ -232,6 +233,8 @@ const val SUBJECT_DADA_NAME = "dadaName"
 const val SUBJECT_ADDRESS = "address"
 const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
+const val SUBPATH_GET_CASTE_LIST = "/read-api/config/caste/get"
+
 
 const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
 
