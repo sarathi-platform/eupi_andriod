@@ -9,7 +9,6 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.example.incomeexpensemodule.R
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
-import com.nudge.core.DEFAULT_ID
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
@@ -82,13 +81,9 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
-    private val context = CoreAppDetails.getContext()
+
     val eventsSubFilterList: List<ValuesDto> =
-        listOf(
-            ValuesDto(1, context?.getString(R.string.all) ?: "All"),
-            ValuesDto(2, context?.getString(R.string.assets) ?: "Assets"),
-            ValuesDto(3, context?.getString(R.string.income_expanse) ?: "Income/Expense")
-        )
+        listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
 
     val selectedLivelihood: MutableState<Int> = mutableStateOf(0)
 
@@ -390,8 +385,7 @@ class DataSummaryScreenViewModel @Inject constructor(
             )
         }
         if (selectedLivelihood.value == 0) {
-            selectedLivelihood.value =
-                if (!livelihoodDropdownList.isNullOrEmpty()) livelihoodDropdownList.first().id else DEFAULT_ID
+            selectedLivelihood.value = livelihoodDropdownList.first().id
         }
         selectedEventsSubFilter.value = eventsSubFilterList.first().id
         filtersTuple = Triple(
