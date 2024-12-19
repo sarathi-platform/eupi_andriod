@@ -11,12 +11,21 @@ enum class AnalyticsEvents(val eventName: String) {
     SYNC_FAILED_DUE_TO_EXCEPTION("sync_failed_due_to_exception"),
     SYNC_CONSUMER_FAILED_DUE_TO_EXCEPTION("sync_consumer_failed_due_to_exception"),
     LOGIN("Login"),
-    LOGOUT("Logout")
+    LOGOUT("Logout"),
+    EXPORT_BACKUP_FILE("export_backup_file"),
+    EXPORT_BACKUP_FILE_FAILED("export_backup_file_fail"),
+    REGENERATE_ALL_EVENT("regenrate_all_event"),
+    EXPORT_BASELINE_QNA("export_baseline_qna"),
+    LOAD_SERVER_DATA("load_server_data"),
+    IMPORT_DATA("import_data"),
+    EXPORT_IMAGES("export_images"),
+    EXPORT_EVENT_FILE("export_event_file"),
+    EXPORT_DATABASE("export_database"),
+    EXPORT_LOG_FILE("export_log_file"),
 }
 
 
 enum class AnalyticsEventsParam(val eventParam: String) {
-
 
     SYNC_TYPE("sync_type"),
 
@@ -34,7 +43,6 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     FAILED_EVENT_ID_LIST("failed_event_id_list"),
     EXCEPTION_MESSAGE("exception_message"),
     STACK_TRACE("stack_trace"),
-    LOGIN("login"),
 
 }
 

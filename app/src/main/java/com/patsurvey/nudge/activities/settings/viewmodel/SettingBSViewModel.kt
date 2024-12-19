@@ -106,6 +106,7 @@ class SettingBSViewModel @Inject constructor(
     val selectionVillageUseCase: SelectionVillageUseCase,
     private val syncManagerUseCase: SyncManagerUseCase,
 
+
     ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
@@ -323,7 +324,10 @@ class SettingBSViewModel @Inject constructor(
                 openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
+                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
+
             } catch (exception: Exception) {
+                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName+exception.message)
                 NudgeLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))

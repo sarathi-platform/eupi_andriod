@@ -32,10 +32,12 @@ fun ExportBackupScreen(
                 SettingTagEnum.EXPORT_DATABASE.name -> {
                     viewModel.exportLocalDatabase(true) {
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                        viewModel.exportDatabaseAnalytic()
                     }
                 }
                 SettingTagEnum.EXPORT_IMAGES.name -> {
                     viewModel.exportLocalImages()
+                    viewModel.exportImageAnalytic()
                 }
 
                 SettingTagEnum.EXPORT_EVENT_FILE.name -> {

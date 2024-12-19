@@ -20,6 +20,7 @@ import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDatabase
@@ -32,6 +33,7 @@ import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
@@ -50,7 +52,9 @@ class ExportBackupScreenViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
-) : BaseViewModel() {
+    private val syncManagerUseCase: SyncManagerUseCase,
+
+    ) : BaseViewModel() {
     var mAppContext: Context
     val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val exportOptionList: State<List<SettingOptionModel>> get() = _exportOptionList
@@ -76,6 +80,7 @@ class ExportBackupScreenViewModel @Inject constructor(
         try {
             CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
+                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_LOG_FILE.eventName)
                 val logFile = BSLogWriter.buildLogFile(appContext = mAppContext) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
@@ -92,7 +97,6 @@ class ExportBackupScreenViewModel @Inject constructor(
                         onEvent(LoaderEvent.UpdateLoaderState(false))
                         openShareSheet(convertURIAccToOS(it), "", type = ZIP_MIME_TYPE)
                     }
-
 
                 }
             }
@@ -116,7 +120,12 @@ class ExportBackupScreenViewModel @Inject constructor(
             }
         }
     }
-
+    fun exportImageAnalytic(){
+        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_IMAGES.eventName)
+    }
+    fun exportDatabaseAnalytic(){
+        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_DATABASE.eventName)
+    }
 
     fun exportLocalDatabase(isNeedToShare: Boolean, onExportSuccess: (Uri) -> Unit) {
         BaselineLogger.d("ExportBackupViewModel", "exportLocalDatabase -----")
@@ -223,6 +232,8 @@ class ExportBackupScreenViewModel @Inject constructor(
                 }
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
+                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_EVENT_FILE.eventName)
+
             } catch (exception: Exception) {
                 BaselineLogger.e("Compression", exception.message ?: "", exception)
                 exception.printStackTrace()

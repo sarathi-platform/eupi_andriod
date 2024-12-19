@@ -105,6 +105,7 @@ fun ExportImportScreen(
             },
             onPositiveButtonClick = {
                 BaselineLogger.d("ExportImportScreen", "Load Server Data Dialog YES Click")
+                viewModel.loadServerDataAnalytic()
                 viewModel.exportLocalDatabase(isNeedToShare = false) {
                     viewModel.clearLocalDatabase {
                         viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -139,6 +140,7 @@ fun ExportImportScreen(
                 viewModel.showRestartAppDialog.value=false
                                     },
             onPositiveButtonClick = {
+                viewModel.exportDataAnalytic()
                 BaselineLogger.d("ExportImportScreen","Restart Dialog Proceed Click")
                 filePicker.launch("*/*")
             })

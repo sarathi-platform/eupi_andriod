@@ -46,6 +46,7 @@ import com.nudge.core.SUBJECT_NAME
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.VILLAGE_NAME
 import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
@@ -67,6 +68,7 @@ import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -100,8 +102,10 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
-) : BaseViewModel() {
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val syncManagerUseCase: SyncManagerUseCase,
+
+    ) : BaseViewModel() {
     var mAppContext: Context
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -193,6 +197,12 @@ class ExportImportViewModel @Inject constructor(
             onExportSuccess(it)
         }
     }
+    fun loadServerDataAnalytic(){
+        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
+    }
+    fun exportDataAnalytic(){
+        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
+    }
 
     fun compressEventData(title: String) {
         BaselineLogger.d("ExportImportViewModel", "compressEventData ----")
@@ -278,6 +288,7 @@ class ExportImportViewModel @Inject constructor(
                 withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
+                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
@@ -627,6 +638,8 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
+            syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
+
         }
     }
 }
