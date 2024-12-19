@@ -65,10 +65,11 @@ class SurveyValidationUseCase @Inject constructor(
         if (validation != null) {
 
             val expressionResult = invoke(
-                validation.condition,
-                questionUiModel,
-                selectionOption,
-                validation.message
+                validationExpression = validation.condition,
+                validationRegex = validation.regex,
+                questionUiModel = questionUiModel,
+                selectionOption = selectionOption,
+                message = validation.message
             )
             onValidationResult(expressionResult.first, expressionResult.second)
 
@@ -81,6 +82,7 @@ class SurveyValidationUseCase @Inject constructor(
 
     suspend fun invoke(
         validationExpression: String?,
+        validationRegex: String?,
         questionUiModel: QuestionUiModel,
         selectionOption: OptionsUiModel,
         message: String
@@ -146,7 +148,11 @@ class SurveyValidationUseCase @Inject constructor(
             return Pair(true, BLANK_STRING)
 
         return Pair(
-            ExpressionEvaluator.evaluateExpression(completedExpression.value()),
+            ExpressionEvaluator.evaluateExpression(
+                completedExpression.value(),
+                selectionOption.selectedValue.value(),
+                validationRegex
+            ),
             validationMessage
         )
     }
