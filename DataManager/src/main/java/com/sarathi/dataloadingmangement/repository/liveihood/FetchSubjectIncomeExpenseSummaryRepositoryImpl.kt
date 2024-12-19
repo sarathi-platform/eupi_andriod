@@ -69,17 +69,15 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         mapEntry: Map.Entry<Int, List<AssetEntity>>,
         imageUriForLivelihood: HashMap<Int, String>
     ) {
-        livelihoodDao.getLivelihoodImageForUser(
+        val image = livelihoodDao.getLivelihoodImageForUser(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            mapEntry.key
-        ).image
-            ?.let {
-                imageUriForLivelihood.put(
-                    mapEntry.key,
-                    it
-                )
-            }
+            livelihoodId = mapEntry.key
+        )?.image
+        image?.let {
+            imageUriForLivelihood[mapEntry.key] = it
+        }
     }
+
 
     override suspend fun getIncomeExpenseSummaryForSubject(
         subjectId: Int,
