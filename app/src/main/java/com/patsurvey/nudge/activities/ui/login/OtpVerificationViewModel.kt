@@ -1,6 +1,8 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -22,7 +24,9 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
-) : BaseViewModel() {
+    private val syncManagerUseCase: SyncManagerUseCase,
+
+    ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
     val showLoader = mutableStateOf(false)
@@ -45,6 +49,7 @@ class OtpVerificationViewModel @Inject constructor(
                         onOtpResponse(it.typeName?: CRP_USER_TYPE,true,response.message)
                     }
                 }
+                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOGIN.eventName)
 
             } else {
                 onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")

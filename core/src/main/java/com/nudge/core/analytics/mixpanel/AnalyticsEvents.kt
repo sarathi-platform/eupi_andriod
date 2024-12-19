@@ -10,6 +10,8 @@ enum class AnalyticsEvents(val eventName: String) {
     SYNC_API_FAILURE("sync_api_failure"),
     SYNC_FAILED_DUE_TO_EXCEPTION("sync_failed_due_to_exception"),
     SYNC_CONSUMER_FAILED_DUE_TO_EXCEPTION("sync_consumer_failed_due_to_exception"),
+    LOGIN("Login"),
+    LOGOUT("Logout")
 }
 
 
@@ -32,6 +34,7 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     FAILED_EVENT_ID_LIST("failed_event_id_list"),
     EXCEPTION_MESSAGE("exception_message"),
     STACK_TRACE("stack_trace"),
+    LOGIN("login"),
 
 }
 
