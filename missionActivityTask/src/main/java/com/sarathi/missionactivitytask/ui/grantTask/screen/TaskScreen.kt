@@ -427,12 +427,14 @@ fun TaskScreen(
 
                             message?.let {
                                 // Display message when applicable
-                                Text(
-                                    text = it,
-                                    style = defaultTextStyle,
-                                    color = textColorDark,
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
+                                if (!viewModel.loaderState.value.isLoaderVisible) {
+                                    Text(
+                                        text = it,
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
                             } ?: LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
 
                                 stickyHeader {
