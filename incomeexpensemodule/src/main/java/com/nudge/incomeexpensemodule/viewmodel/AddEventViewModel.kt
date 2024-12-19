@@ -492,6 +492,7 @@ class AddEventViewModel @Inject constructor(
         if (validation != null) {
             val expressionResult = validationUseCase.invoke(
                 validationExpression = validation.condition,
+                validationRegex = validation.regex,
                 subjectId = subjectId,
                 selectedAsset = selectedAssetType,
                 selectedLivelihood = selectedLivelihood,
