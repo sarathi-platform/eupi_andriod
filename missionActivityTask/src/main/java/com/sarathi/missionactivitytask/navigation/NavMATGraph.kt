@@ -1110,10 +1110,13 @@ fun NavGraphBuilder.MatNavigation(
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
-                navController.popBackStack(
-                    route = MATHomeScreens.SurveyScreen.route,
-                    inclusive = false,
-                    saveState = false
+                navigateToFormSummaryScreen(
+                    navController = navController,
+                    taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
+                    surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
+                    sectionId = it.arguments?.getInt(ARG_SECTION_ID).value(),
+                    formId = it.arguments?.getInt(ARG_FORM_ID).value(),
+                    activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value()
                 )
             },
             onSettingClick = {
