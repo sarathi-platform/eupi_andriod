@@ -418,7 +418,7 @@ fun DropDownContainer(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int
     SingleSelectDropDown(
         sources = livelihoodList,
         selectOptionText = livelihoodList.find { it.isSelected == true }?.id
-            ?: livelihoodList.first()?.id ?: DEFAULT_ID
+            ?: if (livelihoodList.isNotEmpty()) livelihoodList.first().id else DEFAULT_ID
     ) {
         onValueSelected(it)
     }
