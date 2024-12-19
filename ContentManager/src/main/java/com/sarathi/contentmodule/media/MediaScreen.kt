@@ -46,6 +46,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import com.github.barteksc.pdfviewer.PDFView
+import com.nudge.core.ARG_IS_FROM_BACKSTACK
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_15_dp
@@ -67,6 +68,12 @@ fun MediaScreen(
     LaunchedEffect(key1 = true) {
         viewModel.initData(key)
     }
+    BackHandler {
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            ARG_IS_FROM_BACKSTACK, true
+        )
+        navController.popBackStack()
+    }
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
@@ -87,6 +94,9 @@ fun MediaScreen(
                                 activity.requestedOrientation =
                                     ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                             }
+                            navController.previousBackStackEntry?.savedStateHandle?.set(
+                                ARG_IS_FROM_BACKSTACK, true
+                            )
                             navController.popBackStack()
                         }
                     )
