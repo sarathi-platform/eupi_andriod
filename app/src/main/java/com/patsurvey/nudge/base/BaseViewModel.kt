@@ -50,6 +50,8 @@ abstract class BaseViewModel : ViewModel(){
     var job: Job? = null
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
+
+
         when (e) {
             is HttpException -> {
                 when (e.response()?.code() ?: 0) {

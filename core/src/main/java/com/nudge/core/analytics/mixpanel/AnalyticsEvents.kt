@@ -22,6 +22,7 @@ enum class AnalyticsEvents(val eventName: String) {
     EXPORT_EVENT_FILE("export_event_file"),
     EXPORT_DATABASE("export_database"),
     EXPORT_LOG_FILE("export_log_file"),
+    CATCHED_EXCEPTION("catch_exception"),
 }
 
 
@@ -43,6 +44,7 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     FAILED_EVENT_ID_LIST("failed_event_id_list"),
     EXCEPTION_MESSAGE("exception_message"),
     STACK_TRACE("stack_trace"),
+    EXCEPTION("exception")
 
 }
 

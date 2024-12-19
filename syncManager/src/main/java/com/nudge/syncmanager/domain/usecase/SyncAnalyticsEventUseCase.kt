@@ -196,4 +196,5 @@ class SyncAnalyticsEventUseCase @Inject constructor(
             eventName,param
         )
     }
+
 }

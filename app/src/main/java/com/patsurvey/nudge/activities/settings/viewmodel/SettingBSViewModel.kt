@@ -44,6 +44,7 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
@@ -104,9 +105,6 @@ class SettingBSViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
-    private val syncManagerUseCase: SyncManagerUseCase,
-
-
     ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
@@ -253,7 +251,7 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
             delay(2000)
-            syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
+            analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
                showLoader.value=false
@@ -324,10 +322,10 @@ class SettingBSViewModel @Inject constructor(
                 openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
-                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
+                analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
 
             } catch (exception: Exception) {
-                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName+exception.message)
+                analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName+exception.message)
                 NudgeLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))

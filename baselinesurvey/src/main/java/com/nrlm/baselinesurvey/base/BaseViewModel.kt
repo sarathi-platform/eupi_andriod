@@ -32,6 +32,9 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
@@ -50,6 +53,7 @@ abstract class BaseViewModel() : ViewModel() {
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    lateinit var analyticsEventUseCase: AnalyticsEventUseCase
 
     fun ViewModel.ioViewModelScope(
         start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -89,6 +93,13 @@ abstract class BaseViewModel() : ViewModel() {
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         BaselineLogger.e("BaseViewModel", "exceptionHandler: ${e.message}", e)
+        val eventParams = mapOf(
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: com.sarathi.dataloadingmangement.BLANK_STRING)
+        )
+        analyticsEventUseCase.sentAnalyticsEvent(
+            AnalyticsEvents.CATCHED_EXCEPTION.eventName,
+            eventParams
+        )
         onCatchError(e)
 
     }

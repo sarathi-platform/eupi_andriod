@@ -65,6 +65,7 @@ import com.nudge.core.parseStringToList
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
@@ -103,7 +104,7 @@ class ExportImportViewModel @Inject constructor(
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
-    private val syncManagerUseCase: SyncManagerUseCase,
+    private val analyticEventUseCase: AnalyticsEventUseCase,
 
     ) : BaseViewModel() {
     var mAppContext: Context
@@ -198,10 +199,10 @@ class ExportImportViewModel @Inject constructor(
         }
     }
     fun loadServerDataAnalytic(){
-        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
+        analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
     }
     fun exportDataAnalytic(){
-        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
+        analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
     }
 
     fun compressEventData(title: String) {
@@ -288,7 +289,7 @@ class ExportImportViewModel @Inject constructor(
                 withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
-                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
+                analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
@@ -638,7 +639,7 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
-            syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
+            analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
 
         }
     }

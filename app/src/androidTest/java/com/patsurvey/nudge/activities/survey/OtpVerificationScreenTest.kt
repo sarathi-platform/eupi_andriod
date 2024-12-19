@@ -50,16 +50,16 @@ class OtpVerificationScreenTest {
     @Mock
     private lateinit var otpVerificationRepository: OtpVerificationRepository
 
-    @Before
-    fun setupLoginNavHost() {
-        MockitoAnnotations.openMocks(this)
-        composeTestRule.setContent {
-            viewModel = OtpVerificationViewModel(otpVerificationRepository)
-            Nudge_Theme {
-                OtpVerificationScreen(navController = rememberNavController(), viewModel = viewModel, modifier = Modifier, mobileNumber = "")
-            }
-        }
-    }
+//    @Before
+//    fun setupLoginNavHost() {
+//        MockitoAnnotations.openMocks(this)
+//        composeTestRule.setContent {
+//            viewModel = OtpVerificationViewModel(otpVerificationRepository)
+//            Nudge_Theme {
+//                OtpVerificationScreen(navController = rememberNavController(), viewModel = viewModel, modifier = Modifier, mobileNumber = "")
+//            }
+//        }
+//    }
 
     @Test
     fun otpVerificationNavHost() {

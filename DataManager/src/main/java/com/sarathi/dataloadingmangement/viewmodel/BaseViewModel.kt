@@ -5,7 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.util.LoaderState
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -15,6 +18,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
@@ -25,6 +29,8 @@ abstract class BaseViewModel : ViewModel() {
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    @Inject
+    lateinit var analyticsEventUseCase: AnalyticsEventUseCase
     abstract fun <T> onEvent(event: T)
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
@@ -33,6 +39,13 @@ abstract class BaseViewModel : ViewModel() {
             msg = e?.localizedMessage ?: BLANK_STRING,
             stackTrace = true,
             ex = e
+        )
+        val eventParams = mapOf(
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: com.sarathi.dataloadingmangement.BLANK_STRING)
+        )
+        analyticsEventUseCase.sentAnalyticsEvent(
+            AnalyticsEvents.CATCHED_EXCEPTION.eventName,
+            eventParams
         )
 
         onCatchError(e)
