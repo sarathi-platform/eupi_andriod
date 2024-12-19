@@ -187,7 +187,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                     getSurveyConfig(surveyConfigEntityList, taskAttributes)
                 }
 
-            isActivityCompleted = getActivityUseCase.isAllActivityCompleted(
+            isActivityCompleted = getActivityUseCase.isActivityCompleted(
                 missionId = it.missionId.value(NUMBER_ZERO),
                 activityId = it.activityId.value(NUMBER_ZERO)
             )
