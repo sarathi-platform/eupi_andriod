@@ -57,15 +57,15 @@ fun RadioButtonOptionComponent(
                 } else {
                     //TODO need to remove this condition when get image from backend
                     if (index == 0)
-                        redOffline
-                    else
                         greenActiveIcon
+                    else
+                        redOffline
                 },
                 //TODO need to remove this condition when get image from backend
                 icon = if (isIconRequired) if (index == 0)
-                    painterResource(id = R.drawable.icon_close)
+                    painterResource(id = R.drawable.icon_check)
                 else
-                    painterResource(id = R.drawable.icon_check) else null
+                    painterResource(id = R.drawable.icon_close) else null
             ) {
                 onOptionSelected(optionsItem)
             }
