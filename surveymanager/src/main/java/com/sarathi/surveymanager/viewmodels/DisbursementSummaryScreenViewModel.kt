@@ -286,7 +286,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
 
     private fun isActivityCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+            isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
                 missionId = taskEntity?.missionId ?: 0,
                 activityId = taskEntity?.activityId ?: 0
             )

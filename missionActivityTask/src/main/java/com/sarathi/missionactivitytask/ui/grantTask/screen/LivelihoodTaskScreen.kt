@@ -149,7 +149,7 @@ fun LivelihoodTaskRowView(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
-                viewModel.isActivityCompleted()
+                viewModel.checkIsActivityCompleted()
 
             }
             viewModel.getActivityList(viewModel.missionId)

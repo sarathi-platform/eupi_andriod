@@ -116,7 +116,7 @@ fun RadioQuestionBoxComponent(
             Column(modifier = Modifier.background(white)) {
 
                 Column(
-                    Modifier.padding(top = if (isQuestionTypeToggle) dimen_5_dp else dimen_16_dp),
+                    Modifier.padding(top = if (isQuestionTypeToggle) dimen_5_dp else dimen_10_dp),
                     verticalArrangement = Arrangement.spacedBy(if (isQuestionTypeToggle) dimen_5_dp else dimen_18_dp)
                 ) {
                     LazyColumn(
@@ -132,12 +132,12 @@ fun RadioQuestionBoxComponent(
 
                             Row(
                                 modifier = Modifier
-                                    .padding(bottom = 10.dp)
+                                    .padding(bottom = dimen_5_dp)
                                     .padding(
                                         horizontal = if (showCardView) {
                                             dimen_16_dp
                                         } else {
-                                            dimen_0_dp
+                                            dimen_5_dp
                                         }
                                     )
                             ) {
