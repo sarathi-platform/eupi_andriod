@@ -158,8 +158,12 @@ fun TaskScreen(
     }
 
     LaunchedEffect(viewModel.isButtonEnable.value) {
-        if (viewModel.isButtonEnable.value) {
-            scaffoldState.show()
+        viewModel.isButtonEnable.value?.let { isEnabled ->
+            if (isEnabled) {
+                scaffoldState.show()
+            } else {
+                scaffoldState.hide()
+            }
         }
     }
 
