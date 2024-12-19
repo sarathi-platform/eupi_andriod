@@ -396,7 +396,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private suspend fun isTaskStatusCompleted() {
-        isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
             missionId = taskEntity?.missionId ?: 0,
             activityId = taskEntity?.activityId ?: 0
         )

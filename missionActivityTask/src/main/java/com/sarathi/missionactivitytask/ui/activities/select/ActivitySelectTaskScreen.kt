@@ -240,7 +240,7 @@ fun ExpandableTaskCardRow(
 
                 viewModel.expandNextItem(index, groupKey)
 
-                viewModel.isActivityCompleted()
+                viewModel.checkIsActivityCompleted()
             }
         },
         isActivityCompleted = viewModel.isActivityCompleted.value,
