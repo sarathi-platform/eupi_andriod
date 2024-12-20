@@ -26,11 +26,12 @@ import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
-abstract class BaseViewModel  : ViewModel() {
+abstract class BaseViewModel : ViewModel() {
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
-   @Inject
-   lateinit var analyticsEventUseCase: AnalyticsEventUseCase
+
+    @Inject
+    lateinit var analyticsEventUseCase: AnalyticsEventUseCase
     val isDidiImageDialogVisible = mutableStateOf(false)
 
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -50,7 +51,7 @@ abstract class BaseViewModel  : ViewModel() {
         val eventParams = mapOf(
             AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: BLANK_STRING)
         )
-        analyticsEventUseCase.sentAnalyticsEvent(
+        analyticsEventUseCase.sendAnalyticsEvent(
             AnalyticsEvents.CATCHED_EXCEPTION.eventName,
             eventParams
         )

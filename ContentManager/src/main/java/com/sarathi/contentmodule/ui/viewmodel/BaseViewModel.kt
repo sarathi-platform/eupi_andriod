@@ -23,9 +23,9 @@ abstract class BaseViewModel : ViewModel() {
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         val eventParams = mapOf(
-            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: com.sarathi.dataloadingmangement.BLANK_STRING)
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: BLANK_STRING)
         )
-        analyticsEventUseCase.sentAnalyticsEvent(
+        analyticsEventUseCase.sendAnalyticsEvent(
             AnalyticsEvents.CATCHED_EXCEPTION.eventName,
             eventParams
         )

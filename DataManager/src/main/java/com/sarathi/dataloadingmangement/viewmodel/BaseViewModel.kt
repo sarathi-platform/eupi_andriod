@@ -29,6 +29,7 @@ abstract class BaseViewModel : ViewModel() {
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+
     @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
     abstract fun <T> onEvent(event: T)
@@ -41,18 +42,15 @@ abstract class BaseViewModel : ViewModel() {
             ex = e
         )
         val eventParams = mapOf(
-            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: com.sarathi.dataloadingmangement.BLANK_STRING)
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString()
+                ?: BLANK_STRING)
         )
-        analyticsEventUseCase.sentAnalyticsEvent(
+        analyticsEventUseCase.sendAnalyticsEvent(
             AnalyticsEvents.CATCHED_EXCEPTION.eventName,
             eventParams
         )
-
         onCatchError(e)
     }
-
-
-
 
     open fun onCatchError(e: Throwable) {
         CoreAppDetails.getContext()?.applicationContext?.let {

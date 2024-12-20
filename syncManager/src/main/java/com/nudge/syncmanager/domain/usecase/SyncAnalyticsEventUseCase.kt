@@ -191,10 +191,4 @@ class SyncAnalyticsEventUseCase @Inject constructor(
             )
         )
     }
-   fun sentAnalyticsEvent(eventName:String , param :Map<String,Any>  = mapOf()) {
-        analyticsManager.trackEvent(
-            eventName,param
-        )
-    }
-
 }

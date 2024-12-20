@@ -94,9 +94,10 @@ abstract class BaseViewModel() : ViewModel() {
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         BaselineLogger.e("BaseViewModel", "exceptionHandler: ${e.message}", e)
         val eventParams = mapOf(
-            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString() ?: com.sarathi.dataloadingmangement.BLANK_STRING)
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString()
+                ?:BLANK_STRING)
         )
-        analyticsEventUseCase.sentAnalyticsEvent(
+        analyticsEventUseCase.sendAnalyticsEvent(
             AnalyticsEvents.CATCHED_EXCEPTION.eventName,
             eventParams
         )
@@ -108,6 +109,7 @@ abstract class BaseViewModel() : ViewModel() {
     open fun onError(tag: String = "BaseViewModel", message: String) {
         BaselineLogger.e(tag, message)
     }
+
     open fun onServerError(error: ErrorModel?) {
         viewModelScope.launch(Dispatchers.Main) {
             BaselineLogger.e("Error", error?.message ?: BLANK_STRING)
@@ -121,8 +123,6 @@ abstract class BaseViewModel() : ViewModel() {
             )
         }
     }
-
-
 
 
 //    abstract fun onServerError(errorModel: ErrorModelWithApi?)
@@ -140,9 +140,11 @@ abstract class BaseViewModel() : ViewModel() {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         return ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE)
                     }
+
                     RESPONSE_CODE_CONFLICT -> {
                         return ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE)
                     }
+
                     RESPONSE_CODE_NOT_FOUND ->
                         return ErrorModel(
                             message = UNREACHABLE_ERROR_MSG,
@@ -166,6 +168,7 @@ abstract class BaseViewModel() : ViewModel() {
                             message = BAD_GATEWAY_ERROR_MESSAGE,
                             statusCode = e.response()?.code() ?: -1
                         )
+
                     RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
                         return ErrorModel(
                             statusCode = e.response()?.code() ?: -1,
@@ -179,13 +182,16 @@ abstract class BaseViewModel() : ViewModel() {
                         )
                 }
             }
+
             is SocketTimeoutException -> {
                 return ErrorModel(statusCode = RESPONSE_CODE_TIMEOUT, message = TIMEOUT_ERROR_MSG)
             }
+
             is IOException -> {
                 return ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR)
             }
-            is JsonSyntaxException ->{
+
+            is JsonSyntaxException -> {
                 return ErrorModel(
                     -1,
                     statusCode = RESPONSE_CODE_NO_DATA,

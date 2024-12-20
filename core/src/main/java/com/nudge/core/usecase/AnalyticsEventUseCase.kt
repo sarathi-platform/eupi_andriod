@@ -6,7 +6,7 @@ import javax.inject.Inject
 class AnalyticsEventUseCase @Inject constructor(
     private val analyticsManager: AnalyticsManager
 ) {
-   fun sentAnalyticsEvent(eventName:String , param :Map<String,Any>  = mapOf()) {
+   fun sendAnalyticsEvent(eventName:String , param :Map<String,Any>  = mapOf()) {
         analyticsManager.trackEvent(
             eventName,param
         )

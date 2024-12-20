@@ -199,10 +199,10 @@ class ExportImportViewModel @Inject constructor(
         }
     }
     fun loadServerDataAnalytic(){
-        analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
+        analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
     }
     fun exportDataAnalytic(){
-        analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
+        analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
     }
 
     fun compressEventData(title: String) {
@@ -289,7 +289,7 @@ class ExportImportViewModel @Inject constructor(
                 withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
-                analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
+                analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
@@ -639,7 +639,7 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
-            analyticEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
+            analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
 
         }
     }

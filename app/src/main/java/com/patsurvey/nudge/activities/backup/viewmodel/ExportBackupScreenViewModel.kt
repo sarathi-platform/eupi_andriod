@@ -75,12 +75,13 @@ class ExportBackupScreenViewModel @Inject constructor(
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
     }
+
     fun exportOnlyLogFile(context: Context) {
         BaselineLogger.d("ExportBackupViewModel", "exportOnlyLogFile: ----")
         try {
             CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_LOG_FILE.eventName)
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_LOG_FILE.eventName)
                 val logFile = BSLogWriter.buildLogFile(appContext = mAppContext) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                     onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
@@ -120,11 +121,13 @@ class ExportBackupScreenViewModel @Inject constructor(
             }
         }
     }
-    fun exportImageAnalytic(){
-        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_IMAGES.eventName)
+
+    fun exportImageAnalytic() {
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_IMAGES.eventName)
     }
-    fun exportDatabaseAnalytic(){
-        syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_DATABASE.eventName)
+
+    fun exportDatabaseAnalytic() {
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_DATABASE.eventName)
     }
 
     fun exportLocalDatabase(isNeedToShare: Boolean, onExportSuccess: (Uri) -> Unit) {
@@ -232,7 +235,7 @@ class ExportBackupScreenViewModel @Inject constructor(
                 }
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
-                syncManagerUseCase.syncAnalyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_EVENT_FILE.eventName)
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_EVENT_FILE.eventName)
 
             } catch (exception: Exception) {
                 BaselineLogger.e("Compression", exception.message ?: "", exception)

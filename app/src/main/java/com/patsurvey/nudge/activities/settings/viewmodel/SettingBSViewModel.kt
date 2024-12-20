@@ -251,7 +251,7 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
             delay(2000)
-            analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
+            analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
                showLoader.value=false
@@ -322,10 +322,10 @@ class SettingBSViewModel @Inject constructor(
                 openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
-                analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
 
             } catch (exception: Exception) {
-                analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName+exception.message)
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName+exception.message)
                 NudgeLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))

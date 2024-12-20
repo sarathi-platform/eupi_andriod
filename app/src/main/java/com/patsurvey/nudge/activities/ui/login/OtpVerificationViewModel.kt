@@ -25,8 +25,6 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
-    private val analyticsEventUseCase: AnalyticsEventUseCase,
-
     ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
@@ -50,7 +48,7 @@ class OtpVerificationViewModel @Inject constructor(
                         onOtpResponse(it.typeName?: CRP_USER_TYPE,true,response.message)
                     }
                 }
-                analyticsEventUseCase.sentAnalyticsEvent(AnalyticsEvents.LOGIN.eventName)
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGIN.eventName)
 
             } else {
                 onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")
