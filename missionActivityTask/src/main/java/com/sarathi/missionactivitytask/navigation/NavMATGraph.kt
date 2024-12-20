@@ -1110,14 +1110,7 @@ fun NavGraphBuilder.MatNavigation(
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
-                navigateToFormSummaryScreen(
-                    navController = navController,
-                    taskId = it.arguments?.getInt(ARG_TASK_ID).value(),
-                    surveyId = it.arguments?.getInt(ARG_SURVEY_ID).value(),
-                    sectionId = it.arguments?.getInt(ARG_SECTION_ID).value(),
-                    formId = it.arguments?.getInt(ARG_FORM_ID).value(),
-                    activityConfigId = it.arguments?.getInt(ARG_ACTIVITY_CONFIG_ID).value()
-                )
+                navController.navigateUp()
             },
             onSettingClick = {
                 onSettingIconClick()
@@ -1449,6 +1442,17 @@ fun navigateToFormQuestionScreen(
 
 
 fun navigateToFormSummaryScreen(
+    navController: NavController,
+    taskId: Int,
+    surveyId: Int,
+    sectionId: Int,
+    formId: Int,
+    activityConfigId: Int
+) {
+    navController.navigate("$FORM_SUMMARY_SCREEN_ROUTE_NAME/$taskId/$surveyId/$sectionId/$formId/$activityConfigId")
+}
+
+fun navigateToFormSummaryScreenWithNavigateUp(
     navController: NavController,
     taskId: Int,
     surveyId: Int,
