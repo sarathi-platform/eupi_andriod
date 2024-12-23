@@ -1452,17 +1452,6 @@ fun navigateToFormSummaryScreen(
     navController.navigate("$FORM_SUMMARY_SCREEN_ROUTE_NAME/$taskId/$surveyId/$sectionId/$formId/$activityConfigId")
 }
 
-fun navigateToFormSummaryScreenWithNavigateUp(
-    navController: NavController,
-    taskId: Int,
-    surveyId: Int,
-    sectionId: Int,
-    formId: Int,
-    activityConfigId: Int
-) {
-    navController.navigate("$FORM_SUMMARY_SCREEN_ROUTE_NAME/$taskId/$surveyId/$sectionId/$formId/$activityConfigId")
-}
-
 fun navigateToComplexSearchScreen(
     navController: NavController,
     surveyId: Int,
