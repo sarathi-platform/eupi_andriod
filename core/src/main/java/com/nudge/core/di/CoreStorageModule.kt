@@ -20,6 +20,9 @@ class StorageModule {
     @Singleton
     fun provideCoreDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, CoreDatabase::class.java, CORE_DATABASE)
+            .addMigrations(
+                CoreDatabase.CORE_DATABASE_MIGRATION_1_2
+            )
             .fallbackToDestructiveMigration()
             .build()
 

@@ -193,7 +193,7 @@ const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
 const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
-const val CORE_DB_VERSION = 1
+const val CORE_DB_VERSION = 2
 
 const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
