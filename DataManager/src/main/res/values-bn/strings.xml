@@ -140,5 +140,7 @@
     <string name="sync_already_cancelled">"সিঙ্ক আগে থেকে বাতিল করা রয়েছে "</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">আয় / ব্যয়</string>
+    <string name="income">আয়</string>
+    <string name="expense">ব্যয়</string>
 
 </resources>

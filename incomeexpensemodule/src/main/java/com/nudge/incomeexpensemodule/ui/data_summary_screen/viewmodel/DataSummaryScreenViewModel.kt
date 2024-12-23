@@ -82,8 +82,8 @@ class DataSummaryScreenViewModel @Inject constructor(
     val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
 
-    val eventsSubFilterList: List<ValuesDto> =
-        listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
+    val _eventsSubFilterList = mutableStateListOf<ValuesDto>()
+    val eventsSubFilterList: SnapshotStateList<ValuesDto> get() = _eventsSubFilterList
 
     val selectedLivelihood: MutableState<Int> = mutableStateOf(0)
 
@@ -293,7 +293,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     //Todo UNCOMENT After livelihood Mapping Refactor
 
     private fun loadAddDataSummaryData(subjectId: Int) {
-
+        creteEventsSubFilterList()
         ioViewModelScope {
             try {
                 fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
@@ -338,9 +338,7 @@ class DataSummaryScreenViewModel @Inject constructor(
                             subjectLivelihoodMappingEntity = it
                         )
                     )
-
                     createLivelihoodDropDownList()
-
                     with(TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex)) {
                         if (this.equals(-1))
                             TabsCore.setSubTabIndex(TabsEnum.DataSummaryTab.tabIndex, 0)
@@ -368,6 +366,17 @@ class DataSummaryScreenViewModel @Inject constructor(
         }
     }
 
+    private fun creteEventsSubFilterList() {
+        _eventsSubFilterList.clear()
+        val context = CoreAppDetails.getContext()
+        _eventsSubFilterList.addAll(
+            listOf(
+                ValuesDto(1, context?.getString(R.string.all) ?: "All"),
+                ValuesDto(2, context?.getString(R.string.assets) ?: "Assets"),
+                ValuesDto(3, context?.getString(R.string.income_expanse) ?: "Income/Expense")
+            )
+        )
+    }
     private suspend fun createLivelihoodDropDownList() {
         _livelihoodDropdownList.clear()
         if (livelihoodModel.size > 1) {
