@@ -675,8 +675,8 @@ fun NavGraphBuilder.MatNavigation(
                         totalSubmittedAmount = totalSubmittedAmount
                     )
                 },
-                onNavigateSuccessScreen = { msg ->
-                    navigateToActivityCompletionScreen(navController, msg)
+                onNavigateSuccessScreen = { msg ,activityRoutePath->
+                    navigateToActivityCompletionScreen(navController, msg,activityRoutePath=activityRoutePath)
                 },
                 sanctionedAmount = it.arguments?.getInt(
                     ARG_SANCTIONED_AMOUNT
