@@ -15,6 +15,7 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -661,7 +662,9 @@ class DataLoadingModule {
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         analyticsManager: AnalyticsManager,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-        fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase
+        fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
+        fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -686,8 +689,8 @@ class DataLoadingModule {
             livelihoodUseCase = livelihoodUseCase,
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
             fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
-            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase
-
+            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
         )
     }
 

@@ -7,11 +7,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.DEFAULT_LANGUAGE_CODE
-import com.nudge.core.casteMap
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -53,7 +52,8 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -194,7 +194,7 @@ class FormResponseSummaryViewModel @Inject constructor(
         }
     }
 
-    private fun getSurveyConfig(
+    private suspend fun getSurveyConfig(
         surveyConfigEntityList: List<SurveyConfigEntity>,
         taskAttributes: List<SubjectAttributes>
     ) {
@@ -210,14 +210,13 @@ class FormResponseSummaryViewModel @Inject constructor(
             .mapValues { (key, entities) ->
                 mSurveyConfig.put(key, entities.map { entity ->
                     val model = if (entity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
-                        // TEMP Code remove after moving caste table to code.
                         if (entity.value.equals("casteId", true)) {
                             val casteId =
                                 taskAttributes.find { it.key == entity.value }?.value.value()
                                     .toSafeInt()
                             entity.copy(
-                                value = casteMap.get(coreSharedPrefs.getAppLanguage())?.get(casteId)
-                                    ?: casteMap.get(DEFAULT_LANGUAGE_CODE)?.get(casteId).value()
+                                value = fetchCasteConfigNetworkUseCase.getCasteIdValue(casteId = casteId)
+                                    ?: BLANK_STRING
                             )
                         } else {
                             entity.copy(value = taskAttributes.find { it.key == entity.value }?.value.value())
