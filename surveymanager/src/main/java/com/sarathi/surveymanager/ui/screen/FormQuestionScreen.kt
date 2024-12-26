@@ -657,15 +657,19 @@ fun FormScreenQuestionUiContent(
                     }
                 }
             }
-            if (viewModel.fieldValidationAndMessageMap[question.questionId]?.second != BLANK_STRING) {
-                Text(
-                    text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                        ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                    modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
-                    style = quesOptionTextStyle.copy(color = eventTextColor)
-                )
-                CustomVerticalSpacer()
-            }
+            viewModel.fieldValidationAndMessageMap[question.questionId]?.second?.let {
+                if (it != BLANK_STRING) {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
+                        style = quesOptionTextStyle.copy(color = eventTextColor)
+                    )
+                    CustomVerticalSpacer()
+                } else {
+                    CustomVerticalSpacer(size = dimen_20_dp)
+                }
+            } ?: CustomVerticalSpacer(size = dimen_20_dp)
+
         }
 
     }

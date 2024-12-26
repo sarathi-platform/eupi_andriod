@@ -46,6 +46,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -618,14 +619,20 @@ fun QuestionUiContent(
             }
 
         }
-        Text(
-            text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                ?: BLANK_STRING,
-            modifier = Modifier
-                .padding(horizontal = dimen_5_dp)
-                .padding(top = dimen_8_dp, bottom = dimen_10_dp),
-            style = quesOptionTextStyle.copy(color = eventTextColor)
-        )
+        viewModel.fieldValidationAndMessageMap[question.questionId]?.second?.let {
+            if (it != BLANK_STRING) {
+                Text(
+                    text = it,
+                    modifier = Modifier
+                        .padding(horizontal = dimen_5_dp)
+                        .padding(top = dimen_8_dp, bottom = dimen_10_dp),
+                    style = quesOptionTextStyle.copy(color = eventTextColor)
+                )
+                CustomVerticalSpacer()
+            } else {
+                CustomVerticalSpacer(size = dimen_20_dp)
+            }
+        } ?: CustomVerticalSpacer(size = dimen_20_dp)
     }
 }
 
