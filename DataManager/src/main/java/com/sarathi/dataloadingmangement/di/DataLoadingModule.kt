@@ -8,6 +8,7 @@ import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -1024,9 +1025,10 @@ class DataLoadingModule {
     @Singleton
     fun provideDataDeleteRepository(
         nudgeGrantDatabase: NudgeGrantDatabase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao
     ): DeleteAllDataRepositoryImpl {
-        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs)
+        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs, casteListDao)
     }
 
     @Provides
