@@ -1,5 +1,6 @@
 package com.nudge.core.data.repository.caste
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.apiService.CoreApiService
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.entities.CasteEntity
@@ -35,6 +36,13 @@ class CasteConfigRepositoryImpl @Inject constructor(
 
     override suspend fun deleteCasteTable() {
         casteListDao.deleteCasteTable()
+    }
+
+    override suspend fun getCasteIdValue(casteId: Int): String? {
+        return casteListDao.getCasteValue(
+            id = casteId,
+            languageId = coreSharedPrefs.getSelectedLanguageId()
+        ) ?: BLANK_STRING
     }
 
     override suspend fun deleteCasteTableForLanguage() {

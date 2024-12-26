@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
@@ -23,7 +24,8 @@ class ExportImportRepositoryImpl @Inject constructor(
     val nudgeBaselineDatabase:NudgeBaselineDatabase,
     val nudgeDatabase: NudgeDatabase,
     val syncManagerDatabase: SyncManagerDatabase,
-    val missionDao: MissionDao
+    val missionDao: MissionDao,
+    val casteListDao: CasteListDao
 ):ExportImportRepository {
     override fun clearLocalData() {
         try {
@@ -44,7 +46,7 @@ class ExportImportRepositoryImpl @Inject constructor(
                 villageListDao().deleteAllVilleges()
                 surveyEntityDao().deleteAllSurvey(userId)
                 didiInfoEntityDao().deleteAllDidiInfo(userId)
-
+                casteListDao.deleteCasteTable()
             }
 
         }catch (ex:Exception){
@@ -105,6 +107,7 @@ class ExportImportRepositoryImpl @Inject constructor(
             nudgeDatabase.bpcSummaryDao().deleteAllSummary()
             nudgeDatabase.poorDidiListDao().deleteAllDidis()
             prefBSRepo.savePref(LAST_UPDATE_TIME, 0L)
+            casteListDao.deleteCasteTable()
         }catch (ex:Exception){
             NudgeLogger.d("ExportImportRepositoryImpl","clearSelectionLocalDB: ${ex.message}")
         }
