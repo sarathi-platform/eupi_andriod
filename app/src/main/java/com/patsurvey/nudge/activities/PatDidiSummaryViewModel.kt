@@ -199,13 +199,9 @@ class PatDidiSummaryViewModel @Inject constructor(
         )
     }
 
-    fun getCastName(castId : Int) : String{
-        var castName = ""
-        for(cast in castList){
-            if(castId == cast.id)
-                castName = cast.casteName
-        }
-        return castName
+    fun getCastName(castId: Int): String {
+        val matchingCast = castList.firstOrNull { it.casteId == castId }
+        return matchingCast?.casteName ?: BLANK_STRING
     }
 
     fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {
