@@ -30,6 +30,7 @@ import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.exportAllOldImages
@@ -105,7 +106,7 @@ class SettingBSViewModel @Inject constructor(
     val prefRepo: PrefRepo,
     val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
-    ) : BaseViewModel() {
+) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
@@ -234,9 +235,9 @@ class SettingBSViewModel @Inject constructor(
         }
 
 
-        _optionList.value=list
+        _optionList.value = list
         fetchEventCount()
-        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
+        if (userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
         }
     }
@@ -254,7 +255,7 @@ class SettingBSViewModel @Inject constructor(
             analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
-               showLoader.value=false
+                showLoader.value = false
                 onLogout(settingUseCaseResponse)
             }
         }
@@ -325,7 +326,14 @@ class SettingBSViewModel @Inject constructor(
                 analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
 
             } catch (exception: Exception) {
-                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName+exception.message)
+                val eventParams = mapOf(
+                    AnalyticsEventsParam.EXCEPTION.eventParam to (exception.stackTraceToString()
+                        ?: BLANK_STRING)
+                )
+                analyticsEventUseCase.sendAnalyticsEvent(
+                    AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName,
+                    eventParams
+                )
                 NudgeLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -414,42 +422,44 @@ class SettingBSViewModel @Inject constructor(
         selectionVillageUseCase.getVillageListFromDb().distinctBy { it.id }
             .forEach { villageEntity ->
                 val selectedVillageId = villageEntity.id
-        val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
-            prefRepo.getAppLanguageId() ?: 2
-        )
-        val didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageEntity.id)
-        val formAFilePath =
-            generateFormA(
-                prefRepo.getStateId(),
-                casteList,
-                selectedVillageId,
-                didiList,
-                villageEntity = villageEntity
-            )
-        addFormToUriList(formAFilePath, fileAndDbZipList)
+                val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
+                    prefRepo.getAppLanguageId() ?: 2
+                )
+                val didiList =
+                    settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(
+                        villageEntity.id
+                    )
+                val formAFilePath =
+                    generateFormA(
+                        prefRepo.getStateId(),
+                        casteList,
+                        selectedVillageId,
+                        didiList,
+                        villageEntity = villageEntity
+                    )
+                addFormToUriList(formAFilePath, fileAndDbZipList)
 
-        val formBFilePath =
-            generateFormB(
-                prefRepo.getStateId(),
-                casteList,
-                selectedVillageId,
-                didiList,
-                villageEntity
-            )
-        addFormToUriList(formBFilePath, fileAndDbZipList)
+                val formBFilePath =
+                    generateFormB(
+                        prefRepo.getStateId(),
+                        casteList,
+                        selectedVillageId,
+                        didiList,
+                        villageEntity
+                    )
+                addFormToUriList(formBFilePath, fileAndDbZipList)
 
-        val formCFilePath =
-            generateFormc(
-                prefRepo.getStateId(),
-                casteList,
-                selectedVillageId,
-                didiList,
-                villageEntity
-            )
-        addFormToUriList(formCFilePath, fileAndDbZipList)
+                val formCFilePath =
+                    generateFormc(
+                        prefRepo.getStateId(),
+                        casteList,
+                        selectedVillageId,
+                        didiList,
+                        villageEntity
+                    )
+                addFormToUriList(formCFilePath, fileAndDbZipList)
 
-    }
+            }
     }
 
     private fun generateZipFileName(): String {
@@ -509,15 +519,15 @@ class SettingBSViewModel @Inject constructor(
                 settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
         }
 
-            if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
-            ) {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formBAvailable.value = true
-                }
-            } else {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formBAvailable.value = false
-                }
+        if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
+        ) {
+            withContext(CoreDispatchers.mainDispatcher) {
+                formBAvailable.value = true
+            }
+        } else {
+            withContext(CoreDispatchers.mainDispatcher) {
+                formBAvailable.value = false
+            }
 
         }
     }
@@ -726,19 +736,19 @@ class SettingBSViewModel @Inject constructor(
     }
 
     private fun cancelSyncUploadWorker() {
-                workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
-                CoreLogger.d(
-                    CoreAppDetails.getApplicationContext(),
-                    "SettingBSViewModel",
-                    "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
-                )
+        workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            "SettingBSViewModel",
+            "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
+        )
     }
 
     fun syncWorkerRunning(): Boolean {
         val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
-            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
-                return it.state == WorkInfo.State.RUNNING
-           }?:return false
+        workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) }?.let {
+            return it.state == WorkInfo.State.RUNNING
+        } ?: return false
     }
 
     fun fetchhAppConfig() {
