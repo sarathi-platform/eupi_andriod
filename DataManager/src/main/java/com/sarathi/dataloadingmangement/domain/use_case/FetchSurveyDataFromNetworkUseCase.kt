@@ -9,6 +9,9 @@ import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 
@@ -19,15 +22,23 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(missionId: Int): Boolean {
         try {
-            activityConfigDao.getSurveyIds(missionId, sharedPrefs.getUniqueUserIdentifier())
-                .forEach { surveyId ->
-                callSurveyApi(
+            coroutineScope {
+
+                val deferredResults =
+                    activityConfigDao.getSurveyIds(missionId, sharedPrefs.getUniqueUserIdentifier())
+                        .map { surveyId ->
+                            async {
+
+                                callSurveyApi(
                         SurveyRequest(
                             referenceId = getReferenceId(),
                             referenceType = STATE,
                             surveyId = surveyId
                         )
                     )
+                            }
+                        }
+                deferredResults.awaitAll()
             }
             return false
         } catch (apiException: ApiException) {

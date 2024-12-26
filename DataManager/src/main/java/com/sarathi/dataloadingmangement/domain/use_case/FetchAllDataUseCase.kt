@@ -8,6 +8,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLiveliho
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -53,6 +55,55 @@ class FetchAllDataUseCase @Inject constructor(
         }
     }
 
+//   suspend  fun fetchMissionRelatedData(
+//        missionId: Int,
+//        programId: Int,
+//        isRefresh: Boolean,
+//        onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
+//    ) {
+//             if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
+//                     missionId = missionId,
+//                     programId
+//                 ) == 0
+//             ) {
+//
+//            fetchMissionDataUseCase.invoke(missionId, programId)
+//            fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+//            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
+//            val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
+//            fetchContentDataFromNetworkUseCase.invoke()
+//            if (!isRefresh) {
+//                fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
+//                if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+//
+//                         fetchLivelihoodOptionNetworkUseCase.invoke()
+//                     }
+//                     if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
+//                         formUseCase.invoke(missionId)
+//                         moneyJournalUseCase.invoke()
+//                     }
+//                 }
+//
+//                 if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+//
+//                     livelihoodUseCase.invoke()
+//                 }
+//
+//                 CoroutineScope(Dispatchers.IO).launch {
+//                     contentDownloaderUseCase.contentDownloader()
+//                     contentDownloaderUseCase.surveyRelateContentDownlaod()
+//                 }
+//                 fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
+//                 onComplete(true, BLANK_STRING)
+//
+//             } else {
+//                 onComplete(true, BLANK_STRING)
+//
+//             }
+//
+//         }
+
+
     suspend fun fetchMissionRelatedData(
         missionId: Int,
         programId: Int,
@@ -64,28 +115,47 @@ class FetchAllDataUseCase @Inject constructor(
                 programId
             ) == 0
         ) {
-
             fetchMissionDataUseCase.invoke(missionId, programId)
-            fetchSurveyDataFromNetworkUseCase.invoke(missionId)
-            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
             val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
-            fetchContentDataFromNetworkUseCase.invoke()
+
+            coroutineScope {
+                val fetchSurveyData = async { fetchSurveyDataFromNetworkUseCase.invoke(missionId) }
+                val fetchSectionStatus =
+                    async { fetchSectionStatusFromNetworkUsecase.invoke(missionId) }
+                val fetchContentData = async { fetchContentDataFromNetworkUseCase.invoke() }
+                val livelihoodConfigData =
+                    if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+                        async { livelihoodUseCase.invoke() }
+                    } else null
+                fetchSurveyData.await()
+                fetchSectionStatus.await()
+                fetchContentData.await()
+                livelihoodConfigData?.await()
+            }
+
             if (!isRefresh) {
-                fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
-                if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+                coroutineScope {
+                    val fetchSurveyAnswer =
+                        async { fetchSurveyAnswerFromNetworkUseCase.invoke(missionId) }
+                    val fetchLivelihoodOption =
+                        if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+                            async { fetchLivelihoodOptionNetworkUseCase.invoke() }
+                        } else null
+                    val fetchGrantData =
+                        if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
+                            async {
+                                formUseCase.invoke(missionId)
+                                moneyJournalUseCase.invoke()
+                            }
+                        } else null
 
-                    fetchLivelihoodOptionNetworkUseCase.invoke()
-                }
-                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
-                    formUseCase.invoke(missionId)
-                    moneyJournalUseCase.invoke()
+                    fetchSurveyAnswer.await()
+                    fetchLivelihoodOption?.await()
+                    fetchGrantData?.await()
                 }
             }
 
-            if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
-                livelihoodUseCase.invoke()
-            }
 
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
@@ -99,9 +169,8 @@ class FetchAllDataUseCase @Inject constructor(
 
         }
 
+
     }
-
-
     fun getStateId() = coreSharedPrefs.getStateId()
 }
 

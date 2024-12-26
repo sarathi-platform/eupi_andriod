@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.data.dao.SourceTargetQuestionMappingEnti
 import com.sarathi.dataloadingmangement.data.dao.SurveyEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.TagReferenceEntityDao
+import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.data.entities.ConditionsEntity
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
 import com.sarathi.dataloadingmangement.data.entities.QuestionEntity
@@ -40,7 +41,8 @@ class SurveyDownloadRepository @Inject constructor(
     val tagReferenceEntityDao: TagReferenceEntityDao,
     val surveyLanguageAttributeDao: SurveyLanguageAttributeDao,
     val sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
-    val conditionsEntityDao: ConditionsEntityDao
+    val conditionsEntityDao: ConditionsEntityDao,
+    val nudgeGrantDatabase: NudgeGrantDatabase
 ) : ISurveyDownloadRepository {
     override suspend fun fetchSurveyFromNetwork(surveyRequest: SurveyRequest): ApiResponseModel<SurveyResponseModel> {
         return dataLoadingApiService.getSurveyFromNetwork(surveyRequest)
@@ -49,6 +51,7 @@ class SurveyDownloadRepository @Inject constructor(
     override fun saveSurveyToDb(surveyApiResponse: SurveyResponseModel) {
         try {
 
+            nudgeGrantDatabase.runInTransaction {
 
             surveyDao.deleteSurvey(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -132,6 +135,7 @@ class SurveyDownloadRepository @Inject constructor(
                     section,
                     surveyApiResponse,
                 )
+            }
             }
         } catch (ex: Exception) {
             ex.printStackTrace()

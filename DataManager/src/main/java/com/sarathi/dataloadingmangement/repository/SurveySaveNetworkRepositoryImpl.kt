@@ -14,6 +14,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
@@ -33,6 +34,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
     private val grantConfigDao: GrantConfigDao,
     private val taskDao: TaskDao,
     private val coreSharedPrefs: CoreSharedPrefs,
+    private val nudgeGrantDatabase: NudgeGrantDatabase
 ) : ISurveySaveNetworkRepository {
     override suspend fun getSurveyAnswerFromNetwork(surveyAnswerRequest: GetSurveyAnswerRequest): ApiResponseModel<List<QuestionAnswerResponseModel>> {
         return dataLoadingApiService.getSurveyAnswers(surveyAnswerRequest)
@@ -43,7 +45,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
     }
 
     override fun saveSurveyAnswerToDb(surveyApiResponse: List<QuestionAnswerResponseModel>) {
-
+        nudgeGrantDatabase.runInTransaction {
         surveyApiResponse.forEach { questionAnswerResponse ->
             val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
                 languageId = coreSharedPrefs.getAppLanguage(),
@@ -79,6 +81,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
 
                 )
             )
+        }
         }
     }
 

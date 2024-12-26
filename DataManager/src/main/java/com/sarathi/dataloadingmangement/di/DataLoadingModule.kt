@@ -410,7 +410,8 @@ class DataLoadingModule {
         surveyLanguageAttributeDao: SurveyLanguageAttributeDao,
         tagReferenceEntityDao: TagReferenceEntityDao,
         sourceTargetQuestionMappingEntityDao: SourceTargetQuestionMappingEntityDao,
-        conditionsEntityDao: ConditionsEntityDao
+        conditionsEntityDao: ConditionsEntityDao,
+        nudgeGrantDatabase: NudgeGrantDatabase
     ): ISurveyDownloadRepository {
         return SurveyDownloadRepository(
             dataLoadingApiService = dataLoadingApiService,
@@ -422,7 +423,8 @@ class DataLoadingModule {
             surveyLanguageAttributeDao = surveyLanguageAttributeDao,
             tagReferenceEntityDao = tagReferenceEntityDao,
             sourceTargetQuestionMappingEntityDao = sourceTargetQuestionMappingEntityDao,
-            conditionsEntityDao = conditionsEntityDao
+            conditionsEntityDao = conditionsEntityDao,
+            nudgeGrantDatabase = nudgeGrantDatabase
         )
     }
 
@@ -819,6 +821,7 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         grantConfigDao: GrantConfigDao,
         taskDao: TaskDao,
+        nudgeGrantDatabase: NudgeGrantDatabase
     ): ISurveySaveNetworkRepository {
         return SurveySaveNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
@@ -828,7 +831,8 @@ class DataLoadingModule {
             dataLoadingApiService = dataLoadingApiService,
             surveyAnswersDao = surveyAnswersDao,
             grantConfigDao = grantConfigDao,
-            taskDao = taskDao
+            taskDao = taskDao,
+            nudgeGrantDatabase = nudgeGrantDatabase
         )
     }
 

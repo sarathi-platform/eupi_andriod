@@ -5,6 +5,9 @@ import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import javax.inject.Inject
 
 
@@ -14,17 +17,23 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(missionId: Int): Boolean {
         try {
-            repository.getSurveyIds(missionId).forEach {
-                callSurveAnsweryApi(
-                    GetSurveyAnswerRequest(
-                        surveyId = it,
-                        mobileNumber = sharedPrefs.getMobileNo(),
-                        userId = sharedPrefs.getUserName().toInt()
-                    )
-                )
+            coroutineScope {
+                // Launch async calls for each survey ID
+                val deferredResults = repository.getSurveyIds(missionId).map { surveyId ->
+                    async {
+                        callSurveAnsweryApi(
+                            GetSurveyAnswerRequest(
+                                surveyId = surveyId,
+                                mobileNumber = sharedPrefs.getMobileNo(),
+                                userId = sharedPrefs.getUserName().toInt()
+                            )
+                        )
+                    }
+                }
+
+                // Await all calls to complete
+                deferredResults.awaitAll()
             }
-
-
         } catch (apiException: ApiException) {
             throw apiException
         } catch (ex: Exception) {
