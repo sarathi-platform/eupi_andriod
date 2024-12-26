@@ -1393,27 +1393,6 @@ fun extractSubstrings(input: String): List<String> {
     return pattern.findAll(input).map { it.value }.toList()
 }
 
-//TEMP Code to be removed when CasteEntity is moved to core.
-val casteMap = mapOf(
-    "en" to mapOf(
-        1 to "GEN- General",
-        2 to "OBC- Other Backward Class",
-        3 to "SC- Scheduled Caste",
-        4 to "ST- Scheduled Tribes"
-    ),
-    "hi" to mapOf(
-        1 to "GEN- सामान्य जाति",
-        2 to "OBC- अन्य पिछड़ी जाति",
-        3 to "SC- अनुसूचित जाति",
-        4 to "ST- अनुसूचित जनजाति"
-    ),
-    "bn" to mapOf(
-        1 to "GEN- সাধারণ",
-        2 to "OBC- অন্যান্য অনগ্রসর শ্রেণী",
-        3 to "SC- তফসিলি জাতি",
-        4 to "ST- তফসিলি উপজাতি"
-    ),
-)
 
 fun findUserTypeForMetadata(userType: String): String {
     return when (userType) {
@@ -1423,17 +1402,6 @@ fun findUserTypeForMetadata(userType: String): String {
         else -> {
             UPCM
         }
-    }
-}
-
-fun formatProgressNumber(value: Float): Float {
-    try {
-        return value
-    } catch (ex: Exception) {
-        CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatProgressNumber:${ex.message}", ex, false) }
-        return 0F
-
     }
 }
 

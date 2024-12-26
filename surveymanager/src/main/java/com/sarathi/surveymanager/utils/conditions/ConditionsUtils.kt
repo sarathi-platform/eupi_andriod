@@ -757,6 +757,20 @@ class ConditionsUtils {
         }
     }
 
+    fun checkIfTargetQuestionIsFormType(
+        sourceQuestion: QuestionUiModel,
+        formQuestions: List<QuestionUiModel>
+    ): Boolean {
+        val targetQuestions = sourceTargetMap[sourceQuestion.questionId]
+
+        targetQuestions?.let { targetQuest ->
+
+            val formQuestionMap = formQuestions.map { Pair(it.formId, it.questionId) }
+            return formQuestionMap.any { targetQuest.contains(it.second) }
+
+        } ?: return false
+    }
+
 }
 
 fun findNoneOption(sourceQuestion: QuestionUiModel): OptionsUiModel? {

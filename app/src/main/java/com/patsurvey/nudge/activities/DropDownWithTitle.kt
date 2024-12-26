@@ -33,6 +33,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.database.entities.CasteEntity
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -43,7 +44,6 @@ import com.patsurvey.nudge.activities.ui.theme.red
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.utils.BLANK_STRING

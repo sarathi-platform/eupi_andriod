@@ -30,6 +30,7 @@ import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.exportAllOldImages
 import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
@@ -52,7 +53,6 @@ import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
@@ -291,7 +291,11 @@ class SettingBSViewModel @Inject constructor(
                 }
 
                 if (userType == UPCM_USER) {
-                    getSummaryFile()?.let { fileAndDbZipList.add(it) }
+                    getSummaryFile()?.let {
+                        if (it.second != Uri.EMPTY) {
+                            fileAndDbZipList.add(it)
+                        }
+                    }
                 }
 
                 val zipFileName = generateZipFileName()
@@ -546,7 +550,10 @@ class SettingBSViewModel @Inject constructor(
             userId = prefBSRepo.getUniqueUserIdentifier(),
             mobileNo = getUserMobileNumber(),
             fileNameWithoutExtension = summaryFileNameWithoutExtension,
-            fileNameWithExtension = summaryFileNameWithExtension
+            fileNameWithExtension = summaryFileNameWithExtension,
+            isBaselineV2 = settingBSUserCase.baselineV1CheckUseCase.isBaselineV2(
+                stateId = settingBSUserCase.getUserDetailsUseCase.getStateId().toString()
+            )
         )
     }
 

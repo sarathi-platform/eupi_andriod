@@ -20,6 +20,10 @@ object AESHelper {
         secretKeyPass: String,
     ): String {
         try {
+            if (isAlreadyEncrypted(textToEncrypt, secretKeyPass)) {
+                CoreLogger.e(tag = "Encryption", msg = "Already Encrypted string ${textToEncrypt}")
+                return textToEncrypt
+            }
 
             val plainText = textToEncrypt.toByteArray()
 
@@ -34,6 +38,19 @@ object AESHelper {
         }
     }
 
+    fun isAlreadyEncrypted(
+        encryptedText: String,
+        secretKeyPass: String
+    ): Boolean {
+        try {
+            runDecryption(encryptedText, secretKeyPass = secretKeyPass)
+            return true
+
+        } catch (exception: Exception) {
+            return false
+        }
+    }
+
     fun decrypt(
         encryptedText: String,
         secretKeyPass: String
@@ -45,19 +62,23 @@ object AESHelper {
         try {
 
 
-            val textToDecrypt = Base64.decode(encryptedText, Base64.DEFAULT)
-
-            val cipher = Cipher.getInstance("AES")
-
-            cipher.init(Cipher.DECRYPT_MODE, generateSecretKey(secretKeyPass))
-
-            val decrypt = cipher.doFinal(textToDecrypt)
-            return String(decrypt)
+            return runDecryption(encryptedText, secretKeyPass)
         } catch (exception: Exception) {
             CoreLogger.e(tag = "AES", msg = exception.stackTraceToString(), ex = exception)
 
             return encryptedText
         }
+    }
+
+    private fun runDecryption(encryptedText: String, secretKeyPass: String): String {
+        val textToDecrypt = Base64.decode(encryptedText, Base64.DEFAULT)
+
+        val cipher = Cipher.getInstance("AES")
+
+        cipher.init(Cipher.DECRYPT_MODE, generateSecretKey(secretKeyPass))
+
+        val decrypt = cipher.doFinal(textToDecrypt)
+        return String(decrypt)
     }
 
 }

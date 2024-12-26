@@ -20,6 +20,9 @@ class StorageModule {
     @Singleton
     fun provideCoreDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, CoreDatabase::class.java, CORE_DATABASE)
+            .addMigrations(
+                CoreDatabase.CORE_DATABASE_MIGRATION_1_2
+            )
             .fallbackToDestructiveMigration()
             .build()
 
@@ -27,5 +30,9 @@ class StorageModule {
     @Provides
     @Singleton
     fun prodiveAppConfigDao(db: CoreDatabase) = db.appConfigDao()
+
+    @Provides
+    @Singleton
+    fun prodiveCasteListDao(db: CoreDatabase) = db.casteListDao()
 
 }

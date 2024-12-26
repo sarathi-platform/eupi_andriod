@@ -138,5 +138,9 @@
     <string name="sync_view_progress">প্ৰগতি দৰ্শন কৰক</string>
     <string name="sync_worker_cancelled">চিংক কৰ্মী বাতিল কৰা হৈছে</string>
     <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
+    <string name="sort_by">Sort By</string>
+    <string name="income_expanse">উপাৰ্জন/ব্যয়</string>
+    <string name="income">উপাৰ্জন</string>
+    <string name="expense">খৰচ</string>
 
 </resources>

@@ -8,6 +8,7 @@ import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -15,6 +16,7 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -676,6 +678,8 @@ class DataLoadingModule {
         analyticsManager: AnalyticsManager,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
+        fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -700,8 +704,8 @@ class DataLoadingModule {
             livelihoodUseCase = livelihoodUseCase,
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
             fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
-            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase
-
+            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
         )
     }
 
@@ -1039,9 +1043,10 @@ class DataLoadingModule {
     @Singleton
     fun provideDataDeleteRepository(
         nudgeGrantDatabase: NudgeGrantDatabase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao
     ): DeleteAllDataRepositoryImpl {
-        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs)
+        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs, casteListDao)
     }
 
     @Provides

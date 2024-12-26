@@ -32,6 +32,7 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -190,16 +191,18 @@ abstract class BaseViewModel() : ViewModel() {
         onServerError(parseException(e))
     }
 
-    fun refreshData(fetchDataUseCase: FetchDataUseCase) {
+    fun refreshData(
+        fetchDataUseCase: FetchDataUseCase
+    ) {
         currentApiCount = 0
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-                callSurveyApi(fetchDataUseCase)
-                fetchMissionData(fetchDataUseCase)
-                fetchCastes(fetchDataUseCase)
-                fetchUserDetail(fetchDataUseCase)
-                fetchSurveyeeList(fetchDataUseCase)
-                fetchContentData(fetchDataUseCase)
+            callSurveyApi(fetchDataUseCase)
+            fetchMissionData(fetchDataUseCase)
+            fetchCastes(fetchDataUseCase.casteConfigNetworkUseCase)
+            fetchUserDetail(fetchDataUseCase)
+            fetchSurveyeeList(fetchDataUseCase)
+            fetchContentData(fetchDataUseCase)
 
 
         }
@@ -250,9 +253,9 @@ abstract class BaseViewModel() : ViewModel() {
         }
     }
 
-    private fun fetchCastes(fetchDataUseCase: FetchDataUseCase) {
+    private fun fetchCastes(fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
+            fetchCasteConfigNetworkUseCase.invoke()
             currentApiCount++
             updateLoaderEvent()
         }

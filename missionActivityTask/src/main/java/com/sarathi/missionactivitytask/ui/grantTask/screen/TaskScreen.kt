@@ -68,8 +68,8 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_16_sp
+import com.nudge.core.ui.theme.dimen_180_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_250_dp
 import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -160,8 +160,12 @@ fun TaskScreen(
     }
 
     LaunchedEffect(viewModel.isButtonEnable.value) {
-        if (viewModel.isButtonEnable.value) {
-            scaffoldState.show()
+        viewModel.isButtonEnable.value?.let { isEnabled ->
+            if (isEnabled) {
+                scaffoldState.show()
+            } else {
+                scaffoldState.hide()
+            }
         }
     }
 
@@ -180,7 +184,7 @@ fun TaskScreen(
             sheetContent = {
                 Box(
                     modifier = Modifier
-                        .height(dimen_250_dp)
+                        .height(dimen_180_dp)
                         .fillMaxWidth()
                 ) {
                     LazyColumn(
@@ -431,12 +435,14 @@ fun TaskScreen(
 
                             message?.let {
                                 // Display message when applicable
-                                Text(
-                                    text = it,
-                                    style = defaultTextStyle,
-                                    color = textColorDark,
-                                    modifier = Modifier.align(Alignment.Center)
-                                )
+                                if (!viewModel.loaderState.value.isLoaderVisible) {
+                                    Text(
+                                        text = it,
+                                        style = defaultTextStyle,
+                                        color = textColorDark,
+                                        modifier = Modifier.align(Alignment.Center)
+                                    )
+                                }
                             } ?: LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
 
                                 stickyHeader {
@@ -695,7 +701,7 @@ fun TaskRowView(
                                         tag = TAG,
                                         msg = "TaskRowView: exception -> ${ex.message}",
                                         ex = ex,
-                                        stackTrace = true
+                                        stackTrace = false
                                     )
                                     DEFAULT_ID
                                 }
@@ -716,67 +722,6 @@ fun TaskRowView(
                     }
 
                 }
-
-                /*when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
-                    ActivityTypeEnum.GRANT -> {
-                        viewModel.activityConfigUiModel?.let {
-                            if (subjectName.isNotBlank()) {
-                                navigateToGrantSurveySummaryScreen(
-                                    navController,
-                                    taskId = task.key,
-                                    surveyId = it.surveyId,
-                                    sectionId = it.sectionId,
-                                    subjectType = it.subject,
-                                    subjectName = subjectName,
-                                    activityConfigId = it.activityConfigId,
-                                    sanctionedAmount = task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
-                                        ?: DEFAULT_ID,
-                                )
-                            }
-                        }
-                    }
-
-                    ActivityTypeEnum.LIVELIHOOD -> {
-                        navigateToLivelihoodDropDownScreen(
-                            navController,
-                            taskId = task.key,
-                            activityId = viewModel.activityId,
-                            missionId = viewModel.missionId,
-                            subjectName = subjectName
-                        )
-                    }
-
-                    else -> {
-                        viewModel.activityConfigUiModel?.let {
-                            if (subjectName.isNotBlank()) {
-                                val sanctionedAmount = try {
-                                    task.value[TaskCardSlots.TASK_SUBTITLE_4.name]?.value?.toInt()
-                                        ?: DEFAULT_ID
-                                } catch (ex: Exception) {
-                                    CoreLogger.e(
-                                        tag = TAG,
-                                        msg = "TaskRowView: exception -> ${ex.message}",
-                                        ex = ex,
-                                        stackTrace = true
-                                    )
-                                    DEFAULT_ID
-                                }
-                                navigateToSectionScreen(
-                                    navController,
-                                    missionId = viewModel.missionId,
-                                    activityId = viewModel.activityId,
-                                    taskId = task.key,
-                                    surveyId = it.surveyId,
-                                    subjectType = it.subject,
-                                    subjectName = subjectName,
-                                    activityType = viewModel.activityType,
-                                    activityConfigId = it.activityConfigId,
-                                    sanctionedAmount = sanctionedAmount,
-                                )
-                            }
-                        }
-                    }
-                }*/
             }
         },
         onNotAvailable = {
@@ -790,7 +735,7 @@ fun TaskRowView(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
-                viewModel.isActivityCompleted()
+                viewModel.checkIsActivityCompleted()
             }
         },
         imagePath = viewModel.getFilePathUri(

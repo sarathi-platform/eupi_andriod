@@ -12,7 +12,7 @@ data class ValuesDto(
     @Expose
     val value: String,
 
-    val isSelected: Boolean? = false,
+    var isSelected: Boolean? = false,
     @Transient
     val originalName: String? = null
 )

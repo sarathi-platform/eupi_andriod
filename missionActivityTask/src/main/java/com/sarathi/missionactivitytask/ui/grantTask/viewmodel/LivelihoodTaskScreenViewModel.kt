@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
 import com.nudge.core.valueAsMinusTwo
@@ -18,9 +19,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihood
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
-import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -63,7 +64,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitLivelihoodPlanningScreenState -> {
-
+                onEvent(LoaderEvent.UpdateLoaderState(true))
                 initLivelihoodPlanningScreen()
             }
         }
@@ -89,11 +90,6 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
 
     private  fun initLivelihoodPlanningScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(true))
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
-
             livelihoodsEntityList.clear()
             livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
 
@@ -104,6 +100,9 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
                         subjectLivelihoodMappingMap.clear()
                         subjectLivelihoodMappingMap.putAll(it)
                     }
+            withContext(CoreDispatchers.mainDispatcher) {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
         }
     }
     }

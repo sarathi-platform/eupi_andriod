@@ -251,7 +251,7 @@ open class TaskScreenViewModel @Inject constructor(
             ) else taskList
             isContentScreenEmpty()
             getSurveyDetail()
-            isActivityCompleted()
+
             val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
                 missionId = missionId, activityId = activityId
             )
@@ -336,6 +336,7 @@ open class TaskScreenViewModel @Inject constructor(
                 updateFilterForActivity(activityId)
             }
 
+            isActivityCompleted()
             updateProgress()
 
             withContext(Dispatchers.Main) {
@@ -518,11 +519,11 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     suspend fun checkButtonValidation() {
-        var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
+        var isButtonEnabled = getTaskUseCase.isAllTaskCompleted(
             missionId = missionId,
             activityId = activityId
         ) && !isActivityCompleted.value && filterList.value.isNotEmpty()
-        updateValueInMainThread(isButtonEnable, isButtonEnablee)
+        updateValueInMainThread(isButtonEnable, isButtonEnabled)
     }
 
     fun markActivityCompleteStatus() {
@@ -566,14 +567,17 @@ open class TaskScreenViewModel @Inject constructor(
             updateProgress()
         }
     }
+    suspend fun isActivityCompleted() {
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
+            missionId = missionId,
+            activityId = activityId
+        )
+        checkButtonValidation()
+    }
 
-    fun isActivityCompleted() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
-                missionId = missionId,
-                activityId = activityId
-            )
-            checkButtonValidation()
+    fun checkIsActivityCompleted() {
+        ioViewModelScope {
+            isActivityCompleted()
         }
     }
 

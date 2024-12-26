@@ -7,6 +7,7 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.example.incomeexpensemodule.R
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.TabsCore
@@ -14,6 +15,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
@@ -47,6 +49,7 @@ class DataSummaryScreenViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val tag = DataSummaryScreenViewModel::class.java.simpleName
+    private val ALL_DATA = -1
 
     val tabs = listOf<SubTabs>(
         SubTabs.LastWeekTab,
@@ -76,11 +79,11 @@ class DataSummaryScreenViewModel @Inject constructor(
         mutableStateMapOf()
     val incomeExpenseSummaryUiModel: SnapshotStateMap<Int, IncomeExpenseSummaryUiModel?> get() = _incomeExpenseSummaryUiModel
 
-    private val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
+    val _livelihoodDropdownList = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownList: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownList
 
-    val eventsSubFilterList: List<ValuesDto> =
-        listOf(ValuesDto(1, "All"), ValuesDto(2, "Assets"), ValuesDto(3, "Income/Expense"))
+    val _eventsSubFilterList = mutableStateListOf<ValuesDto>()
+    val eventsSubFilterList: SnapshotStateList<ValuesDto> get() = _eventsSubFilterList
 
     val selectedLivelihood: MutableState<Int> = mutableStateOf(0)
 
@@ -95,7 +98,8 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     private val _dateRangeFilter: MutableState<Pair<Long, Long>> = mutableStateOf(
         Pair(
-            getDayPriorCurrentTimeMillis(DEFAULT_DATE_RANGE_DURATION), System.currentTimeMillis()
+            getDayPriorCurrentTimeMillis(DEFAULT_DATE_RANGE_DURATION),
+            System.currentTimeMillis()
         )
     )
 
@@ -191,8 +195,15 @@ class DataSummaryScreenViewModel @Inject constructor(
         livelihoodFilter: Int,
         eventsSubFilter: Int
     ): List<SubjectLivelihoodEventSummaryUiModel> {
-        var result =
+        var result = if (livelihoodFilter == ALL_DATA) {
+            livelihoodModel.mapNotNull { _livelihoodModel ->
+                subjectLivelihoodEventSummaryUiModelList
+                    .filter { it.livelihoodId == _livelihoodModel.livelihoodId }
+                    .takeIf { it.isNotEmpty() }
+            }.flatten()
+        } else {
             subjectLivelihoodEventSummaryUiModelList.filter { it.livelihoodId == livelihoodFilter }
+        }
 
         result =
             filterListForSelectedTab(if (selectedTabFilter == -1) 0 else selectedTabFilter, result)
@@ -274,13 +285,15 @@ class DataSummaryScreenViewModel @Inject constructor(
         return resultAfterTabFilter
     }
 
-    fun setPreviousScreenData(mSubjectId: Int) {
+    fun setPreviousScreenData(mSubjectId: Int, selectedLivelihoodId: Int) {
         subjectId = mSubjectId
+        selectedLivelihood?.value = selectedLivelihoodId
+
     }
     //Todo UNCOMENT After livelihood Mapping Refactor
 
     private fun loadAddDataSummaryData(subjectId: Int) {
-
+        creteEventsSubFilterList()
         ioViewModelScope {
             try {
                 fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListFromDb(
@@ -325,9 +338,7 @@ class DataSummaryScreenViewModel @Inject constructor(
                             subjectLivelihoodMappingEntity = it
                         )
                     )
-
                     createLivelihoodDropDownList()
-
                     with(TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex)) {
                         if (this.equals(-1))
                             TabsCore.setSubTabIndex(TabsEnum.DataSummaryTab.tabIndex, 0)
@@ -355,17 +366,91 @@ class DataSummaryScreenViewModel @Inject constructor(
         }
     }
 
+    private fun creteEventsSubFilterList() {
+        _eventsSubFilterList.clear()
+        val context = CoreAppDetails.getContext()
+        _eventsSubFilterList.addAll(
+            listOf(
+                ValuesDto(1, context?.getString(R.string.all) ?: "All"),
+                ValuesDto(2, context?.getString(R.string.assets) ?: "Assets"),
+                ValuesDto(3, context?.getString(R.string.income_expanse) ?: "Income/Expense")
+            )
+        )
+    }
     private suspend fun createLivelihoodDropDownList() {
         _livelihoodDropdownList.clear()
-        livelihoodModel.forEach {
-            _livelihoodDropdownList.add(ValuesDto(it.livelihoodId, it.name, false))
+        if (livelihoodModel.size > 1) {
+            CoreAppDetails.getContext()?.getString(R.string.all)?.let {
+                _livelihoodDropdownList.add(ValuesDto(-1, it, false))
+            }
         }
-        selectedLivelihood.value = livelihoodDropdownList.first().id
+        livelihoodModel.forEach {
+            _livelihoodDropdownList.add(
+                ValuesDto(
+                    it.livelihoodId,
+                    it.name,
+                    selectedLivelihood.value == it.livelihoodId
+                )
+            )
+        }
+        if (selectedLivelihood.value == 0) {
+            selectedLivelihood.value = livelihoodDropdownList.first().id
+        }
         selectedEventsSubFilter.value = eventsSubFilterList.first().id
         filtersTuple = Triple(
             TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex),
             selectedLivelihood.value,
             selectedEventsSubFilter.value
         )
+    }
+
+    fun getLivelihood(): IncomeExpenseSummaryUiModel? {
+        if (selectedLivelihood.value == ALL_DATA) {
+            val totalIncome = incomeExpenseSummaryUiModel.values.sumOf { it?.totalIncome ?: 0.0 }
+            val totalExpense = incomeExpenseSummaryUiModel.values.sumOf { it?.totalExpense ?: 0.0 }
+
+            val livelihoodAssetMap = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.livelihoodAssetMap }
+                .flatMap { it.entries }
+                .map { it.toPair() }
+                .toMap()
+
+            val totalAssetCountForLivelihood = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.totalAssetCountForLivelihood }
+                .flatMap { it.entries }
+                .map { it.toPair() }
+                .toMap()
+
+            val assetsCountWithValue = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.assetsCountWithValue }
+                .flatten()
+
+            val imageUriForLivelihood = incomeExpenseSummaryUiModel.values
+                .mapNotNull { it?.imageUriForLivelihood }
+                .flatMap { it.entries }
+                .map { it.toPair() }
+                .toMap()
+            return IncomeExpenseSummaryUiModel(
+                subjectId = subjectId,
+                totalIncome = totalIncome,
+                totalExpense = totalExpense,
+                livelihoodAssetMap = livelihoodAssetMap,
+                totalAssetCountForLivelihood = totalAssetCountForLivelihood,
+                assetsCountWithValue = assetsCountWithValue,
+                imageUriForLivelihood = imageUriForLivelihood
+            )
+        }
+
+        return selectedLivelihood.value?.let { incomeExpenseSummaryUiModel[it] }
+    }
+
+    fun getEventsList(): List<LivelihoodEventUiModel>? {
+        return if (selectedLivelihood.value == ALL_DATA) {
+            livelihoodModel.flatMap { _livelihoodModel ->
+                livelihoodEventMap[_livelihoodModel.livelihoodId] ?: emptyList()
+            }
+        } else {
+            livelihoodEventMap[selectedLivelihood.value]
+        }
     }
 }
