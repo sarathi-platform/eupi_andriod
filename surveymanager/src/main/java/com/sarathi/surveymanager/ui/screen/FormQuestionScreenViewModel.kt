@@ -34,6 +34,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -179,11 +180,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
         surveyConfigEntityList.forEach { it ->
             var surveyConfigEntity = it
             if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
-                if (surveyConfigEntity.value.equals("casteId", true)) {
+                if (surveyConfigEntity.value.equals(CASTE_ID, true)) {
                     val casteId =
                         taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value()
                             .toSafeInt()
-                    fetchCasteConfigNetworkUseCase.getCasteIdValue(casteId = casteId)
                     surveyConfigEntity = surveyConfigEntity.copy(
                         value = fetchCasteConfigNetworkUseCase.getCasteIdValue(casteId = casteId)
                             ?: BLANK_STRING

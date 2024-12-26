@@ -29,6 +29,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -210,7 +211,7 @@ class FormResponseSummaryViewModel @Inject constructor(
             .mapValues { (key, entities) ->
                 mSurveyConfig.put(key, entities.map { entity ->
                     val model = if (entity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
-                        if (entity.value.equals("casteId", true)) {
+                        if (entity.value.equals(CASTE_ID, true)) {
                             val casteId =
                                 taskAttributes.find { it.key == entity.value }?.value.value()
                                     .toSafeInt()
