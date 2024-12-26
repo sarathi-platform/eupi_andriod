@@ -12,12 +12,12 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMi
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.preference.CorePrefRepo
-import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -160,7 +160,8 @@ object UseCaseModule {
         nudgeDatabase: NudgeDatabase,
         coreSharedPrefs: CoreSharedPrefs,
         syncManagerDatabase: SyncManagerDatabase,
-        missionDao: MissionDao
+        missionDao: MissionDao,
+        casteListDao: CasteListDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
@@ -168,7 +169,8 @@ object UseCaseModule {
             nudgeDatabase = nudgeDatabase,
             coreSharedPrefs = coreSharedPrefs,
             syncManagerDatabase = syncManagerDatabase,
-            missionDao = missionDao
+            missionDao = missionDao,
+            casteListDao = casteListDao
         )
     }
 

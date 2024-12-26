@@ -240,7 +240,7 @@ fun ExpandableTaskCardRow(
 
                 viewModel.expandNextItem(index, groupKey)
 
-                viewModel.isActivityCompleted()
+                viewModel.checkIsActivityCompleted()
             }
         },
         isActivityCompleted = viewModel.isActivityCompleted.value,
@@ -312,7 +312,7 @@ fun ExpandableTaskCard(
             .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
-                color = if (taskStatus.value == StatusEnum.COMPLETED.name) greenOnline else lightGrayColor,
+                color = if (taskStatus.value == StatusEnum.COMPLETED.name || taskStatus.value == StatusEnum.NOT_AVAILABLE.name) greenOnline else lightGrayColor,
                 shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)

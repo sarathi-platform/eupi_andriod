@@ -254,6 +254,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
 
             taskStatusUseCase.markActivityInProgress(missionId, activityId)
             taskStatusUseCase.markMissionInProgress(missionId)
+            getTaskUseCase.updateTaskStatus(
+                taskId = taskId,
+                status = status
+            )
             eventWriterUseCase.markMATStatus(
                 missionId = missionId,
                 activityId = activityId,
@@ -261,10 +265,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
                 surveyName = ActivityTypeEnum.SELECT.name
             )
-            getTaskUseCase.updateTaskStatus(
-                taskId = taskId,
-                status = status
-            )
+
             checkButtonValidation()
             updateProgress()
         }

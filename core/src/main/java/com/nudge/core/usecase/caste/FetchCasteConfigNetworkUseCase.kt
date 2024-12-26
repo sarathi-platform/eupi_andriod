@@ -116,5 +116,8 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
         apiStatusDao.updateApiStatus(apiEndPoint, status = status, errorMessage, errorCode)
     }
 
+    suspend fun getCasteIdValue(casteId: Int): String? {
+        return casteConfigRepositoryImpl.getCasteIdValue(casteId = casteId) ?: BLANK_STRING
+    }
 
 }

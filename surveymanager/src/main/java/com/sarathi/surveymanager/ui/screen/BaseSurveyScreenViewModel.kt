@@ -339,7 +339,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             } else {
                 // For cases where showSummaryView has multiple items
-                result = showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
+                result =
+                    result && showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
             }
         }
 
@@ -396,7 +397,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private suspend fun isTaskStatusCompleted() {
-        isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
             missionId = taskEntity?.missionId ?: 0,
             activityId = taskEntity?.activityId ?: 0
         )

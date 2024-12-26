@@ -85,7 +85,7 @@ class SectionScreenViewModel @Inject constructor(
 
     fun isActivityCompleted() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+            isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
                 missionId = missionId,
                 activityId = activityId
             )

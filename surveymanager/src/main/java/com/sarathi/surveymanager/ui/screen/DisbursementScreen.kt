@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.toInMillisec
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
@@ -52,7 +53,7 @@ fun DisbursementSummaryScreen(
     activityConfigId: Int,
     sanctionedAmount: Int,
     onNavigateSurveyScreen: (referenceId: String, activityConfigIs: Int, grantId: Int, grantType: String, sanctionedAmount: Int, totalSubmittedAmount: Int) -> Unit,
-    onNavigateSuccessScreen: (mag: String) -> Unit
+    onNavigateSuccessScreen: (mag: String,activityRoutePath:String) -> Unit
 ) {
     val context = LocalContext.current
 
@@ -98,7 +99,7 @@ fun DisbursementSummaryScreen(
                                 "${
                                     viewModel.grantConfigUi.value.grantComponentDTO?.grantComponentName
                                         ?: BLANK_STRING
-                                } for ${subjectName}"
+                                } for ${subjectName}", ActivityTypeEnum.GRANT.name
                             )
                         } else {
                             navController.popBackStack()

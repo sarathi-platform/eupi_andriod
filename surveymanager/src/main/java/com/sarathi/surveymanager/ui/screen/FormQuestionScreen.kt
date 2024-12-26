@@ -41,7 +41,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nudge.core.ARG_IS_FROM_BACKSTACK
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -91,7 +93,6 @@ import com.sarathi.surveymanager.ui.description_component.presentation.ModelBott
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.utils.getMaxInputLength
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -125,21 +126,25 @@ fun FormQuestionScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val showAlertDialog = remember { mutableStateOf(false) }
+    val stateHandle = navController.currentBackStackEntry?.savedStateHandle
+    //Listen the result from Media screen
+    val isFromBackStack = remember { stateHandle?.getLiveData<Boolean>(ARG_IS_FROM_BACKSTACK) }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.setPreviousScreenData(
-            taskId,
-            sectionId,
-            surveyId,
-            formId,
-            activityId,
-            activityConfigId,
-            missionId,
-            referenceId,
-            subjectType = subjectType
-        )
-        viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
-
+        if (isFromBackStack?.value != true) {
+            viewModel.setPreviousScreenData(
+                taskId,
+                sectionId,
+                surveyId,
+                formId,
+                activityId,
+                activityConfigId,
+                missionId,
+                referenceId,
+                subjectType = subjectType
+            )
+            viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
+        }
     }
 
     BackHandler {
@@ -241,9 +246,11 @@ fun FormQuestionScreen(
                         .fillMaxWidth()
                 ) {
                     SubmitButtonBottomUi(
-                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value && !viewModel.isSubmitButtonClicked.value,
                         buttonTitle = stringResource(R.string.submit),
                         onSubmitButtonClick = {
+                            if (!viewModel.isSubmitButtonClicked.value) {
+                                viewModel.isSubmitButtonClicked.value = true
                             viewModel.saveAllAnswers {
                                 viewModel.updateTaskStatus(taskId)
                                 viewModel.updateSectionStatus(
@@ -253,10 +260,12 @@ fun FormQuestionScreen(
                                     taskId,
                                     SurveyStatusEnum.INPROGRESS.name
                                 )
-                                withContext(Dispatchers.Main) {
-                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                                withContext(CoreDispatchers.mainDispatcher) {
                                     onNavigateBack()
+                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+
                                 }
+                            }
                             }
                         }
                     )
