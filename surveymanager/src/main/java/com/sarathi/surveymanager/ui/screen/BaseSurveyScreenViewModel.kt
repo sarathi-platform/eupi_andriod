@@ -339,7 +339,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             } else {
                 // For cases where showSummaryView has multiple items
-                result = showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
+                result =
+                    result && showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
             }
         }
 

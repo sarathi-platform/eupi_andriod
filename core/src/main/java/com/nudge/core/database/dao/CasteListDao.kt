@@ -19,6 +19,9 @@ interface CasteListDao {
     @Query("Select * FROM $CASTE_TABLE where id = :id AND languageId=:languageId")
     fun getCaste(id: Int, languageId: Int): CasteEntity
 
+    @Query("Select casteName FROM $CASTE_TABLE where casteId = :id AND languageId=:languageId")
+    fun getCasteValue(id: Int, languageId: Int): String?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertCaste(caste: CasteEntity)
 

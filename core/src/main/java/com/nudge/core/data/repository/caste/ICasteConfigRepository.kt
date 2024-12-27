@@ -12,5 +12,6 @@ interface ICasteConfigRepository {
     suspend fun insertCaste(caste: CasteEntity)
     suspend fun insertAll(castes: List<CasteEntity>)
     suspend fun deleteCasteTable()
+    suspend fun getCasteIdValue(casteId: Int): String?
     suspend fun deleteCasteTableForLanguage()
 }
