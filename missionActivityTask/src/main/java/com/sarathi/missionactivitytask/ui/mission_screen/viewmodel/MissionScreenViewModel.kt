@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
 import android.content.Context
-import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -108,6 +107,16 @@ class MissionScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+    }
+
+    fun checkMissionType(): Map<String, List<MissionUiModel>> {
+        val livelihoodMissions = missionList.value.filter { it.missionType == "LIVELIHOOD" }
+        val nonLivelihoodMissions = missionList.value.filter { it.missionType == "NON LIVELIHOOD" }
+
+        return mapOf(
+            "LIVELIHOOD" to livelihoodMissions,
+            "NON LIVELIHOOD" to nonLivelihoodMissions
+        )
     }
 
     // Temp method to be removed after baseline is migrated to Grant flow.

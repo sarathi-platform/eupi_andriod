@@ -11,6 +11,7 @@ data class MissionUiModel(
     val activityCount: Int,
     val pendingActivityCount: Int,
     val programId: Int,
+    val missionType: String? = "NON LIVELIHOOD",
     val livelihoodType: String?,
     val livelihoodOrder: Int?
 ) {
