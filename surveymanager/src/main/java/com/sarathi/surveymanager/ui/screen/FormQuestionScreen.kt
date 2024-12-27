@@ -511,6 +511,9 @@ fun FormScreenQuestionUiContent(
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         showCardView = false,
                         maxCustomHeight = maxHeight,
+                        optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
+                            question.questionId
+                        ),
                         navigateToMediaPlayerScreen = { contentList ->
                             handleContentClick(
                                 viewModel = viewModel,
@@ -530,6 +533,12 @@ fun FormScreenQuestionUiContent(
                                     options.isSelected = false
                                 }
                             }
+
+                            val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                            runNoneCheckForMultiSelectDropDownQuestions(
+                                noneOptionCheckResult,
+                                question
+                            )
                             onAnswerSelect(question)
                         }
                     )

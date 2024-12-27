@@ -68,6 +68,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
+import com.sarathi.dataloadingmangement.util.constants.OptionType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -431,7 +432,9 @@ fun QuestionUiContent(
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
-                    optionStateMap = viewModel.optionStateMap,
+                    optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
+                        question.questionId
+                    ),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -450,6 +453,8 @@ fun QuestionUiContent(
                                 options.isSelected = false
                             }
                         }
+                        val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                        runNoneCheckForMultiSelectDropDownQuestions(noneOptionCheckResult, question)
                         onAnswerSelect(question)
 
                     }
@@ -633,6 +638,24 @@ fun QuestionUiContent(
                 CustomVerticalSpacer(size = dimen_20_dp)
             }
         } ?: CustomVerticalSpacer(size = dimen_20_dp)
+    }
+}
+
+fun runNoneCheckForMultiSelectDropDownQuestions(
+    noneOptionCheckResult: Boolean,
+    question: QuestionUiModel
+) {
+    if (noneOptionCheckResult) {
+        question.options?.forEach {
+            it.isSelected = false
+            it.selectedValue = BLANK_STRING
+        }
+
+        question.options?.forEach { options ->
+            if (options.optionType.equals(OptionType.None.name, true)) {
+                options.isSelected = true
+            }
+        }
     }
 }
 

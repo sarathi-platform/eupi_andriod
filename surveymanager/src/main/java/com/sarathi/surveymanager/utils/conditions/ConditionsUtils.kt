@@ -771,6 +771,20 @@ class ConditionsUtils {
         } ?: return false
     }
 
+    fun getOptionStateMapForMutliSelectDropDownQuestion(questionId: Int): Map<Int, Boolean?> {
+        val optionStateMapForMutliSelectDropDownQuestion = mutableMapOf<Int, Boolean?>()
+        val optionStateForQuestion = optionStateMap.filter { it.key.first == questionId }
+        optionStateForQuestion.entries.map {
+            it.key.second
+        }.forEach { it ->
+            optionStateMapForMutliSelectDropDownQuestion.put(
+                it,
+                optionStateForQuestion[Pair(questionId, it)]
+            )
+        }
+        return optionStateMapForMutliSelectDropDownQuestion
+    }
+
 }
 
 fun findNoneOption(sourceQuestion: QuestionUiModel): OptionsUiModel? {
