@@ -5,6 +5,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
@@ -29,6 +30,7 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
     val fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
     val languageConfigUseCase: LanguageConfigUseCase,
+    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -42,6 +44,7 @@ class FetchAllDataUseCase @Inject constructor(
             fetchMissionDataUseCase.getAllMissionList()
             fetchContentDataFromNetworkUseCase.invoke()
             languageConfigUseCase.invoke()
+            fetchCasteConfigNetworkUseCase.invoke()
             if (!isRefresh) {
                 fetchAppConfigFromNetworkUseCase.invoke()
             }

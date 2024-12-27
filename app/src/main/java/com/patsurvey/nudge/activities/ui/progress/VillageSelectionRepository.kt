@@ -11,18 +11,15 @@ import com.google.gson.JsonSyntaxException
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.json
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
-import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
-import com.patsurvey.nudge.RetryHelper.retryApiList
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
-import com.patsurvey.nudge.analytics.AnalyticsHelper
-import com.patsurvey.nudge.analytics.EventParams
-import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
@@ -38,6 +35,7 @@ import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.CasteListDao
+import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -175,6 +173,7 @@ class VillageSelectionRepository @Inject constructor(
     val bpcSummaryDao: BpcSummaryDao,
     val poorDidiListDao: PoorDidiListDao,
     val androidDownloader: AndroidDownloader,
+    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     val analyticsManager: AnalyticsManager
 ): BaseRepository() {
 
@@ -4104,53 +4103,7 @@ class VillageSelectionRepository @Inject constructor(
 
     public fun fetchCastList(isRefresh: Boolean) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val languageList = languageListDao.getAllLanguages()
-            languageList.forEach { language ->
-                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-                if (localCasteList.isEmpty() || isRefresh) {
-                    try {
-                        val casteResponse = apiService.getCasteList(language.id)
-                        if (casteResponse.status.equals(SUCCESS, true)) {
-                            casteResponse.data?.let { casteList ->
-                                if (isRefresh) {
-                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
-                                }
-                                casteList.forEach { casteEntity ->
-                                    casteEntity.languageId = language.id
-                                }
-                                casteListDao.insertAll(casteList)
-                                AnalyticsHelper.logEvent(
-                                    Events.CASTE_LIST_WRITE,
-                                    mapOf(
-                                        EventParams.LANGUAGE_ID to language.id,
-                                        EventParams.CASTE_LIST to "$casteList",
-                                        EventParams.FROM_SCREEN to "VillageSelectionScreen"
-                                    )
-                                )
-                            }
-                        } else {
-                            val ex = ApiResponseFailException(casteResponse.message)
-                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-                                retryApiList.add(ApiType.CAST_LIST_API)
-                                crpPatQuestionApiLanguageId.add(language.id)
-                            }
-                            onCatchError(ex, ApiType.CAST_LIST_API)
-                        }
-                    } catch (ex: Exception) {
-                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-                            retryApiList.add(ApiType.CAST_LIST_API)
-                            crpPatQuestionApiLanguageId.add(language.id)
-                        }
-                        onCatchError(ex, ApiType.CAST_LIST_API)
-                    } finally {
-                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
-                            ApiType.CAST_LIST_API
-                        )
-                    }
-                }
-            }
+            fetchCasteConfigNetworkUseCase.invoke()
         }
     }
-
-
 }

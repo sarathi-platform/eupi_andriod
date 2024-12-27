@@ -675,8 +675,8 @@ fun NavGraphBuilder.MatNavigation(
                         totalSubmittedAmount = totalSubmittedAmount
                     )
                 },
-                onNavigateSuccessScreen = { msg ->
-                    navigateToActivityCompletionScreen(navController, msg)
+                onNavigateSuccessScreen = { msg ,activityRoutePath->
+                    navigateToActivityCompletionScreen(navController, msg,activityRoutePath=activityRoutePath)
                 },
                 sanctionedAmount = it.arguments?.getInt(
                     ARG_SANCTIONED_AMOUNT
@@ -1110,11 +1110,7 @@ fun NavGraphBuilder.MatNavigation(
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
-                navController.popBackStack(
-                    route = MATHomeScreens.SurveyScreen.route,
-                    inclusive = false,
-                    saveState = false
-                )
+                navController.navigateUp()
             },
             onSettingClick = {
                 onSettingIconClick()

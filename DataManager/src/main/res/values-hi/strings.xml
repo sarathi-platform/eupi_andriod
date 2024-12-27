@@ -140,5 +140,9 @@
     <string name="sync_view_progress">प्रगति को देखें </string>
     <string name="sync_worker_cancelled">सिंक कार्यकर्ता रद्द कर दिया गया</string>
     <string name="sync_already_cancelled">"सिंक पहले से ही रद्ध कर दिया गया है "</string>
+    <string name="sort_by">Sort By</string>
+    <string name="income_expanse">"आय/खर्च "</string>
+    <string name="income">आय</string>
+    <string name="expense">खर्च</string>
 
 </resources>

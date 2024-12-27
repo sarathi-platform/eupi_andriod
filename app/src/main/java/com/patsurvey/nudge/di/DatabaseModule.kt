@@ -61,10 +61,6 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideCasteListDao(db: NudgeDatabase) = db.casteListDao()
-
-    @Provides
-    @Singleton
     fun provideDidiDao(db: NudgeDatabase) = db.didiDao()
 
     @Provides

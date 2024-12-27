@@ -17,7 +17,7 @@ class GetTaskUseCase @Inject constructor(private val taskRepositoryImpl: GetTask
         return taskRepositoryImpl.getTask(taskId)
     }
 
-    suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
+    suspend fun isAllTaskCompleted(missionId: Int, activityId: Int): Boolean {
         return taskRepositoryImpl.isAllActivityCompleted(
             missionId = missionId,
             activityId = activityId

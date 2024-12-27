@@ -22,6 +22,7 @@ const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
 const val TRANSLATION_CONFIG_TABLE_NAME = "translation_config_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
+const val CASTE_TABLE = "caste_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -194,7 +195,7 @@ const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
 const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
-const val CORE_DB_VERSION = 1
+const val CORE_DB_VERSION = 2
 
 const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
@@ -234,6 +235,8 @@ const val SUBJECT_DADA_NAME = "dadaName"
 const val SUBJECT_ADDRESS = "address"
 const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
+const val SUBPATH_GET_CASTE_LIST = "/read-api/config/caste/get"
+
 
 const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
 
@@ -250,3 +253,4 @@ const val AES_SALT = "T&CNu7Zs"
 const val MASKED_CHAR = "*"
 
 const val BASELINE_ACTIVITY_NAME_PREFIX = "Conduct "
+const val ARG_IS_FROM_BACKSTACK = "isFromBackstack"

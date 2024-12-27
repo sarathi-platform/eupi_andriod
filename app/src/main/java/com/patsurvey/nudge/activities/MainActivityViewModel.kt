@@ -12,11 +12,11 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
+import com.nudge.core.database.dao.CasteListDao
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao

@@ -11,6 +11,7 @@ import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.database.entities.language.LanguageEntity
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
@@ -18,6 +19,7 @@ import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.value
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -25,9 +27,6 @@ import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.analytics.AnalyticsHelper
-import com.patsurvey.nudge.analytics.EventParams
-import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
@@ -40,7 +39,6 @@ import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
@@ -153,7 +151,8 @@ class VillageSelectionViewModel @Inject constructor(
     val villageSelectionRepository: VillageSelectionRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     val syncMigrationUseCase: SyncMigrationUseCase,
-    val languageConfigUseCase: LanguageConfigUseCase
+    val languageConfigUseCase: LanguageConfigUseCase,
+    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 
 ) : BaseViewModel() {
     private var isNeedToCallVillageApi: Boolean = true
@@ -1046,6 +1045,7 @@ class VillageSelectionViewModel @Inject constructor(
                     }
                 }*/
             }
+            fetchCasteConfigNetworkUseCase.invoke()
         }
     }
 

@@ -1,12 +1,14 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import javax.inject.Inject
 
 class DeleteAllDataRepositoryImpl @Inject constructor(
     private val nudgeGrantDatabase: NudgeGrantDatabase,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val casteListDao: CasteListDao
 ) : IDeleteAllDataRepository {
     override suspend fun deleteAllDataFromDb() {
         val userId = coreSharedPrefs.getUniqueUserIdentifier()
@@ -100,6 +102,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
             sourceTargetQuestionMappingEntityDao().deleteSourceTargetQuestionMappingForUser(userId)
             surveyConfigEntityDao().deleteSurveyConfigForUser(userId)
             conditionsEntityDao().clearAllConditionsForUser(userId)
+            casteListDao.deleteCasteTable()
         }
     }
 }

@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.basic_content.component
 
 import android.net.Uri
-import android.text.TextUtils
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,7 +19,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
@@ -91,7 +89,7 @@ fun LivelihoodTaskCard(
             .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
-                color = if (taskStatus?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
+                color = if (taskStatus?.value == StatusEnum.COMPLETED.name || taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) greenOnline else greyBorderColor,
                 shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)

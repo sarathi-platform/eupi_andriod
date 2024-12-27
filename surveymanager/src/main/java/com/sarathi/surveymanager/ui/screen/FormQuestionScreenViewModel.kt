@@ -6,12 +6,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.DEFAULT_LANGUAGE_CODE
-import com.nudge.core.casteMap
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -35,6 +34,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
+import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -65,6 +65,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSectionListUseCase: GetSectionListUseCase,
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
     private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -102,6 +103,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     val contentList: State<List<Content>> get() = _contentList
 
     val showLoader = mutableStateOf(false)
+    val isSubmitButtonClicked = mutableStateOf(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
@@ -170,7 +172,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun getSurveyConfig(
+    private suspend fun getSurveyConfig(
         surveyConfigEntityList: List<SurveyConfigEntity>,
         taskAttributes: List<SubjectAttributes>
     ) {
@@ -178,14 +180,13 @@ open class FormQuestionScreenViewModel @Inject constructor(
         surveyConfigEntityList.forEach { it ->
             var surveyConfigEntity = it
             if (surveyConfigEntity.type.equals(UiConfigAttributeType.DYNAMIC.name, true)) {
-                // TEMP Code remove after moving caste table to code.
-                if (surveyConfigEntity.value.equals("casteId", true)) {
+                if (surveyConfigEntity.value.equals(CASTE_ID, true)) {
                     val casteId =
                         taskAttributes.find { it.key == surveyConfigEntity.value }?.value.value()
                             .toSafeInt()
                     surveyConfigEntity = surveyConfigEntity.copy(
-                        value = casteMap.get(coreSharedPrefs.getAppLanguage())?.get(casteId)
-                            ?: casteMap.get(DEFAULT_LANGUAGE_CODE)?.get(casteId).value()
+                        value = fetchCasteConfigNetworkUseCase.getCasteIdValue(casteId = casteId)
+                            ?: BLANK_STRING
                     )
                 } else {
                     surveyConfigEntity =
@@ -331,13 +332,13 @@ open class FormQuestionScreenViewModel @Inject constructor(
     fun saveAllAnswers(onSaveComplete: suspend () -> Unit) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             onEvent(LoaderEvent.UpdateLoaderState(true))
-            questionUiModel.value.filter { it.isMandatory && visibilityMap.get(it.questionId) == true }
+            questionUiModel.value.filter { visibilityMap.get(it.questionId) == true }
                 .forEach { questionUiModel ->
                     saveSingleAnswerIntoDb(questionUiModel)
                 }
             surveyAnswerEventWriterUseCase.writeFormResponseEvent(
                 questionUiModels = questionUiModel.value.filter {
-                    it.isMandatory && visibilityMap.get(
+                    visibilityMap.get(
                         it.questionId
                     ) == true
                 },

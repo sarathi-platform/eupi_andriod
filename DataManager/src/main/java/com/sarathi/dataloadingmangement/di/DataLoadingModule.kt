@@ -8,6 +8,7 @@ import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -15,6 +16,7 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
@@ -633,7 +635,8 @@ class DataLoadingModule {
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
         fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
         languageConfigUseCase: LanguageConfigUseCase,
-        fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase
+        fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
+        fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -659,7 +662,8 @@ class DataLoadingModule {
             fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
             fetchTranslationConfigUseCase = fetchTranslationConfigUseCase,
             languageConfigUseCase = languageConfigUseCase,
-            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase
+            fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
         )
     }
 
@@ -993,9 +997,10 @@ class DataLoadingModule {
     @Singleton
     fun provideDataDeleteRepository(
         nudgeGrantDatabase: NudgeGrantDatabase,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        casteListDao: CasteListDao
     ): DeleteAllDataRepositoryImpl {
-        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs)
+        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs, casteListDao)
     }
 
     @Provides

@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
 import android.text.TextUtils
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,6 +49,9 @@ import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
 import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
+import com.nudge.incomeexpensemodule.utils.EVENT_MESSAGE
+import com.nudge.incomeexpensemodule.utils.NEWLY_ADDED_EVENT_TRANSACTION_ID
+import com.nudge.incomeexpensemodule.utils.SELECTED_LIVELIHOOD_ID
 import com.nudge.incomeexpensemodule.viewmodel.AddEventViewModel
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.INFLOW
@@ -72,6 +76,14 @@ fun AddEventScreen(
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
+    }
+    BackHandler {
+        popBackToPreviousScreen(
+            navController,
+            viewModel,
+            message = BLANK_STRING,
+            transactionId = BLANK_STRING
+        )
     }
     val context = LocalContext.current
 
@@ -101,7 +113,14 @@ fun AddEventScreen(
         ) else viewModel.translationHelper.stringResource(context, R.string.add_event),
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        onBackIconClick = { navController.navigateUp() },
+        onBackIconClick = {
+            popBackToPreviousScreen(
+                navController,
+                viewModel,
+                message = BLANK_STRING,
+                transactionId = BLANK_STRING
+            )
+        },
         onSearchValueChange = {},
         onBottomUI = {
 
@@ -141,8 +160,14 @@ fun AddEventScreen(
                         isActive = viewModel.isSubmitButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
-                            viewModel.onSubmitButtonClick(subjectId, transactionId)
-                            navController.navigateUp()
+                            viewModel.onSubmitButtonClick(subjectId, transactionId) {
+                                popBackToPreviousScreen(
+                                    navController,
+                                    viewModel,
+                                    message = context.getString(R.string.event_added_successfully),
+                                    transactionId
+                                )
+                            }
                         }
                     )
 
@@ -488,14 +513,40 @@ fun AddEventScreen(
                     },
                     onPositiveButtonClick = {
                         viewModel.onDeleteClick(transactionId, subjectId)
-                        navController.navigateUp()
                         viewModel.showDeleteDialog.value = false
+                        popBackToPreviousScreen(
+                            navController,
+                            viewModel,
+                            message = context.getString(R.string.event_deleted_successfully),
+                            transactionId
+                        )
+
 
                     }
                 )
             }
         }
     )
+}
+
+private fun popBackToPreviousScreen(
+    navController: NavHostController,
+    viewModel: AddEventViewModel,
+    message: String,
+    transactionId: String
+) {
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        EVENT_MESSAGE,
+        message
+    )
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        SELECTED_LIVELIHOOD_ID,
+        viewModel.selectedLivelihoodId.value
+    )
+    navController.previousBackStackEntry?.savedStateHandle?.set(
+        NEWLY_ADDED_EVENT_TRANSACTION_ID, transactionId
+    )
+    navController.popBackStack()
 }
 
 @Composable
