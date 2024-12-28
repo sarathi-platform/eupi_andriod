@@ -237,4 +237,6 @@ class ExportBackupScreenViewModel @Inject constructor(
         return arrayListOf(uriFromFile(mAppContext, uri.toFile(), applicationId.value))
     }
 
+    fun getMobileNumber() = settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
+
 }

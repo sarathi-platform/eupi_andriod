@@ -65,6 +65,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
@@ -100,7 +101,8 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -627,6 +629,14 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
+        }
+    }
+    fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+    fun fetchAppConfig() {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
 }

@@ -54,5 +54,6 @@
     <string name="no_result_found">No result found</string>
     <string name="proceed">Proceed</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
-
+    <string name="last_sync_date_time">Last Sync Time:</string>
+    <string name="profile_phone">Phone Number</string>
 </resources>

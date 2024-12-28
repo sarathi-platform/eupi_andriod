@@ -318,6 +318,8 @@
     <string name="profile_phone">फ़ोन नंबर</string>
     <string name="profile_identity_num">पहचान संख्या</string>
     <string name="user_profile_text">उपयोगकर्ता की प्रोफाइल</string>
+    <string name="profile_state_name">राज्य का नाम</string>
+    <string name="profile_district_name">जिले का नाम</string>
     <string name="edit_didi">एडिट करे</string>
     <string name="delete_didi">हटाए</string>
     <string name="you_want_to_delete_video">आप %1$s को हटाना चाहते हैं</string>
@@ -439,7 +441,7 @@
     <string name="edit_disable_message">गतिविधि पूर्ण होने के बाद संपादन की अनुमति नहीं है</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
-    <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
+    <string name="export_backup_file">बैकअप फ़ाइल साझा करें</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">विवरण</string>
@@ -472,5 +474,5 @@
     <string name="all_activities_marked_as_in_progress">सभी गतिविधियाँ प्रगति पर चिह्नित हैं</string>
     <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
     <string name="form_e">फॉर्म E</string>
-    <string name="export_data">Export Data</string>
+    <string name="export_data">Share Data</string>
 </resources>

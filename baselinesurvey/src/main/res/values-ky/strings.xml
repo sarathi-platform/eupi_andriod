@@ -338,6 +338,8 @@
     <string name="profile_phone">Phone Number</string>
     <string name="profile_identity_num">Identity Number</string>
     <string name="user_profile_text">User Profile</string>
+    <string name="profile_state_name">State Name</string>
+    <string name="profile_district_name">District Name</string>
     <string name="edit_didi">Edit</string>
     <string name="delete_didi">Delete</string>
     <string name="you_want_to_delete_video">You want to delete %1$s</string>
@@ -474,12 +476,12 @@
     <string name="regenerate_all_events">Regenerate all events</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
-    <string name="export_images">Export Only Images</string>
-    <string name="export_backup_file">Export BackUp File</string>
-    <string name="export_database">Export Only Database</string>
+    <string name="export_images">Share Only Images</string>
+    <string name="export_backup_file">Share BackUp File</string>
+    <string name="export_database">Share Only Database</string>
     <string name="backup_recovery">Backup/Recovery</string>
-    <string name="export_event_file">Export Event File</string>
-    <string name="export_log_file">Export Only Log File</string>
+    <string name="export_event_file">Share Event File</string>
+    <string name="export_log_file">Share Only Log File</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions not answered, please answer all questions!</string>
     <string name="view_label">Khulok di</string>
     <string name="task_completed_label">"Tangmung Paikha - "</string>
@@ -512,5 +514,5 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form E</string>
-    <string name="export_data">Export Data</string>
+    <string name="export_data">Share Data</string>
 </resources>

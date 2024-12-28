@@ -305,6 +305,8 @@
     <string name="profile_email">इ-मेइल</string>
     <string name="profile_phone">फन नम्बर</string>
     <string name="profile_identity_num">सिनायथि नम्बर</string>
+    <string name="profile_state_name">State Name</string>
+    <string name="profile_district_name">District Name</string>
     <string name="user_profile_text">इउजार प्रफाइल</string>
     <string name="edit_didi">फोसाबनाय/सोदांनाय</string>
     <string name="delete_didi">खोमोरनाय</string>
@@ -429,12 +431,12 @@
     <string name="start">"जागायजेन "</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
-    <string name="export_images">Export Only Images</string>
-    <string name="export_backup_file">Export BackUp File</string>
-    <string name="export_database">Export Only Database</string>
+    <string name="export_images">Share Only Images</string>
+    <string name="export_backup_file">Share BackUp File</string>
+    <string name="export_database">Share Only Database</string>
     <string name="backup_recovery">Backup/Recovery</string>
-    <string name="export_event_file">Export Event File</string>
-    <string name="export_log_file">Export Only Log File</string>
+    <string name="export_event_file">Share Event File</string>
+    <string name="export_log_file">Share Only Log File</string>
     <string name="madnatory_question_not_marked_error">गासैबो गोनांथार सोंलुफोरनि फिन्नाय होआखै, अन्नानै गासैबो सोंलुफोरनि फिन्नाय हो!</string>
     <string name="view_label">View</string>
     <string name="task_completed_label">"हाबाफारिया आबुं जाबाय - "</string>
@@ -467,6 +469,6 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">र्फम C</string>
-    <string name="export_data">Export Data</string>
+    <string name="export_data">Share Data</string>
 
 </resources>

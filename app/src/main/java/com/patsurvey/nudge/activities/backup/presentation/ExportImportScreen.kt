@@ -19,11 +19,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.ShowCustomDialog
+import com.nudge.core.isOnline
+import com.nudge.core.showCustomToast
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
@@ -54,14 +57,19 @@ fun ExportImportScreen(
             }
 
         }
-
-    CommonSettingScreen(
-        userType = viewModel.loggedInUserType.value,
+    val settingConfig = CommonSettingScreenConfig(
+        isSyncEnable = false,
+        mobileNumber = viewModel.getMobileNumber(),
+        lastSyncTime = 0L,
         title = stringResource(id = R.string.backup_recovery),
-        versionText = BLANK_STRING,
-        optionList = viewModel.optionList.value,
-        onBackClick = {navController.popBackStack()},
         isScreenHaveLogoutButton = false,
+        optionList = viewModel.optionList.value,
+        versionText = BLANK_STRING,
+        isItemCard = true
+    )
+    CommonSettingScreen(
+        settingScreenConfig = settingConfig,
+        onBackClick = {navController.popBackStack()},
         onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
@@ -83,13 +91,22 @@ fun ExportImportScreen(
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
                 }
+
+                SettingTagEnum.APP_CONFIG.name -> {
+                    if (isOnline(context)) {
+                        viewModel.fetchAppConfig()
+                    } else {
+                        showCustomToast(
+                            context,
+                            msg = context.getString(com.patsurvey.nudge.R.string.network_not_available_message)
+                        )
+                    }
+                }
             }
         },
         onLogoutClick = {},
-        onParticularFormClick = {index->},
         isLoaderVisible = false,
-        expanded = false,
-        activityForm = listOf()
+        onSyncDataClick = {}
     )
 
     if(viewModel.showLoadConfirmationDialog.value){

@@ -34,5 +34,10 @@ data class UserDetailsResponse(
 
     @SerializedName("referenceId")
     @Expose
-    val referenceId: List<ReferenceIdModel>
-)
+    val referenceId: List<ReferenceIdModel>,
+
+    @SerializedName("federationDetail")
+    @Expose
+    val federationDetail: FederationDetail?,
+
+    )

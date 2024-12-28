@@ -5,4 +5,6 @@ interface ProfileBSRepository {
     fun getUserEmail():String
     fun getUserMobileNumber():String
     fun getUserIdentityNumber():String
+    fun getStateName(): String
+    fun getDistrictName(): String
 }

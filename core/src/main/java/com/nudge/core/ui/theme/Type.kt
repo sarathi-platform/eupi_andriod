@@ -192,3 +192,9 @@ val mediumSpanStyle = SpanStyle(
     fontWeight = FontWeight.Medium,
     fontSize = 14.sp
 )
+
+val syncMediumTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Normal,
+    fontSize = 16.sp
+)

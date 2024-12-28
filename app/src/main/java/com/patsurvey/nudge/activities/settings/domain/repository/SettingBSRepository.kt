@@ -39,5 +39,5 @@ interface SettingBSRepository {
     fun isSyncEnable(): Boolean
 
     fun getStateId(): Int
-
+    fun getLastSyncTime(): Long
 }

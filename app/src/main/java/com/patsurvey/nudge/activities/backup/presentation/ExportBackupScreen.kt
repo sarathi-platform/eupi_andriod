@@ -7,6 +7,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
@@ -19,13 +20,18 @@ fun ExportBackupScreen(
 
     navController: NavController) {
     val context=LocalContext.current
-    CommonSettingScreen(
-        userType = viewModel.loggedInUserType.value,
+    val settingConfig = CommonSettingScreenConfig(
+        isSyncEnable = false,
+        mobileNumber = viewModel.getMobileNumber(),
+        lastSyncTime = 0L,
         title = stringResource(id = R.string.export_data),
-        versionText = BLANK_STRING,
-        optionList = viewModel.exportOptionList.value,
-        onBackClick = {navController.popBackStack()},
         isScreenHaveLogoutButton = false,
+        optionList = viewModel.exportOptionList.value,
+        versionText = BLANK_STRING
+    )
+    CommonSettingScreen(
+        settingScreenConfig = settingConfig,
+        onBackClick = {navController.popBackStack()},
         onItemClick = { _, settingOptionModel ->
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             when(settingOptionModel.tag){
@@ -47,9 +53,7 @@ fun ExportBackupScreen(
             }
         },
         onLogoutClick = {},
-        onParticularFormClick = {index->},
         isLoaderVisible = false,
-        expanded = false,
-        activityForm = listOf()
+        onSyncDataClick = {}
     )
 }

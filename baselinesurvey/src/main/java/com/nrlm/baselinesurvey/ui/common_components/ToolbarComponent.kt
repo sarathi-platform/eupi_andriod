@@ -38,7 +38,7 @@ fun ToolbarComponent(title:String,
                 .fillMaxWidth()) {
 
                 Text(
-                    modifier = Modifier.padding(0.dp,0.dp,0.dp,7.dp),
+                    modifier = Modifier.padding(0.dp, 3.dp, 0.dp, 7.dp),
                     text = title,
                     color = Color.Black,
                     textAlign = TextAlign.Center,

@@ -4,6 +4,7 @@ import android.content.Context
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.getDefaultBackUpFileName
@@ -148,5 +149,9 @@ class SettingBSRepositoryImpl(
 
     override fun getStateId(): Int {
         return prefRepo.getStateId()
+    }
+
+    override fun getLastSyncTime(): Long {
+        return prefRepo.getPref(LAST_SYNC_TIME, 0L)
     }
 }

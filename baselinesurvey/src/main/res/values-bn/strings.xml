@@ -314,6 +314,8 @@
     <string name="profile_phone">ফোন নম্বর</string>
     <string name="profile_identity_num">পরিচয় নম্বর</string>
     <string name="user_profile_text">ইউসার প্রোফাইল</string>
+    <string name="profile_state_name">রাজ্যের নাম</string>
+    <string name="profile_district_name">জেলার নাম</string>
     <string name="edit_didi">সম্পাদনা</string>
     <string name="delete_didi">ডিলিট</string>
     <string name="you_want_to_delete_video">আপনি %1$s ডিলিট করতে চান</string>
@@ -437,7 +439,7 @@
     <string name="fetched_successfully">" ডেটা সফলভাবে আনা হয়েছে৷"</string>
     <string name="edit_disable_message">কার্যকলাপ সম্পূর্ণ হওয়ার পরে সম্পাদনা অনুমোদিত নয়।</string>
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
-    <string name="export_backup_file">ব্যাকআপ ফাইল রপ্তানি করুন</string>
+    <string name="export_backup_file">ব্যাকআপ ফাইল শেয়ার করুন</string>
     <string name="backup_recovery">ব্যাকআপ/পুনরুদ্ধার</string>
     <string name="madnatory_question_not_marked_error">সমস্ত বাধ্যতামূলক প্রশ্নের উত্তর দেওয়া হয় না, দয়া করে সমস্ত প্রশ্নের উত্তর দিন!</string>
     <string name="view_label">বিস্তারিত</string>
@@ -472,6 +474,6 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form C</string>
-    <string name="export_data">Export Data</string>
+    <string name="export_data">Share Data</string>
 
 </resources>

@@ -106,8 +106,10 @@ class SettingBSViewModel @Inject constructor(
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
+    var isSyncEnable = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
     var applicationId = mutableStateOf(BLANK_STRING)
+    var lastSyncTime = mutableStateOf(0L)
     lateinit var mAppContext: Context
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     var userType: String = BLANK_STRING
@@ -127,6 +129,7 @@ class SettingBSViewModel @Inject constructor(
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
+        lastSyncTime.value = settingBSUserCase.getUserDetailsUseCase.getLastSyncTime()
         mAppContext =
             if (userType != UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
         getActivityFormGenerateList(onGetData = {
@@ -141,9 +144,10 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 1,
-                context.getString(R.string.profile),
+                context.getString(R.string.language_text),
                 BLANK_STRING,
-                SettingTagEnum.PROFILE.name
+                SettingTagEnum.LANGUAGE.name,
+                icon = R.drawable.ic_language
             )
         )
         if (userType != UPCM_USER) {
@@ -153,7 +157,8 @@ class SettingBSViewModel @Inject constructor(
                         2,
                         context.getString(R.string.forms),
                         BLANK_STRING,
-                        SettingTagEnum.FORMS.name
+                        SettingTagEnum.FORMS.name,
+                        icon = R.drawable.ic_forms
                     )
                 )
             }
@@ -163,7 +168,8 @@ class SettingBSViewModel @Inject constructor(
                     3,
                     context.getString(R.string.training_videos),
                     BLANK_STRING,
-                    SettingTagEnum.TRAINING_VIDEOS.name
+                    SettingTagEnum.TRAINING_VIDEOS.name,
+                    icon = R.drawable.ic_bottom_task_icon
                 )
             )
         } else {
@@ -172,24 +178,19 @@ class SettingBSViewModel @Inject constructor(
                     2,
                     context.getString(R.string.forms),
                     BLANK_STRING,
-                    SettingTagEnum.FORMS.name
+                    SettingTagEnum.FORMS.name,
+                    icon = R.drawable.ic_forms
                 )
             )
         }
         list.add(
             SettingOptionModel(
-                4,
-                context.getString(R.string.language_text),
-                BLANK_STRING,
-                SettingTagEnum.LANGUAGE.name
-            )
-        )
-        list.add(
-            SettingOptionModel(
                 5,
                 context.getString(R.string.export_backup_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_BACKUP_FILE.name,
+                isShareOption = true,
+                icon = R.drawable.ic_backup_file
             )
         )
         list.add(
@@ -197,7 +198,8 @@ class SettingBSViewModel @Inject constructor(
                 6,
                 context.getString(R.string.export_data),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name,
+                icon = R.drawable.ic_share_data
             )
         )
         list.add(
@@ -205,37 +207,26 @@ class SettingBSViewModel @Inject constructor(
                 7,
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
-                SettingTagEnum.BACKUP_RECOVERY.name
+                SettingTagEnum.BACKUP_RECOVERY.name,
+                icon = R.drawable.ic_backup_recovery
             )
         )
-
         list.add(
             SettingOptionModel(
                 8,
-                context.getString(appRes.string.refresh_config),
+                context.getString(R.string.profile),
                 BLANK_STRING,
-                SettingTagEnum.APP_CONFIG.name
-
+                SettingTagEnum.PROFILE.name,
+                icon = R.drawable.ic_profile
             )
         )
 
-        if (settingBSUserCase.getUserDetailsUseCase.isSyncEnable()) {
-            list.add(
-                SettingOptionModel(
-                    7,
-                    context.getString(R.string.sync_your_data),
-                    BLANK_STRING,
-                    SettingTagEnum.SYNC_DATA_NOW.name
-                )
-            )
-        }
-
-
+        isSyncEnable.value = settingBSUserCase.getUserDetailsUseCase.isSyncEnable()
         _optionList.value=list
         fetchEventCount()
-        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
-            checkFormsAvailabilityForVillage(context, villageId)
-        }
+//        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
+//            checkFormsAvailabilityForVillage(context, villageId)
+//        }
     }
 
     fun fetchEventCount() {
@@ -732,14 +723,5 @@ class SettingBSViewModel @Inject constructor(
             workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
                 return it.state == WorkInfo.State.RUNNING
            }?:return false
-    }
-
-    fun fetchhAppConfig() {
-        showLoader.value = true
-        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
-            showLoader.value = false
-
-        }
     }
 }

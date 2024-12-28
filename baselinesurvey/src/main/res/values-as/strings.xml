@@ -314,6 +314,8 @@
     <string name="profile_email">ইমেইল</string>
     <string name="profile_phone">ফোন নম্বৰ</string>
     <string name="profile_identity_num">পৰিচয় নম্বৰ</string>
+    <string name="profile_state_name">ৰাজ্যৰ নাম</string>
+    <string name="profile_district_name">জিলাৰ নাম</string>
     <string name="user_profile_text">ইউযাৰ প্ৰফাইল</string>
     <string name="edit_didi">এদিত</string>
     <string name="delete_didi">ডিলিট</string>
