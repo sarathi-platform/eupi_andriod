@@ -16,8 +16,10 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "type_of_asset",
             "products",
             "increase_in_number",
+            "decrease_in_number",
             "amount",
             "are_you_sure_you_want_to_delete",
+            "event_added_successfully",
             "no",
             "yes"
         )

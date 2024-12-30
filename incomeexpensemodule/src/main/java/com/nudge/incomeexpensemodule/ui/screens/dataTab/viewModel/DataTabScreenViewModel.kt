@@ -72,9 +72,9 @@ class DataTabScreenViewModel @Inject constructor(
         mutableStateOf(Triple(false, -1, listOf()))
 
     override fun <T> onEvent(event: T) {
-        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAddDataForDataTab(isRefresh = false)
             }
 

@@ -88,9 +88,9 @@ class AddEventViewModel @Inject constructor(
     var fieldValidationAndMessageMap = mutableStateMapOf<String, Pair<Boolean, String>>()
 
     override fun <T> onEvent(event: T) {
-        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitAddEventState -> {
+                setTranslationConfig()
                 fetchEventData(event.subjectId, event.transactionId)
             }
 
@@ -99,7 +99,6 @@ class AddEventViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
-
         }
     }
 

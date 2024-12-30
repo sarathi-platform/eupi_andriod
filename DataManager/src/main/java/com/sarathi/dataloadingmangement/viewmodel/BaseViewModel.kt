@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -37,11 +38,10 @@ abstract class BaseViewModel : ViewModel() {
         mutableStateMapOf<String, List<LanguageModel>?>()
     val translationMap: SnapshotStateMap<String, List<LanguageModel>?> get() = _translationMap
 
-    open fun <T> onEvent(event: T) {
-        setTranslationConfig()
-    }
+    abstract fun <T> onEvent(event: T)
 
-    private fun setTranslationConfig() {
+
+    fun setTranslationConfig() {
         ioViewModelScope {
             translationHelper.initTranslationHelper(getScreenName())
         }
@@ -99,5 +99,13 @@ abstract class BaseViewModel : ViewModel() {
 
     open fun getScreenName(): TranslationEnum {
         return TranslationEnum.NoScreen
+    }
+
+    fun getString(context: Context, resId: Int): String {
+        return translationHelper?.getString(context, resId) ?: context.getString(resId)
+    }
+
+    fun stringResource(context: Context, resId: Int): String {
+        return translationHelper?.stringResource(context, resId) ?: context.getString(resId)
     }
 }
