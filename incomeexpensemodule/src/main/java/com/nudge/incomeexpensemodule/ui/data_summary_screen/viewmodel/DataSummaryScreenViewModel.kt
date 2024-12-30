@@ -15,8 +15,8 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
-import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
@@ -107,9 +107,9 @@ class DataSummaryScreenViewModel @Inject constructor(
     val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
 
     override fun <T> onEvent(event: T) {
-        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitDataSummaryScreenState -> {
+                setTranslationConfig()
                 loadAddDataSummaryData(subjectId = event.subjectId)
             }
 

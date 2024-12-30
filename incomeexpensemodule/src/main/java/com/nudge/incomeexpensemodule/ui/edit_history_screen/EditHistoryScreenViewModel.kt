@@ -39,9 +39,9 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
     val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
 
     override fun <T> onEvent(event: T) {
-        super.onEvent(event)
         when (event) {
             is InitDataEvent.InitEditHistoryState -> {
+                setTranslationConfig()
                 loadEditHistoryData(transactionId = event.transactionId)
             }
 

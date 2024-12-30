@@ -36,7 +36,8 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "event",
             "amount",
             "asset",
-            "add_event"
+            "add_event",
+            "livelihood"
         )
     ),
     DataTabScreen(

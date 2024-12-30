@@ -104,21 +104,21 @@ fun DataTabScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = dataTabScreenViewModel.translationHelper.stringResource(
+            title = dataTabScreenViewModel.stringResource(
                 context,
-                id = R.string.are_you_sure
+                resId = R.string.are_you_sure
             ),
-            message = dataTabScreenViewModel.translationHelper.stringResource(
+            message = dataTabScreenViewModel.stringResource(
                 context,
-                id = R.string.do_you_want_to_exit_the_app
+                resId = R.string.do_you_want_to_exit_the_app
             ),
-            positiveButtonTitle = dataTabScreenViewModel.translationHelper.stringResource(
+            positiveButtonTitle = dataTabScreenViewModel.stringResource(
                 context,
-                id = R.string.exit
+                resId = R.string.exit
             ),
-            negativeButtonTitle = dataTabScreenViewModel.translationHelper.stringResource(
+            negativeButtonTitle = dataTabScreenViewModel.stringResource(
                 context,
-                id = R.string.cancel
+                resId = R.string.cancel
             ),
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
@@ -188,9 +188,9 @@ fun DataTabScreen(
             }
         ) {
             ToolBarWithMenuComponent(
-                title = dataTabScreenViewModel.translationHelper.stringResource(
+                title = dataTabScreenViewModel.stringResource(
                     context,
-                    id = com.sarathi.dataloadingmangement.R.string.app_name
+                    resId = com.sarathi.dataloadingmangement.R.string.app_name
                 ),
                 modifier = modifier,
                 isSearch = true,
@@ -265,7 +265,7 @@ fun DataTabScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(1f),
-                                        placeholderString = dataTabScreenViewModel.translationHelper.stringResource(
+                                        placeholderString = dataTabScreenViewModel.stringResource(
                                             context,
                                             DataRes.string.search_by_didis
                                         ),
