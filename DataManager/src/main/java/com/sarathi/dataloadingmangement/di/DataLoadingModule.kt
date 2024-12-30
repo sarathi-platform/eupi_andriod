@@ -13,6 +13,8 @@ import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -999,9 +1001,18 @@ class DataLoadingModule {
     fun provideDataDeleteRepository(
         nudgeGrantDatabase: NudgeGrantDatabase,
         coreSharedPrefs: CoreSharedPrefs,
-        casteListDao: CasteListDao
+        casteListDao: CasteListDao,
+        translationConfigDao: TranslationConfigDao,
+        languageListDao: LanguageListDao
+
     ): DeleteAllDataRepositoryImpl {
-        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs, casteListDao)
+        return DeleteAllDataRepositoryImpl(
+            nudgeGrantDatabase = nudgeGrantDatabase,
+            coreSharedPrefs = coreSharedPrefs,
+            casteListDao = casteListDao,
+            languageListDao = languageListDao,
+            translationConfigDao = translationConfigDao
+        )
     }
 
     @Provides
