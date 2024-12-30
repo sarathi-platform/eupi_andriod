@@ -46,6 +46,7 @@ import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.CASTE_TABLE
 import com.nudge.core.LANGUAGE_TABLE_NAME
 import java.sql.SQLException
 
@@ -127,13 +128,13 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
             }
         }
 
-        //        val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
-//        val MIGRATION_2_3 = object : Migration(2, 3) {
-//            override fun migrate(db: SupportSQLiteDatabase) {
-//                Log.d("NudgeDatabase", "MIGRATION_2_3")
-//                migration(db, listOf(DROP_CASTE_TABLE))
-//            }
-//        }
+        val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                Log.d("NudgeDatabase", "MIGRATION_2_3")
+                migration(db, listOf(DROP_CASTE_TABLE))
+            }
+        }
         const val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
         val MIGRATION_3_4 = object : Migration(3, 4) {
             override fun migrate(db: SupportSQLiteDatabase) {

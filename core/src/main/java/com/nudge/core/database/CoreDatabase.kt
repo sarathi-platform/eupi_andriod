@@ -51,7 +51,7 @@ abstract class CoreDatabase : RoomDatabase() {
         }
         val CORE_DATABASE_MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
-                CoreLogger.d(tag = "**CoreDatabase**", msg = "MIGRATION_2_3")
+                CoreLogger.d(tag = "CoreDatabase", msg = "MIGRATION_2_3")
                 migration(db, listOf(CREATE_LANGUAGE_TABLE, CREATE_TRANSLATION_CONFIG_TABLE))
             }
         }
@@ -62,14 +62,14 @@ abstract class CoreDatabase : RoomDatabase() {
                     database.execSQL(sql)
                 } catch (e: SQLException) {
                     CoreLogger.e(
-                        tag = "CoreDatabase****",
+                        tag = "CoreDatabase",
                         msg = "migration \"$sql\" Migration Error",
                         ex = e,
                         stackTrace = true
                     )
                 } catch (t: Throwable) {
                     CoreLogger.e(
-                        tag = "CoreDatabase**",
+                        tag = "CoreDatabase",
                         msg = "migration \"$sql\"",
                         ex = t,
                         stackTrace = true
