@@ -10,16 +10,16 @@ import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
-import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.value
-import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -995,56 +995,6 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchCastList(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val languageList = languageConfigUseCase.getAllLanguage()
-            languageList.forEach { language ->
-                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-                if (localCasteList.isEmpty() || isRefresh) {
-                    try {
-                        val casteResponse = apiService.getCasteList(language.id)
-                        if (casteResponse.status.equals(SUCCESS, true)) {
-                            casteResponse.data?.let { casteList ->
-                                if (isRefresh) {
-                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
-                                }
-                                casteList.forEach { casteEntity ->
-                                    casteEntity.languageId = language.id
-                                }
-                                casteListDao.insertAll(casteList)
-                                AnalyticsHelper.logEvent(
-                                    Events.CASTE_LIST_WRITE,
-                                    mapOf(
-                                        EventParams.LANGUAGE_ID to language.id,
-                                        EventParams.CASTE_LIST to "$casteList",
-                                        EventParams.FROM_SCREEN to "VillageSelectionScreen"
-                                    )
-                                )
-                            }
-                        } else {
-                            val ex = ApiResponseFailException(casteResponse.message)
-                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-                                retryApiList.add(ApiType.CAST_LIST_API)
-                                crpPatQuestionApiLanguageId.add(language.id)
-                            }
-                            onCatchError(ex, ApiType.CAST_LIST_API)
-                        }
-                    } catch (ex: Exception) {
-                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-                            retryApiList.add(ApiType.CAST_LIST_API)
-                            crpPatQuestionApiLanguageId.add(language.id)
-                        }
-                        onCatchError(ex, ApiType.CAST_LIST_API)
-                    } finally {
-                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
-                            ApiType.CAST_LIST_API
-                        )
-                    }
-                } /*else {
-                    withContext(Dispatchers.Main) {
-                        delay(250)
-                        showLoader.value = false
-                    }
-                }*/
-            }
             fetchCasteConfigNetworkUseCase.invoke()
         }
     }

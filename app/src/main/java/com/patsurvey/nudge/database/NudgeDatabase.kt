@@ -9,6 +9,7 @@ import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.CASTE_TABLE
 import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.nudge.core.NUDGE_DATABASE_VERSION
+import com.nudge.core.database.entities.CasteEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
 import com.patsurvey.nudge.database.converters.QuestionsOptionsConverter
@@ -88,11 +89,14 @@ abstract class NudgeDatabase : RoomDatabase() {
                 migration(db, listOf(DROP_LANGUAGE_TABLE,DROP_CASTE_TABLE))
             }
         }
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                NudgeLogger.d("NudgeDatabase", "MIGRATION_3_4")
+                migration(db, listOf(DROP_LANGUAGE_TABLE))
+            }
+        }
 
         val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
-
-        // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
-
 
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
             for(sql in execSqls) {

@@ -144,7 +144,5 @@
     <string name="sync_already_cancelled">Sync cancelled ungjak se.</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">Ajemung/swbaimung</string>
-    <string name="income">Ajemung</string>
-    <string name="expense">Swbaimung</string>
 
 </resources>

@@ -34,7 +34,7 @@ const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
-const val NUDGE_DATABASE_VERSION = 4
+const val NUDGE_DATABASE_VERSION = 5
 const val NUDGE_GRANT_DATABASE = "NudgeGrantDatabase"
 
 const val SELECTION_MISSION = "Selection"
@@ -195,7 +195,7 @@ const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
 const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
-const val CORE_DB_VERSION = 2
+const val CORE_DB_VERSION = 3
 
 const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
