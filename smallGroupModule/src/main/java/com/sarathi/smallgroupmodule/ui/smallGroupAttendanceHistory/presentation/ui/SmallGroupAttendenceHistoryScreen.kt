@@ -60,13 +60,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.nudge.core.getCurrentTimeInMillis
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.ContentWithImage
 import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
@@ -418,12 +417,8 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 it.key
                                             )
                                         },
-                                        stringMap = M,
-                                        title =TextProperties( text = smallGroupAttendanceHistoryViewModel.stringResource(
-                                            context,
-                                            R.string.edit_button_text,), style = defaultTextStyle
-                                        ),
-
+                                        translationHelper = smallGroupAttendanceHistoryViewModel.getTranslationHelper()
+                                    )
                                 }
                             }
 
@@ -510,12 +505,7 @@ fun AttendanceSummaryCard(
     innerState: LazyListState = rememberLazyListState(),
     maxCustomHeight: Dp,
     subjectAttendanceHistoryStateMappingByDate: Map.Entry<Long, List<SubjectAttendanceHistoryState>>,
-
-    stringMap:Map<String,String>,
-//    attendencePerc:TextProperties<String>,
-//    totalCount:TextProperties<String>,
-//    editBtn: @Composable () -> Unit,
-//    deleteBtn: @Composable () -> Unit,
+    translationHelper: TranslationHelper,
     onEditClicked: () -> Unit,
     onDeleteClicked: () -> Unit
 
@@ -543,6 +533,8 @@ fun AttendanceSummaryCard(
         }
 
     val isExpanded = remember { mutableStateOf(false) }
+
+    val context = LocalContext.current
 
     BasicCardView(
         colors = CardDefaults.cardColors(
@@ -582,7 +574,7 @@ fun AttendanceSummaryCard(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text =translationHelper.stringResource(
+                    text = translationHelper.stringResource(
                         context,
                         R.string.attendance_percentage_text,
                         attendancePercentage.value

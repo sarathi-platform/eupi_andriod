@@ -27,7 +27,7 @@ import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class BaseViewModel : ViewModel() {
     @Inject
-    lateinit var translationHelper: TranslationHelper
+    private lateinit var translationHelper: TranslationHelper
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
 
@@ -58,7 +58,7 @@ abstract class BaseViewModel : ViewModel() {
         onCatchError(e)
     }
 
-
+    fun getTranslationHelper() = translationHelper
 
 
     open fun onCatchError(e: Throwable) {
