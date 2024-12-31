@@ -109,7 +109,7 @@ abstract class BaseViewModel : ViewModel() {
         return translationHelper?.stringResource(context, resId) ?: context.getString(resId)
     }
 
-    fun stringResource(context: Context, resId: Int, formatArgs: Any): String {
+    fun stringResource(context: Context, resId: Int, vararg formatArgs: Any): String {
         return translationHelper?.getString(
             context = context,
             resId = resId,

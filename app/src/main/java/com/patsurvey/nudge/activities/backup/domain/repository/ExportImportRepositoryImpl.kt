@@ -7,6 +7,8 @@ import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
@@ -25,9 +27,11 @@ class ExportImportRepositoryImpl @Inject constructor(
     val nudgeDatabase: NudgeDatabase,
     val syncManagerDatabase: SyncManagerDatabase,
     val missionDao: MissionDao,
-    val casteListDao: CasteListDao
-):ExportImportRepository {
-    override fun clearLocalData() {
+    val casteListDao: CasteListDao,
+    val languageListDao: LanguageListDao,
+    val translationConfigDao: TranslationConfigDao,
+) : ExportImportRepository {
+    override suspend fun clearLocalData() {
         try {
             val userId = prefBSRepo.getUniqueUserIdentifier()
 
@@ -47,6 +51,8 @@ class ExportImportRepositoryImpl @Inject constructor(
                 surveyEntityDao().deleteAllSurvey(userId)
                 didiInfoEntityDao().deleteAllDidiInfo(userId)
                 casteListDao.deleteCasteTable()
+                languageListDao.deleteAllLanguage()
+                translationConfigDao.deleteTranslationConfigModelForUser(userId)
             }
 
         }catch (ex:Exception){
@@ -94,7 +100,7 @@ class ExportImportRepositoryImpl @Inject constructor(
         )
     }
 
-    override fun clearSelectionLocalDB() {
+    override suspend fun clearSelectionLocalDB() {
         try {
             nudgeDatabase.tolaDao().deleteAllTola()
             nudgeDatabase.didiDao().deleteAllDidi()
@@ -108,6 +114,8 @@ class ExportImportRepositoryImpl @Inject constructor(
             nudgeDatabase.poorDidiListDao().deleteAllDidis()
             prefBSRepo.savePref(LAST_UPDATE_TIME, 0L)
             casteListDao.deleteCasteTable()
+            languageListDao.deleteAllLanguage()
+            translationConfigDao.deleteTranslationConfigModelForUser(userId = prefBSRepo.getUniqueUserIdentifier())
         }catch (ex:Exception){
             NudgeLogger.d("ExportImportRepositoryImpl","clearSelectionLocalDB: ${ex.message}")
         }

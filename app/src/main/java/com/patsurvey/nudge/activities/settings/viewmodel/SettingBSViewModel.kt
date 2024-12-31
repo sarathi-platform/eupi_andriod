@@ -187,9 +187,9 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 5,
-                context.getString(R.string.export_data),
+                context.getString(R.string.export_backup_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_BACKUP_FILE.name
             )
         )
         list.add(
