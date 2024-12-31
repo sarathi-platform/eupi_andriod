@@ -16,6 +16,7 @@ import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.json
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.MainActivity
@@ -172,8 +173,9 @@ class VillageSelectionRepository @Inject constructor(
     val poorDidiListDao: PoorDidiListDao,
     val androidDownloader: AndroidDownloader,
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
-    val analyticsManager: AnalyticsManager
-): BaseRepository() {
+    val analyticsManager: AnalyticsManager,
+    val languageConfigUseCase: LanguageConfigUseCase
+) : BaseRepository() {
 
     private var isPendingForBpc = 0
     private var isPendingForCrp = 0
@@ -3973,6 +3975,7 @@ class VillageSelectionRepository @Inject constructor(
                     NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> villageReq: $villageReq")
                     val response = apiService.userAndVillageListAPI(villageReq)
                     NudgeLogger.d("VillageSelectionRepository", "fetchUserAndVillageDetails -> response: ${response.json()}")
+                    languageConfigUseCase.invoke()
                     withContext(Dispatchers.IO) {
                         if (response.status.equals(SUCCESS, true)) {
                             response.data?.let {

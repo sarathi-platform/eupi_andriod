@@ -288,6 +288,7 @@ fun OtpVerificationScreen(
                                 }
                             }
                             RetryHelper.autoReadOtp.value = ""
+                            viewModel.languageConfigUseCase()
                         }
                         else {
                             Log.e("TAG", "OtpVerificationScreen: $message")
