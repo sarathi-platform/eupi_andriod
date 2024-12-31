@@ -17,7 +17,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
-import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
 import com.nrlm.baselinesurvey.database.dao.QuestionEntityDao
 import com.nrlm.baselinesurvey.database.dao.SectionEntityDao
@@ -30,7 +29,6 @@ import com.nrlm.baselinesurvey.model.datamodel.toCSVSave
 import com.nrlm.baselinesurvey.model.datamodel.toCsv
 import com.nrlm.baselinesurvey.model.datamodel.toCsvR
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
-import com.nrlm.baselinesurvey.utils.BSLogWriter
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
@@ -53,7 +51,6 @@ import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.exportDatabase
-import com.nudge.core.exportLogFile
 import com.nudge.core.exportcsv.CsvConfig
 import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
@@ -109,6 +106,7 @@ class ExportImportViewModel @Inject constructor(
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
+
     val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
