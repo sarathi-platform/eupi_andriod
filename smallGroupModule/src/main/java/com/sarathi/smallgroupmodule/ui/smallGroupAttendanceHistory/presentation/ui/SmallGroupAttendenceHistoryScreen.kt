@@ -134,7 +134,7 @@ fun SmallGroupAttendanceHistoryScreen(
     var isVisibleDateRangePickerDialog by remember {
         mutableStateOf(false)
     }
-    val  context = LocalContext.current
+    val context = LocalContext.current
     LaunchedEffect(key1 = Unit) {
         smallGroupAttendanceHistoryViewModel.onEvent(
             SmallGroupAttendanceEvent.LoadSmallGroupDetailsForSmallGroupIdEvent(
@@ -171,18 +171,22 @@ fun SmallGroupAttendanceHistoryScreen(
     if (smallGroupAttendanceHistoryViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title =smallGroupAttendanceHistoryViewModel.stringResource(
+            title = smallGroupAttendanceHistoryViewModel.stringResource(
                 context,
-                R.string.confirmation_alert_dialog_title),
+                R.string.confirmation_alert_dialog_title
+            ),
             message = smallGroupAttendanceHistoryViewModel.stringResource(
                 context,
-                R.string.do_you_want_mark_all_absent),
+                R.string.do_you_want_mark_all_absent
+            ),
             positiveButtonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
                 context,
-                R.string.yes),
-            negativeButtonTitle =  smallGroupAttendanceHistoryViewModel.stringResource(
+                R.string.yes
+            ),
+            negativeButtonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
                 context,
-                R.string.no),
+                R.string.no
+            ),
             positiveButtonColor = deleteButtonBg,
             onPositiveButtonClick = {
                 smallGroupAttendanceHistoryViewModel.onEvent(SmallGroupAttendanceEvent.DeleteAttendanceForDateEvent {
@@ -252,9 +256,10 @@ fun SmallGroupAttendanceHistoryScreen(
                                 .padding(dimen_10_dp)
                         ) {
                             ButtonPositiveComponent(
-                                buttonTitle =smallGroupAttendanceHistoryViewModel.stringResource(
+                                buttonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
                                     context,
-                                    R.string.take_attendance_button_text),
+                                    R.string.take_attendance_button_text
+                                ),
                                 isActive = true,
                                 isArrowRequired = true,
                                 onClick = {
@@ -354,17 +359,19 @@ fun SmallGroupAttendanceHistoryScreen(
                                             ),
                                             label = {
                                                 Text(
-                                                    text =smallGroupAttendanceHistoryViewModel.stringResource(
+                                                    text = smallGroupAttendanceHistoryViewModel.stringResource(
                                                         context,
-                                                        R.string.date_range_picker_label_text),
-                                                            color = otpBorderColor
+                                                        R.string.date_range_picker_label_text
+                                                    ),
+                                                    color = otpBorderColor
                                                 )
                                             },
                                             placeholder = {
                                                 Text(
-                                                    text =smallGroupAttendanceHistoryViewModel.stringResource(
+                                                    text = smallGroupAttendanceHistoryViewModel.stringResource(
                                                         context,
-                                                        R.string.date_range_picker_label_text),
+                                                        R.string.date_range_picker_label_text
+                                                    ),
                                                     color = otpBorderColor
                                                 )
                                             },
@@ -391,8 +398,9 @@ fun SmallGroupAttendanceHistoryScreen(
                                 Text(
                                     text = smallGroupAttendanceHistoryViewModel.stringResource(
                                         context,
-                                        R.string.attendance_history_header_text),
-                                            style = defaultTextStyle,
+                                        R.string.attendance_history_header_text
+                                    ),
+                                    style = defaultTextStyle,
                                     color = textColorDark
                                 )
                             }
@@ -418,7 +426,7 @@ fun SmallGroupAttendanceHistoryScreen(
                                                 it.key
                                             )
                                         },
-                                        translationHelper = smallGroupAttendanceHistoryViewModel.getTranslationHelper()
+                                        translationHelper = smallGroupAttendanceHistoryViewModel.translationHelper
                                     )
                                 }
                             }
@@ -476,18 +484,21 @@ fun EmptyHistoryView(
                     contentDescription = null,
                     blueDark,
                 ), textProperties = TextProperties(
-                    text =smallGroupAttendanceHistoryViewModel.stringResource(
+                    text = smallGroupAttendanceHistoryViewModel.stringResource(
                         context,
-                        R.string.total_didis_label_text, smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount),
+                        R.string.total_didis_label_text,
+                        smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount
+                    ),
                     color = blueDark,
                     style = defaultTextStyle
                 )
             )
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
             ButtonPositiveComponent(
-                buttonTitle =smallGroupAttendanceHistoryViewModel.stringResource(
+                buttonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
                     context,
-                    R.string.take_attendance_button_text),
+                    R.string.take_attendance_button_text
+                ),
                 isActive = true,
                 isArrowRequired = true,
                 onClick = {
@@ -600,7 +611,7 @@ fun AttendanceSummaryCard(
                         contentDescription = null,
                         tint = textColorDark
                     ), textProperties = TextProperties(
-                        text =translationHelper.stringResource(
+                        text = translationHelper.stringResource(
                             context,
                             R.string.total_count_text,
                             counts.value.first,
@@ -626,7 +637,7 @@ fun AttendanceSummaryCard(
                 maxCustomHeight = maxCustomHeight,
                 subjectAttendanceHistoryStateList = subjectAttendanceHistoryStateMappingByDate.value,
                 isExpanded = isExpanded.value,
-                translationHelper =translationHelper
+                translationHelper = translationHelper
             )
 
             Spacer(
@@ -663,8 +674,9 @@ fun AttendanceSummaryCard(
                             modifier = Modifier
                         ),
                         textProperties = TextProperties(
-                            text =translationHelper.stringResource(
-                                context,R.plurals.edit_button_text),
+                            text = translationHelper.stringResource(
+                                context, R.string.edit_button_text
+                            ),
                             style = defaultTextStyle,
                             color = textColorDark
                         )
@@ -696,8 +708,9 @@ fun AttendanceSummaryCard(
                         ), textProperties = TextProperties(
                             text = translationHelper.stringResource(
                                 context,
-                                R.string.delete_button_text),
-                                    style = defaultTextStyle,
+                                R.string.delete_button_text
+                            ),
+                            style = defaultTextStyle,
                             color = redOffline
                         )
                     )
@@ -719,7 +732,7 @@ fun HistorySummaryCard(
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
     maxCustomHeight: Dp,
-    translationHelper:TranslationHelper,
+    translationHelper: TranslationHelper,
     subjectAttendanceHistoryStateList: List<SubjectAttendanceHistoryState>, isExpanded: Boolean
 ) {
 
@@ -758,7 +771,7 @@ fun HistorySummaryCard(
                         HistorySummaryCardItem(
                             modifier = modifier,
                             subjectAttendanceHistoryState = subjectAttendanceHistoryState,
-                            translationHelper=translationHelper
+                            translationHelper = translationHelper
                         )
                     }
                 }
@@ -774,7 +787,7 @@ fun HistorySummaryCardItem(
     subjectAttendanceHistoryState: SubjectAttendanceHistoryState,
     translationHelper: TranslationHelper,
 ) {
-val context = LocalContext.current
+    val context = LocalContext.current
     ContentWithImage(
         modifier = modifier.padding(horizontal = dimen_10_dp),
         imageProperties = ImageProperties(
@@ -808,10 +821,12 @@ val context = LocalContext.current
             text = if (subjectAttendanceHistoryState.attendance)
                 translationHelper.stringResource(
                     context,
-                    R.string.present)
-                else translationHelper.stringResource(
+                    R.string.present
+                )
+            else translationHelper.stringResource(
                 context,
-                R.string.absent),
+                R.string.absent
+            ),
             style = defaultTextStyle,
             color = if (subjectAttendanceHistoryState.attendance) green else redOffline
         )

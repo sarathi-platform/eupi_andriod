@@ -41,22 +41,18 @@ Chikon Bodol</item>
             <item quantity="other">"Bwmwng dakhokma Laihbuma: "</item>
         </plurals>
 
-        <plurals name="edit_button_text">
-            <item quantity="one">Kok mithingma</item>
-            <item quantity="other">Kok mithingma</item>
-        </plurals>
-        <plurals name="total_didis_label_text">
-            <item quantity="one">Bebak Aibi song- %1$s</item>
-            <item quantity="other">Bebak Aibi song - %1$s</item>
-        </plurals>
-        <plurals name="attendance_percentage_text">
-            <item quantity="one">Dakhokma - %1$s</item>
-            <item quantity="other">Dakhokma - %1$s</item>
-        </plurals>
-        <plurals name="total_count_text">
-            <item quantity="one">Bebak - %1$s/%2$s</item>
-            <item quantity="other">Bebak - %1$s/%2$s</item>
-        </plurals>
+        <string name="edit_button_text">
+           Kok mithingma
+        </string>
+        <string name="total_didis_label_text">
+            Bebak Aibi song- %1$s
+        </string>
+        <string name="attendance_percentage_text">
+           Dakhokma - %1$s
+        </string>
+        <string name="total_count_text">
+           Bebak - %1$s/%2$s
+        </string>
         <plurals name="data_selector">
             <item quantity="one">>Date Selector</item>
             <item quantity="other">>Date Selector</item>

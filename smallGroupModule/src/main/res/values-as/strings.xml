@@ -42,18 +42,15 @@
     <string name="edit_button_text">
    সম্পাদনা কৰক
     </string>
-    <plurals name="total_didis_label_text">
-        <item quantity="one">মুঠ বাইদেউ - %1$s</item>
-        <item quantity="other">মুঠ বাইদেউ - %1$s</item>
-    </plurals>
-    <plurals name="attendance_percentage_text">
-        <item quantity="one">উপস্থিতি - %1$s</item>
-        <item quantity="other">উপস্থিত - %1$s</item>
-    </plurals>
-    <plurals name="total_count_text">
-        <item quantity="one">মুঠ- %1$s/%2$s</item>
-        <item quantity="other">মুঠ- %1$s/%2$s</item>
-    </plurals>
+    <string name="total_didis_label_text">
+     মুঠ বাইদেউ - %1$s
+    </string>
+    <string name="attendance_percentage_text">
+       উপস্থিতি - %1$s
+    </string>
+    <string name="total_count_text">
+       মুঠ- %1$s/%2$s
+    </string>
     <plurals name="data_selector">
         <item quantity="one">Date Selector</item>
         <item quantity="other">>Date Selector</item>
