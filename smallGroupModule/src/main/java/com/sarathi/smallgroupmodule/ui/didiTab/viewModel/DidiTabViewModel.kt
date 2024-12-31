@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
@@ -46,11 +47,10 @@ class DidiTabViewModel @Inject constructor(
     val isSubjectApiStatusFailed =
         mutableStateOf(false)
 
-
-
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAllDataForDidiTab(false)
             }
 
@@ -151,5 +151,7 @@ class DidiTabViewModel @Inject constructor(
     override fun refreshData() {
         loadAllDataForDidiTab(true)
     }
-
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DidiTabScreen
+    }
 }

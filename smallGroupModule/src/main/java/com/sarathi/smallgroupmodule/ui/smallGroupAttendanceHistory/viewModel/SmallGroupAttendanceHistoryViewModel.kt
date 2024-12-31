@@ -7,11 +7,13 @@ import com.nudge.core.ONE_YEAR_RANGE_DURATION
 import com.nudge.core.enums.EventType
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.state.DialogState
 import com.nudge.syncmanager.EventWriterEvents
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
@@ -63,7 +65,9 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
 
     override fun <T> onEvent(event: T) {
         when (event) {
-
+            is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
+            }
             is DialogEvents.ShowDialogEvent -> {
                 _alertDialogState.value =
                     _alertDialogState.value.copy(isDialogVisible = event.showDialog)
@@ -208,5 +212,7 @@ class SmallGroupAttendanceHistoryViewModel @Inject constructor(
         )
         onEvent(EventWriterEvents.SaveAttendanceEvent(event, listOf()))
     }
-
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.SmallGroupAttendanceHistoryScreen
+    }
 }

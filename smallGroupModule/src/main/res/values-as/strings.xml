@@ -39,10 +39,9 @@
         <item quantity="other">"উপস্থিতিৰ ইতিহাস: "</item>
     </plurals>
 
-    <plurals name="edit_button_text">
-        <item quantity="one">সম্পাদনা কৰক</item>
-        <item quantity="other">সম্পাদনা কৰক</item>
-    </plurals>
+    <string name="edit_button_text">
+   সম্পাদনা কৰক
+    </string>
     <plurals name="total_didis_label_text">
         <item quantity="one">মুঠ বাইদেউ - %1$s</item>
         <item quantity="other">মুঠ বাইদেউ - %1$s</item>

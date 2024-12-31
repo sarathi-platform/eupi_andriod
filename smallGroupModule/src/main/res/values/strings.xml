@@ -7,65 +7,55 @@
         <item quantity="one">Small Group</item>
         <item quantity="other">Small Group</item>
     </plurals>
-    <plurals name="delete_attendance_confirmation_msg">
-        <item quantity="one">You want to delete small group attendance?</item>
-        <item quantity="other">You want to delete small group attendance?</item>
-    </plurals>
-    <plurals name="confirmation_alert_dialog_title">
-        <item quantity="one">Are you sure!</item>
-        <item quantity="other">Are you sure!</item>
-    </plurals>
+    <string name="delete_attendance_confirmation_msg">
+    You want to delete small group attendance?
+    </string>
+    <string name="confirmation_alert_dialog_title">
+        Are you sure!
+    </string>
     <plurals name="no">
-    <item quantity="one">No</item>
-    <item quantity="other">No</item>
-</plurals>
+        <item quantity="one">No</item>
+        <item quantity="other">No</item>
+    </plurals>
     <plurals name="yes">
-    <item quantity="one">Yes</item>
-    <item quantity="other">Yes</item>
-</plurals>
-
-<plurals name="take_attendance_button_text">
-<item quantity="one">Take Attendance</item>
-<item quantity="other">Take Attendance</item>
-</plurals>
-
-    <plurals name="date_range_picker_label_text">
-        <item quantity="one">From - To</item>
-        <item quantity="other">From - To</item>
-    </plurals>
-    <plurals name="attendance_history_header_text">
-        <item quantity="one">"Attendance History: "</item>
-        <item quantity="other">"Attendance History: "</item>
+        <item quantity="one">Yes</item>
+        <item quantity="other">Yes</item>
     </plurals>
 
-    <plurals name="edit_button_text">
-        <item quantity="one">Edit</item>
-        <item quantity="other">Edit</item>
-    </plurals>
-    <plurals name="total_didis_label_text">
-        <item quantity="one">Total Didis - %1$s</item>
-        <item quantity="other">Total Didis - %1$s</item>
-    </plurals>
-    <plurals name="attendance_percentage_text">
-        <item quantity="one">Attendance - %1$s</item>
-        <item quantity="other">Attendance - %1$s</item>
-    </plurals>
-    <plurals name="total_count_text">
-        <item quantity="one">Total - %1$s/%2$s</item>
-        <item quantity="other">Total - %1$s/%2$s</item>
-    </plurals>
-    <plurals name="data_selector">
-        <item quantity="one">>Date Selector</item>
-        <item quantity="other">>Date Selector</item>
-    </plurals>
+    <string name="take_attendance_button_text">
+   Take Attendance
+    </string>
+
+    <string name="date_range_picker_label_text">
+       From - To
+
+    </string>
+    <string name="attendance_history_header_text">
+       "Attendance History: "
+    </string>
+
+    <string name="edit_button_text">
+       Edit
+    </string>
+    <string name="total_didis_label_text">
+      Total Didis - %1$s
+    </string>
+    <string name="attendance_percentage_text">
+ Attendance - %1$s
+    </string>
+    <string name="total_count_text">
+  Total - %1$s/%2$s
+    </string>
+    <string name="data_selector">
+       Date Selector
+    </string>
     <plurals name="all">
         <item quantity="one">All</item>
         <item quantity="other">All</item>
     </plurals>
-    <plurals name="delete_button_text">
-        <item quantity="one">Delete</item>
-        <item quantity="other">Delete</item>
-    </plurals>
+    <string name="delete_button_text">
+      Delete
+    </string>
     <plurals name="sg_ok">
         <item quantity="one">Ok</item>
         <item quantity="other">Ok</item>
@@ -73,13 +63,11 @@
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\nIf the date is incorrect, then please delete the entry and enter new attendance."</string>
 
     <plurals name="submit">
-<item quantity="one">Submit</item>
-<item quantity="other">Submit</item>
-</plurals>
-<plurals name="do_you_want_mark_all_absent">
-<item quantity="one">Do you want to mark all absent</item>
-<item quantity="other">Do you want to mark all absent</item>
-</plurals>
+        <item quantity="one">Submit</item>
+        <item quantity="other">Submit</item>
+    </plurals>
+    <string name="do_you_want_mark_all_absent">
+Do you want to mark all absent</string>
     <plurals name="attendace_alredy_marked_for_the_date">
         <item quantity="one">Attendance already marked for the date:</item>
         <item quantity="other">Attendance already marked for the date:</item>

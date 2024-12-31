@@ -46,6 +46,7 @@ import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveWithLoaderComponent
 import com.sarathi.missionactivitytask.ui.components.IconProperties
@@ -94,6 +95,8 @@ fun SmallGroupAttendanceScreen(
                 smallGroupId
             )
         )
+        smallGroupAttendanceScreenViewModel.onEvent(InitDataEvent.InitDataState)
+
     }
 
     val smallGroupAttendanceList =
@@ -119,10 +122,18 @@ fun SmallGroupAttendanceScreen(
     if (smallGroupAttendanceScreenViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title = pluralStringResource(id = R.plurals.confirmation_alert_dialog_title,1),
-            message = pluralStringResource(id = R.plurals.do_you_want_mark_all_absent,1),
-            positiveButtonTitle = stringResource(id = R.string.yes),
-            negativeButtonTitle = stringResource(id = R.string.no),
+            title =smallGroupAttendanceScreenViewModel.stringResource(
+                context,
+                R.string.confirmation_alert_dialog_title),
+            message = smallGroupAttendanceScreenViewModel.stringResource(
+                context,
+                R.string.do_you_want_mark_all_absent),
+            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+                context,
+                R.string.yes),
+            negativeButtonTitle =  smallGroupAttendanceScreenViewModel.stringResource(
+                context,
+                R.string.no),
             onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
@@ -175,8 +186,10 @@ fun SmallGroupAttendanceScreen(
                         .padding(dimen_10_dp)
                 ) {
                     ButtonPositiveWithLoaderComponent(
-                        buttonTitle = stringResource(id = R.string.submit),
-                        isActive = true,
+                        buttonTitle =smallGroupAttendanceScreenViewModel.stringResource(
+                            context,
+                            R.string.submit),
+                       isActive = true,
                         showLoader = smallGroupAttendanceScreenViewModel.loaderState.value.isLoaderVisible
                     ) {
                         if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
@@ -251,7 +264,9 @@ fun SmallGroupAttendanceScreen(
                 )
 
                 SearchWithFilterViewComponent(
-                    placeholderString = pluralStringResource(id = R.plurals.search_didi,1),
+                    placeholderString = smallGroupAttendanceScreenViewModel.stringResource(
+                        context,
+                        R.string.search_didi),
                     showFilter = false,
                     onFilterSelected = {
                         /**
@@ -325,8 +340,10 @@ fun SmallGroupAttendanceScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = pluralStringResource(id = R.plurals.all, 1),
-                                style = defaultTextStyle,
+                                text = smallGroupAttendanceScreenViewModel.stringResource(
+                                    context,
+                                    R.string.all),
+                             style = defaultTextStyle,
                                 color = progressIndicatorColor,
                                 overflow = TextOverflow.Ellipsis
                             )

@@ -69,10 +69,18 @@ fun DidiTabScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = stringResource(id = com.sarathi.missionactivitytask.R.string.are_you_sure),
-            message = stringResource(id = com.sarathi.missionactivitytask.R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = com.sarathi.missionactivitytask.R.string.exit),
-            negativeButtonTitle = stringResource(id = com.sarathi.missionactivitytask.R.string.cancel),
+            title = didiTabViewModel.stringResource(
+                context,
+                R.string.are_you_sure),
+            message = didiTabViewModel.stringResource(
+                context,
+                R.string.do_you_want_to_exit_the_app) ,
+            positiveButtonTitle =  didiTabViewModel.stringResource(
+                context,
+                R.string.exit) ,
+            negativeButtonTitle = didiTabViewModel.stringResource(
+                context,
+                R.string.cancel) ,
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
             },
@@ -91,7 +99,9 @@ fun DidiTabScreen(
             } else {
                 showCustomToast(
                     context,
-                    context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again)
+                    didiTabViewModel.stringResource(
+                        context,
+                        R.string.refresh_failed_please_try_again)
                 )
             }
         }
@@ -112,10 +122,18 @@ fun DidiTabScreen(
     val tabs = listOf(SubTabs.DidiTab, SubTabs.SmallGroupTab)
 
     ToolBarWithMenuComponent(
-        title = stringResource(id = DataLoadingRes.string.app_name),
-        dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value) stringResource(
-            R.string.not_able_to_load
-        ) else stringResource(R.string.no_didi_s_assigned_to_you),
+        title = didiTabViewModel.stringResource(
+            context,
+            DataLoadingRes.string.app_name),
+        dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value)
+            didiTabViewModel.stringResource(
+                context,
+                R.string.not_able_to_load
+        ) else
+            didiTabViewModel.stringResource(
+                context,
+                R.string.no_didi_s_assigned_to_you
+            ),
         modifier = modifier,
         isSearch = true,
         iconResId = Res.drawable.ic_sarathi_logo,
@@ -165,9 +183,17 @@ fun DidiTabScreen(
                         Column {
                             SearchWithFilterViewComponent(
                                 placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
-                                    SubTabs.DidiTab.id -> stringResource(R.string.search_didi)
-                                    SubTabs.SmallGroupTab.id -> stringResource(R.string.search_by_small_groups)
-                                    else -> stringResource(R.string.search_didi)
+                                    SubTabs.DidiTab.id -> didiTabViewModel.stringResource(
+                                        context,
+                                        R.string.search_didi)
+                                    SubTabs.SmallGroupTab.id ->
+                                        didiTabViewModel.stringResource(
+                                            context,
+                                            R.string.search_by_small_groups)
+                                    else -> didiTabViewModel.stringResource(
+                                        context,
+                                        R.string.search_didi)
+
                                 },
                                 showFilter = false,
                                 onFilterSelected = {

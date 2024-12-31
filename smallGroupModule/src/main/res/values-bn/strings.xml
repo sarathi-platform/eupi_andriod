@@ -32,10 +32,9 @@
         <item quantity="other">উপস্থিতি নিন</item>
     </plurals>
 
-    <plurals name="date_range_picker_label_text">
-        <item quantity="one">থেকে - অব্দি</item>
-        <item quantity="other">থেকে - অব্দি</item>
-    </plurals>
+    <string name="date_range_picker_label_text">
+     থেকে - অব্দি
+    </string>
     <plurals name="attendance_history_header_text">
         <item quantity="one">"উপস্থিতির ইতিহাস: "</item>
         <item quantity="other">"উপস্থিতির ইতিহাস: "</item>
