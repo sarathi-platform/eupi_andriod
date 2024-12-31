@@ -144,10 +144,6 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         composable(route = SettingScreens.BACKUP_RECOVERY_SCREEN.route) {
             ExportImportScreen(navController = navController, viewModel = hiltViewModel())
         }
-        composable(route = SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route){
-            ExportBackupScreen(navController = navController, viewModel = hiltViewModel())
-
-        }
 
 
         composable(route = SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route) {
