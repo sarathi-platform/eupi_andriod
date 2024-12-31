@@ -78,6 +78,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
+import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
@@ -451,7 +452,37 @@ fun FormScreenQuestionUiContent(
                     }
                 }
 
-                QuestionType.MultiImage.name,
+                QuestionType.MultiImage.name -> {
+                    AddImageComponent(
+                        contents = question.contentEntities,
+                        fileNamePrefix = viewModel.getPrefixFileName(question),
+                        filePaths = commaSeparatedStringToList(
+                            question.options?.firstOrNull()?.selectedValue
+                                ?: com.sarathi.dataloadingmangement.BLANK_STRING
+                        ),
+                        isMandatory = question.isMandatory,
+                        title = question.questionDisplay,
+                        isEditable = viewModel.isActivityNotCompleted.value,
+                        maxCustomHeight = maxHeight,
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
+                        subtitle = question.display
+                    ) { selectedValue, isDeleted ->
+                        saveMultiImageTypeAnswer(
+                            selectedValue,
+                            question.options,
+                            isDeleted
+                        )
+                        onAnswerSelect(question)
+
+                    }
+                }
                 QuestionType.SingleImage.name -> {
                     SingleImageComponent(
                         content = question.contentEntities,
