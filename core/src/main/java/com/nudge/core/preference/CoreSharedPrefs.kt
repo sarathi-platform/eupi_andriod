@@ -56,6 +56,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
 
         const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+        const val PREF_KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
 
 
         @Volatile

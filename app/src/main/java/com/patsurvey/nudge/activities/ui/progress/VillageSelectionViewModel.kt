@@ -1866,6 +1866,7 @@ class VillageSelectionViewModel @Inject constructor(
     fun fetchAppConfig() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke()
+            languageConfigUseCase.invoke()
         }
     }
 
