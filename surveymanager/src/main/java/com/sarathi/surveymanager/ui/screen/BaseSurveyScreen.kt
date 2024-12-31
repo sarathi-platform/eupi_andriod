@@ -56,6 +56,7 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -301,6 +302,9 @@ fun QuestionUiContent(
                     optionsItem = question.options?.firstOrNull(),
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
+                    isError = !viewModel.fieldValidationAndMessageMap.get(question.questionId)?.first.value(
+                        true
+                    ),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -631,7 +635,12 @@ fun QuestionUiContent(
                     modifier = Modifier
                         .padding(horizontal = dimen_5_dp)
                         .padding(top = dimen_8_dp, bottom = dimen_10_dp),
-                    style = quesOptionTextStyle.copy(color = eventTextColor)
+                    style = quesOptionTextStyle.copy(
+                        color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
+                                true
+                            )
+                        ) eventTextColor else redOffline
+                    )
                 )
                 CustomVerticalSpacer()
             } else {

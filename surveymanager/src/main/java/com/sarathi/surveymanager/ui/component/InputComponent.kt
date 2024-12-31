@@ -69,6 +69,7 @@ fun InputComponent(
     isFromTypeQuestion: Boolean = false,
     resetResponse: Boolean = false,
     optionsItem: OptionsUiModel? = null,
+    isError: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
@@ -114,6 +115,7 @@ fun InputComponent(
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
+                isError = isError,
                 onValueChange = { value ->
                     if (value.isEmpty()) {
                         // Allow clearing the field

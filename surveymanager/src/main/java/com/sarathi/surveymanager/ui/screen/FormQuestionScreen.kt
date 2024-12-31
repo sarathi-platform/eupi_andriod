@@ -63,6 +63,7 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -403,6 +404,9 @@ fun FormScreenQuestionUiContent(
                         isOnlyNumber = question.type == QuestionType.NumericField.name || question.type == QuestionType.InputNumber.name,
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING,
+                        isError = !viewModel.fieldValidationAndMessageMap.get(question.questionId)?.first.value(
+                            true
+                        ),
                         navigateToMediaPlayerScreen = { contentList ->
                             handleContentClick(
                                 viewModel = viewModel,
@@ -671,7 +675,12 @@ fun FormScreenQuestionUiContent(
                     Text(
                         text = it,
                         modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
-                        style = quesOptionTextStyle.copy(color = eventTextColor)
+                        style = quesOptionTextStyle.copy(
+                            color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
+                                    true
+                                )
+                            ) eventTextColor else redOffline
+                        )
                     )
                     CustomVerticalSpacer()
                 } else {
