@@ -108,9 +108,9 @@ class ExportImportViewModel @Inject constructor(
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
-
-    val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
+    val showConfirmationDialog = mutableStateOf(false)
+    val selectedTag = mutableStateOf(BLANK_STRING)
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState

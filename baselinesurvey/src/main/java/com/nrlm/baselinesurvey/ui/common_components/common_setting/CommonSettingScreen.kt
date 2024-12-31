@@ -55,6 +55,7 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
+import com.nudge.core.ui.theme.mediumTextStyle
 
 @Composable
 fun CommonSettingScreen(
@@ -112,7 +113,6 @@ fun CommonSettingScreen(
                 .background(Color.White)
                 .padding(top = it.calculateTopPadding())
                 .padding(dimen_20_dp)
-                .fillMaxSize()
         ) {
             val (mainBox, syncCard, circularLoader) = createRefs()
             if (settingScreenConfig.isSyncEnable) {
@@ -142,36 +142,53 @@ fun CommonSettingScreen(
                     Spacer(modifier = Modifier.height(dimen_10_dp))
                 }
             }
-            Column(modifier = Modifier
-                .background(Color.White)
-                .border(
-                    if (settingScreenConfig.isItemCard) 0.dp else
-                        dimen_1_dp,
-                    color = if (settingScreenConfig.isItemCard) white else greyBorder,
-                    RoundedCornerShape(
-                        if (settingScreenConfig.isItemCard) 0.dp else dimen_10_dp
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .border(
+                        if (settingScreenConfig.isItemCard) 0.dp else
+                            dimen_1_dp,
+                        color = if (settingScreenConfig.isItemCard) white else greyBorder,
+                        RoundedCornerShape(
+                            if (settingScreenConfig.isItemCard) 0.dp else dimen_10_dp
+                        )
                     )
-                )
-                .fillMaxWidth()
-                .constrainAs(mainBox) {
-                    start.linkTo(parent.start)
-                    top.linkTo(if (settingScreenConfig.isSyncEnable) syncCard.bottom else parent.top)
-                    end.linkTo(parent.end)
-                }) {
-
-                LazyColumn {
-                    itemsIndexed(settingScreenConfig.optionList) { index, item ->
-                        SettingOptionCard(
-                            title = item.title,
-                            subTitle = item.subTitle,
-                            icon = item.icon,
-                            isItemCard = settingScreenConfig.isItemCard,
-                            isShareOption = item.isShareOption,
-                            isLastLineShow = index < settingScreenConfig.optionList.size - 1,
-                            onClick =
-                            {
-                                onItemClick(index, item)
-                            })
+                    .constrainAs(mainBox) {
+                        start.linkTo(parent.start)
+                        top.linkTo(if (settingScreenConfig.isSyncEnable) syncCard.bottom else parent.top)
+                        end.linkTo(parent.end)
+                    },
+            ) {
+                if (settingScreenConfig.optionList.isNotEmpty()) {
+                    LazyColumn {
+                        itemsIndexed(settingScreenConfig.optionList) { index, item ->
+                            SettingOptionCard(
+                                title = item.title,
+                                subTitle = item.subTitle,
+                                icon = item.icon,
+                                isItemCard = settingScreenConfig.isItemCard,
+                                isShareOption = item.isShareOption,
+                                isLastLineShow = index < settingScreenConfig.optionList.size - 1,
+                                onClick =
+                                {
+                                    onItemClick(index, item)
+                                })
+                        }
+                    }
+                } else {
+                    if (settingScreenConfig.errorMessage.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(white),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = settingScreenConfig.errorMessage,
+                                style = mediumTextStyle,
+                                color = textColorDark
+                            )
+                        }
                     }
                 }
             }
@@ -217,7 +234,8 @@ fun CommonSettingScreenPreview(){
         isScreenHaveLogoutButton = true,
         optionList = list,
         versionText = "Version 978",
-        isItemCard = true
+        isItemCard = true,
+        errorMessage = "No Data available"
     )
     CommonSettingScreen(
         settingScreenConfig = commonSettingScreenConfig,

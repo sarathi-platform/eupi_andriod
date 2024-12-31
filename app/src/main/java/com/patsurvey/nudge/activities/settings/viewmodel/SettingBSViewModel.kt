@@ -43,7 +43,6 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
@@ -56,7 +55,6 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -68,39 +66,23 @@ import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
-import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.UPCM_USER
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
-import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
-import com.sarathi.dataloadingmangement.FORM_E
-import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
-import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
-import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
 import javax.inject.Inject
-import com.patsurvey.nudge.R as appRes
 
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val getActivityUseCase: GetActivityUseCase,
-    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    private val formUseCase: FormUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
-    val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
@@ -114,14 +96,7 @@ class SettingBSViewModel @Inject constructor(
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     var userType: String = BLANK_STRING
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
-
-    val formAAvailable = mutableStateOf(false)
-    val formBAvailable = mutableStateOf(false)
-    val formCAvailable = mutableStateOf(false)
-    val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
-    val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
-    val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
     val loaderState: State<LoaderState> get() = _loaderState
@@ -132,12 +107,7 @@ class SettingBSViewModel @Inject constructor(
         lastSyncTime.value = settingBSUserCase.getUserDetailsUseCase.getLastSyncTime()
         mAppContext =
             if (userType != UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
-        getActivityFormGenerateList(onGetData = {
-            if (activityFormGenerateList.value.isNotEmpty()) {
-                checkFromEAvailable(activityFormGenerateList.value)
-            }
-        })
-        val villageId = settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
+
         val settingOpenFrom = settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
         val list = ArrayList<SettingOptionModel>()
 
@@ -224,9 +194,6 @@ class SettingBSViewModel @Inject constructor(
         isSyncEnable.value = settingBSUserCase.getUserDetailsUseCase.isSyncEnable()
         _optionList.value=list
         fetchEventCount()
-//        if(userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
-//            checkFormsAvailabilityForVillage(context, villageId)
-//        }
     }
 
     fun fetchEventCount() {
@@ -245,10 +212,6 @@ class SettingBSViewModel @Inject constructor(
                 onLogout(settingUseCaseResponse)
             }
         }
-    }
-
-    suspend fun exportLocalData(context: Context) {
-        exportHelper.exportAllData(context)
     }
 
     fun saveLanguagePageFrom() {
@@ -450,86 +413,6 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun showLoaderForTime(time: Long) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-                    withContext(CoreDispatchers.mainDispatcher) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
-                }
-            }
-        }, time)
-    }
-
-    suspend fun checkFormAAvailability(context: Context, villageId: Int) {
-        var didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
-        if (userType == BPC_USER_TYPE) {
-            didiList =
-                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
-        }
-        if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
-        ) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formAAvailable.value = true
-            }
-        } else {
-            withContext(
-                CoreDispatchers.mainDispatcher
-            ) {
-                formAAvailable.value = false
-            }
-        }
-    }
-
-
-    suspend fun checkFormBAvailability(context: Context, villageId: Int) {
-        var didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
-        if (userType == BPC_USER_TYPE) {
-            didiList =
-                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
-        }
-
-            if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
-            ) {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formBAvailable.value = true
-                }
-            } else {
-                withContext(CoreDispatchers.mainDispatcher) {
-                    formBAvailable.value = false
-                }
-
-        }
-    }
-
-
-    suspend fun checkFormCAvailability(context: Context, villageId: Int) {
-
-        val stepList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
-        val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
-        if (filteredStepList[0] != null) {
-            formCAvailable.value =
-                filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-        } else {
-            formCAvailable.value = false
-        }
-    }
-
-    fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
-        job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-
-            checkFormAAvailability(context = context, villageId = villageId)
-            checkFormBAvailability(context = context, villageId = villageId)
-            checkFormCAvailability(context = context, villageId = villageId)
-        }
-
-    }
-
     private suspend fun getSummaryFile(): Pair<String, Uri?>? {
         val summaryFileNameWithoutExtension = "${SARATHI}_${
             getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
@@ -665,21 +548,6 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun getActivityFormGenerateList(onGetData: () -> Unit) {
-        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = FORM_E)
-            activityFormGenerateList.value.forEach {
-                activityFormGenerateNameMap[Pair(it.missionId, it.activityId)] =
-                    formUiConfigUseCase.getFormConfigValue(
-                        key = GrantTaskFormSlots.TASK_PDF_FORM_NAME.name,
-                        missionId = it.missionId,
-                        activityId = it.activityId
-                    )
-            }
-            onGetData()
-        }
-    }
-
     fun getUserMobileNumber(): String {
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
@@ -690,24 +558,6 @@ class SettingBSViewModel @Inject constructor(
         return arrayListOf(uriFromFile(mAppContext, uri.toFile(), applicationId.value))
     }
 
-    private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
-        if (activityFormUIModelList.isNotEmpty()) {
-            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-                val pairFormList = ArrayList<Pair<Int, Boolean>>()
-                activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
-                    val isFromEAvailable = formUseCase.getOnlyGeneratedFormSummaryData(
-                        activityId = activityFormUIModel.activityId,
-                        isFormGenerated = true
-                    ).isNotEmpty()
-                    pairFormList.add(Pair(index, isFromEAvailable))
-                }
-                formEAvailableList.value = pairFormList
-            }
-
-        } else {
-            formEAvailableList.value = emptyList()
-        }
-    }
 
     private fun cancelSyncUploadWorker() {
                 workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)

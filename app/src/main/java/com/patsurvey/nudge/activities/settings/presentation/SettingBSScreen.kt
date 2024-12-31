@@ -2,8 +2,6 @@ package com.patsurvey.nudge.activities.settings.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -30,10 +28,6 @@ fun SettingBSScreen(
 ) {
 
     val context = LocalContext.current
-    val expanded = remember {
-        mutableStateOf(false)
-    }
-
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true) {
@@ -114,10 +108,8 @@ fun SettingBSScreen(
                     }
 
                     SettingTagEnum.FORMS.name -> {
-                        expanded.value = !expanded.value
+                        navController.navigate(SettingScreens.SETTING_FORMS_SCREEN.route)
                     }
-
-
 
                     SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name -> {
                         navController.navigate(SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route)
@@ -155,7 +147,7 @@ fun SettingBSScreen(
     }
 }
 
-private fun isFromEAvailable(fomIndex: Int, pairFromEList: List<Pair<Int, Boolean>>): Boolean {
+fun isFromEAvailable(fomIndex: Int, pairFromEList: List<Pair<Int, Boolean>>): Boolean {
     val pairData = pairFromEList.filter { it.first == fomIndex && it.second }
     return pairData.isNotEmpty()
 
