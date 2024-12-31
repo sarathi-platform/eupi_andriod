@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.smallGroupAttendanceHistory.presentation.ui
 
+import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
@@ -599,7 +600,7 @@ fun AttendanceSummaryCard(
                         contentDescription = null,
                         tint = textColorDark
                     ), textProperties = TextProperties(
-                        text =smallGroupAttendanceHistoryViewModel.stringResource(
+                        text =translationHelper.stringResource(
                             context,
                             R.string.total_count_text,
                             counts.value.first,
@@ -624,7 +625,8 @@ fun AttendanceSummaryCard(
                 innerState = innerState,
                 maxCustomHeight = maxCustomHeight,
                 subjectAttendanceHistoryStateList = subjectAttendanceHistoryStateMappingByDate.value,
-                isExpanded = isExpanded.value
+                isExpanded = isExpanded.value,
+                translationHelper =translationHelper
             )
 
             Spacer(
@@ -661,7 +663,8 @@ fun AttendanceSummaryCard(
                             modifier = Modifier
                         ),
                         textProperties = TextProperties(
-                            text =title,
+                            text =translationHelper.stringResource(
+                                context,R.plurals.edit_button_text),
                             style = defaultTextStyle,
                             color = textColorDark
                         )
@@ -691,7 +694,7 @@ fun AttendanceSummaryCard(
                             tint = redOffline,
                             modifier = Modifier.absolutePadding(top = dimen_2_dp)
                         ), textProperties = TextProperties(
-                            text = smallGroupAttendanceHistoryViewModel.stringResource(
+                            text = translationHelper.stringResource(
                                 context,
                                 R.string.delete_button_text),
                                     style = defaultTextStyle,
@@ -709,12 +712,14 @@ fun AttendanceSummaryCard(
 
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun HistorySummaryCard(
     modifier: Modifier,
     outerState: LazyListState = rememberLazyListState(),
     innerState: LazyListState = rememberLazyListState(),
     maxCustomHeight: Dp,
+    translationHelper:TranslationHelper,
     subjectAttendanceHistoryStateList: List<SubjectAttendanceHistoryState>, isExpanded: Boolean
 ) {
 
@@ -752,7 +757,8 @@ fun HistorySummaryCard(
                     ) { index, subjectAttendanceHistoryState ->
                         HistorySummaryCardItem(
                             modifier = modifier,
-                            subjectAttendanceHistoryState = subjectAttendanceHistoryState
+                            subjectAttendanceHistoryState = subjectAttendanceHistoryState,
+                            translationHelper=translationHelper
                         )
                     }
                 }
@@ -765,9 +771,10 @@ fun HistorySummaryCard(
 @Composable
 fun HistorySummaryCardItem(
     modifier: Modifier,
-    subjectAttendanceHistoryState: SubjectAttendanceHistoryState
+    subjectAttendanceHistoryState: SubjectAttendanceHistoryState,
+    translationHelper: TranslationHelper,
 ) {
-
+val context = LocalContext.current
     ContentWithImage(
         modifier = modifier.padding(horizontal = dimen_10_dp),
         imageProperties = ImageProperties(
@@ -799,10 +806,10 @@ fun HistorySummaryCardItem(
 
         Text(
             text = if (subjectAttendanceHistoryState.attendance)
-                smallGroupAttendanceHistoryViewModel.stringResource(
+                translationHelper.stringResource(
                     context,
                     R.string.present)
-                else smallGroupAttendanceHistoryViewModel.stringResource(
+                else translationHelper.stringResource(
                 context,
                 R.string.absent),
             style = defaultTextStyle,
