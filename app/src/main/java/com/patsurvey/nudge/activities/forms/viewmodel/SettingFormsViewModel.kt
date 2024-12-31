@@ -5,17 +5,16 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.forms.domain.usecase.SettingFormsUseCase
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
-import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.model.dataModel.ErrorModel
-import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeCore
@@ -49,6 +48,8 @@ class SettingFormsViewModel @Inject constructor(
 
     val _activityGenerateFormsList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
     val activityGenerateFormsList: State<List<ActivityFormUIModel>> get() = _activityGenerateFormsList
+    private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
+    val loaderState: State<LoaderState> get() = _loaderState
 
     val formAAvailable = mutableStateOf(false)
     val formBAvailable = mutableStateOf(false)
@@ -237,14 +238,6 @@ class SettingFormsViewModel @Inject constructor(
         }
     }
 
-    override fun onServerError(error: ErrorModel?) {
-        TODO("Not yet implemented")
-    }
-
-    override fun onServerError(errorModel: ErrorModelWithApi?) {
-        TODO("Not yet implemented")
-    }
-
     fun getUserMobileNumber() = settingFormsUseCase.getUserDetailsUseCase.getUserMobileNumber()
 
     fun showLoaderForTime(time: Long) {
@@ -258,6 +251,16 @@ class SettingFormsViewModel @Inject constructor(
                 }
             }
         }, time)
+    }
+
+    override fun <T> onEvent(event: T) {
+        when (event) {
+            is LoaderEvent.UpdateLoaderState -> {
+                _loaderState.value = _loaderState.value.copy(
+                    isLoaderVisible = event.showLoader
+                )
+            }
+        }
     }
 
 }
