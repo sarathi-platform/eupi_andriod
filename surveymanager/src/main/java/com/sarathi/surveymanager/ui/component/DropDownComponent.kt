@@ -40,6 +40,8 @@ import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyColor
@@ -155,7 +157,7 @@ fun <T> DropDownComponent(
         // when clicked, set the Text Field text as the city selected
         DropdownMenu(
             expanded = expanded,
-            offset = if (dropdownBelow) DpOffset.Zero else DpOffset(0.dp, (30).dp),
+            offset = if (dropdownBelow) DpOffset.Zero else DpOffset(dimen_0_dp, dimen_30_dp),
             onDismissRequest = { onDismissRequest() },
             modifier = Modifier.width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
         ) {
