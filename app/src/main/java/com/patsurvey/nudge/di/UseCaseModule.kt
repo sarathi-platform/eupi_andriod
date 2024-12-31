@@ -163,7 +163,8 @@ object UseCaseModule {
         nudgeDatabase: NudgeDatabase,
         coreSharedPrefs: CoreSharedPrefs,
         syncManagerDatabase: SyncManagerDatabase,
-        missionDao: MissionDao
+        missionDao: MissionDao,
+        casteListDao: CasteListDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
@@ -171,7 +172,8 @@ object UseCaseModule {
             nudgeDatabase = nudgeDatabase,
             coreSharedPrefs = coreSharedPrefs,
             syncManagerDatabase = syncManagerDatabase,
-            missionDao = missionDao
+            missionDao = missionDao,
+            casteListDao = casteListDao
         )
     }
 

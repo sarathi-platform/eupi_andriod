@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.CASTE_TABLE
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.model.CasteModel
 
 @Entity(tableName = CASTE_TABLE)
@@ -41,9 +42,9 @@ data class CasteEntity(
                 id = 0,
                 casteName = casteModel.casteName,
                 languageId = casteModel.languageId,
-                languageCode = casteModel.languageCode
+                languageCode = casteModel.languageCode?.takeIf { it.isNotEmpty() }
+                    ?: DEFAULT_LANGUAGE_CODE
             )
-
         }
     }
 }
