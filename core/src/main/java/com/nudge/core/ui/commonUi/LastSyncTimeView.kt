@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.nudge.core.R
 import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
+import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.syncMediumTextStyle
-import com.nudge.core.ui.theme.textColorDark
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -39,7 +39,7 @@ fun LastSyncTimeView(
                 Text(
                     text = stringResource(id = R.string.last_sync_date_time),
                     style = syncMediumTextStyle,
-                    color = textColorDark
+                    color = blueDark
                 )
 
                 Text(
@@ -47,7 +47,7 @@ fun LastSyncTimeView(
                         lastSyncTime
                     ),
                     style = syncMediumTextStyle,
-                    color = textColorDark
+                    color = blueDark
                 )
             }
             if (isShowPhoneNumber) {
@@ -60,13 +60,13 @@ fun LastSyncTimeView(
                     Text(
                         text = stringResource(id = R.string.profile_phone),
                         style = syncMediumTextStyle,
-                        color = textColorDark
+                        color = blueDark
                     )
 
                     Text(
                         text = mobileNumber,
                         style = syncMediumTextStyle,
-                        color = textColorDark
+                        color = blueDark
                     )
                 }
             }

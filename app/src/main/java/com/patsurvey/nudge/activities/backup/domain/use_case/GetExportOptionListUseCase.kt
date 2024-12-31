@@ -83,7 +83,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.export_images),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_IMAGES.name,
-                isShareOption = true
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -92,7 +92,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.export_event_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_EVENT_FILE.name,
-                isShareOption = true
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -101,7 +101,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.export_database),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_DATABASE.name,
-                isShareOption = true
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -110,7 +110,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 context.getString(R.string.export_log_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_LOG_FILE.name,
-                isShareOption = true
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         return list.ifEmpty { arrayListOf() }

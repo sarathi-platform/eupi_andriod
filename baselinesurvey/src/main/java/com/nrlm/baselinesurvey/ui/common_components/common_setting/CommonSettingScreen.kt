@@ -3,6 +3,7 @@ package com.nrlm.baselinesurvey.ui.common_components.common_setting
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,7 +23,9 @@ import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -30,32 +33,42 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
-import com.nrlm.baselinesurvey.ui.common_components.ButtonOutline
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.greyBorder
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
+import com.nrlm.baselinesurvey.ui.theme.syncButtonBorderColor
+import com.nrlm.baselinesurvey.ui.theme.syncButtonColor
+import com.nrlm.baselinesurvey.ui.theme.syncCardBorderColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
+import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.ui.commonUi.LastSyncTimeView
+import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_15_dp
+import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.languageItemInActiveBorderBg
+import com.nudge.core.ui.theme.dimen_28_dp
+import com.nudge.core.ui.theme.dimen_44_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.text_size_13
+import com.nudge.core.ui.theme.uncheckedTrackColor
 
 @Composable
 fun CommonSettingScreen(
@@ -92,7 +105,7 @@ fun CommonSettingScreen(
                             color = textColorDark50,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(0.dp, 0.dp, 0.dp, 10.dp),
+                                .padding(bottom = dimen_10_dp),
                             textAlign = TextAlign.Center,
                             style = newMediumTextStyle
                         )
@@ -125,14 +138,42 @@ fun CommonSettingScreen(
                             end.linkTo(parent.end)
                         }
                 ) {
-                    ButtonOutline(
+                    Box(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .height(45.dp),
-                        buttonTitle = stringResource(id = R.string.sync),
-                        isIconShow = false
+                            .clip(RoundedCornerShape(dimen_6_dp))
+                            .border(width = dimen_1_dp, color = syncButtonBorderColor)
+                            .background(syncButtonColor)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(
+                                    bounded = true,
+                                    color = Color.White
+                                )
+
+                            ) {
+                                onSyncDataClick()
+                            },
+                        contentAlignment = Alignment.Center,
                     ) {
-                        onSyncDataClick()
+                        Row(
+                            Modifier
+                                .padding(dimen_10_dp)
+                                .fillMaxWidth()
+                                .align(Alignment.Center),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.sync),
+                                color = blueDark,
+                                style = TextStyle(
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = text_size_16_sp
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
                     }
                     LastSyncTimeView(
                         lastSyncTime = settingScreenConfig.lastSyncTime ?: 0L,
@@ -146,11 +187,11 @@ fun CommonSettingScreen(
                 modifier = Modifier
                     .background(Color.White)
                     .border(
-                        if (settingScreenConfig.isItemCard) 0.dp else
+                        if (settingScreenConfig.isItemCard) dimen_0_dp else
                             dimen_1_dp,
-                        color = if (settingScreenConfig.isItemCard) white else greyBorder,
+                        color = if (settingScreenConfig.isItemCard) white else syncCardBorderColor,
                         RoundedCornerShape(
-                            if (settingScreenConfig.isItemCard) 0.dp else dimen_10_dp
+                            if (settingScreenConfig.isItemCard) dimen_0_dp else dimen_10_dp
                         )
                     )
                     .constrainAs(mainBox) {
@@ -163,11 +204,8 @@ fun CommonSettingScreen(
                     LazyColumn {
                         itemsIndexed(settingScreenConfig.optionList) { index, item ->
                             SettingOptionCard(
-                                title = item.title,
-                                subTitle = item.subTitle,
-                                icon = item.icon,
+                                settingOptionModel = item,
                                 isItemCard = settingScreenConfig.isItemCard,
-                                isShareOption = item.isShareOption,
                                 isLastLineShow = index < settingScreenConfig.optionList.size - 1,
                                 onClick =
                                 {
@@ -209,7 +247,7 @@ fun CommonSettingScreen(
                     CircularProgressIndicator(
                         color = blueDark,
                         modifier = Modifier
-                            .size(28.dp)
+                            .size(dimen_28_dp)
                             .align(Alignment.Center)
                     )
                 }
@@ -222,9 +260,30 @@ fun CommonSettingScreen(
 @Composable
 fun CommonSettingScreenPreview(){
  val list= listOf(
-     SettingOptionModel(1, "Sync Now", "", "", icon = R.drawable.ic_language),
-        SettingOptionModel(2,"Forms","",""),
-     SettingOptionModel(3, "Language", "", "", isShareOption = true)
+     SettingOptionModel(
+         1,
+         "Sync Now",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_arrow_forward_ios_24
+     ),
+     SettingOptionModel(
+         2,
+         "Forms",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_share_icon
+     ),
+     SettingOptionModel(
+         3,
+         "Language",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_share_icon
+     )
  )
     val commonSettingScreenConfig = CommonSettingScreenConfig(
         isSyncEnable = true,
@@ -234,7 +293,7 @@ fun CommonSettingScreenPreview(){
         isScreenHaveLogoutButton = true,
         optionList = list,
         versionText = "Version 978",
-        isItemCard = true,
+        isItemCard = false,
         errorMessage = "No Data available"
     )
     CommonSettingScreen(
@@ -249,24 +308,26 @@ fun CommonSettingScreenPreview(){
 @Preview(showBackground = true)
 @Composable
 fun CommonSettingCardPreview(){
+    val settingOptionModel = SettingOptionModel(
+        title = "Language",
+        leadingIcon = R.drawable.ic_language,
+        subTitle = BLANK_STRING,
+        tag = BLANK_STRING,
+        id = 0
+    )
     SettingOptionCard(
-        title = "title",
-        subTitle = "",
-        isShareOption = false,
+        settingOptionModel = settingOptionModel,
         onClick = {},
-        icon = R.drawable.ic_language
+
     )
 }
 
 @Composable
 fun SettingOptionCard(
-    title: String,
-    subTitle: String,
-    isShareOption: Boolean = false,
+    settingOptionModel: SettingOptionModel,
     isLastLineShow: Boolean = true,
     isItemCard: Boolean = false,
     onClick: () -> Unit,
-    icon: Int?,
 ) {
     Column(modifier = Modifier
         .background(Color.White)
@@ -280,52 +341,56 @@ fun SettingOptionCard(
                     .background(Color.White)
                     .fillMaxWidth()
                     .padding(horizontal = dimensionResource(id = R.dimen.dp_10))
-                    .padding(vertical = dimensionResource(id = R.dimen.dp_15))
+                    .padding(vertical = dimensionResource(id = R.dimen.dp_13))
             ) {
-                Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                    icon?.let { icon ->
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    settingOptionModel.leadingIcon?.let { icon ->
                         Icon(
                             painter = painterResource(id = icon),
                             contentDescription = null,
                             modifier = Modifier
                                 .align(Alignment.CenterVertically)
                                 .size(dimen_20_dp),
-                            tint = textColorDark
+                            tint = blueDark
 
                         )
                         Spacer(modifier = Modifier.width(dimen_10_dp))
                     }
 
                     Text(
-                        text = title,
+                        text = settingOptionModel.title,
                         textAlign = TextAlign.Start,
-                        fontSize = 16.sp,
+                        fontSize = dimen_16_sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
-                        color = textColorDark,
+                        color = blueDark,
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
                     )
+
                     Icon(
                         painter = painterResource(
-                            id = if (!isShareOption)
-                                R.drawable.ic_arrow_forward_ios_24
-                            else R.drawable.ic_share_icon
+                            id = settingOptionModel.trailingIcon
                         ),
                         contentDescription = null,
-                        tint = textColorDark,
+                        tint = blueDark,
                         modifier = Modifier
-                            .width(dimen_20_dp)
-                            .height(dimen_20_dp)
+                            .size(dimen_15_dp)
+                            .align(Alignment.CenterVertically)
                     )
 
+
+
                 }
-                if (!subTitle.isNullOrEmpty()) {
+                if (!settingOptionModel.subTitle.isNullOrEmpty()) {
                     Text(
-                        text = subTitle,
+                        text = settingOptionModel.subTitle,
                         textAlign = TextAlign.Start,
-                        fontSize = 13.sp,
+                        fontSize = text_size_13,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.Normal,
                         color = black100Percent,
@@ -338,28 +403,28 @@ fun SettingOptionCard(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(dimensionResource(id = R.dimen.dp_1))
-                        .background(greyBorder)
+                        .background(syncCardBorderColor)
                 )
             }
         } else {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 4.dp, horizontal = 0.dp)
-                    .height(dimensionResource(id = R.dimen.height_60dp))
-                    .clip(RoundedCornerShape(6.dp))
+                    .padding(vertical = dimen_4_dp)
+                    .height(dimen_44_dp)
+                    .clip(RoundedCornerShape(dimen_6_dp))
                     .border(
-                        width = 1.dp,
-                        color = languageItemInActiveBorderBg,
-                        shape = RoundedCornerShape(6.dp)
+                        width = dimen_1_dp,
+                        color = uncheckedTrackColor,
+                        shape = RoundedCornerShape(dimen_6_dp)
                     )
                     .background(Color.White)
 
             ) {
                 Text(
-                    text = title,
+                    text = settingOptionModel.title,
                     color = blueDark,
-                    fontSize = 18.sp,
+                    fontSize = dimen_16_sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     modifier = Modifier.align(Alignment.Center)

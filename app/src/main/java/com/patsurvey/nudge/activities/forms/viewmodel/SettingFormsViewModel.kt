@@ -76,8 +76,7 @@ class SettingFormsViewModel @Inject constructor(
                     1,
                     mAppContext.getString(R.string.digital_form_a_title),
                     BLANK_STRING,
-                    SettingTagEnum.FORMS.name,
-                    icon = R.drawable.ic_forms
+                    SettingTagEnum.FORMS.name
                 )
             )
             list.add(
@@ -85,8 +84,7 @@ class SettingFormsViewModel @Inject constructor(
                     2,
                     mAppContext.getString(R.string.digital_form_b_title),
                     BLANK_STRING,
-                    SettingTagEnum.FORMS.name,
-                    icon = R.drawable.ic_forms
+                    SettingTagEnum.FORMS.name
                 )
             )
             list.add(
@@ -94,8 +92,7 @@ class SettingFormsViewModel @Inject constructor(
                     3,
                     mAppContext.getString(R.string.digital_form_c_title),
                     BLANK_STRING,
-                    SettingTagEnum.FORMS.name,
-                    icon = R.drawable.ic_forms
+                    SettingTagEnum.FORMS.name
                 )
             )
         } else {
@@ -136,8 +133,7 @@ class SettingFormsViewModel @Inject constructor(
                             )].toString()
                         }",
                         BLANK_STRING,
-                        SettingTagEnum.FORMS.name,
-                        icon = R.drawable.ic_forms
+                        SettingTagEnum.FORMS.name
                     )
                 )
 

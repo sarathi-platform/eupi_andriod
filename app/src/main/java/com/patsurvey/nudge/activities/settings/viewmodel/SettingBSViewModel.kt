@@ -117,7 +117,7 @@ class SettingBSViewModel @Inject constructor(
                 context.getString(R.string.language_text),
                 BLANK_STRING,
                 SettingTagEnum.LANGUAGE.name,
-                icon = R.drawable.ic_language
+                leadingIcon = R.drawable.ic_language
             )
         )
         if (userType != UPCM_USER) {
@@ -128,7 +128,7 @@ class SettingBSViewModel @Inject constructor(
                         context.getString(R.string.forms),
                         BLANK_STRING,
                         SettingTagEnum.FORMS.name,
-                        icon = R.drawable.ic_forms
+                        leadingIcon = R.drawable.ic_forms
                     )
                 )
             }
@@ -139,7 +139,7 @@ class SettingBSViewModel @Inject constructor(
                     context.getString(R.string.training_videos),
                     BLANK_STRING,
                     SettingTagEnum.TRAINING_VIDEOS.name,
-                    icon = R.drawable.ic_bottom_task_icon
+                    leadingIcon = R.drawable.ic_bottom_task_icon
                 )
             )
         } else {
@@ -149,7 +149,7 @@ class SettingBSViewModel @Inject constructor(
                     context.getString(R.string.forms),
                     BLANK_STRING,
                     SettingTagEnum.FORMS.name,
-                    icon = R.drawable.ic_forms
+                    leadingIcon = R.drawable.ic_forms
                 )
             )
         }
@@ -159,8 +159,8 @@ class SettingBSViewModel @Inject constructor(
                 context.getString(R.string.export_backup_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_BACKUP_FILE.name,
-                isShareOption = true,
-                icon = R.drawable.ic_backup_file
+                leadingIcon = R.drawable.ic_backup_file,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -169,7 +169,7 @@ class SettingBSViewModel @Inject constructor(
                 context.getString(R.string.export_data),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name,
-                icon = R.drawable.ic_share_data
+                leadingIcon = R.drawable.ic_share_data
             )
         )
         list.add(
@@ -178,7 +178,7 @@ class SettingBSViewModel @Inject constructor(
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
                 SettingTagEnum.BACKUP_RECOVERY.name,
-                icon = R.drawable.ic_backup_recovery
+                leadingIcon = R.drawable.ic_backup_recovery
             )
         )
         list.add(
@@ -187,7 +187,7 @@ class SettingBSViewModel @Inject constructor(
                 context.getString(R.string.profile),
                 BLANK_STRING,
                 SettingTagEnum.PROFILE.name,
-                icon = R.drawable.ic_profile
+                leadingIcon = R.drawable.ic_profile
             )
         )
 

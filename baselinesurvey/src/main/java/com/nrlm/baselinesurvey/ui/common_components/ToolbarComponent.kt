@@ -12,10 +12,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 
 
@@ -31,7 +31,11 @@ fun ToolbarComponent(title:String,
             onClick = { onBackIconClick()},
             modifier = Modifier
         ) {
-            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button")
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back Button",
+                tint = blueDark
+            )
         }
         Box(
             Modifier
@@ -40,7 +44,7 @@ fun ToolbarComponent(title:String,
                 Text(
                     modifier = Modifier.padding(0.dp, 3.dp, 0.dp, 7.dp),
                     text = title,
-                    color = Color.Black,
+                    color = blueDark,
                     textAlign = TextAlign.Center,
                     style = largeTextStyle
                 )

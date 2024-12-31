@@ -14,18 +14,14 @@ import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
-import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
+import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.syncMediumTextStyle
 
 @Composable
 fun CommonProfileScreen(
@@ -55,31 +51,19 @@ fun CommonProfileScreen(
 
             LazyColumn {
                 itemsIndexed(items = userDetailList) { index, item ->
-                    Text(
-                        text = buildAnnotatedString
-                        {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = textColorDark,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("${item.first}: ")
-                            }
-                            withStyle(
-                                style = SpanStyle(
-                                    color = textColorDark,
-                                    fontSize = 14.sp,
-                                    fontWeight = FontWeight.Normal,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append("\n${item.second}")
-                            }
-                        }
-                    )
+                    Column {
+                        Text(
+                            modifier = Modifier.alpha(.6F),
+                            text = item.first,
+                            style = syncMediumTextStyle,
+                            color = blueDark
+                        )
+                        Text(
+                            text = item.second,
+                            style = syncMediumTextStyle,
+                            color = blueDark
+                        )
+                    }
                     Spacer(modifier = Modifier.height(dimen_10_dp))
                 }
             }

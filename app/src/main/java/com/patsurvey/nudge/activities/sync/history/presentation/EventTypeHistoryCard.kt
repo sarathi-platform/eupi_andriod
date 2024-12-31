@@ -24,7 +24,6 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_10_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_5_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nudge.core.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallTextStyle
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
@@ -56,7 +55,7 @@ fun EventTypeHistoryCard(
                 Text(
                     text = cardTitle,
                     style = smallTextStyle,
-                    color = textColorDark,
+                    color = blueDark,
                     textAlign = TextAlign.Start,
                     modifier = Modifier.weight(1F)
                 )
@@ -64,7 +63,7 @@ fun EventTypeHistoryCard(
                 Text(
                     text = "Total Events: $totalEvents",
                     style = smallerTextStyleNormalWeight,
-                    color = textColorDark,
+                    color = blueDark,
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(1F)
                 )
@@ -84,7 +83,7 @@ fun EventTypeHistoryCard(
                     ) {
                         Text(
                             text = item.first,
-                            color = textColorDark,
+                            color = blueDark,
                             style = smallerTextStyle,
                             textAlign = TextAlign.Start,
                             modifier = Modifier
@@ -95,7 +94,7 @@ fun EventTypeHistoryCard(
 
                         Text(
                             text = "${item.second}",
-                            color = textColorDark,
+                            color = blueDark,
                             style = smallerTextStyle,
                             textAlign = TextAlign.End,
                             modifier = Modifier
