@@ -1,8 +1,5 @@
 package com.patsurvey.nudge.activities.backup.presentation
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -13,7 +10,6 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineLogger
-import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.backup.viewmodel.ExportBackupScreenViewModel
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 
@@ -22,25 +18,7 @@ fun ExportBackupScreen(
     viewModel: ExportBackupScreenViewModel = hiltViewModel(),
 
     navController: NavController) {
-        val context=LocalContext.current
-        val filePicker =
-        rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
-            viewModel.showRestartAppDialog.value=false
-            it?.let { uri->
-                if(uri != Uri.EMPTY){
-
-                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
-                    BaselineLogger.d("ExportImportScreen","Selected File :${uri.path}")
-                    viewModel.importSelectedDB(uri){
-                       viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                       viewModel.showRestartAppDialog.value=false
-                       viewModel.restartApp(context, MainActivity::class.java)
-                   }
-                }
-            }
-
-        }
-
+    val context = LocalContext.current
     CommonSettingScreen(
         userType = viewModel.loggedInUserType.value,
         title = stringResource(id = R.string.export_data),
@@ -65,10 +43,6 @@ fun ExportBackupScreen(
                 }
                 SettingTagEnum.EXPORT_LOG_FILE.name -> {
                     viewModel.exportOnlyLogFile(context)
-                }
-
-                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name ->{
-                    viewModel.compressExportData(context.getString(R.string.share_export_file))
                 }
             }
         },

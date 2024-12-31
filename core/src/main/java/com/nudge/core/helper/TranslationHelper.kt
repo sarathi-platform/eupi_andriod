@@ -16,71 +16,45 @@ class TranslationHelper @Inject constructor(
     private val _translationMap = mutableStateMapOf<String, String>()
     val translationMap: SnapshotStateMap<String, String> get() = _translationMap
 
-    /**
-     * Initializes the translation map for the given TranslationEnum
-     */
     suspend fun initTranslationHelper(translationEnum: TranslationEnum) {
-        // Get translations from DB and populate the map
         val translations = getScreenNameKeys(translationEnum)
         translations.forEach { (key, value) ->
             _translationMap[key] = value
         }
     }
 
-    /**
-     * Returns a translated string based on the resource ID and the current language setting.
-     */
     fun getString(context: Context, resId: Int): String {
-        // Get the resource key from the resource ID
         val resourceKey = context.resources?.getResourceEntryName(resId)
-
-        // Fetch the translated string from the map using the resource key
         val dbString = translationMap[resourceKey]
-
-        // Return the translated string if available, else fallback to the default string resource
         return if (!TextUtils.isEmpty(dbString)) dbString ?: BLANK_STRING else context.getString(
             resId
         )
     }
-    fun getString(context: Context, resId: Int, formatArgs: Any): String {
-        // Get the resource key from the resource ID
+
+    fun getString(context: Context, resId: Int, vararg formatArgs: Any): String {
         val resourceKey = context.resources?.getResourceEntryName(resId)
-
-        // Fetch the translated string from the map using the resource key
         val dbString = translationMap[resourceKey]
-
-        // If dbString is not empty, format it with formatArgs; otherwise, fallback to the default string resource
-        return if (!TextUtils.isEmpty(dbString)) {
-            String.format(dbString ?: BLANK_STRING, formatArgs)
+        return if (!dbString.isNullOrEmpty()) {
+            String.format(dbString, *formatArgs)
         } else {
-            context.getString(resId, formatArgs)
+            context.getString(resId, *formatArgs)
         }
     }
 
-    /**
-     * Wrapper around getString for easier access to string resources.
-     */
     fun stringResource(context: Context, id: Int): String {
         return getString(context = context, resId = id)
     }
 
-    fun stringResource(context: Context, resId: Int, formatArgs: Any): String {
+    fun stringResource(context: Context, resId: Int, vararg formatArgs: Any): String {
         return getString(context = context, resId = resId, formatArgs = formatArgs)
     }
 
-    /**
-     * Fetches translations from the database based on the TranslationEnum's keys.
-     * Caches the translations in the map.
-     */
     private suspend fun getScreenNameKeys(translationEnum: TranslationEnum): Map<String, String> {
-        // Fetch translations from the database using DAO and user preferences
         val configList = translationConfigDao.getTranslationConfigForUser(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             languageCode = coreSharedPrefs.getSelectedLanguageCode(),
             keys = translationEnum.keys
         )
-
-        // Convert the list of TranslationConfig into a Map<String, String> (key -> value)
         return configList.associate { it.key to it.value }
     }
 }
