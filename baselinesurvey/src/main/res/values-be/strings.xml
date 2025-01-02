@@ -472,9 +472,9 @@
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">र्फम C</string>
     <string name="export_data">Share Data</string>
-    <string name="refresh_config">Refresh app config</string>
-    <string name="are_you_sure_you_want_to_reset_app_configuration">Are you sure you want to Reset App Configurations?</string>
-    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">Are you sure you want to Regenerate events? There will be data loss after this action.</string>
+    <string name="refresh_config">Reset Configuration</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">"नोंथाङा App Configurations खौ रिसेट खालामनो लुबैदों होन्ना रोखा नामा? "</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">नोंथाङा इभेन्टफोरखौ फिन सोरजिफिन्नो लुबैदों होन्ना रोखा नामा? बे खामानिनि उनाव data loss जागोन।</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
 
 </resources>

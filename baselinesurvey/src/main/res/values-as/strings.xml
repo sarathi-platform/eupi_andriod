@@ -480,10 +480,10 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form C</string>
-    <string name="export_data">Export Data</string>
-    <string name="refresh_config">Refresh app config</string>
+    <string name="export_data">ডাটা শ্বেয়াৰ কৰক</string>
+    <string name="refresh_config">বিন্যাস পুনৰায় সেট কৰক</string>
     <string name="are_you_sure_you_want_to_reset_app_configuration">আপুনি নিশ্চিত নেকি যে আপুনি এপ বিন্যাসসমূহ পুনৰায় সেট কৰিব বিচাৰে?</string>
-    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰুত্পাদন কৰিব বিচাৰে? এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব।</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰ সৃষ্টি কৰিব বিচাৰে ?এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
 
 </resources>

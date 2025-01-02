@@ -481,10 +481,10 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form C</string>
-    <string name="export_data">Share Data</string>
-    <string name="refresh_config">Refresh app config</string>
-    <string name="are_you_sure_you_want_to_reset_app_configuration">আপনি কি অ্যাপ কনফিগারেশন রিসেট করার বিষয়ে নিশ্চিত?</string>
-    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰুত্পাদন কৰিব বিচাৰে? এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব।</string>
+    <string name="export_data">ডেটা শেয়ার করুন</string>
+    <string name="refresh_config">কনফিগারেশন রিসেট করুন</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">আপনি কি অ্যাপ কনফিগারেশন রিসেট করতে চান?</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপনি কি ইভেন্টগুলি আবার জেনারেট করতে চান? ইটা করার পরে ডেটা লস হতে পারে</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
     <string name="export_baseline_qna">বেসলাইন প্রশ্নউত্তর পাঠান</string>
 </resources>
