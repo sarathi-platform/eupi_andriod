@@ -28,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
@@ -49,13 +50,13 @@ import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.syncButtonBorderColor
 import com.nrlm.baselinesurvey.ui.theme.syncButtonColor
 import com.nrlm.baselinesurvey.ui.theme.syncCardBorderColor
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
 import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.ui.commonUi.LastSyncTimeView
+import com.nudge.core.ui.theme.alpha_6
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_15_dp
@@ -63,10 +64,11 @@ import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_28_dp
+import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_44_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_6_dp
-import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.syncMediumTextStyle
 import com.nudge.core.ui.theme.text_size_13
 import com.nudge.core.ui.theme.uncheckedTrackColor
 
@@ -221,11 +223,26 @@ fun CommonSettingScreen(
                                 .background(white),
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = settingScreenConfig.errorMessage,
-                                style = mediumTextStyle,
-                                color = textColorDark
-                            )
+                            Column(modifier = Modifier.align(Alignment.Center)) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_no_forms),
+                                    contentDescription = null,
+                                    modifier = Modifier
+                                        .align(Alignment.CenterHorizontally)
+                                        .size(dimen_30_dp)
+                                        .alpha(alpha_6),
+                                    tint = blueDark
+                                )
+                                Spacer(modifier = Modifier.width(dimen_10_dp))
+
+                                Text(
+                                    text = settingScreenConfig.errorMessage,
+                                    style = syncMediumTextStyle,
+                                    color = blueDark,
+                                    modifier = Modifier.alpha(alpha_6)
+                                )
+                            }
+
                         }
                     }
                 }
@@ -286,14 +303,14 @@ fun CommonSettingScreenPreview(){
      )
  )
     val commonSettingScreenConfig = CommonSettingScreenConfig(
-        isSyncEnable = true,
+        isSyncEnable = false,
         mobileNumber = "9862345078",
         lastSyncTime = 1735275558303,
         title = "Setting",
-        isScreenHaveLogoutButton = true,
-        optionList = list,
+        isScreenHaveLogoutButton = false,
+        optionList = emptyList(),
         versionText = "Version 978",
-        isItemCard = false,
+        isItemCard = true,
         errorMessage = "No Data available"
     )
     CommonSettingScreen(

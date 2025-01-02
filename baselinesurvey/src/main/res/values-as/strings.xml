@@ -485,5 +485,6 @@
     <string name="are_you_sure_you_want_to_reset_app_configuration">আপুনি নিশ্চিত নেকি যে আপুনি এপ বিন্যাসসমূহ পুনৰায় সেট কৰিব বিচাৰে?</string>
     <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰ সৃষ্টি কৰিব বিচাৰে ?এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
+    <string name="profile_block_name">ব্লকৰ নাম</string>
 
 </resources>

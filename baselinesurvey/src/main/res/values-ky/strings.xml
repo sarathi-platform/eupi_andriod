@@ -521,5 +521,6 @@
     <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">Nwng kubui da samung khlai finai muchung kha? Abo khlai mani yagula data rok kwmai wi thang nai</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
     <string name="refresh_config">Reset Configuration</string>
+    <string name="profile_block_name">Block Name</string>
 
 </resources>

@@ -7,4 +7,5 @@ interface ProfileBSRepository {
     fun getUserIdentityNumber():String
     fun getStateName(): String
     fun getDistrictName(): String
+    fun getBlockName(): String
 }

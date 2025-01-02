@@ -347,6 +347,7 @@
     <string name="profile_identity_num">Identity Number</string>
     <string name="profile_state_name">State Name</string>
     <string name="profile_district_name">District Name</string>
+    <string name="profile_block_name">Block Name</string>
     <string name="user_profile_text">User Profile</string>
     <string name="edit_didi">Edit</string>
     <string name="delete_didi">Delete</string>

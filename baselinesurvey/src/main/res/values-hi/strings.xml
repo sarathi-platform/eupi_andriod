@@ -487,4 +487,5 @@
     <string name="are_you_sure_you_want_to_reset_app_configuration">क्या आप वाकई ऐप कॉन्फ़िगरेशन रीसेट करना चाहते हैं?</string>
     <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">क्या आप वाकई घटनाओं को पुन: उत्पन्न करना चाहते हैं? इस कार्रवाई के बाद डेटा हानि होगी.</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
+    <string name="profile_block_name">ब्लॉक का नाम</string>
 </resources>

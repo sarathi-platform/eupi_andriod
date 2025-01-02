@@ -6,6 +6,7 @@ import com.nrlm.baselinesurvey.PREF_KEY_IDENTITY_NUMBER
 import com.nrlm.baselinesurvey.PREF_KEY_NAME
 import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_BLOCK_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_DISTRICT_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_NAME
 
@@ -31,6 +32,9 @@ class ProfileBSRepositoryImpl(private val prefBSRepo: PrefBSRepo):ProfileBSRepos
 
     override fun getDistrictName(): String {
         return prefBSRepo.getPref(PREF_DISTRICT_NAME, BLANK_STRING) ?: BLANK_STRING
+    }
+    override fun getBlockName(): String {
+        return prefBSRepo.getPref(PREF_BLOCK_NAME, BLANK_STRING) ?: BLANK_STRING
     }
 
 }
