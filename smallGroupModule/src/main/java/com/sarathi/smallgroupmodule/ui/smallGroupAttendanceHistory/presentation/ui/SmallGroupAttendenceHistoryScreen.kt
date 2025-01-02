@@ -61,7 +61,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
@@ -655,7 +654,8 @@ fun AttendanceSummaryCard(
             Row(
                 Modifier
                     .fillMaxWidth()
-                    .height(dimen_48_dp), horizontalArrangement = Arrangement.SpaceEvenly
+                    .heightIn(min = dimen_48_dp, max = dimen_100_dp),
+                horizontalArrangement = Arrangement.SpaceEvenly
             ) {
 
                 val interactionSource = remember { MutableInteractionSource() }
@@ -678,7 +678,8 @@ fun AttendanceSummaryCard(
                                 context, R.string.edit_button_text
                             ),
                             style = defaultTextStyle,
-                            color = textColorDark
+                            color = textColorDark,
+                            maxLines = 2
                         )
                     )
                 }
@@ -711,7 +712,8 @@ fun AttendanceSummaryCard(
                                 R.string.delete_button_text
                             ),
                             style = defaultTextStyle,
-                            color = redOffline
+                            color = redOffline,
+                            maxLines = 2
                         )
                     )
                 }
