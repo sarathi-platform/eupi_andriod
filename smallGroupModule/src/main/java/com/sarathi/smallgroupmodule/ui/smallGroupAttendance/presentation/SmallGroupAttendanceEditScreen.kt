@@ -56,7 +56,6 @@ import com.sarathi.smallgroupmodule.ui.theme.uncheckedTrackColor
 import com.sarathi.smallgroupmodule.ui.theme.white
 import com.sarathi.smallgroupmodule.utils.getDate
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SmallGroupAttendanceEditScreen(
     smallGroupId: Int = 0,

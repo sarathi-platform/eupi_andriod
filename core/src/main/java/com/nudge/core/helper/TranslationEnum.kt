@@ -73,7 +73,8 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "yes",
             "no",
             "search_didi",
-            "all"
+            "all",
+            "attendance_already_marked"
         )
     ),
 

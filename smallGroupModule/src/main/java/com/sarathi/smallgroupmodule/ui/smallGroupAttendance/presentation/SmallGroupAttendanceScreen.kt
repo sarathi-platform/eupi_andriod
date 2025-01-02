@@ -122,18 +122,22 @@ fun SmallGroupAttendanceScreen(
     if (smallGroupAttendanceScreenViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title =smallGroupAttendanceScreenViewModel.stringResource(
+            title = smallGroupAttendanceScreenViewModel.stringResource(
                 context,
-                R.string.confirmation_alert_dialog_title),
+                R.string.confirmation_alert_dialog_title
+            ),
             message = smallGroupAttendanceScreenViewModel.stringResource(
                 context,
-                R.string.do_you_want_mark_all_absent),
+                R.string.do_you_want_mark_all_absent
+            ),
             positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 context,
-                R.string.yes),
-            negativeButtonTitle =  smallGroupAttendanceScreenViewModel.stringResource(
+                R.string.yes
+            ),
+            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 context,
-                R.string.no),
+                R.string.no
+            ),
             onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
@@ -153,7 +157,11 @@ fun SmallGroupAttendanceScreen(
                         )
                         showCustomToast(
                             context = context,
-                            msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
+                            msg = smallGroupAttendanceScreenViewModel.stringResource(
+                                context,
+                                R.string.attendance_already_marked,
+                                smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
+                            )
                         )
                     }
                 })
@@ -186,10 +194,11 @@ fun SmallGroupAttendanceScreen(
                         .padding(dimen_10_dp)
                 ) {
                     ButtonPositiveWithLoaderComponent(
-                        buttonTitle =smallGroupAttendanceScreenViewModel.stringResource(
+                        buttonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                             context,
-                            R.string.submit),
-                       isActive = true,
+                            R.string.submit
+                        ),
+                        isActive = true,
                         showLoader = smallGroupAttendanceScreenViewModel.loaderState.value.isLoaderVisible
                     ) {
                         if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
@@ -224,7 +233,11 @@ fun SmallGroupAttendanceScreen(
                                         )
                                         showCustomToast(
                                             context = context,
-                                            msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
+                                            msg =smallGroupAttendanceScreenViewModel.stringResource(
+                                                context,
+                                                R.string.attendance_already_marked,
+                                                smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
+                                            )
                                         )
                                     }
                                 }
@@ -266,7 +279,8 @@ fun SmallGroupAttendanceScreen(
                 SearchWithFilterViewComponent(
                     placeholderString = smallGroupAttendanceScreenViewModel.stringResource(
                         context,
-                        R.string.search_didi),
+                        R.string.search_didi
+                    ),
                     showFilter = false,
                     onFilterSelected = {
                         /**
@@ -342,8 +356,9 @@ fun SmallGroupAttendanceScreen(
                             Text(
                                 text = smallGroupAttendanceScreenViewModel.stringResource(
                                     context,
-                                    R.string.all),
-                             style = defaultTextStyle,
+                                    R.string.all
+                                ),
+                                style = defaultTextStyle,
                                 color = progressIndicatorColor,
                                 overflow = TextOverflow.Ellipsis
                             )
