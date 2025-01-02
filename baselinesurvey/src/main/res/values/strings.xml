@@ -345,6 +345,8 @@
     <string name="profile_email">Email</string>
     <string name="profile_phone">Phone Number</string>
     <string name="profile_identity_num">Identity Number</string>
+    <string name="profile_state_name">State Name</string>
+    <string name="profile_district_name">District Name</string>
     <string name="user_profile_text">User Profile</string>
     <string name="edit_didi">Edit</string>
     <string name="delete_didi">Delete</string>
@@ -487,13 +489,13 @@
     <string name="load_server_data">Load Server Data</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
     <string name="import_data">Import Data</string>
-    <string name="export_images">Export Only Images</string>
-    <string name="export_backup_file">Export BackUp File</string>
-    <string name="export_database">Export Only Database</string>
+    <string name="export_images">Export only images</string>
+    <string name="export_backup_file">Export Backup file</string>
+    <string name="export_database">Export only database</string>
     <string name="backup_recovery">Backup/Recovery</string>
-    <string name="export_data">Export Data</string>
-    <string name="export_event_file">Export Event File</string>
-    <string name="export_log_file">Export Only Log File</string>
+    <string name="export_data">Share Data</string>
+    <string name="export_event_file">Export event file</string>
+    <string name="export_log_file">Export only log file</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions are not answered, please answer all questions!</string>
     <string name="view_label">View</string>
     <string name="hours">Hours</string>
@@ -528,4 +530,8 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form E</string>
+    <string name="refresh_config">Refresh app config</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">Are you sure you want to Reset App Configurations?</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">Are you sure you want to Regenerate events? There will be data loss after this action.</string>
+    <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
 </resources>

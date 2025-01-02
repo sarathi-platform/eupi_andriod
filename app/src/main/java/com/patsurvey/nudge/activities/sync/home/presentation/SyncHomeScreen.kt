@@ -66,6 +66,7 @@ import com.nudge.core.isImageEvent
 import com.nudge.core.isOnline
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.commonUi.LastSyncTimeView
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -309,9 +310,9 @@ fun SyncHomeContent(
                         .fillMaxSize()
                 ) {
                     item {
-                        LastSyncTime(
-                            viewModel.lastSyncTime.longValue,
-                            viewModel.getUserPhoneNumber()
+                        LastSyncTimeView(
+                            lastSyncTime = viewModel.lastSyncTime.longValue,
+                            mobileNumber = viewModel.getUserPhoneNumber()
                         ) {
                             viewModel.onLastSyncTimeClick {
                                 showCustomToast(
@@ -430,55 +431,6 @@ fun BottomContent(
                     "Sync All Data Click: ${viewModel.selectedSyncType.intValue}"
                 )
                 startSyncProcess(context, viewModel, isNetworkAvailable.value)
-            }
-        }
-    }
-}
-
-@Composable
-fun LastSyncTime(lastSyncTime: Long, mobileNumber: String, onCancelWorker: () -> Unit) {
-    if (lastSyncTime != 0L) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp)
-                    .clickable {
-                        onCancelWorker()
-                    },
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.last_sync_date_time),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-
-                Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
-                        lastSyncTime
-                    ),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(dimen_10_dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Text(
-                    text = stringResource(id = R.string.profile_phone),
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
-
-                Text(
-                    text = mobileNumber,
-                    style = syncMediumTextStyle,
-                    color = textColorDark
-                )
             }
         }
     }

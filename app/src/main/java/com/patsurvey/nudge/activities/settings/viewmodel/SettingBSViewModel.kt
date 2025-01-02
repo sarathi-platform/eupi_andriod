@@ -60,7 +60,6 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
-import com.patsurvey.nudge.utils.BPC_USER_TYPE
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
@@ -72,58 +71,37 @@ import com.patsurvey.nudge.utils.PREF_WEALTH_RANKING_COMPLETION_DATE_
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.PatSurveyStatus
 import com.patsurvey.nudge.utils.PdfUtils
-import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.UPCM_USER
-import com.patsurvey.nudge.utils.VO_ENDORSEMENT_CONSTANT
-import com.patsurvey.nudge.utils.WealthRank
 import com.patsurvey.nudge.utils.changeMilliDateToDate
-import com.sarathi.dataloadingmangement.FORM_E
-import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.GetFormUiConfigUseCase
-import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
-import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
-import java.util.Timer
-import java.util.TimerTask
 import javax.inject.Inject
-import com.patsurvey.nudge.R as appRes
 
 
 @HiltViewModel
 class SettingBSViewModel @Inject constructor(
     private val settingBSUserCase: SettingBSUserCase,
-    private val getActivityUseCase: GetActivityUseCase,
-    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    private val formUseCase: FormUseCase,
     val exportHelper: ExportHelper,
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
-    val formUiConfigUseCase: GetFormUiConfigUseCase,
     val selectionVillageUseCase: SelectionVillageUseCase,
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
     var showLogoutDialog = mutableStateOf(false)
+    var isSyncEnable = mutableStateOf(false)
     var showLoader = mutableStateOf(false)
     var applicationId = mutableStateOf(BLANK_STRING)
+    var lastSyncTime = mutableStateOf(0L)
     lateinit var mAppContext: Context
     val optionList: State<List<SettingOptionModel>> get() = _optionList
     var userType: String = BLANK_STRING
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(isLoaderVisible = false))
-
-    val formAAvailable = mutableStateOf(false)
-    val formBAvailable = mutableStateOf(false)
-    val formCAvailable = mutableStateOf(false)
-    val formEAvailableList = mutableStateOf<List<Pair<Int, Boolean>>>(emptyList())
-    val activityFormGenerateList = mutableStateOf<List<ActivityFormUIModel>>(emptyList())
     val workManager = WorkManager.getInstance(MyApplication.applicationContext())
-    val activityFormGenerateNameMap = HashMap<Pair<Int, Int>, String>()
 
 
     val loaderState: State<LoaderState> get() = _loaderState
@@ -131,23 +109,20 @@ class SettingBSViewModel @Inject constructor(
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
+        lastSyncTime.value = settingBSUserCase.getUserDetailsUseCase.getLastSyncTime()
         mAppContext =
             if (userType != UPCM_USER) NudgeCore.getAppContext() else BaselineCore.getAppContext()
-        getActivityFormGenerateList(onGetData = {
-            if (activityFormGenerateList.value.isNotEmpty()) {
-                checkFromEAvailable(activityFormGenerateList.value)
-            }
-        })
-        val villageId = settingBSUserCase.getSettingOptionListUseCase.getSelectedVillageId()
+
         val settingOpenFrom = settingBSUserCase.getSettingOptionListUseCase.settingOpenFrom()
         val list = ArrayList<SettingOptionModel>()
 
         list.add(
             SettingOptionModel(
                 1,
-                context.getString(R.string.profile),
+                context.getString(R.string.language_text),
                 BLANK_STRING,
-                SettingTagEnum.PROFILE.name
+                SettingTagEnum.LANGUAGE.name,
+                leadingIcon = R.drawable.ic_language
             )
         )
         if (userType != UPCM_USER) {
@@ -157,7 +132,8 @@ class SettingBSViewModel @Inject constructor(
                         2,
                         context.getString(R.string.forms),
                         BLANK_STRING,
-                        SettingTagEnum.FORMS.name
+                        SettingTagEnum.FORMS.name,
+                        leadingIcon = R.drawable.ic_forms
                     )
                 )
             }
@@ -167,7 +143,8 @@ class SettingBSViewModel @Inject constructor(
                     3,
                     context.getString(R.string.training_videos),
                     BLANK_STRING,
-                    SettingTagEnum.TRAINING_VIDEOS.name
+                    SettingTagEnum.TRAINING_VIDEOS.name,
+                    leadingIcon = R.drawable.ic_bottom_task_icon
                 )
             )
         } else {
@@ -176,24 +153,19 @@ class SettingBSViewModel @Inject constructor(
                     2,
                     context.getString(R.string.forms),
                     BLANK_STRING,
-                    SettingTagEnum.FORMS.name
+                    SettingTagEnum.FORMS.name,
+                    leadingIcon = R.drawable.ic_forms
                 )
             )
         }
         list.add(
             SettingOptionModel(
-                4,
-                context.getString(R.string.language_text),
-                BLANK_STRING,
-                SettingTagEnum.LANGUAGE.name
-            )
-        )
-        list.add(
-            SettingOptionModel(
                 5,
                 context.getString(R.string.export_backup_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_BACKUP_FILE.name,
+                leadingIcon = R.drawable.ic_backup_file,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -201,7 +173,8 @@ class SettingBSViewModel @Inject constructor(
                 6,
                 context.getString(R.string.export_data),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name
+                SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name,
+                leadingIcon = R.drawable.ic_share_data
             )
         )
         list.add(
@@ -209,33 +182,22 @@ class SettingBSViewModel @Inject constructor(
                 7,
                 context.getString(R.string.backup_recovery),
                 BLANK_STRING,
-                SettingTagEnum.BACKUP_RECOVERY.name
+                SettingTagEnum.BACKUP_RECOVERY.name,
+                leadingIcon = R.drawable.ic_backup_recovery
             )
         )
-
         list.add(
             SettingOptionModel(
                 8,
-                context.getString(appRes.string.refresh_config),
+                context.getString(R.string.profile),
                 BLANK_STRING,
-                SettingTagEnum.APP_CONFIG.name
-
+                SettingTagEnum.PROFILE.name,
+                leadingIcon = R.drawable.ic_profile
             )
         )
 
-        if (settingBSUserCase.getUserDetailsUseCase.isSyncEnable()) {
-            list.add(
-                SettingOptionModel(
-                    7,
-                    context.getString(R.string.sync_your_data),
-                    BLANK_STRING,
-                    SettingTagEnum.SYNC_DATA_NOW.name
-                )
-            )
-        }
-
-
-        _optionList.value = list
+        isSyncEnable.value = settingBSUserCase.getUserDetailsUseCase.isSyncEnable()
+        _optionList.value=list
         fetchEventCount()
         if (userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
             checkFormsAvailabilityForVillage(context, villageId)
@@ -260,7 +222,9 @@ class SettingBSViewModel @Inject constructor(
             }
         }
     }
-
+    fun saveLanguagePageFrom() {
+        settingBSUserCase.saveLanguageScreenOpenFromUseCase.invoke()
+    }
     suspend fun exportLocalData(context: Context) {
         exportHelper.exportAllData(context)
     }
@@ -476,86 +440,6 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun showLoaderForTime(time: Long) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        Timer().schedule(object : TimerTask() {
-            override fun run() {
-                job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-                    withContext(CoreDispatchers.mainDispatcher) {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
-                }
-            }
-        }, time)
-    }
-
-    suspend fun checkFormAAvailability(context: Context, villageId: Int) {
-        var didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
-        if (userType == BPC_USER_TYPE) {
-            didiList =
-                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
-        }
-        if (didiList.any { it.wealth_ranking == WealthRank.POOR.rank && it.activeStatus == DidiStatus.DIDI_ACTIVE.ordinal && !it.rankingEdit }
-        ) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formAAvailable.value = true
-            }
-        } else {
-            withContext(
-                CoreDispatchers.mainDispatcher
-            ) {
-                formAAvailable.value = false
-            }
-        }
-    }
-
-
-    suspend fun checkFormBAvailability(context: Context, villageId: Int) {
-        var didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageId)
-        if (userType == BPC_USER_TYPE) {
-            didiList =
-                settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllPoorDidiForVillage(villageId)
-        }
-
-        if (didiList.any { it.forVoEndorsement == 1 && !it.patEdit }
-        ) {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formBAvailable.value = true
-            }
-        } else {
-            withContext(CoreDispatchers.mainDispatcher) {
-                formBAvailable.value = false
-            }
-
-        }
-    }
-
-
-    suspend fun checkFormCAvailability(context: Context, villageId: Int) {
-
-        val stepList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllStepsForVillage(villageId)
-        val filteredStepList = stepList.filter { it.name.equals(VO_ENDORSEMENT_CONSTANT, true) }
-        if (filteredStepList[0] != null) {
-            formCAvailable.value =
-                filteredStepList[0].isComplete == StepStatus.COMPLETED.ordinal
-        } else {
-            formCAvailable.value = false
-        }
-    }
-
-    fun checkFormsAvailabilityForVillage(context: Context, villageId: Int) {
-        job = CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-
-            checkFormAAvailability(context = context, villageId = villageId)
-            checkFormBAvailability(context = context, villageId = villageId)
-            checkFormCAvailability(context = context, villageId = villageId)
-        }
-
-    }
-
     private suspend fun getSummaryFile(): Pair<String, Uri?>? {
         val summaryFileNameWithoutExtension = "${SARATHI}_${
             getFirstName(settingBSUserCase.getUserDetailsUseCase.getUserName())
@@ -691,21 +575,6 @@ class SettingBSViewModel @Inject constructor(
         }
     }
 
-    fun getActivityFormGenerateList(onGetData: () -> Unit) {
-        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            activityFormGenerateList.value = getActivityUseCase.getActiveForm(formType = FORM_E)
-            activityFormGenerateList.value.forEach {
-                activityFormGenerateNameMap[Pair(it.missionId, it.activityId)] =
-                    formUiConfigUseCase.getFormConfigValue(
-                        key = GrantTaskFormSlots.TASK_PDF_FORM_NAME.name,
-                        missionId = it.missionId,
-                        activityId = it.activityId
-                    )
-            }
-            onGetData()
-        }
-    }
-
     fun getUserMobileNumber(): String {
         return settingBSUserCase.getUserDetailsUseCase.getUserMobileNumber()
     }
@@ -716,47 +585,20 @@ class SettingBSViewModel @Inject constructor(
         return arrayListOf(uriFromFile(mAppContext, uri.toFile(), applicationId.value))
     }
 
-    private fun checkFromEAvailable(activityFormUIModelList: List<ActivityFormUIModel>) {
-        if (activityFormUIModelList.isNotEmpty()) {
-            CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-                val pairFormList = ArrayList<Pair<Int, Boolean>>()
-                activityFormUIModelList.forEachIndexed { index, activityFormUIModel ->
-                    val isFromEAvailable = formUseCase.getOnlyGeneratedFormSummaryData(
-                        activityId = activityFormUIModel.activityId,
-                        isFormGenerated = true
-                    ).isNotEmpty()
-                    pairFormList.add(Pair(index, isFromEAvailable))
-                }
-                formEAvailableList.value = pairFormList
-            }
-
-        } else {
-            formEAvailableList.value = emptyList()
-        }
-    }
 
     private fun cancelSyncUploadWorker() {
-        workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
-        CoreLogger.d(
-            CoreAppDetails.getApplicationContext(),
-            "SettingBSViewModel",
-            "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
-        )
+                workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
+                CoreLogger.d(
+                    CoreAppDetails.getApplicationContext(),
+                    "SettingBSViewModel",
+                    "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
+                )
     }
 
     fun syncWorkerRunning(): Boolean {
         val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
-        workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) }?.let {
-            return it.state == WorkInfo.State.RUNNING
-        } ?: return false
-    }
-
-    fun fetchhAppConfig() {
-        showLoader.value = true
-        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
-            showLoader.value = false
-
-        }
+            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
+                return it.state == WorkInfo.State.RUNNING
+           }?:return false
     }
 }

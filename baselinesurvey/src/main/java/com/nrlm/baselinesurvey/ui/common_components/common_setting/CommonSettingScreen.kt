@@ -1,18 +1,8 @@
 package com.nrlm.baselinesurvey.ui.common_components.common_setting
 
-
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.animateInt
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.core.updateTransition
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -25,92 +15,76 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.Divider
 import androidx.compose.material.Icon
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
-import com.nrlm.baselinesurvey.EXPANSTION_TRANSITION_DURATION
 import com.nrlm.baselinesurvey.R
+import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
 import com.nrlm.baselinesurvey.ui.common_components.ButtonPositive
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.NotoSans
 import com.nrlm.baselinesurvey.ui.theme.black100Percent
 import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.borderGreyLight
 import com.nrlm.baselinesurvey.ui.theme.newMediumTextStyle
+import com.nrlm.baselinesurvey.ui.theme.syncButtonBorderColor
+import com.nrlm.baselinesurvey.ui.theme.syncButtonColor
+import com.nrlm.baselinesurvey.ui.theme.syncCardBorderColor
 import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.textColorDark50
+import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nrlm.baselinesurvey.ui.theme.white
-import com.nudge.core.UPCM_USER
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.SettingOptionModel
-import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
+import com.nudge.core.ui.commonUi.LastSyncTimeView
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_15_dp
+import com.nudge.core.ui.theme.dimen_16_sp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_28_dp
+import com.nudge.core.ui.theme.dimen_44_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.text_size_13
+import com.nudge.core.ui.theme.uncheckedTrackColor
 
 @Composable
 fun CommonSettingScreen(
-    userType: String,
-    title:String,
-    versionText:String,
-    optionList:List<SettingOptionModel>,
-    expanded: Boolean,
+    settingScreenConfig: CommonSettingScreenConfig,
+    isLoaderVisible: Boolean = false,
     onBackClick:()->Unit,
-    activityForm: List<ActivityFormUIModel>,
-    formEName: Map<Pair<Int, Int>, String> = emptyMap(),
-    isLoaderVisible:Boolean=false,
     onItemClick:(Int,SettingOptionModel)->Unit,
-    isScreenHaveLogoutButton:Boolean=true,
-    onParticularFormClick: (Int) -> Unit,
+    onSyncDataClick: () -> Unit,
     onLogoutClick:()->Unit
 ){
-
-    val formList = mutableListOf<String>()
-    if (userType != UPCM_USER) {
-        formList.add(stringResource(R.string.digital_form_a_title))
-        formList.add(stringResource(R.string.digital_form_b_title))
-        formList.add(stringResource(R.string.digital_form_c_title))
-    } else {
-        if (activityForm.isNotEmpty()) {
-
-            activityForm.forEach {
-
-                formList.add(
-                    "${it.missionName} - ${
-                        formEName[Pair(
-                            first = it.missionId,
-                            second = it.activityId
-                        )]
-                    }"
-                )
-            }
-        }
-    }
-
-
     Scaffold(
         backgroundColor = white,
         modifier = Modifier.fillMaxSize(),
         topBar = {
             ToolbarComponent(
-                title = title,
+                title = settingScreenConfig.title,
                 modifier = Modifier
             ) {
                 onBackClick()
@@ -118,7 +92,7 @@ fun CommonSettingScreen(
             }
         },
         bottomBar = {
-            if(isScreenHaveLogoutButton) {
+            if (settingScreenConfig.isScreenHaveLogoutButton) {
                 Box(
                     modifier = Modifier
                         .padding(horizontal = dimensionResource(id = R.dimen.dp_15))
@@ -127,11 +101,11 @@ fun CommonSettingScreen(
                     Column {
 
                         Text(
-                            text = versionText,
+                            text = settingScreenConfig.versionText,
                             color = textColorDark50,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(0.dp, 0.dp, 0.dp, 10.dp),
+                                .padding(bottom = dimen_10_dp),
                             textAlign = TextAlign.Center,
                             style = newMediumTextStyle
                         )
@@ -151,34 +125,108 @@ fun CommonSettingScreen(
             modifier = Modifier
                 .background(Color.White)
                 .padding(top = it.calculateTopPadding())
-                .fillMaxSize()
+                .padding(dimen_20_dp)
         ) {
-            val (mainBox, logoutButton, versionBox,circularLoader) = createRefs()
+            val (mainBox, syncCard, circularLoader) = createRefs()
+            if (settingScreenConfig.isSyncEnable) {
+                Column(
+                    modifier = Modifier
+                        .background(Color.White)
+                        .constrainAs(syncCard) {
+                            start.linkTo(parent.start)
+                            top.linkTo(parent.top)
+                            end.linkTo(parent.end)
+                        }
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(dimen_6_dp))
+                            .border(width = dimen_1_dp, color = syncButtonBorderColor)
+                            .background(syncButtonColor)
+                            .clickable(
+                                interactionSource = remember { MutableInteractionSource() },
+                                indication = rememberRipple(
+                                    bounded = true,
+                                    color = Color.White
+                                )
 
-            Column(modifier = Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-                .constrainAs(mainBox) {
-                    start.linkTo(parent.start)
-                    top.linkTo(parent.top)
-                    end.linkTo(parent.end)
-                }) {
-                LazyColumn {
-                    itemsIndexed(optionList) { index, item ->
-                        CommonSettingCard(
-                            title = item.title,
-                            subTitle = item.subTitle,
-                            formList = formList,
-                            expanded = item.title == stringResource(id = R.string.forms) && expanded,
-                            showArrow = item.title == stringResource(id = R.string.forms),
-                            onClick = {
-                                onItemClick(index,item)
+                            ) {
+                                onSyncDataClick()
                             },
-                            onParticularFormClick = {formIndex->
-                                onParticularFormClick(formIndex)
-                            }
-
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Row(
+                            Modifier
+                                .padding(dimen_10_dp)
+                                .fillMaxWidth()
+                                .align(Alignment.Center),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = stringResource(id = R.string.sync),
+                                color = blueDark,
+                                style = TextStyle(
+                                    fontFamily = NotoSans,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = text_size_16_sp
+                                ),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    LastSyncTimeView(
+                        lastSyncTime = settingScreenConfig.lastSyncTime ?: 0L,
+                        mobileNumber = settingScreenConfig.mobileNumber,
+                        isShowPhoneNumber = false
+                    ) { }
+                    Spacer(modifier = Modifier.height(dimen_10_dp))
+                }
+            }
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .border(
+                        if (settingScreenConfig.isItemCard) dimen_0_dp else
+                            dimen_1_dp,
+                        color = if (settingScreenConfig.isItemCard) white else syncCardBorderColor,
+                        RoundedCornerShape(
+                            if (settingScreenConfig.isItemCard) dimen_0_dp else dimen_10_dp
                         )
+                    )
+                    .constrainAs(mainBox) {
+                        start.linkTo(parent.start)
+                        top.linkTo(if (settingScreenConfig.isSyncEnable) syncCard.bottom else parent.top)
+                        end.linkTo(parent.end)
+                    },
+            ) {
+                if (settingScreenConfig.optionList.isNotEmpty()) {
+                    LazyColumn {
+                        itemsIndexed(settingScreenConfig.optionList) { index, item ->
+                            SettingOptionCard(
+                                settingOptionModel = item,
+                                isItemCard = settingScreenConfig.isItemCard,
+                                isLastLineShow = index < settingScreenConfig.optionList.size - 1,
+                                onClick =
+                                {
+                                    onItemClick(index, item)
+                                })
+                        }
+                    }
+                } else {
+                    if (settingScreenConfig.errorMessage.isNotEmpty()) {
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(white),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = settingScreenConfig.errorMessage,
+                                style = mediumTextStyle,
+                                color = textColorDark
+                            )
+                        }
                     }
                 }
             }
@@ -199,7 +247,7 @@ fun CommonSettingScreen(
                     CircularProgressIndicator(
                         color = blueDark,
                         modifier = Modifier
-                            .size(28.dp)
+                            .size(dimen_28_dp)
                             .align(Alignment.Center)
                     )
                 }
@@ -212,226 +260,176 @@ fun CommonSettingScreen(
 @Composable
 fun CommonSettingScreenPreview(){
  val list= listOf(
-        SettingOptionModel(1,"Sync Now","new Datta",""),
-        SettingOptionModel(2,"Forms","",""),
-        SettingOptionModel(3,"Language","",""))
-    CommonSettingScreen(
-        userType = UPCM_USER,
+     SettingOptionModel(
+         1,
+         "Sync Now",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_arrow_forward_ios_24
+     ),
+     SettingOptionModel(
+         2,
+         "Forms",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_share_icon
+     ),
+     SettingOptionModel(
+         3,
+         "Language",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_share_icon
+     )
+ )
+    val commonSettingScreenConfig = CommonSettingScreenConfig(
+        isSyncEnable = true,
+        mobileNumber = "9862345078",
+        lastSyncTime = 1735275558303,
         title = "Setting",
+        isScreenHaveLogoutButton = true,
+        optionList = list,
         versionText = "Version 978",
-        list,
+        isItemCard = false,
+        errorMessage = "No Data available"
+    )
+    CommonSettingScreen(
+        settingScreenConfig = commonSettingScreenConfig,
         onBackClick = {},
         onItemClick = { index, item -> },
-        expanded = true,
         onLogoutClick = {},
-        activityForm = listOf(),
-        onParticularFormClick = { index -> })
+        onSyncDataClick = {}
+    )
 }
 
 @Preview(showBackground = true)
 @Composable
 fun CommonSettingCardPreview(){
-    val formList = mutableListOf<String>()
-    formList.add(stringResource(R.string.digital_form_a_title))
-    formList.add(stringResource(R.string.digital_form_b_title))
-    formList.add(stringResource(R.string.digital_form_c_title))
-    CommonSettingCard(
-        title = "title",
-        subTitle = "subtitle",
-        formList = formList,
-        expanded = false,
-        onParticularFormClick = {index->},
-        onClick = {}
+    val settingOptionModel = SettingOptionModel(
+        title = "Language",
+        leadingIcon = R.drawable.ic_language,
+        subTitle = BLANK_STRING,
+        tag = BLANK_STRING,
+        id = 0
+    )
+    SettingOptionCard(
+        settingOptionModel = settingOptionModel,
+        onClick = {},
+
     )
 }
+
 @Composable
-fun CommonSettingCard(
-    title: String,
-    subTitle: String,
-    expanded: Boolean,
-    formList: List<String>,
-    showArrow: Boolean = false,
+fun SettingOptionCard(
+    settingOptionModel: SettingOptionModel,
+    isLastLineShow: Boolean = true,
+    isItemCard: Boolean = false,
     onClick: () -> Unit,
-    onParticularFormClick: (Int) -> Unit
 ) {
-
-    val transition = updateTransition(expanded, label = "transition")
-
-    val animateInt by transition.animateInt({
-        tween(durationMillis = 10)
-    }, label = "animate float") {
-        if (it) 1 else 0
-    }
-
-    val arrowRotationDegree by transition.animateFloat({
-        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
-    }, label = "rotationDegreeTransition") {
-        if (it) 0f else -90f
-    }
-
     Column(modifier = Modifier
         .background(Color.White)
         .fillMaxWidth()
         .clickable {
             onClick()
         }) {
-        Column(
-            modifier = Modifier
-                .background(Color.White)
-                .fillMaxWidth()
-                .padding(horizontal = dimensionResource(id = R.dimen.dp_20))
-                .padding(vertical = dimensionResource(id = R.dimen.dp_15))
-        ) {
-            Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-                Text(
-                    text = title,
-                    textAlign = TextAlign.Start,
-                    fontSize = 16.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColorDark,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f)
-                )
-                if (showArrow) {
+        if (!isItemCard) {
+            Column(
+                modifier = Modifier
+                    .background(Color.White)
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.dp_10))
+                    .padding(vertical = dimensionResource(id = R.dimen.dp_13))
+            ) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    settingOptionModel.leadingIcon?.let { icon ->
+                        Icon(
+                            painter = painterResource(id = icon),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .align(Alignment.CenterVertically)
+                                .size(dimen_20_dp),
+                            tint = blueDark
+
+                        )
+                        Spacer(modifier = Modifier.width(dimen_10_dp))
+                    }
+
+                    Text(
+                        text = settingOptionModel.title,
+                        textAlign = TextAlign.Start,
+                        fontSize = dimen_16_sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        color = blueDark,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .weight(1f)
+                    )
+
                     Icon(
-                        painter = painterResource(id = R.drawable.baseline_keyboard_arrow_down),
+                        painter = painterResource(
+                            id = settingOptionModel.trailingIcon
+                        ),
                         contentDescription = null,
-                        tint = textColorDark,
-                        modifier = Modifier.rotate(arrowRotationDegree)
+                        tint = blueDark,
+                        modifier = Modifier
+                            .size(dimen_15_dp)
+                            .align(Alignment.CenterVertically)
+                    )
+
+
+
+                }
+                if (!settingOptionModel.subTitle.isNullOrEmpty()) {
+                    Text(
+                        text = settingOptionModel.subTitle,
+                        textAlign = TextAlign.Start,
+                        fontSize = text_size_13,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Normal,
+                        color = black100Percent,
+                        modifier = Modifier.fillMaxWidth()
                     )
                 }
             }
-            if (!subTitle.isNullOrEmpty()) {
-                Text(
-                    text = subTitle,
-                    textAlign = TextAlign.Start,
-                    fontSize = 13.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.Normal,
-                    color = black100Percent,
-                    modifier = Modifier.fillMaxWidth()
+            if (isLastLineShow) {
+                Spacer(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(dimensionResource(id = R.dimen.dp_1))
+                        .background(syncCardBorderColor)
                 )
             }
-        }
-        ExpandedSettingsList(
-            modifier = Modifier,
-            expanded = animateInt == 1,
-            formList = formList
-        ){
-            onParticularFormClick(it)
-        }
+        } else {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimen_4_dp)
+                    .height(dimen_44_dp)
+                    .clip(RoundedCornerShape(dimen_6_dp))
+                    .border(
+                        width = dimen_1_dp,
+                        color = uncheckedTrackColor,
+                        shape = RoundedCornerShape(dimen_6_dp)
+                    )
+                    .background(Color.White)
 
-        Spacer(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(dimensionResource(id = R.dimen.dp_2))
-                .background(borderGreyLight)
-        )
-
-    }
-}
-
-@Composable
-fun ExpandedSettingsList(
-    modifier: Modifier = Modifier,
-    expanded: Boolean,
-    formList: List<String>,
-    onParticularFormClick:(Int)->Unit
-) {
-
-    val enterTransition = remember {
-        expandVertically(
-            expandFrom = Alignment.Top,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
-        ) + fadeIn(
-            initialAlpha = 0.3f,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
-        )
-    }
-    val exitTransition = remember {
-        shrinkVertically(
-            // Expand from the top.
-            shrinkTowards = Alignment.Top,
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
-        ) + fadeOut(
-            // Fade in with the initial alpha of 0.3f.
-            animationSpec = tween(EXPANSTION_TRANSITION_DURATION)
-        )
-    }
-
-    val interactionSource = remember { MutableInteractionSource() }
-
-    AnimatedVisibility(
-        visible = expanded,
-        enter = enterTransition,
-        exit = exitTransition,
-        modifier = Modifier.then(modifier)
-    ) {
-        Column(
-            verticalArrangement = Arrangement.SpaceEvenly,
-            modifier = Modifier
-        ) {
-            if (formList.isNotEmpty()) {
-                formList.forEachIndexed { index, name ->
-
-                    Row(
-                        Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-
-                        Text(
-                            text = name,
-                            textAlign = TextAlign.Start,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            color = textColorDark,
-                            modifier = Modifier
-                                .padding(horizontal = 26.dp)
-                                .padding(top = if (index == 0) 0.dp else 8.dp, bottom = 8.dp)
-                                .fillMaxWidth()
-                                .indication(
-                                    interactionSource = interactionSource,
-                                    indication = rememberRipple(
-                                        bounded = true,
-                                        color = Color.Black
-                                    )
-                                )
-                                .clickable {
-                                    onParticularFormClick(index)
-                                })
-
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_baseline_keyboard_arrow_down_24),
-                            contentDescription = null,
-                            tint = textColorDark,
-                            modifier = Modifier.rotate(-90f)
-                        )
-                    }
-                    if (index < formList.size - 1)
-                        Divider(
-                            color = borderGreyLight,
-                            thickness = 1.dp,
-                            modifier = Modifier.padding(horizontal = 26.dp)
-                        )
-                }
-            } else {
+            ) {
                 Text(
-                    text = stringResource(R.string.no_form_available_yet_text),
-                    textAlign = TextAlign.Start,
-                    fontSize = 14.sp,
+                    text = settingOptionModel.title,
+                    color = blueDark,
+                    fontSize = dimen_16_sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    color = textColorDark,
-                    modifier = Modifier
-                        .padding(horizontal = 20.dp)
-                        .padding(top = 8.dp, bottom = 8.dp)
-                        .fillMaxWidth()
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
-            Spacer(modifier = Modifier.height(15.dp))
         }
     }
 }

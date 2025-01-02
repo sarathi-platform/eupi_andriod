@@ -1,7 +1,9 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_DISTRICT_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_EMAIL
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_IDENTITY_NUMBER
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_NAME
@@ -10,6 +12,7 @@ import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_ROLE_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_USER_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_NAME
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
@@ -82,5 +85,13 @@ class IDataLoadingScreenRepositoryImpl @Inject constructor(
         coreSharedPrefs.savePref(PREF_KEY_ROLE_NAME, userDetails.roleName ?: "")
         coreSharedPrefs.savePref(PREF_KEY_TYPE_NAME, userDetails.typeName ?: "")
         coreSharedPrefs.savePref(PREF_STATE_ID, userDetails.referenceId.first().stateId ?: -1)
+        coreSharedPrefs.savePref(
+            PREF_DISTRICT_NAME,
+            userDetails.federationDetail?.districtName ?: BLANK_STRING
+        )
+        coreSharedPrefs.savePref(
+            PREF_STATE_NAME,
+            userDetails.federationDetail?.stateName ?: BLANK_STRING
+        )
     }
 }

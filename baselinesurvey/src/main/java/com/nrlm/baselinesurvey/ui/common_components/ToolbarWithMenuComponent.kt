@@ -24,7 +24,6 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
-import com.nrlm.baselinesurvey.ui.theme.textColorDark
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 
@@ -65,7 +64,11 @@ fun ToolbarWithMenuComponent(title:String,
                             onClick = { onBackIconClick()},
                             modifier = Modifier
                         ) {
-                            Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back Button", tint = Color.Black)
+                            Icon(
+                                imageVector = Icons.Default.ArrowBack,
+                                contentDescription = "Back Button",
+                                tint = blueDark
+                            )
                         }
                         Row(  modifier = Modifier
                             .align(Alignment.CenterVertically)
@@ -74,7 +77,7 @@ fun ToolbarWithMenuComponent(title:String,
                             Text(
                                 text = title,
                                 style = largeTextStyle,
-                                color = textColorDark,
+                                color = blueDark,
                                 textAlign = TextAlign.Center,
 
                             )

@@ -1,22 +1,13 @@
 package com.nudge.core.model
 
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
+import com.nudge.core.R
+
 
 data class SettingOptionModel(
-    @SerializedName("id")
-    @Expose
-    val id:Int,
-
-    @SerializedName("title")
-    @Expose
-    val title:String,
-
-    @SerializedName("subTitle")
-    @Expose
-    val subTitle:String,
-
-    @SerializedName("tag")
-    @Expose
-    val tag:String
-    )
+    val id: Int,
+    val title: String,
+    val subTitle: String,
+    val tag: String,
+    val leadingIcon: Int? = null,
+    val trailingIcon: Int = R.drawable.ic_arrow_forward_ios_24
+)

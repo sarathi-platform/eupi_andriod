@@ -318,6 +318,8 @@
     <string name="profile_phone">फ़ोन नंबर</string>
     <string name="profile_identity_num">पहचान संख्या</string>
     <string name="user_profile_text">उपयोगकर्ता की प्रोफाइल</string>
+    <string name="profile_state_name">राज्य का नाम</string>
+    <string name="profile_district_name">जिले का नाम</string>
     <string name="edit_didi">एडिट करे</string>
     <string name="delete_didi">हटाए</string>
     <string name="you_want_to_delete_video">आप %1$s को हटाना चाहते हैं</string>
@@ -439,8 +441,13 @@
     <string name="edit_disable_message">गतिविधि पूर्ण होने के बाद संपादन की अनुमति नहीं है</string>
     <string name="start">"शुरू "</string>
     <string name="retry">पुन: प्रयास करें</string>
-    <string name="export_backup_file">बैकअप फ़ाइल निर्यात करें</string>
+    <string name="import_data">"डाटा इम्पोर्ट (आयात) करें "</string>
+    <string name="export_images">"केवल छबी को एक्सपोर्ट करें "</string>
+    <string name="export_backup_file">बैकअप फ़ाइल साझा करें</string>
+    <string name="export_database">"केवल डेटाबेस को एक्सपोर्ट करें "</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
+    <string name="export_event_file">"केवल इवेंट फाइल को एक्सपोर्ट करें "</string>
+    <string name="export_log_file">"केवल लोग फाइल एक्सपोर्ट करें "</string>
     <string name="madnatory_question_not_marked_error">सभी अनिवार्य प्रश्नों के उत्तर नहीं दिए गए हैं, कृपया सभी प्रश्नों के उत्तर दें!</string>
     <string name="view_label">विवरण</string>
     <string name="task_completed_label">"गतिविधि पूर्ण हुई - "</string>
@@ -460,7 +467,10 @@
     <string name="activity_completed_message">आपने %1$s गतिविधि सफलतापूर्वक पूरी कर ली है</string>
     <string name="total_addelabel">"कुल जोड़ा गया: "</string>
     <string name="view_summary_label">सारांश देखें</string>
+    <string name="regenerate_all_events">"सभी इवेंट्स को फिर से उत्पन्न करें "</string>
+    <string name="load_server_data">"सर्वर डाटा लोड करें "</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">क्या आप सर्वर से नया डेटा पुनः लोड करने के बारे में सुनिश्चित हैं, जिससे असमन्वित डेटा नष्ट हो सकता है?</string>
+    <string name="export_baseline_qna">"केवल बेसलाइन के सवाल जवाब को एक्सपोर्ट करें "</string>
     <string name="form_alert_dialog_message">यदि आप फॉर्म जमा किए बिना आगे बढ़ते हैं तो ये परिवर्तन खो जाएंगे। \n\nक्या आप जारी रखना चाहते हैं?</string>
     <string name="no_data_available_at_the_moment">फिलहाल कोई डेटा उपलब्ध नहीं है</string>
     <string name="start_baseline">बेसलाइन शुरू करें </string>
@@ -472,5 +482,9 @@
     <string name="all_activities_marked_as_in_progress">सभी गतिविधियाँ प्रगति पर चिह्नित हैं</string>
     <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
     <string name="form_e">फॉर्म E</string>
-    <string name="export_data">Export Data</string>
+    <string name="export_data">Share Data</string>
+    <string name="refresh_config">Refresh app config</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">क्या आप वाकई ऐप कॉन्फ़िगरेशन रीसेट करना चाहते हैं?</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">क्या आप वाकई घटनाओं को पुन: उत्पन्न करना चाहते हैं? इस कार्रवाई के बाद डेटा हानि होगी.</string>
+    <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
 </resources>

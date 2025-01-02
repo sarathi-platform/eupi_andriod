@@ -2,30 +2,23 @@ package com.patsurvey.nudge.activities.settings.presentation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.utils.showCustomToast
-import com.nudge.core.BLANK_STRING
-import com.nudge.core.UPCM_USER
-import com.nudge.core.isOnline
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.settings.domain.DigitalFormEnum
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
-import com.patsurvey.nudge.utils.showToast
-import com.sarathi.missionactivitytask.navigation.navigateToDisbursmentSummaryScreen
 import java.util.Locale
 
 @Composable
@@ -35,16 +28,11 @@ fun SettingBSScreen(
 ) {
 
     val context = LocalContext.current
-    val expanded = remember {
-        mutableStateOf(false)
-    }
-
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true) {
         viewModel.initOptions(context)
     }
-
 
     if (viewModel.showLogoutDialog.value) {
         if (viewModel.syncWorkerRunning().value())
@@ -92,18 +80,21 @@ fun SettingBSScreen(
     }
 
     if (!loaderState.value.isLoaderVisible) {
-        CommonSettingScreen(
-            userType = viewModel.userType,
+        val settingConfig = CommonSettingScreenConfig(
+            isSyncEnable = viewModel.isSyncEnable.value,
+            mobileNumber = viewModel.getUserMobileNumber(),
+            lastSyncTime = viewModel.lastSyncTime.value,
             title = stringResource(id = R.string.settings_screen_title),
-            versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            isScreenHaveLogoutButton = true,
             optionList = viewModel.optionList.value ?: emptyList(),
+            versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+        )
+        CommonSettingScreen(
+            settingScreenConfig = settingConfig,
             isLoaderVisible = viewModel.showLoader.value,
             onBackClick = {
                 navController.popBackStack()
             },
-            expanded = expanded.value,
-            activityForm = viewModel.activityFormGenerateList.value,
-            formEName = viewModel.activityFormGenerateNameMap,
             onItemClick = { _, option ->
                 when (option.tag) {
                     SettingTagEnum.LANGUAGE.name -> {
@@ -117,16 +108,12 @@ fun SettingBSScreen(
                     }
 
                     SettingTagEnum.FORMS.name -> {
-                        expanded.value = !expanded.value
+                        navController.navigate(SettingScreens.SETTING_FORMS_SCREEN.route)
                     }
-
-
 
                     SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name -> {
 
                         navController.navigate(SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route)
-
-//                        viewModel.compressEventData(context.getString(R.string.share_export_file))
                     }
 
                     SettingTagEnum.TRAINING_VIDEOS.name -> {
@@ -145,93 +132,24 @@ fun SettingBSScreen(
                         viewModel.exportOnlyLogFile(context)
                     }
 
-                    SettingTagEnum.SYNC_DATA_NOW.name -> {
-                        if (viewModel.syncEventCount.value > 0)
-                            navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
-                        else showCustomToast(
-                            context,
-                            context.getString(R.string.data_is_not_available_for_sync_please_perform_some_action)
-                        )
-                    }
-                    SettingTagEnum.APP_CONFIG.name -> {
-                        if (isOnline(context)) {
-                            viewModel.fetchhAppConfig()
-                        } else {
-                            com.nudge.core.showCustomToast(
-                                context,
-                                msg = context.getString(R.string.network_not_available_message)
-                            )
-                        }
-                    }
                 }
             },
             onLogoutClick = {
                 viewModel.showLogoutDialog.value = true
             },
-            onParticularFormClick = { formIndex ->
-                if (viewModel.userType == UPCM_USER) {
-                    if (isFromEAvailable(
-                            fomIndex = formIndex,
-                            pairFromEList = viewModel.formEAvailableList.value
-                        ) && viewModel.activityFormGenerateList.value.isNotEmpty()
-                    ) {
-                        navigateToDisbursmentSummaryScreen(
-                            navController = navController,
-                            missionId = viewModel.activityFormGenerateList.value[formIndex].missionId,
-                            activityId = viewModel.activityFormGenerateList.value[formIndex].activityId,
-                            taskIdList = BLANK_STRING,
-                            isFromSettingScreen = true
-                        )
-                    } else {
-                        showToast(
-                            context,
-                            context.getString(R.string.no_data_form_e_not_generated_text)
-                        )
-                    }
-
-                } else {
-                    when (formIndex) {
-                        DigitalFormEnum.DIGITAL_FORM_A.ordinal -> {
-                            viewModel.showLoaderForTime(500)
-                            if (viewModel.formAAvailable.value)
-                                navController.navigate(SettingScreens.FORM_A_SCREEN.route)
-                            else
-                                showToast(
-                                    context,
-                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
-                                )
-                        }
-
-                        DigitalFormEnum.DIGITAL_FORM_B.ordinal -> {
-                            viewModel.showLoaderForTime(500)
-                            if (viewModel.formBAvailable.value)
-                                navController.navigate(SettingScreens.FORM_B_SCREEN.route)
-                            else
-                                showToast(
-                                    context,
-                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
-                                )
-                        }
-
-                        DigitalFormEnum.DIGITAL_FORM_C.ordinal -> {
-                            viewModel.showLoaderForTime(500)
-                            if (viewModel.formCAvailable.value)
-                                navController.navigate(SettingScreens.FORM_C_SCREEN.route)
-                            else
-                                showToast(
-                                    context,
-                                    context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
-                                )
-                        }
-                    }
-                }
-
+            onSyncDataClick = {
+                if (viewModel.syncEventCount.value > 0)
+                    navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
+                else showCustomToast(
+                    context,
+                    context.getString(R.string.data_is_not_available_for_sync_please_perform_some_action)
+                )
             }
         )
     }
 }
 
-private fun isFromEAvailable(fomIndex: Int, pairFromEList: List<Pair<Int, Boolean>>): Boolean {
+fun isFromEAvailable(fomIndex: Int, pairFromEList: List<Pair<Int, Boolean>>): Boolean {
     val pairData = pairFromEList.filter { it.first == fomIndex && it.second }
     return pairData.isNotEmpty()
 

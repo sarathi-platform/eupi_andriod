@@ -50,6 +50,9 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCa
 import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
 import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
+import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepository
+import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepositoryImpl
+import com.patsurvey.nudge.activities.forms.domain.usecase.SettingFormsUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryV2
@@ -459,4 +462,24 @@ object UseCaseModule {
         return GetSummaryFileRepositoryV2Impl(coreSharedPrefs, taskDao, activityDao, missionDao)
     }
 
+    @Provides
+    @Singleton
+    fun providesSettingFormsRepository(
+        prefRepo: PrefRepo
+    ): SettingFormsRepository {
+        return SettingFormsRepositoryImpl(prefRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingFormsUseCase(
+        repository: SettingFormsRepository,
+        settingBSRepository: SettingBSRepository
+    ): SettingFormsUseCase {
+        return SettingFormsUseCase(
+            repository,
+            getUserDetailsUseCase = GetUserDetailsUseCase(settingBSRepository),
+            getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(settingBSRepository)
+        )
+    }
 }

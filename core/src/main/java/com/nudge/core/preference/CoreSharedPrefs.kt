@@ -41,6 +41,8 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_STATE_ID = "type_state_id"
+        const val PREF_STATE_NAME = "state_name"
+        const val PREF_DISTRICT_NAME = "district_name"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_USER_NAME = "key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"

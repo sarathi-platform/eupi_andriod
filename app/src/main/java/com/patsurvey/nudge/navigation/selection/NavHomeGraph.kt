@@ -26,9 +26,8 @@ import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
-import com.nudge.navigationmanager.routes.MISSION_SUMMARY_SCREEN_ROUTE_NAME
-import com.nudge.navigationmanager.utils.NavigationParams
 import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -40,6 +39,7 @@ import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
+import com.patsurvey.nudge.activities.forms.presentation.SettingFormsScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
@@ -802,7 +802,9 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
             ActivityReopeningScreen(navController = navController)
         }
-
+        composable(route = SettingScreens.SETTING_FORMS_SCREEN.route) {
+            SettingFormsScreen(navController = navController, viewModel = hiltViewModel())
+        }
     }
 }
 
