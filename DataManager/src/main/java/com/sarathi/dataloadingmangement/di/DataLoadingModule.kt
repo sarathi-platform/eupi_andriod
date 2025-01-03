@@ -59,6 +59,8 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -396,6 +398,14 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyConfigEntityDao(db: NudgeGrantDatabase) = db.surveyConfigEntityDao()
 
+    @Provides
+    @Singleton
+    fun provideMissionConfigEntityDao(db: NudgeGrantDatabase) = db.missionConfigEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodConfigEntityDao(db: NudgeGrantDatabase) = db.livelihoodConfigEntityDao()
+
 
     @Provides
     @Singleton
@@ -475,7 +485,9 @@ class DataLoadingModule {
         sharedPrefs: CoreSharedPrefs,
         grantConfigDao: GrantConfigDao,
         formUiConfigDao: FormUiConfigDao,
-        surveyConfigEntityDao: SurveyConfigEntityDao
+        surveyConfigEntityDao: SurveyConfigEntityDao,
+        missionConfigEntityDao: MissionConfigEntityDao,
+        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -493,7 +505,9 @@ class DataLoadingModule {
             sharedPrefs = sharedPrefs,
             grantConfigDao = grantConfigDao,
             formUiConfigDao = formUiConfigDao,
-            surveyConfigEntityDao = surveyConfigEntityDao
+            surveyConfigEntityDao = surveyConfigEntityDao,
+            missionConfigEntityDao = missionConfigEntityDao,
+            livelihoodConfigEntityDao = livelihoodConfigEntityDao
         )
     }
 
@@ -742,7 +756,9 @@ class DataLoadingModule {
         eventDependencyDao: EventDependencyDao,
         coreSharedPrefs: CoreSharedPrefs,
         eventStatusDao: EventStatusDao,
-        imageStatusDao: ImageStatusDao
+        imageStatusDao: ImageStatusDao,
+        missionConfigEntityDao: MissionConfigEntityDao,
+        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
 
     ): IEventWriterRepository {
         return EventWriterRepositoryImpl(
@@ -751,7 +767,9 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             context = context,
             eventStatusDao = eventStatusDao,
-            imageStatusDao = imageStatusDao
+            imageStatusDao = imageStatusDao,
+            missionConfigEntityDao = missionConfigEntityDao,
+            livelihoodConfigEntityDao = livelihoodConfigEntityDao
         )
     }
 

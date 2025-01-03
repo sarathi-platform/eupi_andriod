@@ -18,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.sp
@@ -31,6 +32,7 @@ import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_27_dp
+import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -43,6 +45,7 @@ import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButton
 import com.sarathi.missionactivitytask.ui.components.SecondaryButton
+import com.sarathi.missionactivitytask.ui.components.TagComponent
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.statusColor
 
@@ -58,8 +61,11 @@ fun BasicMissionCard(
     secondaryButtonText: String = BLANK_STRING,
     topHeaderText: String = BLANK_STRING,
     prefixIcon: Int = R.drawable.ic_group_icon,
+    livelihoodType: String? = BLANK_STRING,
+    livelihoodOrder: Int? = 0,
     onPrimaryClick: () -> Unit
 ) {
+    val context = LocalContext.current
     BasicCardView(
         modifier = Modifier
             .clickable {
@@ -91,6 +97,26 @@ fun BasicMissionCard(
                 title = title,
                 prefixIcon = prefixIcon
             )
+            if (livelihoodOrder != 0 && !livelihoodType.isNullOrEmpty()) {
+                Row(
+                    modifier = Modifier.padding(
+                        start = dimen_40_dp,
+                        end = dimen_16_dp,
+                        bottom = dimen_5_dp
+                    )
+                ) {
+                    TagComponent(
+                        when (livelihoodOrder) {
+                            1, 2 -> "${context.getString(R.string.livelihood)} $livelihoodOrder"
+                            else -> BLANK_STRING
+                        }
+                    )
+                    if (!livelihoodType.isNullOrBlank()) {
+                        TagComponent(livelihoodType)
+                    }
+                }
+            }
+
             if (needToShowProgressBar && totalCount > 0) {
                 Column(
                     modifier = Modifier

@@ -90,6 +90,7 @@ fun ActivitySelectTaskScreen(
     navController: NavController = rememberNavController(),
     viewModel: ActivitySelectTaskViewModel = hiltViewModel(),
     missionId: Int,
+    missionSubTitle: String,
     activityName: String,
     activityId: Int,
     programId:Int,
@@ -101,6 +102,7 @@ fun ActivitySelectTaskScreen(
     }
 
     TaskScreen(
+        missionSubTitle = missionSubTitle,
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,
