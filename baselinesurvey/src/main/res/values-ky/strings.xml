@@ -478,7 +478,7 @@
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Data nahordi</string>
     <string name="export_images">Mangphli najak simi Tunhordi</string>
-    <string name="export_backup_file">Share BackUp File</string>
+    <string name="export_backup_file">Backup Laihkang tunhorma</string>
     <string name="export_database">Database simi tunhordi</string>
     <string name="backup_recovery">Backup/Recovery</string>
     <string name="export_event_file">Wngmung laihkang tunhordi</string>

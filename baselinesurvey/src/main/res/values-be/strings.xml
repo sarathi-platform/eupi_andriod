@@ -433,7 +433,7 @@
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
     <string name="export_images">सावगारिफोरखौल\' एक्सपर्ट खालाम।</string>
-    <string name="export_backup_file">Share BackUp File</string>
+    <string name="export_backup_file">Export Backup file</string>
     <string name="export_database">Export only database</string>
     <string name="backup_recovery">Backup/Recovery</string>
     <string name="export_event_file">इभेन्टनि फाइलखौ एक्सपर्ट खालाम।</string>

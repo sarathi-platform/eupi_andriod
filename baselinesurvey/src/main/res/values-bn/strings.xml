@@ -441,7 +441,7 @@
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
     <string name="import_data">ডেটা ইম্পোর্ট  করুন</string>
     <string name="export_images">ছবি গুলো পাঠান</string>
-    <string name="export_backup_file">ব্যাকআপ ফাইল শেয়ার করুন</string>
+    <string name="export_backup_file">ব্যাকআপ ফাইল পাঠান</string>
     <string name="export_database">ডাটাবেস পাঠান</string>
     <string name="backup_recovery">ব্যাকআপ/রিস্টোর</string>
     <string name="export_event_file">ইভেন্ট ফাইল পাঠান</string>

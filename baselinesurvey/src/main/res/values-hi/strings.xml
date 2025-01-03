@@ -443,7 +443,7 @@
     <string name="retry">पुन: प्रयास करें</string>
     <string name="import_data">"डाटा इम्पोर्ट (आयात) करें "</string>
     <string name="export_images">"केवल छबी को एक्सपोर्ट करें "</string>
-    <string name="export_backup_file">बैकअप फ़ाइल साझा करें</string>
+    <string name="export_backup_file">बैक फाइल निर्यात करें</string>
     <string name="export_database">"केवल डेटाबेस को एक्सपोर्ट करें "</string>
     <string name="backup_recovery">बैकअप/पुनर्प्राप्ति</string>
     <string name="export_event_file">"केवल इवेंट फाइल को एक्सपोर्ट करें "</string>
