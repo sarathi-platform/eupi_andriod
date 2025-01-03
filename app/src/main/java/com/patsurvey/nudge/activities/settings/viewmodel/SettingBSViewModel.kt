@@ -45,11 +45,8 @@ import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.usecase.AnalyticsEventUseCase
-import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
-import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -199,9 +196,6 @@ class SettingBSViewModel @Inject constructor(
         isSyncEnable.value = settingBSUserCase.getUserDetailsUseCase.isSyncEnable()
         _optionList.value=list
         fetchEventCount()
-        if (userType != UPCM_USER && settingOpenFrom != PageFrom.VILLAGE_PAGE.ordinal) {
-            checkFormsAvailabilityForVillage(context, villageId)
-        }
     }
 
     fun fetchEventCount() {
@@ -228,11 +222,6 @@ class SettingBSViewModel @Inject constructor(
     suspend fun exportLocalData(context: Context) {
         exportHelper.exportAllData(context)
     }
-
-    fun saveLanguagePageFrom() {
-        settingBSUserCase.saveLanguageScreenOpenFromUseCase.invoke()
-    }
-
 
     fun compressEventData(title: String) {
         NudgeLogger.d("SettingBSViewModel", "compressEventData---------------")

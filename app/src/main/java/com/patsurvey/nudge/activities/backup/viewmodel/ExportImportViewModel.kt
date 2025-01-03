@@ -104,7 +104,6 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val analyticEventUseCase: AnalyticsEventUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
@@ -202,6 +201,10 @@ class ExportImportViewModel @Inject constructor(
     }
     fun loadServerDataAnalytic(){
         analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
+    }
+    fun appConfigDataAnalytic(){
+        analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.APP_CONFIG_LOG_FILE.eventName)
+
     }
     fun exportDataAnalytic(){
         analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)

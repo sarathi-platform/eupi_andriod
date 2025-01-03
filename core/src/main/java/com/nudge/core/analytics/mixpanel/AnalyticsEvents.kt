@@ -22,6 +22,7 @@ enum class AnalyticsEvents(val eventName: String) {
     EXPORT_EVENT_FILE("export_event_file"),
     EXPORT_DATABASE("export_database"),
     EXPORT_LOG_FILE("export_log_file"),
+    APP_CONFIG_LOG_FILE("app_config_log_file"),
     CATCHED_EXCEPTION("catch_exception"),
 }
 

@@ -47,12 +47,14 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import javax.inject.Inject
 
 abstract class BaseViewModel() : ViewModel() {
 
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
 
     fun ViewModel.ioViewModelScope(

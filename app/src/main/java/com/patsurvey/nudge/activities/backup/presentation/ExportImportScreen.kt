@@ -117,6 +117,7 @@ fun ExportImportScreen(
             onPositiveButtonClick = {
                 BaselineLogger.d("ExportImportScreen", "Restart Dialog Proceed Click")
                 filePicker.launch("*/*")
+                viewModel.exportDataAnalytic()
             })
     }
     if (viewModel.showConfirmationDialog.value) {
@@ -138,10 +139,10 @@ fun ExportImportScreen(
                     "ExportImportScreen",
                     "${viewModel.selectedTag.value} Dialog Positive Click"
                 )
-                viewModel.loadServerDataAnalytic()
 
                 when (viewModel.selectedTag.value) {
                     SettingTagEnum.LOAD_SERVER_DATA.name -> {
+                        viewModel.loadServerDataAnalytic()
                         viewModel.exportLocalDatabase(isNeedToShare = false) {
                             viewModel.clearLocalDatabase {
                                 viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -180,7 +181,7 @@ fun ExportImportScreen(
                         if (isOnline(context)) {
                             viewModel.fetchAppConfig()
                             viewModel.showConfirmationDialog.value = false
-                            viewModel.loadServerDataAnalytic()
+                            viewModel.appConfigDataAnalytic()
                         } else {
                             showCustomToast(
                                 context,
