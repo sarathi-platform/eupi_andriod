@@ -381,7 +381,6 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 )
             }
         }
-
     }
 
     suspend fun updateSectionStatus(

@@ -4,6 +4,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
@@ -28,6 +29,7 @@ class DataTabUseCase @Inject constructor(
     val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
     val livelihoodUseCase: LivelihoodUseCase,
     private val moneyJournalUseCase: FetchMoneyJournalUseCase,
+    private val contentDownloaderUseCase: ContentDownloaderUseCase
     ) {
 
     suspend operator fun invoke(
@@ -46,8 +48,8 @@ class DataTabUseCase @Inject constructor(
                     moneyJournalUseCase.invoke()
                 }
                 livelihoodUseCase.invoke()
-
-               coreSharedPrefs.setDataTabDataLoaded(true)
+                contentDownloaderUseCase.livelihoodContentDownlaod()
+                coreSharedPrefs.setDataTabDataLoaded(true)
                 withContext(CoreDispatchers.mainDispatcher) {
                     onComplete(true, BLANK_STRING)
                 }

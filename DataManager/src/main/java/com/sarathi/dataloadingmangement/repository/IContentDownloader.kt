@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.data.entities.livelihood.LivelihoodEntity
 
 interface IContentDownloader {
     suspend fun getContentDataFromDb(): List<Content>
@@ -13,5 +14,6 @@ interface IContentDownloader {
     suspend fun getDidiImagesUrl(): List<String>
 
     suspend fun getDidiImageUrlForSmallGroup(): List<String>
+    suspend fun getLivelihoodContentData(): List<LivelihoodEntity>
 
 }
