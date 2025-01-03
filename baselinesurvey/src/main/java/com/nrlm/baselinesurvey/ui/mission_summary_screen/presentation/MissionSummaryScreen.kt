@@ -25,6 +25,7 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.viewModel.MissionSummar
 import com.nrlm.baselinesurvey.ui.theme.inprogressYellow
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.navigationmanager.graphs.navigateToSurveyListWithParamsScreen
 
 
@@ -34,6 +35,8 @@ fun MissionSummaryScreen(
     navController: NavController,
     missionId: Int = 0,
     missionName: String,
+    missionSubName: String,
+    missionSubNameDetail: String,
     viewModel: MissionSummaryViewModel = hiltViewModel()
 ) {
     val activities =
@@ -44,6 +47,8 @@ fun MissionSummaryScreen(
     }
     ToolbarWithMenuComponent(
         title = missionName,
+        subTitle = missionSubName,
+        subTitleColorId = brownDark,
         modifier = Modifier.fillMaxSize(),
         navController=navController,
         onBackIconClick = { navController.popBackStack() },
@@ -133,7 +138,8 @@ fun MissionSummaryScreen(
                                         activityName =activity.activityName,
                                         activityDate =activity.endDate,
                                         surveyId =activity.activityId,
-                                        missionId =missionId
+                                        missionId = missionId,
+                                        missionSubTitle = missionSubNameDetail
                                     )
                                 })
                         }

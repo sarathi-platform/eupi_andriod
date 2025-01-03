@@ -28,15 +28,20 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyColor
@@ -80,6 +85,11 @@ fun <T> DropDownComponent(
     else
         Icons.Filled.KeyboardArrowDown
 
+    var textFieldPositionY by remember { mutableStateOf(0f) }
+    var dropdownBelow by remember { mutableStateOf(true) }
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val density = LocalDensity.current
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start
@@ -117,6 +127,13 @@ fun <T> DropDownComponent(
                     // the DropDown the same width
                     onGlobalPositioned(coordinates)
 //                    mTextFieldSize = coordinates.size.toSize()
+
+                    textFieldPositionY = coordinates.positionInRoot().y
+                    dropdownBelow = with(density) {
+                        val screenHeightPx = screenHeight.toPx()
+                        val textFieldBottom = textFieldPositionY + coordinates.size.height
+                        textFieldBottom < ((2 * screenHeightPx) / 3)
+                    }
                 },
             textStyle = newMediumTextStyle.copy(blueDark),
             singleLine = true,
@@ -140,6 +157,7 @@ fun <T> DropDownComponent(
         // when clicked, set the Text Field text as the city selected
         DropdownMenu(
             expanded = expanded,
+            offset = if (dropdownBelow) DpOffset.Zero else DpOffset(dimen_0_dp, dimen_30_dp),
             onDismissRequest = { onDismissRequest() },
             modifier = Modifier.width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
         ) {

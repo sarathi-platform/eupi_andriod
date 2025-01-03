@@ -17,6 +17,8 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
@@ -161,7 +163,9 @@ object UseCaseModule {
         coreSharedPrefs: CoreSharedPrefs,
         syncManagerDatabase: SyncManagerDatabase,
         missionDao: MissionDao,
-        casteListDao: CasteListDao
+        casteListDao: CasteListDao,
+        translationConfigDao: TranslationConfigDao,
+        languageListDao: LanguageListDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
@@ -170,7 +174,9 @@ object UseCaseModule {
             coreSharedPrefs = coreSharedPrefs,
             syncManagerDatabase = syncManagerDatabase,
             missionDao = missionDao,
-            casteListDao = casteListDao
+            casteListDao = casteListDao,
+            languageListDao = languageListDao,
+            translationConfigDao = translationConfigDao
         )
     }
 

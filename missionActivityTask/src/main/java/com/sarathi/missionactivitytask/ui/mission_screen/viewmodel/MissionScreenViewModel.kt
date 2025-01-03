@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
 import android.content.Context
-import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
@@ -109,6 +108,7 @@ class MissionScreenViewModel @Inject constructor(
             }
         }
     }
+
 
     // Temp method to be removed after baseline is migrated to Grant flow.
     private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {

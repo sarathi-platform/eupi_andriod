@@ -60,7 +60,6 @@ import com.nrlm.baselinesurvey.ZERO_RESULT
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
 import com.nrlm.baselinesurvey.database.entity.QuestionEntity
 import com.nrlm.baselinesurvey.database.entity.SectionAnswerEntity
@@ -91,6 +90,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_NAME
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.enums.EventName
 import com.nudge.core.utils.state.DialogState
 import com.nudge.core.utils.state.rememberDialogState

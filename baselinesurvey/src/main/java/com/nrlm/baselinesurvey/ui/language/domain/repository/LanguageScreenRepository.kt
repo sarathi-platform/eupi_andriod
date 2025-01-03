@@ -1,8 +1,8 @@
 package com.nrlm.baselinesurvey.ui.language.domain.repository
 
 import android.content.Context
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
+import com.nudge.core.database.entities.language.LanguageEntity
 
 interface LanguageScreenRepository {
 

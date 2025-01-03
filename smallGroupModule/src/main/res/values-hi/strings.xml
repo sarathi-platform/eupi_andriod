@@ -40,22 +40,18 @@
             <item quantity="other">"উপস্থিতিৰ ইতিহাস: "</item>
         </plurals>
 
-        <plurals name="edit_button_text">
-            <item quantity="one">Edit</item>
-            <item quantity="other">Edit</item>
-        </plurals>
-        <plurals name="total_didis_label_text">
-            <item quantity="one">Total Didis - %1$s</item>
-            <item quantity="other">Total Didis - %1$s</item>
-        </plurals>
-        <plurals name="attendance_percentage_text">
-            <item quantity="one">Attendance - %1$s</item>
-            <item quantity="other">Attendance - %1$s</item>
-        </plurals>
-        <plurals name="total_count_text">
-            <item quantity="one">Total - %1$s/%2$s</item>
-            <item quantity="other">Total - %1$s/%2$s</item>
-        </plurals>
+        <string name="edit_button_text">
+           Edit
+        </string>
+        <string name="total_didis_label_text">
+          Total Didis - %1$s
+        </string>
+        <string name="attendance_percentage_text">
+           Attendance - %1$s
+        </string>
+        <string name="total_count_text">
+         Total - %1$s/%2$s
+        </string>
         <plurals name="data_selector">
             <item quantity="one">>Date Selector</item>
             <item quantity="other">>Date Selector</item>
