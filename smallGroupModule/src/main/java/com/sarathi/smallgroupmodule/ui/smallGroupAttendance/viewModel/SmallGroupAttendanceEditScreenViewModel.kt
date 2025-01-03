@@ -6,12 +6,14 @@ import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.enums.EventType
 import com.nudge.core.getCurrentTimeInMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
 import com.nudge.syncmanager.EventWriterEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.data.model.SubjectAttendanceHistoryState
@@ -62,6 +64,10 @@ class SmallGroupAttendanceEditScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
 
         when (event) {
+
+            is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
+            }
 
             is DialogEvents.ShowDialogEvent -> {
                 alertDialogState.value = alertDialogState.value.copy(event.showDialog)
@@ -217,6 +223,8 @@ class SmallGroupAttendanceEditScreenViewModel @Inject constructor(
     fun dateValidator(selectedDate: Long): Boolean {
         return selectedDate < System.currentTimeMillis()
     }
-
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.SmallGroupAttendanceEditScreen
+    }
 
 }

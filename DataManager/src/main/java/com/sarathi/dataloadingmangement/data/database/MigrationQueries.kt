@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.data.database
 
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
@@ -133,6 +134,7 @@ object MigrationQueries {
         "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN 'isDataLoaded' INTEGER DEFAULT 1 NOT NULL"
 
 
+
     val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID =
         "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceId' INTEGER"
 
@@ -255,5 +257,6 @@ object MigrationQueries {
     val ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER =
         "ALTER TABLE $ACTIVITY_TABLE_NAME ADD COLUMN activityOrder INTEGER DEFAULT 1 NOT NULL"
 
+    val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
 }
 

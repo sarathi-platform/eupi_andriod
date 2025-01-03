@@ -1,11 +1,11 @@
-package com.nrlm.baselinesurvey.database.dao
+package com.nudge.core.database.dao.language
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.nrlm.baselinesurvey.LANGUAGE_TABLE_NAME
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
+import com.nudge.core.LANGUAGE_TABLE_NAME
+import com.nudge.core.database.entities.language.LanguageEntity
 
 @Dao
 interface LanguageListDao {
@@ -20,4 +20,7 @@ interface LanguageListDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAll(villages: List<LanguageEntity>)
+
+    @Query("DELETE FROM $LANGUAGE_TABLE_NAME")
+    suspend fun deleteAllLanguage()
 }

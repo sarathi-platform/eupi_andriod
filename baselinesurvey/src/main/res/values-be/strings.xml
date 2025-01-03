@@ -134,6 +134,7 @@
     <string name="pat_survey_complete">PAT सार्भे</string>
     <string name="result_summary">गुदिखिथा फिथाइ</string>
     <string name="summary_text">गुदिखिथागुदिखिथा</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">खोन्दो 1 फोजोब</string>
     <string name="logout">लगआउट</string>
     <string name="this_section_is_in_progress">बे खोन्दोआ दावगानाय थासारियाव</string>
@@ -405,6 +406,8 @@
     <string name="average_travel_cost_comparision">दावबायनायनि सानजेर बेसेन</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">हेमलेटखौ नागिर</string>
     <string name="mission_completed_text">मिसना आबुं जाबाय</string>
     <string name="aadhar_card_titile_assam">नोंथांनाव आधार कार्ड दं नामा ?</string>
@@ -427,6 +430,7 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"जागायजेन "</string>
+    <string name="regenerate_all_events">Regenerate all events</string>
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
     <string name="export_images">Export Only Images</string>
@@ -456,6 +460,7 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="export_baseline_qna">Export Baseline QnA</string>
     <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
     <string name="no_data_available_at_the_moment">दायो जेबो खारि गैया।</string>
     <string name="start_baseline">जागायजेन बेसलाइन</string>

@@ -1,12 +1,12 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
-import com.sarathi.dataloadingmangement.data.dao.LanguageDao
-import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import javax.inject.Inject
@@ -14,7 +14,7 @@ import javax.inject.Inject
 class UserDetailRepository @Inject constructor(
     val sharedPrefs: CoreSharedPrefs,
     val apiInterface: DataLoadingApiService,
-    val languageDao: LanguageDao
+    val languageDao: LanguageListDao
 ) : IUserDetailRepository {
     override suspend fun fetchUseDetailFromNetwork(userViewApiRequest: String): ApiResponseModel<UserDetailsResponse> {
         return apiInterface.userAndVillageListAPI(userViewApiRequest)

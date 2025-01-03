@@ -1,12 +1,11 @@
-package com.sarathi.dataloadingmangement.data.entities
+package com.nudge.core.database.entities.language
 
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
-import com.nudge.core.DEFAULT_LANGUAGE_CODE
-import com.sarathi.dataloadingmangement.LANGUAGE_TABLE_NAME
+import com.nudge.core.LANGUAGE_TABLE_NAME
 
 @Entity(tableName = LANGUAGE_TABLE_NAME)
 data class LanguageEntity(
@@ -35,14 +34,4 @@ data class LanguageEntity(
     @Expose
     @ColumnInfo(name = "localName")
     val localName: String?,
-) {
-    fun getDefaultLanguage(): LanguageEntity {
-        return LanguageEntity(
-            id = 2,
-            language = "English",
-            langCode = DEFAULT_LANGUAGE_CODE,
-            orderNumber = 1,
-            localName = "English"
-        )
-    }
-}
+)

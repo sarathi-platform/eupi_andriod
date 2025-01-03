@@ -1,7 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.model.ApiResponseModel
-import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 
 interface IUserDetailRepository {

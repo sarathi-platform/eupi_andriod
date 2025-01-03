@@ -39,14 +39,14 @@ fun TotalIncomeExpenseAssetSummaryView(
 ) {
     val context = LocalContext.current
     Column {
-        Text(text = context.getString(R.string.income), style = getTextColor(newMediumTextStyle))
+        Text(text = stringResource(R.string.income), style = getTextColor(newMediumTextStyle))
         Text(
             text = "₹ ${incomeExpenseSummaryUiModel?.totalIncome.value()}",
             style = getTextColor(defaultTextStyle)
         )
     }
     Column {
-        Text(text = context.getString(R.string.expense), style = getTextColor(newMediumTextStyle))
+        Text(text = stringResource(R.string.expense), style = getTextColor(newMediumTextStyle))
         Text(
             text = "₹ ${incomeExpenseSummaryUiModel?.totalExpense.value()}",
             style = getTextColor(defaultTextStyle)

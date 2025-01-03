@@ -18,7 +18,7 @@ fun ExportBackupScreen(
     viewModel: ExportBackupScreenViewModel = hiltViewModel(),
 
     navController: NavController) {
-    val context=LocalContext.current
+    val context = LocalContext.current
     CommonSettingScreen(
         userType = viewModel.loggedInUserType.value,
         title = stringResource(id = R.string.export_data),
