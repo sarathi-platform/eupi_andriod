@@ -42,6 +42,7 @@ import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
+import com.patsurvey.nudge.activities.forms.presentation.SettingFormsScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
@@ -808,7 +809,9 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
             ActivityReopeningScreen(navController = navController)
         }
-
+        composable(route = SettingScreens.SETTING_FORMS_SCREEN.route) {
+            SettingFormsScreen(navController = navController, viewModel = hiltViewModel())
+        }
     }
 }
 

@@ -61,6 +61,15 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 )
             )
         }
+        list.add(
+            SettingOptionModel(
+                6,
+                context.getString(R.string.refresh_config),
+                BLANK_STRING,
+                SettingTagEnum.APP_CONFIG.name
+
+            )
+        )
         return list.ifEmpty { arrayListOf() }
     }
 
@@ -73,7 +82,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 1,
                 context.getString(R.string.export_images),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_IMAGES.name
+                SettingTagEnum.EXPORT_IMAGES.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -81,7 +91,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 2,
                 context.getString(R.string.export_event_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_EVENT_FILE.name
+                SettingTagEnum.EXPORT_EVENT_FILE.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -89,7 +100,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 3,
                 context.getString(R.string.export_database),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_DATABASE.name
+                SettingTagEnum.EXPORT_DATABASE.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -97,7 +109,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 4,
                 context.getString(R.string.export_log_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_LOG_FILE.name
+                SettingTagEnum.EXPORT_LOG_FILE.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         return list.ifEmpty { arrayListOf() }

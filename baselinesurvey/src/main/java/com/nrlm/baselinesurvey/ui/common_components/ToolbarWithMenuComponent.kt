@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
+import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.grayColor

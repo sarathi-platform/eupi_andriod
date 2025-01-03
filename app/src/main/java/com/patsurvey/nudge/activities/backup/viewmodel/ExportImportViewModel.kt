@@ -65,6 +65,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
@@ -100,15 +101,16 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
-
-    val showLoadConfirmationDialog = mutableStateOf(false)
     val showRestartAppDialog = mutableStateOf(false)
+    val showConfirmationDialog = mutableStateOf(false)
+    val selectedTag = mutableStateOf(BLANK_STRING)
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
@@ -627,6 +629,14 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
+        }
+    }
+    fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+    fun fetchAppConfig() {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
 }

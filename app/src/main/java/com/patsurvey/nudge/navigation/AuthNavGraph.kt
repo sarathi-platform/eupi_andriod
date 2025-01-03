@@ -26,6 +26,7 @@ import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
+import com.patsurvey.nudge.activities.forms.presentation.SettingFormsScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
@@ -184,9 +185,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 viewModel = hiltViewModel()
             )
         }
-    }
 
-//    settingNavGraph(navController)
-//   logoutGraph(navController =navController)
+        composable(route = SettingScreens.SETTING_FORMS_SCREEN.route) {
+            SettingFormsScreen(navController = navController, viewModel = hiltViewModel())
+        }
+    }
 }
 

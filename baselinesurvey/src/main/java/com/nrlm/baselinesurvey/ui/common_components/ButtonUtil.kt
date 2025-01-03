@@ -178,6 +178,7 @@ fun ButtonOutline(
     modifier: Modifier = Modifier,
     buttonTitle: String = stringResource(id = R.string.add_tola),
     icon: ImageVector = Icons.Default.Add,
+    isIconShow: Boolean = true,
     onClick: () -> Unit
 ) {
     OutlinedButton(
@@ -196,14 +197,16 @@ fun ButtonOutline(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
-            Icon(
-                icon,
-                contentDescription = "Add Button",
-                tint = blueDark,
-                modifier = Modifier
-                    .absolutePadding(top = 0.dp, right = 2.dp)
-                    .size(22.dp)
-            )
+            if (isIconShow) {
+                Icon(
+                    icon,
+                    contentDescription = "Add Button",
+                    tint = blueDark,
+                    modifier = Modifier
+                        .absolutePadding(top = 0.dp, right = 2.dp)
+                        .size(22.dp)
+                )
+            }
             Text(
                 text = buttonTitle,
                 color = blueDark,
