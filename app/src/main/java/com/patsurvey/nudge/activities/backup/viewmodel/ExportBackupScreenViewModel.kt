@@ -65,7 +65,8 @@ class ExportBackupScreenViewModel @Inject constructor(
 
     init {
         mAppContext = NudgeCore.getAppContext()
-        userType = settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
+        userType =
+            settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
 
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID

@@ -104,7 +104,6 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val getTaskUseCase: GetTaskUseCase,
-    private val analyticEventUseCase: AnalyticsEventUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 ) : BaseViewModel() {
@@ -200,14 +199,14 @@ class ExportImportViewModel @Inject constructor(
         }
     }
     fun loadServerDataAnalytic(){
-        analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
     }
     fun appConfigDataAnalytic(){
-        analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.APP_CONFIG_LOG_FILE.eventName)
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.APP_CONFIG_LOG_FILE.eventName)
 
     }
     fun exportDataAnalytic(){
-        analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
     }
 
     fun compressEventData(title: String) {
@@ -294,7 +293,7 @@ class ExportImportViewModel @Inject constructor(
                 withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
-                analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
@@ -644,7 +643,7 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
-            analyticEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
+            analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
 
         }
     }
