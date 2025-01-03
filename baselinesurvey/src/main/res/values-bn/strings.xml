@@ -142,6 +142,7 @@
     <string name="pat_survey_complete">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="result_summary">সারাংশের পরিনাম</string>
     <string name="summary_text">সারাংশ</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">ভাগ 1 সম্পূর্ণ করুন</string>
     <string name="logout">লগআউট করুন</string>
     <string name="this_section_is_in_progress">এই বিভাগটি প্রগতিশীল অবস্থায় রয়েছে</string>
@@ -218,6 +219,7 @@
     <string name="pat_completed_status_text">PAT সমীক্ষা সম্পন্ন হয়েছে</string>
     <string name="vo_endorsement_status_text">VO অনুমোদন সম্পন্ন হয়েছে</string>
     <string name="no_didis_availble_for_vo_endorsement">গ্রাম সংগঠনের (VO) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">পর্যায় 1</string>
     <string name="sync_status">BPC প্রমাণীকরণ</string>
     <string name="step_2">পর্যায় 2</string>
@@ -412,10 +414,12 @@
     <string name="to_the_nearest_government_school_comparision">কাছের সরকারি স্কুলে</string>
     <string name="to_the_nearest_permanent_market_comparision">কাছের স্থায়ী বাজারে</string>
     <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
-    <string name="to_the_replacement_string">""</string>
+    <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">গড় ভ্রমণ খরচ</string>
     <string name="questions_data_tab_title">প্রশ্ন</string>
     <string name="section_information_tab_title">বিভাগসমূহ</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">হ্যামলেট অনুসন্ধান করুন</string>
     <string name="mission_completed_text">মিশন সম্পন্ন</string>
     <string name="aadhar_card_titile_assam">আপনার কি আধার কার্ড আছে?</string>

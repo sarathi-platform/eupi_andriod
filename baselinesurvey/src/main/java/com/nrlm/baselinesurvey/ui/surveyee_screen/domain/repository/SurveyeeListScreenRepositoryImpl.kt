@@ -13,7 +13,6 @@ import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
@@ -26,6 +25,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
+import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao

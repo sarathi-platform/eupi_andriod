@@ -146,6 +146,7 @@
     <string name="pat_survey_complete">PAT सर्वे</string>
     <string name="result_summary">सारांश</string>
     <string name="summary_text">सारांशविवरण</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">अनुभाग 1 पूरा करें</string>
     <string name="logout">लॉगआउट</string>
     <string name="this_section_is_in_progress">अनुभाग प्रगतिशील स्थिति मे है</string>
@@ -222,6 +223,7 @@
     <string name="pat_completed_status_text">PAT सर्वे पूर्ण हुआ</string>
     <string name="vo_endorsement_status_text">VO अनुमोदन पूर्ण हुआ</string>
     <string name="no_didis_availble_for_vo_endorsement">VO अनुमोदन के लिए दीदी मौजूद नहीं है</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">चरण 1</string>
     <string name="sync_status">बी.पी.सी. द्वारा सत्यापन</string>
     <string name="step_2">चरण 2</string>
@@ -413,10 +415,12 @@
     <string name="to_the_nearest_government_school_comparision">नजदीकी सरकारी स्कूल</string>
     <string name="to_the_nearest_permanent_market_comparision">निकटतम स्थायी बाज़ार तक</string>
     <string name="to_the_nearest_bank_comparsion">निकटतम बैंक तक</string>
-    <string name="to_the_replacement_string">""</string>
+    <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">औसत यात्रा लागत</string>
     <string name="questions_data_tab_title">सवाल </string>
     <string name="section_information_tab_title">धारा</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">हेमलेट खोजें</string>
     <string name="mission_completed_text">मिशन पूरा किया</string>
     <string name="aadhar_card_titile_assam">क्या आपके पास आधार कार्ड है?</string>

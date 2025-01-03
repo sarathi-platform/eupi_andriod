@@ -52,6 +52,7 @@ import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.FilterListState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_250_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
@@ -69,6 +70,7 @@ fun SurveyeeListScreen(
     viewModel: SurveyeeScreenViewModel,
     missionId: Int,
     activityName: String,
+    missionSubTitle: String,
     activityDate: String,
     activityId: Int
 ) {
@@ -221,6 +223,8 @@ fun SurveyeeListScreen(
     ) {
         ToolbarWithMenuComponent(
             title = activityName,
+            subTitle = missionSubTitle,
+            subTitleColorId = brownDark,
             modifier = Modifier.fillMaxSize(),
             navController = navController,
             onBackIconClick = { navController.popBackStack() },

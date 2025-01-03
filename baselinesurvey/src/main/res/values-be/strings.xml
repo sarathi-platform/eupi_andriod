@@ -134,6 +134,7 @@
     <string name="pat_survey_complete">PAT सार्भे</string>
     <string name="result_summary">गुदिखिथा फिथाइ</string>
     <string name="summary_text">गुदिखिथागुदिखिथा</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">खोन्दो 1 फोजोब</string>
     <string name="logout">लगआउट</string>
     <string name="this_section_is_in_progress">बे खोन्दोआ दावगानाय थासारियाव</string>
@@ -407,6 +408,8 @@
     <string name="average_travel_cost_comparision">दावबायनायनि सानजेर बेसेन</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">हेमलेटखौ नागिर</string>
     <string name="mission_completed_text">मिसना आबुं जाबाय</string>
     <string name="aadhar_card_titile_assam">नोंथांनाव आधार कार्ड दं नामा ?</string>

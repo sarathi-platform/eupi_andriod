@@ -13,10 +13,14 @@ import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
+import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -29,7 +33,6 @@ import com.sarathi.dataloadingmangement.data.dao.DocumentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
-import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -56,6 +59,8 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -66,7 +71,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchLanguageUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
@@ -135,7 +139,6 @@ import com.sarathi.dataloadingmangement.repository.IContentRepository
 import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.IFormEventRepository
-import com.sarathi.dataloadingmangement.repository.ILanguageRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISectionStatusRepository
@@ -145,8 +148,6 @@ import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
-import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
-import com.sarathi.dataloadingmangement.repository.LanguageRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
@@ -226,7 +227,8 @@ class DataLoadingModule {
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_1_2,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_4_5
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_4_5,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_5_6
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())
@@ -306,9 +308,6 @@ class DataLoadingModule {
     @Singleton
     fun provideTaskAttributeDao(db: NudgeGrantDatabase) = db.taskAttributeDao()
 
-    @Provides
-    @Singleton
-    fun provideLanguageDao(db: NudgeGrantDatabase) = db.languageDao()
 
     @Provides
     @Singleton
@@ -399,6 +398,14 @@ class DataLoadingModule {
     @Singleton
     fun provideSurveyConfigEntityDao(db: NudgeGrantDatabase) = db.surveyConfigEntityDao()
 
+    @Provides
+    @Singleton
+    fun provideMissionConfigEntityDao(db: NudgeGrantDatabase) = db.missionConfigEntityDao()
+
+    @Provides
+    @Singleton
+    fun provideLivelihoodConfigEntityDao(db: NudgeGrantDatabase) = db.livelihoodConfigEntityDao()
+
 
     @Provides
     @Singleton
@@ -478,7 +485,9 @@ class DataLoadingModule {
         sharedPrefs: CoreSharedPrefs,
         grantConfigDao: GrantConfigDao,
         formUiConfigDao: FormUiConfigDao,
-        surveyConfigEntityDao: SurveyConfigEntityDao
+        surveyConfigEntityDao: SurveyConfigEntityDao,
+        missionConfigEntityDao: MissionConfigEntityDao,
+        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -496,7 +505,9 @@ class DataLoadingModule {
             sharedPrefs = sharedPrefs,
             grantConfigDao = grantConfigDao,
             formUiConfigDao = formUiConfigDao,
-            surveyConfigEntityDao = surveyConfigEntityDao
+            surveyConfigEntityDao = surveyConfigEntityDao,
+            missionConfigEntityDao = missionConfigEntityDao,
+            livelihoodConfigEntityDao = livelihoodConfigEntityDao
         )
     }
 
@@ -528,30 +539,7 @@ class DataLoadingModule {
         )
     }
 
-    @Provides
-    @Singleton
-    fun provideLanguageRepository(
-        languageDao: LanguageDao,
-        apiService: DataLoadingApiService,
-    ): ILanguageRepository {
-        return LanguageRepositoryImpl(
-            apiInterface = apiService, languageDao = languageDao
-        )
-    }
 
-    @Provides
-    @Singleton
-    fun provideUserDetailRepository(
-        languageDao: LanguageDao,
-        sharedPrefs: CoreSharedPrefs,
-        apiService: DataLoadingApiService,
-    ): IUserDetailRepository {
-        return UserDetailRepository(
-            sharedPrefs = sharedPrefs,
-            apiInterface = apiService,
-            languageDao = languageDao
-        )
-    }
 
     @Provides
     @Singleton
@@ -598,14 +586,16 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
         attributeValueReferenceDao: AttributeValueReferenceDao,
-        subjectEntityDao: SubjectEntityDao
+        subjectEntityDao: SubjectEntityDao,
+        livelihoodDao: LivelihoodDao
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
             contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
             attributeValueReferenceDao = attributeValueReferenceDao,
-            subjectEntityDao = subjectEntityDao
+            subjectEntityDao = subjectEntityDao,
+            livelihoodDao = livelihoodDao
         )
     }
 
@@ -652,7 +642,6 @@ class DataLoadingModule {
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
         downloaderManager: DownloaderManager,
-        languageRepository: LanguageRepositoryImpl,
         userDetailRepository: UserDetailRepository,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyAnswerFromNetworkUseCase: FetchSurveyAnswerFromNetworkUseCase,
@@ -663,9 +652,10 @@ class DataLoadingModule {
         fetchLivelihoodOptionNetworkUseCase: FetchLivelihoodOptionNetworkUseCase,
         analyticsManager: AnalyticsManager,
         fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+        fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
+        languageConfigUseCase: LanguageConfigUseCase,
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
         fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
-
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -681,7 +671,6 @@ class DataLoadingModule {
                 sharedPrefs = coreSharedPrefs
             ),
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
-            fetchLanguageUseCase = FetchLanguageUseCase(languageRepository),
             fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository, analyticsManager),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
@@ -690,6 +679,8 @@ class DataLoadingModule {
             livelihoodUseCase = livelihoodUseCase,
             fetchLivelihoodOptionNetworkUseCase =fetchLivelihoodOptionNetworkUseCase,
             fetchAppConfigFromNetworkUseCase = fetchAppConfigFromNetworkUseCase,
+            fetchTranslationConfigUseCase = fetchTranslationConfigUseCase,
+            languageConfigUseCase = languageConfigUseCase,
             fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
             fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
         )
@@ -765,7 +756,9 @@ class DataLoadingModule {
         eventDependencyDao: EventDependencyDao,
         coreSharedPrefs: CoreSharedPrefs,
         eventStatusDao: EventStatusDao,
-        imageStatusDao: ImageStatusDao
+        imageStatusDao: ImageStatusDao,
+        missionConfigEntityDao: MissionConfigEntityDao,
+        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
 
     ): IEventWriterRepository {
         return EventWriterRepositoryImpl(
@@ -774,7 +767,9 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             context = context,
             eventStatusDao = eventStatusDao,
-            imageStatusDao = imageStatusDao
+            imageStatusDao = imageStatusDao,
+            missionConfigEntityDao = missionConfigEntityDao,
+            livelihoodConfigEntityDao = livelihoodConfigEntityDao
         )
     }
 
@@ -1026,9 +1021,18 @@ class DataLoadingModule {
     fun provideDataDeleteRepository(
         nudgeGrantDatabase: NudgeGrantDatabase,
         coreSharedPrefs: CoreSharedPrefs,
-        casteListDao: CasteListDao
+        casteListDao: CasteListDao,
+        translationConfigDao: TranslationConfigDao,
+        languageListDao: LanguageListDao
+
     ): DeleteAllDataRepositoryImpl {
-        return DeleteAllDataRepositoryImpl(nudgeGrantDatabase, coreSharedPrefs, casteListDao)
+        return DeleteAllDataRepositoryImpl(
+            nudgeGrantDatabase = nudgeGrantDatabase,
+            coreSharedPrefs = coreSharedPrefs,
+            casteListDao = casteListDao,
+            languageListDao = languageListDao,
+            translationConfigDao = translationConfigDao
+        )
     }
 
     @Provides

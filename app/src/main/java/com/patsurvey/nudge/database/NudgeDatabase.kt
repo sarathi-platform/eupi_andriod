@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.CASTE_TABLE
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.nudge.core.NUDGE_DATABASE_VERSION
 import com.patsurvey.nudge.database.converters.BeneficiaryStepConverter
 import com.patsurvey.nudge.database.converters.IntConverter
@@ -15,7 +16,6 @@ import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -30,7 +30,7 @@ import java.sql.SQLException
 
 
 @Database(
-    entities = [VillageEntity::class, UserEntity::class, LanguageEntity::class, StepListEntity::class,
+    entities = [VillageEntity::class, UserEntity::class, StepListEntity::class,
         TolaEntity::class, DidiEntity::class, LastTolaSelectedEntity::class, QuestionEntity::class, SectionAnswerEntity::class, NumericAnswerEntity::class, TrainingVideoEntity::class,
         BpcSummaryEntity::class, BpcScorePercentageEntity::class, PoorDidiEntity::class],
     version = NUDGE_DATABASE_VERSION,
@@ -45,7 +45,6 @@ abstract class NudgeDatabase : RoomDatabase() {
 
     abstract fun villageListDao(): VillageListDao
     abstract fun userDao(): UserDao
-    abstract fun languageListDao(): LanguageListDao
     abstract fun stepsListDao(): StepsListDao
     abstract fun tolaDao(): TolaDao
     abstract fun didiDao(): DidiDao
@@ -59,8 +58,6 @@ abstract class NudgeDatabase : RoomDatabase() {
     abstract fun poorDidiListDao(): PoorDidiListDao
 
     companion object {
-
-
         // ADD THIS TYPE OF SQL QUERY FOR TABLE CREATION OR ALTERATION
         private const val ALTER_VILLAGE_TABLE =
             "ALTER TABLE 'village_table' ADD COLUMN 'isDataLoadTriedOnce' INTEGER DEFAULT 0 NOT NULL"
@@ -83,11 +80,17 @@ abstract class NudgeDatabase : RoomDatabase() {
 
         val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
 
-        // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_3_4 = object : Migration(3, 4) {
-            override fun migrate(database: SupportSQLiteDatabase) {
-                Log.d("NudgeDatabase", "MIGRATION_3_4")
-                migration(database, listOf(DROP_CASTE_TABLE))
+            override fun migrate(db: SupportSQLiteDatabase) {
+                NudgeLogger.d("NudgeDatabase", "MIGRATION_3_4")
+                migration(db, listOf(DROP_CASTE_TABLE))
+            }
+        }
+        const val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
+        val MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                NudgeLogger.d("NudgeDatabase", "MIGRATION_4_5")
+                migration(db, listOf(DROP_LANGUAGE_TABLE))
             }
         }
 

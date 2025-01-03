@@ -19,10 +19,13 @@ import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
+import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
@@ -31,6 +34,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiM
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -53,6 +57,9 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val getActivityUiConfigUseCase: GetActivityUiConfigUseCase,
     private val getSurveyConfigFromDbUseCase: GetSurveyConfigFromDbUseCase,
     private val coreSharedPrefs: CoreSharedPrefs,
+    private val getSectionListUseCase: GetSectionListUseCase,
+    private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
+    private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 ) : BaseViewModel() {
@@ -260,7 +267,73 @@ class FormResponseSummaryViewModel @Inject constructor(
                 )
             }
 
+            updateTaskStatus(taskId = taskId)
+            checkAndUpdateSectionStatus(
+                missionId = activityConfig?.missionId.value(),
+                surveyId = surveyId,
+                sectionId = sectionId,
+                taskId = taskId,
+                status = SurveyStatusEnum.INPROGRESS.name
+            )
         }
+    }
+
+    suspend fun updateTaskStatus(taskId: Int) {
+        taskEntity?.let { task ->
+            if (task.status != SurveyStatusEnum.INPROGRESS.name) {
+                val surveyEntity = getSectionListUseCase.getSurveyEntity(surveyId)
+                surveyEntity?.let { survey ->
+                    taskStatusUseCase.markTaskInProgress(taskId = taskId)
+                    matStatusEventWriterUseCase.updateTaskStatus(
+                        taskEntity = task,
+                        surveyName = survey.surveyName,
+                        subjectType = activityConfig?.subject.value()
+                    )
+                }
+            }
+        }
+    }
+
+    suspend fun checkAndUpdateSectionStatus(
+        missionId: Int,
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        status: String
+    ) {
+        val existingSectionStatus =
+            getSectionListUseCase.getSectionStatusMap(missionId, surveyId, taskId)[sectionId]
+        existingSectionStatus?.let { sectionStatus ->
+            if (sectionStatus != SurveyStatusEnum.INPROGRESS.name) {
+                updateSectionStatus(missionId, surveyId, sectionId, taskId, status)
+            }
+        } ?: suspend {
+            updateSectionStatus(missionId, surveyId, sectionId, taskId, status)
+        }
+
+
+    }
+
+    suspend fun updateSectionStatus(
+        missionId: Int,
+        surveyId: Int,
+        sectionId: Int,
+        taskId: Int,
+        status: String
+    ) {
+        sectionStatusUpdateUseCase.invoke(
+            missionId = missionId,
+            surveyId = surveyId,
+            sectionId = sectionId,
+            taskId = taskId,
+            status = status
+        )
+        sectionStatusEventWriterUserCase.invoke(
+            surveyId = surveyId,
+            sectionId = sectionId,
+            taskId = taskId,
+            status = status, isFromRegenerate = false
+        )
     }
 
     fun getAESSecretKey(): String {

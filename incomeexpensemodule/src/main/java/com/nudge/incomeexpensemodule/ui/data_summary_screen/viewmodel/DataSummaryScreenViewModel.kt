@@ -15,6 +15,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
@@ -108,6 +109,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataSummaryScreenState -> {
+                setTranslationConfig()
                 loadAddDataSummaryData(subjectId = event.subjectId)
             }
 
@@ -121,7 +123,7 @@ class DataSummaryScreenViewModel @Inject constructor(
 
             is CommonEvents.UpdateDateRange -> {
                 if (event.startDate != null && event.endDate != null) {
-                    _dateRangeFilter.value =
+                      _dateRangeFilter.value =
                         _dateRangeFilter.value.copy(event.startDate!!, event.endDate!!)
                 }
             }
@@ -452,5 +454,9 @@ class DataSummaryScreenViewModel @Inject constructor(
         } else {
             livelihoodEventMap[selectedLivelihood.value]
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DataSummaryScreen
     }
 }

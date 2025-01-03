@@ -29,6 +29,7 @@ import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.material.rememberModalBottomSheetState
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.runtime.Composable
@@ -63,6 +64,7 @@ import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -109,7 +111,11 @@ import com.nudge.core.R as CoreRes
 
 const val TAG = "TaskScreen"
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+
+@OptIn(
+    ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class,
+    ExperimentalFoundationApi::class
+)
 @Composable
 fun TaskScreen(
     navController: NavController,
@@ -123,6 +129,7 @@ fun TaskScreen(
     onSecondaryButtonClick: () -> Unit,
     isSecondaryButtonVisible: Boolean = false,
     taskList: List<TaskUiModel>? = null,
+    missionSubTitle: String,
     onSettingClick: () -> Unit,
     taskScreenContent: LazyListScope.(viewModel: TaskScreenViewModel, navController: NavController) -> Unit,
     taskScreenContentForGroup: LazyListScope.(groupKey: String, viewModel: TaskScreenViewModel, navController: NavController) -> Unit
@@ -267,6 +274,8 @@ fun TaskScreen(
         ) {
             ToolBarWithMenuComponent(
                 title = activityName,
+                subTitle = missionSubTitle,
+                subTitleColorId = brownDark,
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,
                 onBackIconClick = { navController.popBackStack() },

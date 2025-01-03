@@ -381,7 +381,6 @@ open class FormQuestionScreenViewModel @Inject constructor(
                 )
             }
         }
-
     }
 
     suspend fun updateSectionStatus(
@@ -442,6 +441,14 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun getAESSecretKey(): String {
         return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
+    }
+
+    fun getOptionStateMapForMutliSelectDropDownQuestion(questionId: Int): Map<Int, Boolean?> {
+        return conditionsUtils.getOptionStateMapForMutliSelectDropDownQuestion(questionId)
+    }
+
+    fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
+        return conditionsUtils.runNoneOptionCheck(sourceQuestion)
     }
 
 }
