@@ -11,12 +11,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.nudge.core.R
-import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
+import com.nudge.core.getTimeAgoDetailed
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.syncMediumTextStyle
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @Composable
 fun LastSyncTimeView(
@@ -43,9 +41,7 @@ fun LastSyncTimeView(
                 )
 
                 Text(
-                    text = SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
-                        lastSyncTime
-                    ),
+                    text = getTimeAgoDetailed(lastSyncTime),
                     style = syncMediumTextStyle,
                     color = blueDark
                 )

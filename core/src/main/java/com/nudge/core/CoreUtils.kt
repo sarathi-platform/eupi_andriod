@@ -1420,3 +1420,29 @@ fun Int.intToFloat(): Float {
         0F
     }
 }
+
+fun getTimeAgoDetailed(timeInMillis: Long): String {
+    val currentTime = System.currentTimeMillis()
+    val diff = currentTime - timeInMillis
+
+    if (diff < 0) {
+        return BLANK_STRING
+    }
+
+    val days = TimeUnit.MILLISECONDS.toDays(diff)
+    val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
+
+    if (days > 2) {
+        return SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+            timeInMillis
+        )
+    }
+
+    return when {
+        days > 0 -> "$days days, $hours hours, $minutes minutes ago"
+        hours > 0 -> "$hours hours, $minutes minutes ago"
+        minutes > 0 -> "$minutes minutes ago"
+        else -> "Just now"
+    }
+}
