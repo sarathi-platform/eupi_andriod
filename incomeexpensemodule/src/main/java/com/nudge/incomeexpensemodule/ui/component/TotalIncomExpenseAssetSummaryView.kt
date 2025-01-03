@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -66,7 +67,8 @@ fun TotalIncomeExpenseAssetSummaryView(
                 incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
                     incomeExpenseSummaryUiModel.imageUriForLivelihood.get(it.key)
                         ?.let { fileName ->
-                            FileUtils.getImageUri(context = context, fileName = fileName)
+                            val fileNameFromUrl = getFileNameFromURL(fileName)
+                            FileUtils.getImageUri(context = context, fileName = fileNameFromUrl)
                                 ?.let { it1 -> ImageViewer(uri = it1) }
                         }
                     CustomHorizontalSpacer(size = dimen_5_dp)

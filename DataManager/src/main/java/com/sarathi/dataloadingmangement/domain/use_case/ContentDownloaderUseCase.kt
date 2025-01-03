@@ -49,6 +49,24 @@ class ContentDownloaderUseCase @Inject constructor(
         }
     }
 
+    suspend fun livelihoodContentDownlaod() {
+        CoroutineScope(Dispatchers.IO).launch {
+            try {
+                repository.getLivelihoodContentData().forEach { livelihood ->
+                    livelihood.image?.let {
+                        if (it.isNotEmpty()) {
+                            downloaderManager.downloadItem(url = it)
+                        }
+                    }
+
+                }
+
+            } catch (ex: Exception) {
+                CoreLogger.e(tag = "ContentDownloader", msg = "downloadItem exception", ex = ex)
+            }
+        }
+    }
+
     suspend fun didiImagesForSmallGroupDownload() {
         CoreDispatchers.ioCoroutineScope {
             try {
