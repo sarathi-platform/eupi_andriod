@@ -177,7 +177,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             } else
                 null
 
-            val firstNotStartedTaskIndex = filterList.value.entries.toList()
+            val firstNotStartedTaskIndex =
+                (if (isGroupingApplied.value) filterTaskMap[firstGroupWithNotStatedTask].value() else filterList.value.entries.toList())
                 .indexOfFirst { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
             expandNextItem(firstNotStartedTaskIndex - 1, firstGroupWithNotStatedTask)
 
