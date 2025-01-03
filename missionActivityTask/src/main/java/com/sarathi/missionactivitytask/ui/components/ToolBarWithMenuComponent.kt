@@ -167,9 +167,11 @@ fun ToolBarWithMenuComponent(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewMatToolBarWithMenuComponent() {
-//    ToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
-//
-//    }, onContentUI = {
-//
-//    }, onBottomUI = {})
+    ToolBarWithMenuComponent(title = "Mission Summary", modifier = Modifier, onBackIconClick = {
+
+    }, onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+    }, onBottomUI = {},
+        onSettingClick = {},
+        onRetry = {},
+        onSearchValueChange = {})
 }
