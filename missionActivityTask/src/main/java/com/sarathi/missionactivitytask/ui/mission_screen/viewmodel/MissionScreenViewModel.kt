@@ -109,15 +109,6 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    fun checkMissionType(): Map<String, List<MissionUiModel>> {
-        val livelihoodMissions = missionList.value.filter { it.missionType == "LIVELIHOOD" }
-        val nonLivelihoodMissions = missionList.value.filter { it.missionType == "NON LIVELIHOOD" }
-
-        return mapOf(
-            "LIVELIHOOD" to livelihoodMissions,
-            "NON LIVELIHOOD" to nonLivelihoodMissions
-        )
-    }
 
     // Temp method to be removed after baseline is migrated to Grant flow.
     private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
