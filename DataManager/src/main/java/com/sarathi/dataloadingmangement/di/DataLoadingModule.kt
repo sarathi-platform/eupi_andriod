@@ -598,14 +598,16 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         contentConfigDao: ContentConfigDao,
         attributeValueReferenceDao: AttributeValueReferenceDao,
-        subjectEntityDao: SubjectEntityDao
+        subjectEntityDao: SubjectEntityDao,
+        livelihoodDao: LivelihoodDao
     ): IContentDownloader {
         return ContentDownloaderRepositoryImpl(
             contentDao,
             coreSharedPrefs = coreSharedPrefs,
             contentConfigDao = contentConfigDao,
             attributeValueReferenceDao = attributeValueReferenceDao,
-            subjectEntityDao = subjectEntityDao
+            subjectEntityDao = subjectEntityDao,
+            livelihoodDao = livelihoodDao
         )
     }
 
