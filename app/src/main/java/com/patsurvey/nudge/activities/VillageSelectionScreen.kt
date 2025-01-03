@@ -158,7 +158,7 @@ fun VillageSelectionScreen(
                 viewModel.downloadImageItem(context,it)
             }
         }
-        viewModel.saveVideosToDb(context)
+//        viewModel.saveVideosToDb(context)
     }
     val showRetryLoader = remember {
         mutableStateOf(false)
