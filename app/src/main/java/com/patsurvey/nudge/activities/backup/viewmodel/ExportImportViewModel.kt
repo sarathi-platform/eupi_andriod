@@ -65,12 +65,10 @@ import com.nudge.core.parseStringToList
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
-import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -645,14 +643,6 @@ class ExportImportViewModel @Inject constructor(
             }
             analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
 
-        }
-    }
-    fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
-    fun fetchAppConfig() {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
-            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
     fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
