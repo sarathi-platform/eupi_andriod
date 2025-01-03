@@ -29,6 +29,8 @@ import com.nudge.core.SUFFIX_EVENT_ZIP_FILE
 import com.nudge.core.SUFFIX_IMAGE_ZIP_FILE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.exportAllOldImages
@@ -206,9 +208,10 @@ class SettingBSViewModel @Inject constructor(
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
             delay(2000)
+            analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
             cancelSyncUploadWorker()
             withContext(CoreDispatchers.mainDispatcher) {
-               showLoader.value=false
+                showLoader.value = false
                 onLogout(settingUseCaseResponse)
             }
         }
@@ -272,7 +275,17 @@ class SettingBSViewModel @Inject constructor(
                 openShareSheet(fileUriList, title, ZIP_MIME_TYPE, mAppContext)
                 CoreSharedPrefs.getInstance(mAppContext).setFileExported(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BACKUP_FILE.eventName)
+
             } catch (exception: Exception) {
+                val eventParams = mapOf(
+                    AnalyticsEventsParam.EXCEPTION.eventParam to (exception.stackTraceToString()
+                        ?: BLANK_STRING)
+                )
+                analyticsEventUseCase.sendAnalyticsEvent(
+                    AnalyticsEvents.EXPORT_BACKUP_FILE_FAILED.eventName,
+                    eventParams
+                )
                 NudgeLogger.e("Compression Exception", exception.message ?: "")
                 exception.printStackTrace()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -361,42 +374,44 @@ class SettingBSViewModel @Inject constructor(
         selectionVillageUseCase.getVillageListFromDb().distinctBy { it.id }
             .forEach { villageEntity ->
                 val selectedVillageId = villageEntity.id
-        val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
-            prefRepo.getAppLanguageId() ?: 2
-        )
-        val didiList =
-            settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(villageEntity.id)
-        val formAFilePath =
-            generateFormA(
-                prefRepo.getStateId(),
-                casteList,
-                selectedVillageId,
-                didiList,
-                villageEntity = villageEntity
-            )
-        addFormToUriList(formAFilePath, fileAndDbZipList)
+                val casteList = settingBSUserCase.getCasteUseCase.getAllCasteForLanguage(
+                    prefRepo.getAppLanguageId() ?: 2
+                )
+                val didiList =
+                    settingBSUserCase.getAllPoorDidiForVillageUseCase.getAllDidiForVillage(
+                        villageEntity.id
+                    )
+                val formAFilePath =
+                    generateFormA(
+                        prefRepo.getStateId(),
+                        casteList,
+                        selectedVillageId,
+                        didiList,
+                        villageEntity = villageEntity
+                    )
+                addFormToUriList(formAFilePath, fileAndDbZipList)
 
-        val formBFilePath =
-            generateFormB(
-                prefRepo.getStateId(),
-                casteList,
-                selectedVillageId,
-                didiList,
-                villageEntity
-            )
-        addFormToUriList(formBFilePath, fileAndDbZipList)
+                val formBFilePath =
+                    generateFormB(
+                        prefRepo.getStateId(),
+                        casteList,
+                        selectedVillageId,
+                        didiList,
+                        villageEntity
+                    )
+                addFormToUriList(formBFilePath, fileAndDbZipList)
 
-        val formCFilePath =
-            generateFormc(
-                prefRepo.getStateId(),
-                casteList,
-                selectedVillageId,
-                didiList,
-                villageEntity
-            )
-        addFormToUriList(formCFilePath, fileAndDbZipList)
+                val formCFilePath =
+                    generateFormc(
+                        prefRepo.getStateId(),
+                        casteList,
+                        selectedVillageId,
+                        didiList,
+                        villageEntity
+                    )
+                addFormToUriList(formCFilePath, fileAndDbZipList)
 
-    }
+            }
     }
 
     private fun generateZipFileName(): String {

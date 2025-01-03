@@ -111,6 +111,7 @@ fun ExportImportScreen(
             onPositiveButtonClick = {
                 BaselineLogger.d("ExportImportScreen", "Restart Dialog Proceed Click")
                 filePicker.launch("*/*")
+                viewModel.exportDataAnalytic()
             })
     }
     if (viewModel.showConfirmationDialog.value) {
@@ -139,6 +140,8 @@ fun ExportImportScreen(
                             viewModel.clearLocalDatabase {
                                 viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                                 viewModel.showConfirmationDialog.value = false
+                                viewModel.loadServerDataAnalytic()
+
                                 if (viewModel.loggedInUserType.value == UPCM_USER) {
                                     navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                                         launchSingleTop = true
@@ -173,6 +176,7 @@ fun ExportImportScreen(
                         if (isOnline(context)) {
                             viewModel.fetchAppConfig()
                             viewModel.showConfirmationDialog.value = false
+                            viewModel.appConfigDataAnalytic()
                         } else {
                             showCustomToast(
                                 context,

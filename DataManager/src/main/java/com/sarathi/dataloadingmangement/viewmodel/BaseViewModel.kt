@@ -10,8 +10,11 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.helper.TranslationHelper
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.response.LanguageModel
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.util.LoaderState
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -34,6 +37,9 @@ abstract class BaseViewModel : ViewModel() {
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+
+    @Inject
+    lateinit var analyticsEventUseCase: AnalyticsEventUseCase
     private val _translationMap =
         mutableStateMapOf<String, List<LanguageModel>?>()
     val translationMap: SnapshotStateMap<String, List<LanguageModel>?> get() = _translationMap
@@ -54,7 +60,14 @@ abstract class BaseViewModel : ViewModel() {
             stackTrace = true,
             ex = e
         )
-
+        val eventParams = mapOf(
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString()
+                ?: BLANK_STRING)
+        )
+        analyticsEventUseCase.sendAnalyticsEvent(
+            AnalyticsEvents.CATCHED_EXCEPTION.eventName,
+            eventParams
+        )
         onCatchError(e)
     }
 

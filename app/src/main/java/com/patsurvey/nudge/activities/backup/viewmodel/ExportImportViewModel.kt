@@ -46,6 +46,7 @@ import com.nudge.core.SUBJECT_NAME
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.VILLAGE_NAME
 import com.nudge.core.ZIP_MIME_TYPE
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.datamodel.BaseLineQnATableCSV
 import com.nudge.core.datamodel.HamletQnATableCSV
@@ -64,10 +65,12 @@ import com.nudge.core.parseStringToList
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -195,6 +198,16 @@ class ExportImportViewModel @Inject constructor(
             onExportSuccess(it)
         }
     }
+    fun loadServerDataAnalytic(){
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
+    }
+    fun appConfigDataAnalytic(){
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.APP_CONFIG_LOG_FILE.eventName)
+
+    }
+    fun exportDataAnalytic(){
+        analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
+    }
 
     fun compressEventData(title: String) {
         BaselineLogger.d("ExportImportViewModel", "compressEventData ----")
@@ -280,6 +293,7 @@ class ExportImportViewModel @Inject constructor(
                 withContext(CoreDispatchers.mainDispatcher) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
                 }
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.REGENERATE_ALL_EVENT.eventName)
             } catch (exception: Exception) {
                 BaselineLogger.e("RegenerateEvent", exception.message ?: "")
                 exception.printStackTrace()
@@ -629,6 +643,16 @@ class ExportImportViewModel @Inject constructor(
                 BaselineLogger.d("ExportImportViewModel", "New Baseline Export")
 
             }
+            analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_BASELINE_QNA.eventName)
+
+        }
+    }
+    fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+    fun fetchAppConfig() {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
     fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
