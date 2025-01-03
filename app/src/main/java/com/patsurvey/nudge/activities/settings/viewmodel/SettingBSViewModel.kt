@@ -216,12 +216,11 @@ class SettingBSViewModel @Inject constructor(
             }
         }
     }
+
     fun saveLanguagePageFrom() {
         settingBSUserCase.saveLanguageScreenOpenFromUseCase.invoke()
     }
-    suspend fun exportLocalData(context: Context) {
-        exportHelper.exportAllData(context)
-    }
+
 
     fun compressEventData(title: String) {
         NudgeLogger.d("SettingBSViewModel", "compressEventData---------------")

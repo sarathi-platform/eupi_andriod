@@ -136,11 +136,12 @@ fun ExportImportScreen(
 
                 when (viewModel.selectedTag.value) {
                     SettingTagEnum.LOAD_SERVER_DATA.name -> {
-                        viewModel.loadServerDataAnalytic()
                         viewModel.exportLocalDatabase(isNeedToShare = false) {
                             viewModel.clearLocalDatabase {
                                 viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
                                 viewModel.showConfirmationDialog.value = false
+                                viewModel.loadServerDataAnalytic()
+
                                 if (viewModel.loggedInUserType.value == UPCM_USER) {
                                     navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
                                         launchSingleTop = true

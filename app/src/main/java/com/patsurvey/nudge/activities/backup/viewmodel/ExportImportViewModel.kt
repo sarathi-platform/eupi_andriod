@@ -655,4 +655,12 @@ class ExportImportViewModel @Inject constructor(
             onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
+    fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+    fun fetchAppConfig() {
+        onEvent(LoaderEvent.UpdateLoaderState(true))
+        CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.invoke()
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+        }
+    }
 }
