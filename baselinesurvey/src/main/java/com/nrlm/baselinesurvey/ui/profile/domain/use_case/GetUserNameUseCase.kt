@@ -6,4 +6,7 @@ class GetUserNameUseCase(private val repository:ProfileBSRepository) {
     operator fun invoke():String{
         return repository.getUserName()
     }
+    fun getStateName() = repository.getStateName()
+    fun getDistrictName() = repository.getDistrictName()
+    fun getBlockName() = repository.getBlockName()
 }

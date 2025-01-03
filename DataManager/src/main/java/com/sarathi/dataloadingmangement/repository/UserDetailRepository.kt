@@ -7,6 +7,9 @@ import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_BLOCK_NAME
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_DISTRICT_NAME
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_NAME
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import javax.inject.Inject
@@ -49,6 +52,11 @@ class UserDetailRepository @Inject constructor(
             sharedPrefs.setStateId(
                 userDetailsResponse.referenceId.first().stateId ?: -1
             )
+        }
+        userDetailsResponse.federationDetail?.let {
+            sharedPrefs.savePref(PREF_STATE_NAME, it.stateName ?: BLANK_STRING)
+            sharedPrefs.savePref(PREF_DISTRICT_NAME, it.districtName ?: BLANK_STRING)
+            sharedPrefs.savePref(PREF_BLOCK_NAME, it.blockName ?: BLANK_STRING)
         }
     }
 

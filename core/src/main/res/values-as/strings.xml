@@ -59,5 +59,7 @@
     <string name="no_result_found">কোনো ফলাফল পোৱা নগ\'ল</string>
     <string name="proceed">Proceed</string>
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="last_sync_date_time">অন্তিম চিংক সময়:</string>
+    <string name="profile_phone">ফোন নম্বৰ</string>
 
 </resources>
