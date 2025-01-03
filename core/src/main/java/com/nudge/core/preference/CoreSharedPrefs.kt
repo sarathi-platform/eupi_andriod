@@ -43,6 +43,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_STATE_ID = "type_state_id"
         const val PREF_STATE_NAME = "state_name"
         const val PREF_DISTRICT_NAME = "district_name"
+        const val PREF_BLOCK_NAME = "block_name"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_USER_NAME = "key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
@@ -57,6 +58,8 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
         const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
 
+        const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+        const val PREF_KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
 
 
         @Volatile

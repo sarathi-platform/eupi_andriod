@@ -63,6 +63,8 @@ val weight_60_percent = 0.6f
 val weight_80_percent = 0.8f
 val weight_100_percent = 1f
 val text_size_13 = 13.sp
+val alpha_6 = 0.6F
+
 
 
 

@@ -63,6 +63,7 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -404,6 +405,9 @@ fun FormScreenQuestionUiContent(
                         isOnlyNumber = question.type == QuestionType.NumericField.name || question.type == QuestionType.InputNumber.name,
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING,
+                        isError = !viewModel.fieldValidationAndMessageMap.get(question.questionId)?.first.value(
+                            true
+                        ),
                         navigateToMediaPlayerScreen = { contentList ->
                             handleContentClick(
                                 viewModel = viewModel,
@@ -542,6 +546,9 @@ fun FormScreenQuestionUiContent(
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         showCardView = false,
                         maxCustomHeight = maxHeight,
+                        optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
+                            question.questionId
+                        ),
                         navigateToMediaPlayerScreen = { contentList ->
                             handleContentClick(
                                 viewModel = viewModel,
@@ -561,6 +568,12 @@ fun FormScreenQuestionUiContent(
                                     options.isSelected = false
                                 }
                             }
+
+                            val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                            runNoneCheckForMultiSelectDropDownQuestions(
+                                noneOptionCheckResult,
+                                question
+                            )
                             onAnswerSelect(question)
                         }
                     )
@@ -688,15 +701,24 @@ fun FormScreenQuestionUiContent(
                     }
                 }
             }
-            if (viewModel.fieldValidationAndMessageMap[question.questionId]?.second != BLANK_STRING) {
-                Text(
-                    text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                        ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                    modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
-                    style = quesOptionTextStyle.copy(color = eventTextColor)
-                )
-                CustomVerticalSpacer()
-            }
+            viewModel.fieldValidationAndMessageMap[question.questionId]?.second?.let {
+                if (it != BLANK_STRING) {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
+                        style = quesOptionTextStyle.copy(
+                            color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
+                                    true
+                                )
+                            ) eventTextColor else redOffline
+                        )
+                    )
+                    CustomVerticalSpacer()
+                } else {
+                    CustomVerticalSpacer(size = dimen_20_dp)
+                }
+            } ?: CustomVerticalSpacer(size = dimen_20_dp)
+
         }
 
     }

@@ -52,6 +52,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
@@ -243,7 +244,7 @@ fun DataSummaryScreen(
                         backgroundColor = Color.White,
                         elevation = 10.dp
                     ) {
-                        AddEventButton() {
+                        AddEventButton(viewModel = viewModel) {
                             navigateToAddEventScreen(
                                 navController = navController,
                                 subjectName = subjectName,
@@ -269,7 +270,7 @@ fun DataSummaryScreen(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier.fillMaxSize()
                         ) {
-                            AddEventButton {
+                            AddEventButton(viewModel = viewModel) {
                                 eventMessage?.value = BLANK_STRING
                                 selectedLivelihoodId?.value = 0
                                 navigateToAddEventScreen(
@@ -337,6 +338,7 @@ private fun DataSummaryView(
     onShowModeClicked: () -> Unit,
     newlyAddedEvent: String
 ) {
+    val context = LocalContext.current
     TabBarContainer(viewModel.tabs) {
         if (TabsCore.getSubTabForTabIndex(TabsEnum.DataSummaryTab.tabIndex) == viewModel.tabs.map { it.id }
                 .indexOf(SubTabs.CustomDateRange.id)) {
@@ -358,7 +360,10 @@ private fun DataSummaryView(
     if (viewModel.showCustomDatePicker.value) {
         CustomDateRangePickerDisplay(
             value = "${viewModel.dateRangeFilter.value.first.getDate()} - ${viewModel.dateRangeFilter.value.second.getDate()}",
-            label = stringResource(R.string.date_range_picker_label_text)
+            label = viewModel.stringResource(
+                context,
+                R.string.date_range_picker_label_text
+            )
         ) {
             dateRangePickerClicked()
         }
@@ -378,6 +383,7 @@ private fun DataSummaryView(
     }
     Spacer(modifier = Modifier.height(16.dp))
     EventsListHeaderWithDropDownFilter(
+        viewModel = viewModel,
         viewModel.eventsSubFilterList,
         selectedValue = viewModel.selectedEventsSubFilter.value,
         showMoreItems
@@ -387,6 +393,7 @@ private fun DataSummaryView(
 
     Spacer(modifier = Modifier.height(16.dp))
     EventView(
+        viewModel = viewModel,
         viewModel.filteredSubjectLivelihoodEventSummaryUiModelList.toList()
             .sortedByDescending { it.date },
         eventsList = viewModel.getEventsList(),
@@ -449,11 +456,13 @@ fun HeaderSection(
 
 @Composable
 fun EventsListHeaderWithDropDownFilter(
+    viewModel: DataSummaryScreenViewModel,
     eventSubFilterSelected: List<ValuesDto>,
     selectedValue: Int,
     showMoreItems: Boolean,
     onEventSubFilterSelected: (selectedFilterId: Int) -> Unit
 ) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceBetween,
@@ -468,8 +477,11 @@ fun EventsListHeaderWithDropDownFilter(
 
 
         Text(
-            if (showMoreItems) stringResource(R.string.all_events) else stringResource(
-                R.string.last_events,
+            if (showMoreItems) viewModel.stringResource(
+                context,
+                R.string.all_events
+            ) else viewModel.stringResource(
+                context, R.string.last_events,
                 DEFAULT_EVENT_LIST_VIEW_SIZE
             ),
             style = getTextColor(defaultTextStyle)
@@ -491,7 +503,12 @@ fun EventsListHeaderWithDropDownFilter(
 
 
 @Composable
-fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
+fun ShowMoreButton(
+    viewModel: DataSummaryScreenViewModel,
+    showMoreItems: Boolean,
+    onShowModeClicked: () -> Unit
+) {
+    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -513,8 +530,11 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
                 horizontalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = if (showMoreItems) stringResource(R.string.show_less) else stringResource(
-                        R.string.show_more
+                    text = if (showMoreItems) viewModel.stringResource(
+                        context = context,
+                        R.string.show_less
+                    ) else viewModel.stringResource(
+                        context, R.string.show_more
                     ),
                     textAlign = TextAlign.Center,
                     style = getTextColor(defaultTextStyle),
@@ -533,6 +553,7 @@ fun ShowMoreButton(showMoreItems: Boolean, onShowModeClicked: () -> Unit) {
 
 @Composable
 private fun EventView(
+    viewModel: DataSummaryScreenViewModel,
     filteredSubjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel>,
     eventsList: List<LivelihoodEventUiModel>?,
     showMoreItems: Boolean,
@@ -583,10 +604,11 @@ private fun EventView(
             ) {
                 Column {
                     EventHeader(
+                        viewModel = viewModel,
                         subjectLivelihoodEventSummaryUiModel,
                         eventsList
                     )
-                    EventDetails(subjectLivelihoodEventSummaryUiModel) {
+                    EventDetails(viewModel = viewModel,subjectLivelihoodEventSummaryUiModel) {
                         if (subjectLivelihoodEventSummaryUiModel.status != 2) {
                             onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                         }
@@ -623,10 +645,12 @@ private fun EventView(
                         ) {
                         Column {
                             EventHeader(
+                                viewModel = viewModel,
                                 subjectLivelihoodEventSummaryUiModel,
                                 eventsList
                             )
                             EventDetails(
+                                viewModel = viewModel,
                                 subjectLivelihoodEventSummaryUiModel,
                             ) {
                                 onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
@@ -650,7 +674,7 @@ private fun EventView(
 
         if (filteredSubjectLivelihoodEventSummaryUiModelList.size > DEFAULT_EVENT_LIST_VIEW_SIZE) {
             item {
-                ShowMoreButton(showMoreItems) {
+                ShowMoreButton(viewModel = viewModel, showMoreItems) {
 
                     onShowModeClicked()
                 }
@@ -687,9 +711,11 @@ const val DEFAULT_EVENT_LIST_VIEW_SIZE = 3
 
 @Composable
 private fun EventHeader(
+    viewModel: DataSummaryScreenViewModel,
     item: SubjectLivelihoodEventSummaryUiModel,
     livelihoodEventUiModels: List<LivelihoodEventUiModel>?
 ) {
+    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
@@ -698,7 +724,7 @@ private fun EventHeader(
     ) {
         Row {
             TextWithPaddingEnd(
-                text = stringResource(R.string.event),
+                text = viewModel.stringResource(context, R.string.event),
                 style = getTextColor(smallTextStyle, color = eventTextColor)
             )
             StrikethroughText(
@@ -717,9 +743,11 @@ private fun EventHeader(
 
 @Composable
 private fun EventDetails(
+    viewModel: DataSummaryScreenViewModel,
     item: SubjectLivelihoodEventSummaryUiModel,
     onClick: () -> Unit
 ) {
+    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
@@ -729,7 +757,10 @@ private fun EventDetails(
         item.transactionAmount?.let {
             Row {
                 TextWithPaddingEnd(
-                    text = stringResource(id = R.string.amount),
+                    text = viewModel.stringResource(
+                        context,
+                        resId = R.string.amount
+                    ),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 StrikethroughText(
@@ -743,7 +774,7 @@ private fun EventDetails(
         item.assetCount?.let {
             Row {
                 TextWithPaddingEnd(
-                    text = stringResource(id = R.string.asset),
+                    text = viewModel.stringResource(context, resId = R.string.asset),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 StrikethroughText(
@@ -807,9 +838,13 @@ private fun TextWithPaddingEnd(text: String, style: TextStyle) {
 }
 
 @Composable
-private fun AddEventButton(onAddEventButtonClicked: () -> Unit) {
+private fun AddEventButton(
+    viewModel: DataSummaryScreenViewModel,
+    onAddEventButtonClicked: () -> Unit
+) {
+    val context = LocalContext.current
     ButtonPositive(
-        buttonTitle = stringResource(R.string.add_event),
+        buttonTitle = viewModel.stringResource(context, R.string.add_event),
         isActive = true,
         isArrowRequired = true
     ) {

@@ -134,6 +134,7 @@
     <string name="pat_survey_complete">PAT सार्भे</string>
     <string name="result_summary">गुदिखिथा फिथाइ</string>
     <string name="summary_text">गुदिखिथागुदिखिथा</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">खोन्दो 1 फोजोब</string>
     <string name="logout">लगआउट</string>
     <string name="this_section_is_in_progress">बे खोन्दोआ दावगानाय थासारियाव</string>
@@ -407,6 +408,8 @@
     <string name="average_travel_cost_comparision">दावबायनायनि सानजेर बेसेन</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">हेमलेटखौ नागिर</string>
     <string name="mission_completed_text">मिसना आबुं जाबाय</string>
     <string name="aadhar_card_titile_assam">नोंथांनाव आधार कार्ड दं नामा ?</string>
@@ -433,7 +436,7 @@
     <string name="load_server_data">Load Server Data</string>
     <string name="import_data">Import Data</string>
     <string name="export_images">सावगारिफोरखौल\' एक्सपर्ट खालाम।</string>
-    <string name="export_backup_file">Share BackUp File</string>
+    <string name="export_backup_file">Export Backup file</string>
     <string name="export_database">Export only database</string>
     <string name="backup_recovery">Backup/Recovery</string>
     <string name="export_event_file">इभेन्टनि फाइलखौ एक्सपर्ट खालाम।</string>
@@ -472,9 +475,10 @@
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">र्फम C</string>
     <string name="export_data">Share Data</string>
-    <string name="refresh_config">Refresh app config</string>
-    <string name="are_you_sure_you_want_to_reset_app_configuration">Are you sure you want to Reset App Configurations?</string>
-    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">Are you sure you want to Regenerate events? There will be data loss after this action.</string>
+    <string name="refresh_config">Reset Configuration</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">"नोंथाङा App Configurations खौ रिसेट खालामनो लुबैदों होन्ना रोखा नामा? "</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">नोंथाङा इभेन्टफोरखौ फिन सोरजिफिन्नो लुबैदों होन्ना रोखा नामा? बे खामानिनि उनाव data loss जागोन।</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
+    <string name="profile_block_name">Block Name</string>
 
 </resources>

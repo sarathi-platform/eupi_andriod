@@ -10,6 +10,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -89,6 +90,7 @@ class AddEventViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitAddEventState -> {
+                setTranslationConfig()
                 fetchEventData(event.subjectId, event.transactionId)
             }
 
@@ -97,8 +99,11 @@ class AddEventViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
-
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.AddEventScreen
     }
 
 

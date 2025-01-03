@@ -1,13 +1,19 @@
 package com.sarathi.dataloadingmangement.viewmodel
 
+import android.content.Context
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.model.response.LanguageModel
 import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.util.LoaderState
@@ -23,6 +29,8 @@ import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
 
 abstract class BaseViewModel : ViewModel() {
+    @Inject
+    lateinit var translationHelper: TranslationHelper
     val _loaderState = mutableStateOf<LoaderState>(LoaderState())
     val loaderState: State<LoaderState> get() = _loaderState
 
@@ -32,7 +40,18 @@ abstract class BaseViewModel : ViewModel() {
 
     @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
+    private val _translationMap =
+        mutableStateMapOf<String, List<LanguageModel>?>()
+    val translationMap: SnapshotStateMap<String, List<LanguageModel>?> get() = _translationMap
+
     abstract fun <T> onEvent(event: T)
+
+
+    fun setTranslationConfig() {
+        ioViewModelScope {
+            translationHelper.initTranslationHelper(getScreenName())
+        }
+    }
 
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         CoreLogger.e(
@@ -88,4 +107,23 @@ abstract class BaseViewModel : ViewModel() {
     }
 
 
+    open fun getScreenName(): TranslationEnum {
+        return TranslationEnum.NoScreen
+    }
+
+    fun getString(context: Context, resId: Int): String {
+        return translationHelper?.getString(context, resId) ?: context.getString(resId)
+    }
+
+    fun stringResource(context: Context, resId: Int): String {
+        return translationHelper?.stringResource(context, resId) ?: context.getString(resId)
+    }
+
+    fun stringResource(context: Context, resId: Int, vararg formatArgs: Any): String {
+        return translationHelper?.getString(
+            context = context,
+            resId = resId,
+            formatArgs = formatArgs
+        ) ?: context.getString(resId, formatArgs)
+    }
 }

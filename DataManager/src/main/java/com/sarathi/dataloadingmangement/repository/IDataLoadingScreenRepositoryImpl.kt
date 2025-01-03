@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_BLOCK_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_DISTRICT_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_EMAIL
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_IDENTITY_NUMBER
@@ -92,6 +93,11 @@ class IDataLoadingScreenRepositoryImpl @Inject constructor(
         coreSharedPrefs.savePref(
             PREF_STATE_NAME,
             userDetails.federationDetail?.stateName ?: BLANK_STRING
+        )
+
+        coreSharedPrefs.savePref(
+            PREF_BLOCK_NAME,
+            userDetails.federationDetail?.blockName ?: BLANK_STRING
         )
     }
 }

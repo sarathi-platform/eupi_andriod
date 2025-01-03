@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.navigation.selection
 
+import android.text.TextUtils
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -14,6 +15,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_DETAIL_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.SYNC_DATA
@@ -193,7 +196,11 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 finishActivity()
             },
             onNavigateToBaselineMission = { mission: MissionUiModel ->
-                navController.navigate("$DATA_LOADING_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
+                var missionSubtitleWithNullable =
+                    if (!TextUtils.isEmpty(mission.missionSubtitle)) mission.missionSubtitle else null
+                var missionSubtitlDetaileWithNullable =
+                    if (!TextUtils.isEmpty(mission.missionSubTitleDetail)) mission.missionSubTitleDetail else null
+                navController.navigate("$DATA_LOADING_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}/${missionSubtitleWithNullable}/${missionSubtitlDetaileWithNullable}")
             }
         )
         SmallGroupNavigation(
@@ -809,7 +816,6 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
 }
 
 
-
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
     navigation(route = NudgeNavigationGraph.VO_ENDORSEMENT_GRAPH,
         startDestination = VoEndorsmentScreeens.VO_ENDORSMENT_LIST_SCREEN.route,
@@ -985,12 +991,25 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
             },
                 navArgument(ARG_MISSION_NAME) {
                     type = NavType.StringType
-                })) {
+                },
+                navArgument(ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument(ARG_SUB_MISSION_DETAIL_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )) {
             DataLoadingScreenComponent(
                 viewModel = hiltViewModel(),
                 navController = navController,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+                missionSubDescription = it.arguments?.getString(ARG_SUB_MISSION_NAME)
+                    ?: BLANK_STRING,
+                missionSubDescriptionDetail = it.arguments?.getString(ARG_SUB_MISSION_DETAIL_NAME)
+                    ?: BLANK_STRING
             )
         }
     }

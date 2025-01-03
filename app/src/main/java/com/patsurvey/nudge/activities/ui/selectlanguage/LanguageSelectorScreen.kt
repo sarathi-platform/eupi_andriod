@@ -48,6 +48,7 @@ import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.KOKBOROK_LANGUAGE_CODE
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.R
@@ -59,7 +60,6 @@ import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING

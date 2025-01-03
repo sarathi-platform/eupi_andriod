@@ -142,6 +142,7 @@
     <string name="pat_survey_complete">দারিদ্র্য অনুমান (PAT) সমীক্ষা</string>
     <string name="result_summary">সারাংশের পরিনাম</string>
     <string name="summary_text">সারাংশ</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">ভাগ 1 সম্পূর্ণ করুন</string>
     <string name="logout">লগআউট করুন</string>
     <string name="this_section_is_in_progress">এই বিভাগটি প্রগতিশীল অবস্থায় রয়েছে</string>
@@ -218,6 +219,7 @@
     <string name="pat_completed_status_text">PAT সমীক্ষা সম্পন্ন হয়েছে</string>
     <string name="vo_endorsement_status_text">VO অনুমোদন সম্পন্ন হয়েছে</string>
     <string name="no_didis_availble_for_vo_endorsement">গ্রাম সংগঠনের (VO) অনুমোদনের জন্য কোন দিদি পাওয়া যাচ্ছে না</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">পর্যায় 1</string>
     <string name="sync_status">BPC প্রমাণীকরণ</string>
     <string name="step_2">পর্যায় 2</string>
@@ -412,10 +414,12 @@
     <string name="to_the_nearest_government_school_comparision">কাছের সরকারি স্কুলে</string>
     <string name="to_the_nearest_permanent_market_comparision">কাছের স্থায়ী বাজারে</string>
     <string name="to_the_nearest_bank_comparsion">কাছের ব্যাঙ্কে</string>
-    <string name="to_the_replacement_string">""</string>
+    <string name="to_the_replacement_string">"To the "</string>
     <string name="average_travel_cost_comparision">গড় ভ্রমণ খরচ</string>
     <string name="questions_data_tab_title">প্রশ্ন</string>
     <string name="section_information_tab_title">বিভাগসমূহ</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">হ্যামলেট অনুসন্ধান করুন</string>
     <string name="mission_completed_text">মিশন সম্পন্ন</string>
     <string name="aadhar_card_titile_assam">আপনার কি আধার কার্ড আছে?</string>
@@ -441,7 +445,7 @@
     <string name="retry">"পুনরায় চেষ্টা করা "</string>
     <string name="import_data">ডেটা ইম্পোর্ট  করুন</string>
     <string name="export_images">ছবি গুলো পাঠান</string>
-    <string name="export_backup_file">ব্যাকআপ ফাইল শেয়ার করুন</string>
+    <string name="export_backup_file">ব্যাকআপ ফাইল পাঠান</string>
     <string name="export_database">ডাটাবেস পাঠান</string>
     <string name="backup_recovery">ব্যাকআপ/রিস্টোর</string>
     <string name="export_event_file">ইভেন্ট ফাইল পাঠান</string>
@@ -481,10 +485,11 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form C</string>
-    <string name="export_data">Share Data</string>
-    <string name="refresh_config">Refresh app config</string>
-    <string name="are_you_sure_you_want_to_reset_app_configuration">আপনি কি অ্যাপ কনফিগারেশন রিসেট করার বিষয়ে নিশ্চিত?</string>
-    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰুত্পাদন কৰিব বিচাৰে? এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব।</string>
+    <string name="export_data">ডেটা শেয়ার করুন</string>
+    <string name="refresh_config">কনফিগারেশন রিসেট করুন</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">আপনি কি অ্যাপ কনফিগারেশন রিসেট করতে চান?</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপনি কি ইভেন্টগুলি আবার জেনারেট করতে চান? ইটা করার পরে ডেটা লস হতে পারে</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
     <string name="export_baseline_qna">বেসলাইন প্রশ্নউত্তর পাঠান</string>
+    <string name="profile_block_name">ব্লকের নাম</string>
 </resources>

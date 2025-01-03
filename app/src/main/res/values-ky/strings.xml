@@ -530,8 +530,8 @@
     <string name="proceed">Proceed</string>
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="regenerate_event_file">Regenerate event file</string>
-    <string name="load_server_data">Load Server Data</string>
-    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="load_server_data">Load server data</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Nwng server ni data load khai na muchung o de? Omo khai khe sync wngya data bo kwmawi thang mano.</string>
     <string name="didi_verified_by_bpc">Didi verified by BPC</string>
     <string name="recover_old_data">Recover Old Data</string>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>
@@ -545,7 +545,7 @@
     <string name="able_bodied_women_text">2. Able-bodied women</string>
     <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
-    <string name="mark_activity_in_progress">Mark Activity In Progress</string>
+    <string name="mark_activity_in_progress">Tangnai raida ni mari no taisa khlai di.</string>
     <string name="select_mission">Select Mission</string>
     <string name="select_activity_for">"Select Activity for "</string>
     <string name="select_all">Select All</string>

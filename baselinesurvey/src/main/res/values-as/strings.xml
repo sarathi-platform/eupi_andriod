@@ -143,6 +143,7 @@
     <string name="pat_survey_complete">PAT সমীক্ষা</string>
     <string name="result_summary">সাৰাংশৰ ফলাফল</string>
     <string name="summary_text">সাৰাংশ</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">শাখা 1 সম্পূৰ্ণ কৰক</string>
     <string name="logout">লগ আউট</string>
     <string name="this_section_is_in_progress">এই শাখাটো প্ৰগতিশীল অৱস্থাত আছে</string>
@@ -219,6 +220,7 @@
     <string name="pat_completed_status_text">PAT সমীক্ষা সম্পূৰ্ণ হল</string>
     <string name="vo_endorsement_status_text">VO অনুমোদন সম্পূৰ্ণ হল</string>
     <string name="no_didis_availble_for_vo_endorsement">VO অনুমোদনৰ বাবে বাইদেউ সকল উপলব্ধ নাই</string>
+    <string name="no_didis_availble_for_bpc_verification">No Didis available for BPC Verification.</string>
     <string name="step_1">পৰ্যায় 1</string>
     <string name="sync_status">BPC প্ৰমাণীকৰণ</string>
     <string name="step_2">পৰ্যায় 2</string>
@@ -415,6 +417,8 @@
     <string name="average_travel_cost_comparision">গড় ভ্ৰমণ ব্যয়</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
+    <string name="share_export_file">Share exported file</string>
+    <string name="share_export_image">Share exported image</string>
     <string name="search_hamlet">হেমলেট সন্ধান কৰক</string>
     <string name="mission_completed_text">মিছন সম্পূৰ্ণ</string>
     <string name="aadhar_card_titile_assam">আপোনাৰ আধাৰ কাৰ্ড আছে নে?</string>
@@ -480,10 +484,11 @@
     <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
     <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
     <string name="form_e">Form C</string>
-    <string name="export_data">Export Data</string>
-    <string name="refresh_config">Refresh app config</string>
+    <string name="export_data">ডাটা শ্বেয়াৰ কৰক</string>
+    <string name="refresh_config">বিন্যাস পুনৰায় সেট কৰক</string>
     <string name="are_you_sure_you_want_to_reset_app_configuration">আপুনি নিশ্চিত নেকি যে আপুনি এপ বিন্যাসসমূহ পুনৰায় সেট কৰিব বিচাৰে?</string>
-    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰুত্পাদন কৰিব বিচাৰে? এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব।</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">আপুনি নিশ্চিত নেকি যে আপুনি ইভেন্টসমূহ পুনৰ সৃষ্টি কৰিব বিচাৰে ?এই কাৰ্য্যৰ পিছত তথ্য হেৰুৱাব লাগিব</string>
     <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
+    <string name="profile_block_name">ব্লকৰ নাম</string>
 
 </resources>

@@ -24,12 +24,6 @@ class ProfileBSViewModel @Inject constructor(
         )
         userDetailList.add(
             Pair(
-                context.getString(R.string.profile_email),
-                profileBSUseCase.getUserEmailUseCase.invoke()
-            )
-        )
-        userDetailList.add(
-            Pair(
                 context.getString(R.string.profile_phone),
                 profileBSUseCase.getUserMobileNumberUseCase.invoke()
             )
@@ -39,6 +33,15 @@ class ProfileBSViewModel @Inject constructor(
                 Pair(
                     context.getString(R.string.profile_identity_num),
                     profileBSUseCase.getIdentityNumberUseCase.invoke()
+                )
+            )
+        }
+
+        if (profileBSUseCase.getUserNameUseCase.getBlockName().isNotEmpty()) {
+            userDetailList.add(
+                Pair(
+                    context.getString(R.string.profile_block_name),
+                    profileBSUseCase.getUserNameUseCase.getBlockName()
                 )
             )
         }

@@ -1,5 +1,6 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.presentation
 
+import android.text.TextUtils
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
@@ -24,7 +25,9 @@ fun DataLoadingScreenComponent(
     viewModel: DataLoadingScreenViewModel,
     navController: NavController,
     missionId: Int,
-    missionDescription: String
+    missionDescription: String,
+    missionSubDescription: String,
+    missionSubDescriptionDetail: String
 ) {
 
     val loaderState = viewModel.loaderState.value
@@ -36,7 +39,11 @@ fun DataLoadingScreenComponent(
                 viewModel.fetchAllData {
                     viewModel.setAllDataFetched()
                     viewModel.setGrantDbMissionDataLoaded()
-                    navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                    var missionSubtitleWithNullable =
+                        if (!TextUtils.isEmpty(missionSubDescription)) missionSubDescription else null
+                    var missionSubtitleDetailWithNullable =
+                        if (!TextUtils.isEmpty(missionSubDescriptionDetail)) missionSubDescriptionDetail else null
+                    navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}/${missionSubtitleWithNullable}/${missionSubtitleDetailWithNullable}") {
                         popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                             inclusive = true
                         }
@@ -45,14 +52,22 @@ fun DataLoadingScreenComponent(
 
                 }
             } else {
-                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                var missionSubtitleWithNullable =
+                    if (!TextUtils.isEmpty(missionSubDescription)) missionSubDescription else null
+                var missionSubtitleDetailWithNullable =
+                    if (!TextUtils.isEmpty(missionSubDescriptionDetail)) missionSubDescriptionDetail else null
+                navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}/${missionSubtitleWithNullable}/${missionSubtitleDetailWithNullable}") {
                     popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                         inclusive = true
                     }
                 }
             }
         } else {
-            navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+            var missionSubtitleWithNullable =
+                if (!TextUtils.isEmpty(missionSubDescription)) missionSubDescription else null
+            var missionSubtitleDetailWithNullable =
+                if (!TextUtils.isEmpty(missionSubDescriptionDetail)) missionSubDescriptionDetail else null
+            navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}/${missionSubtitleWithNullable}/${missionSubtitleDetailWithNullable}") {
                 popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                     inclusive = true
                 }
@@ -62,7 +77,11 @@ fun DataLoadingScreenComponent(
 
     if (viewModel.errorNavigate.value) {
         viewModel.setAllDataFetched()
-        navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+        var missionSubtitleWithNullable =
+            if (!TextUtils.isEmpty(missionSubDescription)) missionSubDescription else null
+        var missionSubtitleDetailWithNullable =
+            if (!TextUtils.isEmpty(missionSubDescriptionDetail)) missionSubDescriptionDetail else null
+        navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}/${missionSubtitleWithNullable}/${missionSubtitleDetailWithNullable}") {
             popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                 inclusive = true
             }
@@ -88,7 +107,11 @@ fun DataLoadingScreenComponent(
                     viewModel.clearLocalDB {
                         viewModel.fetchAllData {
                             viewModel.setAllDataFetched()
-                            navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}") {
+                            var missionSubtitleWithNullable =
+                                if (!TextUtils.isEmpty(missionSubDescription)) missionSubDescription else null
+                            var missionSubtitleDetailWithNullable =
+                                if (!TextUtils.isEmpty(missionSubDescriptionDetail)) missionSubDescriptionDetail else null
+                            navController.navigate("$MISSION_SUMMARY_SCREEN_ROUTE_NAME/${missionId}/${missionDescription}/${missionSubtitleWithNullable}/${missionSubtitleDetailWithNullable}") {
                                 popUpTo(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
                                     inclusive = true
                                 }
