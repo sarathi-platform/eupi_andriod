@@ -123,7 +123,7 @@ class DataSummaryScreenViewModel @Inject constructor(
 
             is CommonEvents.UpdateDateRange -> {
                 if (event.startDate != null && event.endDate != null) {
-                    _dateRangeFilter.value =
+                      _dateRangeFilter.value =
                         _dateRangeFilter.value.copy(event.startDate!!, event.endDate!!)
                 }
             }

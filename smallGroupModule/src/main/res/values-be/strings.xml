@@ -45,25 +45,15 @@
         <item quantity="other">"हाजिरानि  जारिमिन: "</item>
     </plurals>
 
-    <plurals name="edit_button_text">
-        <item quantity="one">सुजु</item>
-        <item quantity="other">सुजु</item>
-    </plurals>
+    <string name="edit_button_text">
+     सुजु</string>
+    <string name="attendance_percentage_text">
+      जारिमिन - %1$s
+    </string>
 
-<!--    <plurals name="total_didis_label_text">-->
-<!--        <item quantity="one">गासै आब'मोन - %1$s</item>-->
-<!--        <item quantity="other">गासै आब'मोन - %1$s</item>-->
-<!--    </plurals>-->
-
-    <plurals name="attendance_percentage_text">
-        <item quantity="one">जारिमिन - %1$s</item>
-        <item quantity="other">जारिमिन - %1$s</item>
-    </plurals>
-
-    <plurals name="total_count_text">
-        <item quantity="one">गासै - %1$s/%2$s</item>
-        <item quantity="other">गासै - %1$s/%2$s</item>
-    </plurals>
+    <string name="total_count_text">
+      गासै - %1$s/%2$s
+    </string>
 
     <plurals name="data_selector">
         <item quantity="one">>Date Selector</item>
