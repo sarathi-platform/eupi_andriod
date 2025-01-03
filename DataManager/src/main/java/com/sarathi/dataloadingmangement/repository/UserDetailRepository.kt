@@ -10,7 +10,6 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_BLOCK_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_DISTRICT_NAME
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_NAME
-import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.network.response.UserDetailsResponse
 import javax.inject.Inject
