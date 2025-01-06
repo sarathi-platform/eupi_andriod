@@ -86,10 +86,6 @@ fun ExportImportScreen(
                     viewModel.showRestartAppDialog.value=true
                 }
 
-                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
-                    viewModel.exportOldAndNewBaselineQnA(context)
-                }
-
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
                 }

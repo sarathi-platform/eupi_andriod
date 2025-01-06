@@ -11,8 +11,8 @@ data class LivelihoodOptionResponse(
 )
 
 data class LivelihoodDTO(
-    @SerializedName("livelihoodId")
-    val livelihoodId: Int,
+    @SerializedName("programLivelihoodId")
+    val programLivelihoodId: Int,
     @SerializedName("order")
     val order: Int,
 )

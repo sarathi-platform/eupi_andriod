@@ -61,5 +61,10 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="last_sync_date_time">অন্তিম চিংক সময়:</string>
     <string name="profile_phone">ফোন নম্বৰ</string>
+    <string name="days">%1$s দিন</string>
+    <string name="hours">%1$s ঘণ্টা</string>
+    <string name="minutes">%1$s মিনিটবোৰ</string>
+    <string name="ago">আগতে</string>
+    <string name="just_now">মাত্ৰ এতিয়া</string>
 
 </resources>

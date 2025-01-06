@@ -106,7 +106,7 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
         return SaveLivelihoodEventDto(
             subjectId = eventData.subjectId,
             eventId = eventData.eventId,
-            livelihoodId = eventData.livelihoodId,
+            programLivelihoodId = eventData.livelihoodId,
             eventValue = eventData.eventValue,
             productId = eventData.productId,
             assetType = eventData.assetType,

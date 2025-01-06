@@ -56,5 +56,10 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="last_sync_date_time">सिंक का अंतिम समय:</string>
     <string name="profile_phone">फ़ोन नंबर</string>
+    <string name="days">%1$s दिन</string>
+    <string name="hours">%1$s घंटे</string>
+    <string name="minutes">%1$s मिनट</string>
+    <string name="ago">पहले</string>
+    <string name="just_now">अभी</string>
 
 </resources>

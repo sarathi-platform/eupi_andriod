@@ -8,13 +8,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import com.nudge.core.R
 import com.nudge.core.getTimeAgoDetailed
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.syncMediumTextStyle
+import com.nudge.core.ui.theme.syncTimeSmallTextStyle
 
 @Composable
 fun LastSyncTimeView(
@@ -23,6 +25,7 @@ fun LastSyncTimeView(
     isShowPhoneNumber: Boolean = true,
     onCancelWorker: () -> Unit
 ) {
+    val context = LocalContext.current
     if (lastSyncTime != 0L) {
         Column(modifier = Modifier.fillMaxWidth()) {
             Row(
@@ -32,17 +35,18 @@ fun LastSyncTimeView(
                     .clickable {
                         onCancelWorker()
                     },
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     text = stringResource(id = R.string.last_sync_date_time),
-                    style = syncMediumTextStyle,
+                    style = syncTimeSmallTextStyle,
                     color = blueDark
                 )
 
                 Text(
-                    text = getTimeAgoDetailed(lastSyncTime),
-                    style = syncMediumTextStyle,
+                    text = getTimeAgoDetailed(lastSyncTime, context),
+                    style = syncTimeSmallTextStyle,
                     color = blueDark
                 )
             }
@@ -54,14 +58,14 @@ fun LastSyncTimeView(
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     Text(
-                        text = stringResource(id = R.string.profile_phone),
-                        style = syncMediumTextStyle,
+                        text = stringResource(id = R.string.profile_phone) + ":",
+                        style = syncTimeSmallTextStyle,
                         color = blueDark
                     )
 
                     Text(
                         text = mobileNumber,
-                        style = syncMediumTextStyle,
+                        style = syncTimeSmallTextStyle,
                         color = blueDark
                     )
                 }

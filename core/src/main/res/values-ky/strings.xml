@@ -51,5 +51,10 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="last_sync_date_time">Swkang ni Sync khaima Jora:</string>
     <string name="profile_phone">Phone Number</string>
+    <string name="days">%1$s days</string>
+    <string name="hours">%1$s hours</string>
+    <string name="minutes">%1$s minutes</string>
+    <string name="ago">ago</string>
+    <string name="just_now">Just Now</string>
 
 </resources>
