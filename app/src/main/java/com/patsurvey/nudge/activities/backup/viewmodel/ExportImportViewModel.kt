@@ -27,9 +27,6 @@ import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.database.entities.Events
-import com.nudge.core.datamodel.BaseLineQnATableCSV
-import com.nudge.core.datamodel.HamletQnATableCSV
-import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.exportDatabase
 import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
@@ -41,8 +38,6 @@ import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
-import com.nudge.core.utils.AESHelper
-import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -67,11 +62,7 @@ class ExportImportViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
-    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
-    private val getTaskUseCase: GetTaskUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    val syncEventDetailUseCase: SyncEventDetailUseCase,
     val syncHistoryUseCase: SyncHistoryUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
