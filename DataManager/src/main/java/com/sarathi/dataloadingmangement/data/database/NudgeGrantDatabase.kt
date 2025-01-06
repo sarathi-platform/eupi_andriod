@@ -140,7 +140,7 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 7
+const val NUDGE_GRANT_DATABASE_VERSION = 6
 
 @Database(
     entities = [
@@ -349,16 +349,9 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                 CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_5_6")
                 migration(
                     db,
-                    listOf(DROP_LANGUAGE_TABLE, ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID)
-                )
-            }
-        }
-        val NUDGE_GRANT_DATABASE_MIGRATION_6_7 = object : Migration(6, 7) {
-            override fun migrate(db: SupportSQLiteDatabase) {
-                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_6_7")
-                migration(
-                    db,
                     listOf(
+                        DROP_LANGUAGE_TABLE,
+                        ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID,
                         CREATE_MISSION_CONFIG_ENTITY_TABLE,
                         CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE
                     )

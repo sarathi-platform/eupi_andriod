@@ -263,7 +263,7 @@ object MigrationQueries {
     val ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID =
         "ALTER TABLE $LIVELIHOOD_TABLE_NAME ADD COLUMN programLivelihoodId INTEGER DEFAULT 0 NOT NULL"
     val CREATE_MISSION_CONFIG_ENTITY_TABLE =
-        "CREATE TABLE $MISSION_CONFIG_TABLE_NAME (\n" +
+        "CREATE TABLE IF NOT EXISTS $MISSION_CONFIG_TABLE_NAME (\n" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "    userId TEXT,\n" +
                 "    missionName TEXT NOT NULL,\n" +
@@ -271,7 +271,7 @@ object MigrationQueries {
                 "    missionType TEXT NOT NULL\n" +
                 ");"
     val CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE =
-        "CREATE TABLE $LIVELIHOOD_CONFIG_TABLE_NAME (\n" +
+        "CREATE TABLE IF NOT EXISTS $LIVELIHOOD_CONFIG_TABLE_NAME (\n" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "    userId TEXT,\n" +
                 "    missionId INTEGER NOT NULL,\n" +
