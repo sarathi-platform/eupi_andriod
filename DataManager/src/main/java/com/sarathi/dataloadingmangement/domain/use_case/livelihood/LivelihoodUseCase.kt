@@ -43,7 +43,7 @@ class LivelihoodUseCase @Inject constructor(
                 )
             }
             livelihoodResponse.assets?.let { assets ->
-                livelihoodResponse.livelihood?.id?.let {
+                livelihoodResponse.livelihood?.programLivelihoodId?.let {
                     coreLivelihoodRepositoryImpl.saveLivelihoodItemListToDB(
                         assets,
                         it
@@ -51,7 +51,7 @@ class LivelihoodUseCase @Inject constructor(
                 }
             }
             livelihoodResponse.products?.let { products ->
-                livelihoodResponse.livelihood?.id?.let {
+                livelihoodResponse.livelihood?.programLivelihoodId?.let {
                     coreLivelihoodRepositoryImpl.saveLivelihoodItemListToDB(
                         products,
                         it
@@ -59,7 +59,7 @@ class LivelihoodUseCase @Inject constructor(
                 }
             }
             livelihoodResponse.events?.let { events ->
-                livelihoodResponse.livelihood?.id?.let {
+                livelihoodResponse.livelihood?.programLivelihoodId?.let {
                     coreLivelihoodRepositoryImpl.saveLivelihoodItemListToDB(
                         events,
                         it
