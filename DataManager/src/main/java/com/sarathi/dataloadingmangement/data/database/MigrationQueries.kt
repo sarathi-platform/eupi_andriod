@@ -195,7 +195,6 @@ object MigrationQueries {
     val CREATE_NEW_LIVELIHOOD_TABLE = "CREATE TABLE IF NOT EXISTS  $LIVELIHOOD_TABLE_NAME (\n" +
             "    'id' INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
             "    livelihoodId INTEGER NOT NULL,\n" +
-            "    programLivelihoodId INTEGER NOT NULL,\n" +
             "    userId TEXT NOT NULL,\n" +
             "    name TEXT NOT NULL,\n" +
             "    status INTEGER NOT NULL,\n" +
@@ -259,5 +258,8 @@ object MigrationQueries {
         "ALTER TABLE $ACTIVITY_TABLE_NAME ADD COLUMN activityOrder INTEGER DEFAULT 1 NOT NULL"
 
     val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
+    val ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID =
+        "ALTER TABLE $LIVELIHOOD_TABLE_NAME ADD COLUMN programLivelihoodId INTEGER DEFAULT 0 NOT NULL"
+
 }
 

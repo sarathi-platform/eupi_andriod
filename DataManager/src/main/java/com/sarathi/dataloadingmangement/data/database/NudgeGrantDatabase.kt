@@ -65,6 +65,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACT
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_TABLE_ADD_MISSION_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
@@ -344,7 +345,10 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
         val NUDGE_GRANT_DATABASE_MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_5_6")
-                migration(db, listOf(DROP_LANGUAGE_TABLE))
+                migration(
+                    db,
+                    listOf(DROP_LANGUAGE_TABLE, ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID)
+                )
             }
         }
 
