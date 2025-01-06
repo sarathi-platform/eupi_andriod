@@ -200,7 +200,7 @@ class DataSummaryScreenViewModel @Inject constructor(
         var result = if (livelihoodFilter == ALL_DATA) {
             livelihoodModel.mapNotNull { _livelihoodModel ->
                 subjectLivelihoodEventSummaryUiModelList
-                    .filter { it.livelihoodId == _livelihoodModel.livelihoodId }
+                    .filter { it.livelihoodId == _livelihoodModel.programLivelihoodId }
                     .takeIf { it.isNotEmpty() }
             }.flatten()
         } else {
@@ -389,9 +389,9 @@ class DataSummaryScreenViewModel @Inject constructor(
         livelihoodModel.forEach {
             _livelihoodDropdownList.add(
                 ValuesDto(
-                    it.livelihoodId,
+                    it.programLivelihoodId,
                     it.name,
-                    selectedLivelihood.value == it.livelihoodId
+                    selectedLivelihood.value == it.programLivelihoodId
                 )
             )
         }
@@ -449,7 +449,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     fun getEventsList(): List<LivelihoodEventUiModel>? {
         return if (selectedLivelihood.value == ALL_DATA) {
             livelihoodModel.flatMap { _livelihoodModel ->
-                livelihoodEventMap[_livelihoodModel.livelihoodId] ?: emptyList()
+                livelihoodEventMap[_livelihoodModel.programLivelihoodId] ?: emptyList()
             }
         } else {
             livelihoodEventMap[selectedLivelihood.value]
