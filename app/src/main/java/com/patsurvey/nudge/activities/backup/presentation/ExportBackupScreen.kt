@@ -1,8 +1,15 @@
 package com.patsurvey.nudge.activities.backup.presentation
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -10,6 +17,7 @@ import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
+import com.nrlm.baselinesurvey.ui.theme.blueDark
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.patsurvey.nudge.activities.backup.viewmodel.ExportBackupScreenViewModel
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
@@ -61,4 +69,19 @@ fun ExportBackupScreen(
         isLoaderVisible = false,
         onSyncDataClick = {}
     )
+
+    if (viewModel.loaderState.value.isLoaderVisible) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = blueDark,
+                modifier = Modifier
+                    .size(28.dp)
+                    .align(Alignment.Center)
+            )
+        }
+    }
 }

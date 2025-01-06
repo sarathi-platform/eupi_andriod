@@ -1152,8 +1152,6 @@ fun formatToIndianRupee(amount: String): String {
             formattedAmount
         }
     } catch (ex: Exception) {
-        CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1456,4 +1454,12 @@ fun getTimeAgoDetailed(timeInMillis: Long, context: Context): String {
 
         else -> context.getString(R.string.just_now)
     }
+}
+
+fun String.toCamelCase(): String {
+    return this.split(" ")
+        .mapIndexed { _, word ->
+            word.lowercase().replaceFirstChar { it.uppercase() }
+        }
+        .joinToString(" ")
 }

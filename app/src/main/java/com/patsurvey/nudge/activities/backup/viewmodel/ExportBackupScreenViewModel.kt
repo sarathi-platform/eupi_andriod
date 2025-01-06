@@ -111,6 +111,7 @@ class ExportBackupScreenViewModel @Inject constructor(
     val applicationId = mutableStateOf(BLANK_STRING)
     val loggedInUserType = mutableStateOf(BLANK_STRING)
     var userType: String = BLANK_STRING
+    val loaderState: State<LoaderState> get() = _loaderState
 
     init {
         mAppContext = NudgeCore.getAppContext()

@@ -4,6 +4,7 @@ import android.content.Context
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.ui.profile.domain.use_case.ProfileBSUseCase
+import com.nudge.core.toCamelCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
@@ -41,7 +42,7 @@ class ProfileBSViewModel @Inject constructor(
             userDetailList.add(
                 Pair(
                     context.getString(R.string.profile_block_name),
-                    profileBSUseCase.getUserNameUseCase.getBlockName()
+                    profileBSUseCase.getUserNameUseCase.getBlockName().toCamelCase()
                 )
             )
         }
@@ -50,7 +51,7 @@ class ProfileBSViewModel @Inject constructor(
             userDetailList.add(
                 Pair(
                     context.getString(R.string.profile_district_name),
-                    profileBSUseCase.getUserNameUseCase.getDistrictName()
+                    profileBSUseCase.getUserNameUseCase.getDistrictName().toCamelCase()
                 )
             )
         }
@@ -59,7 +60,7 @@ class ProfileBSViewModel @Inject constructor(
             userDetailList.add(
                 Pair(
                     context.getString(R.string.profile_state_name),
-                    profileBSUseCase.getUserNameUseCase.getStateName()
+                    profileBSUseCase.getUserNameUseCase.getStateName().toCamelCase()
                 )
             )
         }
