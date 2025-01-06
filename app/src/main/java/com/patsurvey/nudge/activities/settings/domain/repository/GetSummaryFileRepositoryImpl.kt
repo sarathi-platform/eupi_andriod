@@ -6,10 +6,10 @@ import androidx.core.net.toUri
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
-import com.nrlm.baselinesurvey.model.datamodel.SummaryFileDto
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.SARATHI_DIRECTORY_NAME
+import com.nudge.core.model.SummaryFileDto
 import com.nudge.core.utils.CoreLogger
 import java.io.File
 import java.io.FileWriter

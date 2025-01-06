@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sync">Sync</string>
+    <string name="baseLine">BaseLine</string>
+    <string name="image">Image</string>
+    <string name="sync_Icon">Sync Icon</string>
+    <string name="arrow_Icon">Arrow Icon</string>
+
+</resources>

@@ -23,7 +23,12 @@ object DatabaseModule {
     fun provideDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, NudgeDatabase::class.java, NUDGE_DATABASE)
             // Add Migrations for each migration object created.
-            .addMigrations(NudgeDatabase.MIGRATION_1_2, NudgeDatabase.MIGRATION_2_3)
+            .addMigrations(
+                NudgeDatabase.MIGRATION_1_2,
+                NudgeDatabase.MIGRATION_2_3,
+                NudgeDatabase.MIGRATION_3_4,
+                NudgeDatabase.MIGRATION_4_5
+            )
             .addCallback(NudgeDatabase.NudgeDatabaseCallback())
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .fallbackToDestructiveMigration()
@@ -33,6 +38,8 @@ object DatabaseModule {
     @Singleton
     fun provideSyncDatabase(@ApplicationContext context: Context) =
         Room.databaseBuilder(context, SyncManagerDatabase::class.java, SYNC_MANAGER_DATABASE)
+            .addMigrations(SyncManagerDatabase.MIGRATION_1_2)
+            .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .fallbackToDestructiveMigration()
             .build()
 
@@ -44,9 +51,6 @@ object DatabaseModule {
     @Singleton
     fun provideUserDao(db: NudgeDatabase) = db.userDao()
 
-    @Provides
-    @Singleton
-    fun provideLanguageDao(db: NudgeDatabase) = db.languageListDao()
 
     @Provides
     @Singleton
@@ -55,10 +59,6 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideTolaDao(db: NudgeDatabase) = db.tolaDao()
-
-    @Provides
-    @Singleton
-    fun provideCasteListDao(db: NudgeDatabase) = db.casteListDao()
 
     @Provides
     @Singleton
@@ -103,5 +103,21 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun providesEventDependencyDao(syncDb: SyncManagerDatabase) = syncDb.eventsDependencyDao()
+
+    @Provides
+    @Singleton
+    fun providesApiStatusDao(syncDb: SyncManagerDatabase) = syncDb.apiStatusDao()
+
+    @Provides
+    @Singleton
+    fun providesEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.eventStatusDao()
+
+    @Provides
+    @Singleton
+    fun provideImageEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.imageStatusDao()
+
+    @Provides
+    @Singleton
+    fun provideRequestEventStatusDao(syncDb: SyncManagerDatabase) = syncDb.requestStatusDao()
 
 }

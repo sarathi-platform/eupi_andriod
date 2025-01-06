@@ -96,7 +96,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
                 TabsEnum.MissionTab
             )
         )
-        if (!prefRepo.isDataTabVisible()) {
+        if (prefRepo.isDataTabVisible()) {
             screenList.add(
                 BottomNavItem(
                     "Data",

@@ -18,6 +18,21 @@ class EventsWriterUserCase(private val repository: EventsWriterRepository) {
             repository.saveEventToMultipleSources(events, eventDependencies, eventType)
     }
 
+    open suspend fun writeFailedEventIntoEventFile(
+        events: Events,
+        eventDependencies: List<EventDependencyEntity> = emptyList(),
+        eventType: EventType,
+        fileNameWithoutExtension: String
+    ) {
+        if (events.id != BLANK_STRING)
+            repository.saveFailedEventWithFileName(
+                event = events,
+                eventDependencies = eventDependencies,
+                eventType = eventType,
+                fileNameWithoutExtension = fileNameWithoutExtension
+            )
+    }
+
 
     open suspend fun writeImageEventIntoLogFile(
         event: Events,

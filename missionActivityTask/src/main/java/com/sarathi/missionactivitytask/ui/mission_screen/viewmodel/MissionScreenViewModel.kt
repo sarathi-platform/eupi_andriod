@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.SyncMigrationUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -31,7 +32,8 @@ class MissionScreenViewModel @Inject constructor(
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
-    private val baselineV1CheckUseCase: BaselineV1CheckUseCase
+    private val baselineV1CheckUseCase: BaselineV1CheckUseCase,
+    private val syncMigrationUseCase: SyncMigrationUseCase
 ) : BaseViewModel() {
     private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
     val missionList: State<List<MissionUiModel>> get() = _missionList
@@ -95,6 +97,8 @@ class MissionScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            // To Delete events for version 1 to 2 sync migration
+            syncMigrationUseCase.deleteEventsAfter1To2Migration()
             fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
                 initMissionScreen()
             }
@@ -104,6 +108,7 @@ class MissionScreenViewModel @Inject constructor(
             }
         }
     }
+
 
     // Temp method to be removed after baseline is migrated to Grant flow.
     private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
@@ -149,7 +154,6 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    //TODO Temp code remove after data is fetched from API
     fun getStateId() = fetchAllDataUseCase.getStateId()
 
     fun isBaselineV1Mission(missionName: String): Boolean {

@@ -294,11 +294,9 @@ class SurveySummaryRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
                     payloadLocalId = "",
-                    consumer_status = BLANK_STRING,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
                         depends_on = listOf(),

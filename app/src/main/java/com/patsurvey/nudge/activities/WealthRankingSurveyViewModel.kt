@@ -587,7 +587,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
                     stepId = stepId
                 )
 
-            val didiList = repository.getAllDidisForVillage(villageId)
+            val didiList = repository.getAllDidisForVillage(villageId).filter { it.rankingEdit }
 
             val tolaDeviceIdMap: Map<Int, String> =
                 repository.getTolaDeviceIdMap(villageId, repository.tolaDao)
@@ -605,7 +605,7 @@ class WealthRankingSurveyViewModel @Inject constructor(
             addRankingFlagEditEventList.forEach { rankingEditEvent ->
                 repository.saveEventToMultipleSources(rankingEditEvent, listOf())
             }
-
+            updateWealthRankingFlagForDidis()
         }
     }
 

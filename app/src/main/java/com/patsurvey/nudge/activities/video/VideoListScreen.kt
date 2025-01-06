@@ -121,7 +121,9 @@ fun VideoListScreen(
 
                 }, onSearchValueChange = {
                     viewModel.performQuery(it)
-                }
+                },
+                        onSortedSelected = {}
+
             )
 
             Text(

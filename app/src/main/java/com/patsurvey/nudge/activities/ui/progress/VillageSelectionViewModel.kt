@@ -9,10 +9,17 @@ import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.SyncMigrationUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
+import com.nudge.core.usecase.language.LanguageConfigUseCase
+import com.nudge.core.value
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
@@ -20,14 +27,10 @@ import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.RetryHelper.crpPatQuestionApiLanguageId
 import com.patsurvey.nudge.RetryHelper.retryApiList
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.analytics.AnalyticsHelper
-import com.patsurvey.nudge.analytics.EventParams
-import com.patsurvey.nudge.analytics.Events
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
 import com.patsurvey.nudge.database.DidiEntity
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.database.NumericAnswerEntity
 import com.patsurvey.nudge.database.PoorDidiEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -36,9 +39,7 @@ import com.patsurvey.nudge.database.TrainingVideoEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
@@ -69,7 +70,6 @@ import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DownloadStatus
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.HEADING_QUESTION_TYPE
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PAT_SURVEY_CONSTANT
@@ -137,7 +137,6 @@ class VillageSelectionViewModel @Inject constructor(
     val tolaDao: TolaDao,
     val didiDao: DidiDao,
     val casteListDao: CasteListDao,
-    val languageListDao: LanguageListDao,
     val questionListDao: QuestionListDao,
     val trainingVideoDao: TrainingVideoDao,
     val numericAnswerDao: NumericAnswerDao,
@@ -150,7 +149,10 @@ class VillageSelectionViewModel @Inject constructor(
     val lastSelectedTolaDao: LastSelectedTolaDao,
 
     val villageSelectionRepository: VillageSelectionRepository,
-    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
+    val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val syncMigrationUseCase: SyncMigrationUseCase,
+    val languageConfigUseCase: LanguageConfigUseCase,
+    val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
 
 ) : BaseViewModel() {
     private var isNeedToCallVillageApi: Boolean = true
@@ -181,7 +183,7 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    fun clearLocalDB(context: Context) {
+    fun clearLocalDB(context: Context, onDataClearComplete: () -> Unit) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             casteListDao.deleteCasteTable()
@@ -196,10 +198,10 @@ class VillageSelectionViewModel @Inject constructor(
             villageListDao.deleteAllVilleges()
             bpcSummaryDao.deleteAllSummary()
             poorDidiListDao.deleteAllDidis()
-            syncManagerDatabase.eventsDao().deleteAllEvents()
-            syncManagerDatabase.eventsDependencyDao().deleteAllDependentEvents()
             clearSharedPreference()
             init(context)
+            onDataClearComplete()
+
         }
     }
 
@@ -238,6 +240,8 @@ class VillageSelectionViewModel @Inject constructor(
                 }
             }
         }
+        // To Delete events for version 1 to 2 sync migration
+        syncMigrationUseCase.deleteEventsAfter1To2Migration()
     }
 
 
@@ -256,7 +260,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchQuestions(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val localLanguageList = languageListDao.getAllLanguages()
+            val localLanguageList = languageConfigUseCase.getAllLanguage()
             stateId.value = getStateId()
             localLanguageList?.let {
                 localLanguageList.forEach { languageEntity ->
@@ -991,56 +995,7 @@ class VillageSelectionViewModel @Inject constructor(
     private fun fetchCastList(isRefresh: Boolean) {
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val languageList = languageListDao.getAllLanguages()
-            languageList.forEach { language ->
-                var localCasteList = casteListDao.getAllCasteForLanguage(language.id)
-                if (localCasteList.isEmpty() || isRefresh) {
-                    try {
-                        val casteResponse = apiService.getCasteList(language.id)
-                        if (casteResponse.status.equals(SUCCESS, true)) {
-                            casteResponse.data?.let { casteList ->
-                                if (isRefresh) {
-                                    casteListDao.deleteCasteTableForLanguage(languageId = language.id)
-                                }
-                                casteList.forEach { casteEntity ->
-                                    casteEntity.languageId = language.id
-                                }
-                                casteListDao.insertAll(casteList)
-                                AnalyticsHelper.logEvent(
-                                    Events.CASTE_LIST_WRITE,
-                                    mapOf(
-                                        EventParams.LANGUAGE_ID to language.id,
-                                        EventParams.CASTE_LIST to "$casteList",
-                                        EventParams.FROM_SCREEN to "VillageSelectionScreen"
-                                    )
-                                )
-                            }
-                        } else {
-                            val ex = ApiResponseFailException(casteResponse.message)
-                            if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-                                retryApiList.add(ApiType.CAST_LIST_API)
-                                crpPatQuestionApiLanguageId.add(language.id)
-                            }
-                            onCatchError(ex, ApiType.CAST_LIST_API)
-                        }
-                    } catch (ex: Exception) {
-                        if (!retryApiList.contains(ApiType.CAST_LIST_API)) {
-                            retryApiList.add(ApiType.CAST_LIST_API)
-                            crpPatQuestionApiLanguageId.add(language.id)
-                        }
-                        onCatchError(ex, ApiType.CAST_LIST_API)
-                    } finally {
-                        if (retryApiList.contains(ApiType.CAST_LIST_API)) RetryHelper.retryApi(
-                            ApiType.CAST_LIST_API
-                        )
-                    }
-                } /*else {
-                    withContext(Dispatchers.Main) {
-                        delay(250)
-                        showLoader.value = false
-                    }
-                }*/
-            }
+            fetchCasteConfigNetworkUseCase.invoke()
         }
     }
 
@@ -1578,7 +1533,7 @@ class VillageSelectionViewModel @Inject constructor(
             try {
 
                 val localVillageList = villageListDao.getAllVillages(prefRepo.getAppLanguageId()?:2)
-                val localLanguageList = languageListDao.getAllLanguages()
+                val localLanguageList = languageConfigUseCase.getAllLanguage()
                val villageReq= createMultiLanguageVillageRequest(localLanguageList)
                 if (!localVillageList.isNullOrEmpty()) {
                     _villagList.value = localVillageList.distinctBy {
@@ -1605,6 +1560,12 @@ class VillageSelectionViewModel @Inject constructor(
                                     it.villageList?.firstOrNull()?.stateId ?: 4
                                 )
 
+                                villageSelectionRepository.analyticsManager.setUserDetail(
+                                    distinctId = prefRepo.getMobileNumber(),
+                                    name = it.name.value(),
+                                    userType = it.typeName.value(),
+                                    buildEnvironment = prefRepo.getBuildEnvironment()
+                                )
 
                                 coreSharedPrefs.setBackupFileName(
                                     getDefaultBackUpFileName(
@@ -1645,6 +1606,7 @@ class VillageSelectionViewModel @Inject constructor(
                                 } else {
                                     prefRepo.setIsUserBPC(false)
                                 }
+                                fetchLanguageConfig()
                                 apiSuccess(true)
                             }
 
@@ -1904,6 +1866,11 @@ class VillageSelectionViewModel @Inject constructor(
     fun fetchAppConfig() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke()
+            languageConfigUseCase.invoke()
         }
+    }
+
+    suspend fun fetchLanguageConfig() {
+        languageConfigUseCase.invoke()
     }
 }

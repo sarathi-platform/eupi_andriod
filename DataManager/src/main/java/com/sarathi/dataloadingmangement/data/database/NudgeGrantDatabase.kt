@@ -30,7 +30,6 @@ import com.sarathi.dataloadingmangement.data.dao.DocumentDao
 import com.sarathi.dataloadingmangement.data.dao.FormDao
 import com.sarathi.dataloadingmangement.data.dao.FormUiConfigDao
 import com.sarathi.dataloadingmangement.data.dao.GrantConfigDao
-import com.sarathi.dataloadingmangement.data.dao.LanguageDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.MissionLanguageAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
@@ -58,12 +57,20 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_TABLE_ADD_MISSION_ORDER
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
@@ -81,6 +88,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SOURCE_TARGET_QUESTION_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SUBJECT_LIVELIHOOD_MAPPING_TABLE_
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_SURVEY_CONFIG_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LANGUAGE_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_PRODUCT_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.DROP_LIVELIHOOD_TABLE
@@ -98,7 +106,6 @@ import com.sarathi.dataloadingmangement.data.entities.DocumentEntity
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.data.entities.FormUiConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.GrantConfigEntity
-import com.sarathi.dataloadingmangement.data.entities.LanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionEntity
 import com.sarathi.dataloadingmangement.data.entities.MissionLanguageEntity
 import com.sarathi.dataloadingmangement.data.entities.OptionItemEntity
@@ -125,10 +132,12 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEnt
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 4
+const val NUDGE_GRANT_DATABASE_VERSION = 6
 
 @Database(
     entities = [
@@ -149,7 +158,6 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
         SectionEntity::class,
         QuestionEntity::class,
         OptionItemEntity::class,
-        LanguageEntity::class,
         ProgrammeEntity::class,
         SurveyAnswerEntity::class,
         GrantConfigEntity::class,
@@ -172,7 +180,9 @@ const val NUDGE_GRANT_DATABASE_VERSION = 4
         SectionStatusEntity::class,
         SourceTargetQuestionMappingEntity::class,
         ConditionsEntity::class,
-        SurveyConfigEntity::class
+        SurveyConfigEntity::class,
+        MissionConfigEntity::class,
+        LivelihoodConfigEntity::class
     ],
 
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -197,7 +207,6 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun activityDao(): ActivityDao
     abstract fun taskDao(): TaskDao
     abstract fun contentDao(): ContentDao
-    abstract fun languageDao(): LanguageDao
     abstract fun activityConfigDao(): ActivityConfigDao
     abstract fun formEDao(): FormDao
     abstract fun documentDao(): DocumentDao
@@ -244,6 +253,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
     abstract fun conditionsEntityDao(): ConditionsEntityDao
 
     abstract fun surveyConfigEntityDao(): SurveyConfigEntityDao
+    abstract fun missionConfigEntityDao(): MissionConfigEntityDao
+    abstract fun livelihoodConfigEntityDao(): LivelihoodConfigEntityDao
 
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
@@ -308,9 +319,32 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         CREATE_CONDITIONS_TABLE,
                         CREATE_SURVEY_CONFIG_TABLE,
                         ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION,
-                        ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
+                        ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID,
+
+                        ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE,
+                        ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
                     )
                 )
+            }
+        }
+        val NUDGE_GRANT_DATABASE_MIGRATION_4_5 = object : Migration(4, 5) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_4_5")
+                migration(
+                    db,
+                    listOf(
+                        ALTER_QUESTION_ENTITY_ADD_FORM_ORDER,
+                        ALTER_QUESTION_TABLE_ADD_FORM_CONTENT,
+                        ALTER_MISSION_TABLE_ADD_MISSION_ORDER,
+                        ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
+                    )
+                )
+            }
+        }
+        val NUDGE_GRANT_DATABASE_MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_5_6")
+                migration(db, listOf(DROP_LANGUAGE_TABLE))
             }
         }
 

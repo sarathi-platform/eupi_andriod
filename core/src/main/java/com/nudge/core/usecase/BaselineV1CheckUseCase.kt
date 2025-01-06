@@ -35,4 +35,8 @@ class BaselineV1CheckUseCase @Inject constructor(
         return baselineV1Ids
     }
 
+    fun isBaselineV2(stateId: String): Boolean {
+        return !getBaselineV1Ids().contains(stateId)
+    }
+
 }

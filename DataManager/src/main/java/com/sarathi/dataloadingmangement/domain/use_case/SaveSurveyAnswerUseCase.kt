@@ -126,7 +126,7 @@ class SaveSurveyAnswerUseCase(private val repository: ISurveySaveRepository) {
         )
     }
 
-    fun getFormResponseMap(
+    suspend fun getFormResponseMap(
         surveyId: Int,
         sectionId: Int,
         taskId: Int,

@@ -20,7 +20,9 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.util.Base64
 import android.util.Log
+import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.ui.unit.Dp
@@ -34,6 +36,8 @@ import com.google.gson.reflect.TypeToken
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
+import com.nudge.core.datamodel.ImageEventDetailsModel
+import com.nudge.core.enums.SyncBatchEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.theme.dimen_60_dp
@@ -43,6 +47,9 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileInputStream
 import java.io.FileNotFoundException
@@ -138,13 +145,13 @@ fun List<Events>.getEventDependencyEntityListFromEvents(dependentEvents: Events)
     return eventDependencyList
 }
 
-fun getBatchSize(connectionQuality: ConnectionQuality): Int {
+fun getBatchSize(connectionQuality: ConnectionQuality): SyncBatchEnum {
     return when (connectionQuality) {
-        ConnectionQuality.EXCELLENT -> return 20
-        ConnectionQuality.GOOD -> return 15
-        ConnectionQuality.MODERATE -> return 10
-        ConnectionQuality.POOR -> 5
-        ConnectionQuality.UNKNOWN -> -1
+        ConnectionQuality.EXCELLENT -> SyncBatchEnum.EXCELLENT
+        ConnectionQuality.GOOD -> SyncBatchEnum.GOOD
+        ConnectionQuality.MODERATE -> SyncBatchEnum.MODERATE
+        ConnectionQuality.POOR -> SyncBatchEnum.POOR
+        ConnectionQuality.UNKNOWN -> SyncBatchEnum.UNKNOWN
     }
 }
 
@@ -927,6 +934,8 @@ fun Int?.value(defaultValue: Int) = this ?: defaultValue
 
 fun Long?.value() = this ?: -1
 
+fun Long?.value(defaultValue: Long = -1) = this ?: defaultValue
+
 fun Boolean?.value() = this ?: false
 
 fun Boolean?.value(defaultValue: Boolean) = this ?: defaultValue
@@ -1144,7 +1153,7 @@ fun formatToIndianRupee(amount: String): String {
         }
     } catch (ex: Exception) {
         CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, true) }
+            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1238,18 +1247,16 @@ fun convertFileUriToContentUri(_uri: Uri, context: Context) {
 }
 
 fun getImageUri(context: Context, fileName: String): Uri? {
-    var file =
+    val file =
         File("${context.getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath}/${fileName}")
-    if (!file.exists()) {
-        file =
-            File("${context.getExternalFilesDir(Environment.DIRECTORY_DCIM)?.absolutePath}/${fileName}")
-    }
-    return CoreAppDetails.getApplicationDetails()?.applicationID?.let {
-        uriFromFile(
-            context, file,
-            it
-        )
-    }
+    return if (file.exists() && file.isFile) {
+        CoreAppDetails.getApplicationDetails()?.applicationID?.let {
+            uriFromFile(
+                context, file,
+                it
+            )
+        }
+    } else Uri.EMPTY
 }
 
 fun onlyNumberField(value: String): Boolean {
@@ -1306,6 +1313,59 @@ fun openSettings() {
     CoreAppDetails.getContext()?.startActivity(appSettingsIntent)
 }
 
+
+fun getFileMimeType(file: File): String? {
+    var type: String? = null
+    val extension = MimeTypeMap.getFileExtensionFromUrl(file.path)
+    if (extension != null) {
+        type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+    return type
+}
+
+fun convertFileIntoMultipart(
+    imageFile: File,
+    imageEventDetail: ImageEventDetailsModel
+): MultipartBody.Part? {
+    try {
+        val imageRequest = imageFile
+            .asRequestBody(MULTIPART_FORM_DATA.toMediaTypeOrNull())
+        val multipartRequest = MultipartBody.Part.createFormData(
+            MULTIPART_IMAGE_PARAM_NAME,
+            imageEventDetail.fileName,
+            imageRequest
+        )
+        return multipartRequest
+    } catch (ex: Exception) {
+        ex.printStackTrace()
+        return null
+    }
+}
+
+fun getImagePathFromPicture() = CoreAppDetails.getApplicationContext().applicationContext
+    .getExternalFilesDir(Environment.DIRECTORY_PICTURES)?.absolutePath ?: BLANK_STRING
+
+fun isDataEvent(event: Events): Boolean {
+    return !event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) && event.name != FORM_C_TOPIC && event.name != FORM_D_TOPIC
+}
+
+fun isImageEvent(event: Events): Boolean {
+    return event.name.lowercase(Locale.ENGLISH)
+        .contains(IMAGE_STRING) || event.name == FORM_C_TOPIC || event.name == FORM_D_TOPIC
+}
+
+fun decodeBase64ToPlainText(encodedString: String): String {
+    // Decode Base64 encoded string
+    val decodedBytes = Base64.decode(encodedString, Base64.DEFAULT)
+
+    // Convert decoded bytes to String
+    return String(decodedBytes, Charsets.UTF_8)
+}
+
+
+
+
 fun replaceLastWord(sentence: String?, newWord: String?): String {
     if (sentence.isNullOrBlank() || newWord.isNullOrBlank()) {
         return sentence ?: BLANK_STRING
@@ -1315,6 +1375,7 @@ fun replaceLastWord(sentence: String?, newWord: String?): String {
         words[words.size - 1] = newWord
     }
     return words.joinToString(" ")
+
 }
 
 fun String.parseStringToList(): List<Int?> {
@@ -1332,27 +1393,6 @@ fun extractSubstrings(input: String): List<String> {
     return pattern.findAll(input).map { it.value }.toList()
 }
 
-//TEMP Code to be removed when CasteEntity is moved to core.
-val casteMap = mapOf(
-    "en" to mapOf(
-        1 to "GEN- General",
-        2 to "OBC- Other Backward Class",
-        3 to "SC- Scheduled Caste",
-        4 to "ST- Scheduled Tribes"
-    ),
-    "hi" to mapOf(
-        1 to "GEN- सामान्य जाति",
-        2 to "OBC- अन्य पिछड़ी जाति",
-        3 to "SC- अनुसूचित जाति",
-        4 to "ST- अनुसूचित जनजाति"
-    ),
-    "bn" to mapOf(
-        1 to "GEN- সাধারণ",
-        2 to "OBC- অন্যান্য অনগ্রসর শ্রেণী",
-        3 to "SC- তফসিলি জাতি",
-        4 to "ST- তফসিলি উপজাতি"
-    ),
-)
 
 fun findUserTypeForMetadata(userType: String): String {
     return when (userType) {
@@ -1362,5 +1402,47 @@ fun findUserTypeForMetadata(userType: String): String {
         else -> {
             UPCM
         }
+    }
+}
+
+fun calculateProgress(pendingCount: Int, totalCount: Int): Float {
+    return if (totalCount <= 0)
+        0F
+    else {
+        pendingCount.intToFloat() / totalCount.intToFloat()
+    }
+}
+
+fun Int.intToFloat(): Float {
+    return try {
+        this.toFloat()
+    } catch (e: Exception) {
+        0F
+    }
+}
+
+fun getTimeAgoDetailed(timeInMillis: Long): String {
+    val currentTime = System.currentTimeMillis()
+    val diff = currentTime - timeInMillis
+
+    if (diff < 0) {
+        return BLANK_STRING
+    }
+
+    val days = TimeUnit.MILLISECONDS.toDays(diff)
+    val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
+
+    if (days > 2) {
+        return SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+            timeInMillis
+        )
+    }
+
+    return when {
+        days > 0 -> "$days days, $hours hours, $minutes minutes ago"
+        hours > 0 -> "$hours hours, $minutes minutes ago"
+        minutes > 0 -> "$minutes minutes ago"
+        else -> "Just now"
     }
 }

@@ -139,9 +139,6 @@ fun FormPictureScreen(
 ) {
 
     val localContext = LocalContext.current
-
-    val screenHeight = LocalConfiguration.current.screenHeightDp
-
     val shouldRequestPermission = remember {
         mutableStateOf(false)
     }
@@ -1048,7 +1045,6 @@ fun FormPictureScreen(
                                 PREF_NEED_TO_POST_FORM_C_AND_D_ + formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,
                                 true
                             )
-                            formPictureScreenViewModel.updateVoEndorsementEditFlag()
                             formPictureScreenViewModel.updateDidiVoEndorsementStatus()
                             formPictureScreenViewModel.markVoEndorsementComplete(
                                 formPictureScreenViewModel.repository.prefRepo.getSelectedVillage().id,

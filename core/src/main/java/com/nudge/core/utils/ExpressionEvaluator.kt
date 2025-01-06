@@ -1,19 +1,74 @@
 package com.nudge.core.utils
 
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.value
 import java.util.Stack
 
 object ExpressionEvaluator {
 
-    fun evaluateExpression(expression: String): Boolean {
+    private val stringCheckRegex = Regex(".*[a-zA-Z].*")
+
+    private val logicalOperatorCheckRegex = Regex("&&|\\|\\|")
+
+    private val expressionRegex =
+        Regex("""(".*?"|\d+\s*[a-zA-Z]*.*?)\s*(!=|==)\s*(".*?"|\d+\s*[a-zA-Z]*.*?)""")
+
+    fun evaluateExpression(
+        expression: String,
+        validationString: String,
+        validationRegex: String?
+    ): Boolean {
+
+        return if (isStringExpression(expression))
+            evaluateStringExpressions(expression, validationString, validationRegex)
+        else
+            evaluateNonStringExpressions(expression, validationString, validationRegex)
+
+    }
+
+    private fun evaluateStringExpressions(
+        expression: String,
+        validationString: String,
+        validationRegex: String?
+    ): Boolean {
+        val cleanExpression = getCleanExpression(expression)
+
+        return evaluateStringExpression(cleanExpression, validationString, validationRegex)
+    }
+
+    private fun evaluateNonStringExpressions(
+        expression: String,
+        validationString: String,
+        validationRegex: String?
+    ): Boolean {
         // Remove whitespace for simplicity
-        val cleanExpression = expression.replace(" ", "")
+        val cleanExpression = getCleanExpression(expression)
 
         // Replace "&&" with "and" and "||" with "or" for easier handling
         val formattedExpression = cleanExpression
             .replace("&&", " and ")
             .replace("||", " or ")
 
-        return evaluate(formattedExpression)
+
+        return evaluate(formattedExpression) && evaluateValidationRegex(
+            validationString,
+            validationRegex
+        )
+    }
+
+    private fun evaluateValidationRegex(
+        validationString: String,
+        validationRegex: String?
+    ): Boolean {
+
+        if (validationString.equals(BLANK_STRING, true)) {
+            return true
+        }
+
+        return validationRegex?.let { it ->
+            val regex = Regex(it)
+            regex.matches(validationString)
+        } ?: true
     }
 
     private fun evaluate(expression: String): Boolean {
@@ -141,6 +196,70 @@ object ExpressionEvaluator {
 
             else -> false
         }
+    }
+
+    private fun evaluateStringExpression(
+        expression: String,
+        validationString: String,
+        validationRegex: String?
+    ): Boolean {
+        if (logicalOperatorCheckRegex.containsMatchIn(expression)) {
+            val logicalOperator =
+                logicalOperatorCheckRegex.findAll(expression).map { it.value }.toSet().firstOrNull()
+            val individualExpressions = logicalOperator?.let {
+                expression.split(it)
+            }
+            return individualExpressions?.fold(
+                evaluateComparisonStringExpression(
+                    individualExpressions.firstOrNull() ?: BLANK_STRING
+                )
+            ) { acc: Boolean, subExpression: String ->
+                when (logicalOperator) {
+                    "&&" -> acc && evaluateComparisonStringExpression(subExpression)
+                    "||" -> acc || evaluateComparisonStringExpression(subExpression)
+                    else -> false
+                }
+            }.value()
+
+        } else {
+
+            return evaluateComparisonStringExpression(expression) && evaluateValidationRegex(
+                validationString,
+                validationRegex
+            )
+        }
+    }
+
+    private fun evaluateComparisonStringExpression(expression: String): Boolean {
+
+        if (expression == BLANK_STRING)
+            return false
+
+        val match = expressionRegex.matchEntire(expression)
+        if (match != null) {
+            val (left, operator, right) = match.destructured
+            val leftValue = parseValue(left)
+            val rightValue = parseValue(right)
+            return when (operator) {
+                "!=" -> leftValue != rightValue
+                "==" -> leftValue == rightValue
+                else -> false
+            }
+        }
+        return false
+    }
+
+    private fun parseValue(value: String): String {
+        return value.trim().removeSurrounding("\"")
+    }
+
+    private fun isStringExpression(expression: String): Boolean {
+        return stringCheckRegex.containsMatchIn(expression)
+    }
+
+    private fun getCleanExpression(expression: String): String {
+        val cleanExpression = expression.replace(" ", "")
+        return cleanExpression
     }
 
 }

@@ -581,10 +581,8 @@ class EventWriterHelperImpl @Inject constructor(
             createdBy = prefBSRepo.getUserId(),
             mobile_number = prefBSRepo.getMobileNumber() ?: "",
             request_payload = payload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = UUID.randomUUID().toString(),
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -663,10 +661,8 @@ class EventWriterHelperImpl @Inject constructor(
             createdBy = prefBSRepo.getUserId(),
             mobile_number = prefBSRepo.getMobileNumber() ?: "",
             request_payload = payload,
-            status = EventSyncStatus.OPEN.name,
+            status = EventSyncStatus.OPEN.eventSyncStatus,
             modified_date = System.currentTimeMillis().toDate(),
-            result = null,
-            consumer_status = BLANK_STRING,
             payloadLocalId = UUID.randomUUID().toString(),
             metadata = MetadataDto(
                 mission = SELECTION_MISSION,
@@ -835,7 +831,7 @@ class EventWriterHelperImpl @Inject constructor(
                     referenceId = didiInfoEntity.didiId.toString(),
                     tag = it.optionTag,
                     optionDesc = optionItemEntityList.find { option -> option.optionId == it.optionId }?.display
-                        ?: BLANK_STRING
+                        ?: BLANK_STRING,
                 )
                 saveAnswerEventOptionItemDtoList.add(saveAnswerEventOptionItemDto)
             }

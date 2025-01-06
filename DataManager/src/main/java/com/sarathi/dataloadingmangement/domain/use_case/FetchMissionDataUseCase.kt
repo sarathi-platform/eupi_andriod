@@ -22,6 +22,11 @@ class FetchMissionDataUseCase @Inject constructor(
                             missionId = missionId,
                             missionActivityModel = activity,
                         )
+                        repository.saveActivityOrderStatus(
+                            missionId = missionId,
+                            activityId = activity.id,
+                            order = activity.order ?: 1
+                        )
                         repository.saveMissionsActivityTaskToDB(
                             missionId = missionId,
                             activityId = activity.id,

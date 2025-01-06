@@ -1,9 +1,11 @@
 package com.patsurvey.nudge.activities.ui.socialmapping
 
 import androidx.compose.foundation.lazy.LazyListState
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
@@ -25,6 +27,8 @@ import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.StepType
 import com.patsurvey.nudge.utils.WealthRank
+import com.patsurvey.nudge.utils.getSortedList
+import com.patsurvey.nudge.utils.getSortedMap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -50,7 +54,7 @@ class WealthRankingViewModel @Inject constructor(
     private val _didiList = MutableStateFlow(listOf<DidiEntity>())
     val expandedCardIdsList: StateFlow<List<Int>> get() = _expandedCardIdsList
     val didiList: StateFlow<List<DidiEntity>> get() = _didiList
-
+ val selectedSortIndex : MutableState<Int> = mutableStateOf(0)
     val shouldShowBottomButton = mutableStateOf(didiList.value.any { it.wealth_ranking == WealthRank.NOT_RANKED.rank })
 
     private var _filterDidiList = MutableStateFlow(listOf<DidiEntity>())
@@ -81,6 +85,16 @@ class WealthRankingViewModel @Inject constructor(
                 _filterDidiList.value = didiList.value
                 showLoader.value = false
             }
+        }
+    }
+    fun didiSortedList(didiSortIndex: Int,tolaFilterSelected:Boolean) {
+
+        if (tolaFilterSelected)
+        {
+            filterTolaMapList= getSortedMap(didiSortIndex,tolaMapList)
+        }
+        else{
+            _filterDidiList.value= getSortedList(didiSortIndex,_filterDidiList.value)
         }
     }
 
@@ -280,5 +294,5 @@ class WealthRankingViewModel @Inject constructor(
             list.clear()
         }
     }
-
 }
+

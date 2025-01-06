@@ -145,7 +145,9 @@ fun BpcVillageSelectionScreen(
                 navController.navigate(AuthScreen.LOGIN.route)
             },
             onPositiveButtonClick = {
-                viewModel.clearLocalDB(context = context)
+                viewModel.clearLocalDB(context = context) {
+                    //Remove remote config call
+                }
                 viewModel.showUserChangedDialog.value = false
             })
     }
@@ -333,7 +335,9 @@ fun BpcVillageSelectionScreen(
                                     },
                                     onSearchValueChange = {
                                         viewModel.performQuery(it)
-                                    }
+                                    },
+                                    onSortedSelected = {}
+
                                 )
                             }
                             NudgeLogger.d("Village_UI_LIST","$villages :: ${villages.size}")

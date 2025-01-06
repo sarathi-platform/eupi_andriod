@@ -146,7 +146,7 @@ fun AddTolaBox(
 
     LaunchedEffect(key1 = showLoader.value) {
         if (showLoader.value) {
-            delay(200)
+            delay(2000)
             if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                 locationAdded = true
             } else {
@@ -192,8 +192,6 @@ fun AddTolaBox(
             )
         }
         if (getGpsLoaction.value) {
-
-
             ShowDialogForGPsLocation(
                 title = stringResource(R.string.permission_required_prompt_title),
                 message = stringResource(R.string.gps_location_not_enable),
@@ -468,7 +466,7 @@ fun TolaBox(
 
     LaunchedEffect(key1 = showLoader.value) {
         if (showLoader.value) {
-            delay(200)
+            delay(2000)
             if ((location!!.lat != null && location!!.long != null) && (location?.lat != 0.0 && location?.long != 0.0)) {
                 locationAdded = true
             } else {
@@ -729,7 +727,7 @@ fun TolaBox(
                                         networkConsumer
                                     )
                                     coroutineScope.launch {
-                                        delay(500)
+//                                        delay(500)
 
                                         if (showInlineLocationError.value && !getLocationAdded) {
                                             getGpsLoaction.value =true

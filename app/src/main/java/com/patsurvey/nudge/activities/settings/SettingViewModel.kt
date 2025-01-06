@@ -10,10 +10,13 @@ import android.util.Log
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import com.facebook.network.connectionclass.DeviceBandwidthSampler
+import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.exportOldData
 import com.nudge.core.getDefaultBackUpFileName
@@ -28,11 +31,9 @@ import com.patsurvey.nudge.SyncBPCDataOnServer
 import com.patsurvey.nudge.SyncHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
@@ -56,7 +57,6 @@ import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.FORM_A_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_B_PDF_NAME
 import com.patsurvey.nudge.utils.FORM_C_PDF_NAME
-import com.patsurvey.nudge.utils.LAST_SYNC_TIME
 import com.patsurvey.nudge.utils.LAST_UPDATE_TIME
 import com.patsurvey.nudge.utils.LogWriter.getLogFile
 import com.patsurvey.nudge.utils.NudgeCore
@@ -927,7 +927,7 @@ class SettingViewModel @Inject constructor(
                 Log.e("TAG", "Error while downloading image.")
             }
             Log.d("D", ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength().toString())
-            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
+//            NudgeCore.getEventObserver()?.syncPendingEvent(NudgeCore.getAppContext(), networkSpeed)
         }
     }
 

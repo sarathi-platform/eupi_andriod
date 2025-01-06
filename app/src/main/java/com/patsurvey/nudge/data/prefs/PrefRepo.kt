@@ -95,10 +95,21 @@ interface PrefRepo {
    fun savePageOpenFromOTPScreen(status: Boolean)
    fun getPageOpenFromOTPScreen(): Boolean
 
+   fun saveSyncBatchSize(batchSize: Long)
+   fun saveSyncRetryCount(retryCount: Long)
    fun saveDataTabVisibility(isEnabled: Boolean)
 
    fun isDataTabVisible(): Boolean
    fun isDataTabDataLoaded(): Boolean
    fun isDidiTabDataLoaded(): Boolean
+
+   fun saveBuildEnvironment(buildEnv: String)
+
+   fun getBuildEnvironment(): String
+
+   fun setSyncOptionEnabled(isEnabled: Boolean)
+   fun iSSyncOptionEnabled(): Boolean
+   fun setSyncDBMigrate(isSyncDbMigrate: Boolean)
+   fun isSyncDBMigrate(): Boolean
 
 }

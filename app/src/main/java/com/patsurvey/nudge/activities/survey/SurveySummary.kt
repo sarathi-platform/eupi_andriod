@@ -213,7 +213,6 @@ fun SurveySummary(
                         stepId = stepId
                     )
                     surveySummaryViewModel.saveBpcPatCompletionDate()
-                    surveySummaryViewModel.updatePatEditFlag()
                     surveySummaryViewModel.addRankingFlagEditEvent(
                         true,
                         stepId = stepId
@@ -289,7 +288,6 @@ fun SurveySummary(
                                     stepId = stepId
                                 )
                                 surveySummaryViewModel.savePatCompletionDate()
-                                surveySummaryViewModel.updatePatEditFlag()
                                 surveySummaryViewModel.addRankingFlagEditEvent(stepId = stepId)
                             }
                             if ((context as MainActivity).isOnline.value ?: false) {

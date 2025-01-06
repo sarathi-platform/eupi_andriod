@@ -5,7 +5,12 @@ import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
+import com.nudge.core.data.repository.SyncMigrationRepository
+import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
+import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.Module
 import dagger.Provides
@@ -37,6 +42,20 @@ class RepositoryModule {
         return AppConfigDatabaseRepositoryImpl(
             appConfigDao = appConfigDao,
             coreSharedPrefs = coreSharedPrefs
+        )
+    }
+
+    @Singleton
+    @Provides
+    fun provideSyncMigration(
+        eventsDao: EventsDao,
+        eventDependencyDao: EventDependencyDao,
+        corePrefRepo: CorePrefRepo
+    ): SyncMigrationRepository {
+        return SyncMigrationRepositoryImpl(
+            eventsDao = eventsDao,
+            eventDependencyDao = eventDependencyDao,
+            corePrefRepo = corePrefRepo
         )
     }
 

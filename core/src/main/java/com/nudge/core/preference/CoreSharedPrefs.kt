@@ -30,7 +30,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_FILE_BACKUP_NAME = "file_backup_name"
         const val PREF_IMAGE_FILE_BACKUP_NAME = "image_file_backup_name"
         const val PREF_IMAGE_FILE_EXPORTED_NAME = "is_file_exorted"
-        const val PREF_PRODUCER_WORKER_ID = "producer_worker_id"
+        const val PREF_PRODUCER_WORKER_ID= "producer_worker_id"
 
         const val PREF_MOBILE_NO_NAME = "pref_mobile_number"
         const val PREF_USER_TYPE = "type_name"
@@ -41,6 +41,9 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_STATE_ID = "type_state_id"
+        const val PREF_STATE_NAME = "state_name"
+        const val PREF_DISTRICT_NAME = "district_name"
+        const val PREF_BLOCK_NAME = "block_name"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_USER_NAME = "key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
@@ -53,6 +56,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_SYNC_BATCH_SIZE = "sync_batch_size"
         const val PREF_KEY_SYNC_RETRY_COUNT = "sync_retry_count"
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
+        const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
+
+        const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+        const val PREF_KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
 
 
         @Volatile
@@ -299,7 +306,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun saveMixPanelToken(token: String) {
         savePref(PREF_MIX_PANEL_TOKEN, token)
     }
-
     override fun saveSyncImageBlobUploadEnable(isBlobUploadEnable: Boolean) {
         savePref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, isBlobUploadEnable)
     }
@@ -307,7 +313,6 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun isSyncImageBlobUploadEnable(): Boolean {
         return getPref(PREF_SYNC_IMAGE_UPLOAD_ENABLE, false)
     }
-
     override fun saveSyncBatchSize(batchSize: Long) {
         prefs.edit().putLong(PREF_KEY_SYNC_BATCH_SIZE, batchSize).apply()
     }
@@ -336,6 +341,14 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     override fun getHardEventLimitThreshold(): Int {
         return prefs.getInt(PREF_HARD_EVENT_LIMIT_THRESHOLD, DEFAULT_HARD_EVENT_LIMIT_THRESHOLD)
 
+    }
+
+    override fun setSyncDBMigrate(isSyncDbMigrate: Boolean) {
+        prefs.edit().putBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, isSyncDbMigrate).apply()
+    }
+
+    override fun isSyncDBMigrate(): Boolean {
+        return prefs.getBoolean(PREF_KEY_IS_SYNC_DB_MIGRATE, false)
     }
 
     override fun isUserBPC(): Boolean {

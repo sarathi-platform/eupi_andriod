@@ -22,6 +22,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
      */
     suspend fun invoke(
         validationExpression: String?,
+        validationRegex: String?,
         selectedLivelihood: LivelihoodModel,
         subjectId: Int,
         selectedAsset: ProductAssetUiModel?,
@@ -92,7 +93,10 @@ class LivelihoodEventValidationUseCase @Inject constructor(
             }
             return Pair(
                 if (completeExpression?.isNotEmpty() == true) ExpressionEvaluator.evaluateExpression(
-                    completeExpression ?: BLANK_STRING
+                    expression = completeExpression ?: BLANK_STRING,
+                    validationString = BLANK_STRING,
+                    validationRegex = validationRegex
+
                 ) else true,
                 validationMessage
             )

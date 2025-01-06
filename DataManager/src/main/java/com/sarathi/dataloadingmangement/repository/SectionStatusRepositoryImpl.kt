@@ -6,6 +6,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.data.dao.SectionStatusEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.SectionStatusEntity
 import com.sarathi.dataloadingmangement.model.survey.request.SectionStatusRequest
 import com.sarathi.dataloadingmangement.model.survey.response.SectionStatusResponseModel
@@ -21,15 +22,15 @@ class SectionStatusRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) : ISectionStatusRepository {
     override suspend fun fetchSectionStatusFromNetwork(
-        missionId: Int,
-        surveyId: Int
+        activityConfigEntity: ActivityConfigEntity
     ): ApiResponseModel<List<SectionStatusResponseModel>> {
 
         return dataLoadingApiService.getSectionStatus(
             SectionStatusRequest(
                 sectionId = 0,
-                surveyId = surveyId,
-                userId = coreSharedPrefs.getUserId().toIntOrNull() ?: 0
+                surveyId = activityConfigEntity.surveyId,
+                userId = coreSharedPrefs.getUserId().toIntOrNull() ?: 0,
+                subjectType = activityConfigEntity.subject
             )
         )
 
@@ -65,5 +66,11 @@ class SectionStatusRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getActivityConfigForMission(missionId: Int): List<ActivityConfigEntity>? {
+        return activityConfigDao.getActivityConfigUiModel(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            missionId = missionId
+        )
+    }
 
 }

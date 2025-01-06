@@ -9,11 +9,11 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
 import com.akexorcist.localizationactivity.core.LocalizationApplicationDelegate
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.Core
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.syncmanager.SyncManager
-import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.NudgeLogger.e
@@ -49,6 +49,7 @@ class MyApplication : Application(), androidx.work.Configuration.Provider {
         NudgeCore.initEventObserver(syncManager)
         BaselineCore.init(instance.applicationContext)
         Core().init(instance.applicationContext)
+
     }
 
     override fun onCreate() {
@@ -152,8 +153,7 @@ class MyApplication : Application(), androidx.work.Configuration.Provider {
         return localizationDelegate.getResources(baseContext, super.getResources())
     }
 
-    override fun getWorkManagerConfiguration(): androidx.work.Configuration {
-        return androidx.work.Configuration.Builder()
+    override val workManagerConfiguration: androidx.work.Configuration
+        get() = androidx.work.Configuration.Builder()
             .setWorkerFactory(workerFactory).build()
-    }
 }

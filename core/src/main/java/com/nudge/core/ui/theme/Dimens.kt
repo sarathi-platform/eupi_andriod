@@ -34,6 +34,7 @@ val dimen_35_dp = 35.dp
 val dimen_40_dp = 40.dp
 val dimen_45_dp = 45.dp
 val dimen_48_dp = 48.dp
+val dimen_44_dp = 44.dp
 
 val dimen_56_dp = 56.dp
 val dimen_50_dp = 50.dp
@@ -45,6 +46,7 @@ val dimen_80_dp = 80.dp
 
 val dimen_100_dp = 100.dp
 val dimen_150_dp = 150.dp
+val dimen_180_dp = 180.dp
 val dimen_200_dp = 200.dp
 val dimen_250_dp = 250.dp
 val dimen_300_dp = 300.dp
@@ -60,6 +62,9 @@ val weight_50_percent = 0.5f
 val weight_60_percent = 0.6f
 val weight_80_percent = 0.8f
 val weight_100_percent = 1f
+val text_size_13 = 13.sp
+val alpha_6 = 0.6F
+
 
 
 

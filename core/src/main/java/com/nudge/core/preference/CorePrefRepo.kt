@@ -84,6 +84,8 @@ interface CorePrefRepo {
     fun getSoftEventLimitThreshold(): Int
     fun setHardEventLimitThreshold(threshold: Int)
     fun getHardEventLimitThreshold(): Int
+    fun setSyncDBMigrate(isSyncDbMigrate: Boolean)
+    fun isSyncDBMigrate(): Boolean
     fun isUserBPC(): Boolean
 
 }

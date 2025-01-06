@@ -45,6 +45,8 @@ import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.LivelihoodPlanningDropDownComponent
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 @Composable
 fun LivelihoodDropDownScreen(
@@ -129,8 +131,11 @@ fun LivelihoodDropDownScreen(
                         isActive = viewModel.isButtonEnable.value,
                         isLeftArrow = false,
                         onClick = {
-                            viewModel.saveButtonClicked()
-                            navController.navigateUp()
+                            viewModel.saveButtonClicked() {
+                                withContext(Dispatchers.Main) {
+                                    navController.navigateUp()
+                                }
+                            }
                         }
                     )
                 }

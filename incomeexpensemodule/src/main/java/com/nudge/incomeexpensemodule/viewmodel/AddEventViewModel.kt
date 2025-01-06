@@ -10,6 +10,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -35,6 +36,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
@@ -88,6 +90,7 @@ class AddEventViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitAddEventState -> {
+                setTranslationConfig()
                 fetchEventData(event.subjectId, event.transactionId)
             }
 
@@ -96,8 +99,11 @@ class AddEventViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
-
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.AddEventScreen
     }
 
 
@@ -270,7 +276,7 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
-    fun onSubmitButtonClick(subjectId: Int, transactionId: String) {
+    fun onSubmitButtonClick(subjectId: Int, transactionId: String, onComplete: () -> Unit) {
 
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
@@ -311,6 +317,10 @@ class AddEventViewModel @Inject constructor(
                 createdDateTime = createdDateTime,
                 modifiedDate = modifiedDate
             )
+            withContext(mainDispatcher)
+            {
+                onComplete()
+            }
 
         }
     }
@@ -487,6 +497,7 @@ class AddEventViewModel @Inject constructor(
         if (validation != null) {
             val expressionResult = validationUseCase.invoke(
                 validationExpression = validation.condition,
+                validationRegex = validation.regex,
                 subjectId = subjectId,
                 selectedAsset = selectedAssetType,
                 selectedLivelihood = selectedLivelihood,

@@ -42,6 +42,13 @@ data class SurveyAnswerFormSummaryUiModel(
 
     @SerializedName("formId")
     @Expose
-    var formId: Int = 0
+    var formId: Int = 0,
 
-    )
+    @SerializedName("createdDate")
+    @Expose
+    val createdDate: Long = System.currentTimeMillis(),
+
+    @SerializedName("modifiedDate")
+    @Expose
+    var modifiedDate: Long = System.currentTimeMillis()
+)

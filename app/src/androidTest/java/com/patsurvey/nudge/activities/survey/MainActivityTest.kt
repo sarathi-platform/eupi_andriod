@@ -6,14 +6,15 @@ import androidx.lifecycle.Lifecycle
 import androidx.test.core.app.launchActivity
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
+import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.CasteListDao
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainActivityViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
 import com.patsurvey.nudge.database.dao.BpcSummaryDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.PoorDidiListDao
 import com.patsurvey.nudge.database.dao.QuestionListDao
@@ -96,6 +97,9 @@ class MainActivityTest {
 
     @Mock
     private lateinit var context: Context
+
+    @Mock
+    private lateinit var updateBaselineStatusOnInitUseCase: UpdateBaselineStatusOnInitUseCase
 
     private lateinit var viewModel: MainActivityViewModel
 

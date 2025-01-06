@@ -61,7 +61,9 @@ import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_150_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
@@ -301,7 +303,7 @@ fun DisbursementFormSummaryScreen(
                                 .padding(
                                     start = dimen_16_dp,
                                     end = dimen_16_dp,
-                                    bottom = if (isFormSettingScreen) dimen_10_dp else 150.dp
+                                    bottom = if (isFormSettingScreen) dimen_100_dp else dimen_150_dp
                                 ),
                             verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
                         ) {

@@ -17,7 +17,6 @@ import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.InputTypeQuestionAnswerDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -122,7 +121,6 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingS
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepositoryImpl
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepository
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.SurveyeeListScreenRepositoryImpl
-import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchCastesFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchSectionStatusFromNetworkUseCase
@@ -135,10 +133,16 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeLis
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
+import com.nudge.core.data.repository.caste.CasteConfigRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
+import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
@@ -238,9 +242,10 @@ object BaselineModule {
     @Singleton
     fun provideLoginScreenRepository(
         prefBSRepo: PrefBSRepo,
-        baseLineApiService: BaseLineApiService
+        baseLineApiService: BaseLineApiService,
+        corePrefRepo: CorePrefRepo
     ): LoginScreenRepository {
-        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService)
+        return LoginScreenRepositoryImpl(prefBSRepo, baseLineApiService, corePrefRepo = corePrefRepo)
     }
 
     @Provides
@@ -468,6 +473,7 @@ object BaselineModule {
         baselineDatabase: NudgeBaselineDatabase,
         didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
         apiStatusDao: ApiStatusDao,
+        corePrefRepo: CorePrefRepo,
         downloaderManager: DownloaderManager
 
     ): DataLoadingScreenRepository {
@@ -487,6 +493,7 @@ object BaselineModule {
             baselineDatabase,
             didiSectionProgressEntityDao,
             apiStatusDao,
+            corePrefRepo,
             downloaderManager = downloaderManager
         )
     }
@@ -495,19 +502,26 @@ object BaselineModule {
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         repository: DataLoadingScreenRepository,
-        splashScreenRepository: SplashScreenRepository
+        splashScreenRepository: SplashScreenRepository,
+        casteConfigRepositoryImpl: CasteConfigRepositoryImpl,
+        apiStatusDao: ApiStatusDao,
+        coreSharedPrefs: CoreSharedPrefs,
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
             fetchUserDetailFromNetworkUseCase = FetchUserDetailFromNetworkUseCase(repository),
             fetchSurveyFromNetworkUseCase = FetchSurveyFromNetworkUseCase(repository),
             fetchMissionDataFromNetworkUseCase = FetchMissionDataFromNetworkUseCase(repository),
-            fetchCastesFromNetworkUseCase = FetchCastesFromNetworkUseCase(repository),
             fetchContentnDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(repository),
             fetchSectionStatusFromNetworkUseCase = FetchSectionStatusFromNetworkUseCase(repository),
             fetchSurveyAnswerFromNetworkUseCase = FetchSurveyAnswerFromNetworkUseCase(repository),
             loggedInUseCase = LoggedInUseCase(splashScreenRepository),
             fetchLanguageConfigFromNetworkUseCase = FetchLanguageFromNetworkConfigUseCase(splashScreenRepository),
+            casteConfigNetworkUseCase = FetchCasteConfigNetworkUseCase(
+                casteConfigRepositoryImpl = casteConfigRepositoryImpl,
+                apiStatusDao = apiStatusDao,
+                coreSharedPrefs = coreSharedPrefs
+            ),
             saveLanguageConfigUseCase = SaveLanguageConfigUseCase(splashScreenRepository)
         )
     }
@@ -693,7 +707,9 @@ object BaselineModule {
         eventsDao: EventsDao,
         eventDependencyDao: EventDependencyDao,
         nudgeBaselineDatabase: NudgeBaselineDatabase,
-        eventWriterHelper: EventWriterHelperImpl
+        eventWriterHelper: EventWriterHelperImpl,
+        eventStatusDao: EventStatusDao,
+        imageStatusDao: ImageStatusDao
     ): EventsWriterRepository {
         return EventsWriterRepositoryImpl(
             prefBSRepo = prefBSRepo,
@@ -702,6 +718,8 @@ object BaselineModule {
             eventsDao = eventsDao,
             eventDependencyDao = eventDependencyDao,
             missionEntityDao = missionEntityDao,
+            eventStatusDao = eventStatusDao,
+            imageStatusDao = imageStatusDao
         )
     }
 

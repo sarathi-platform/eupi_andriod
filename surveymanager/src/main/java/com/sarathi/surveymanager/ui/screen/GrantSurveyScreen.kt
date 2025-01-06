@@ -38,7 +38,7 @@ fun GrantSurveyScreen(
         totalSubmittedAmount = totalSubmittedAmount,
         onSettingClick = onSettingClick,
         onAnswerSelect = { questionUiModel ->
-            //Not needed
+            viewModel.isButtonEnable.value = viewModel.checkButtonValidation()
         },
         onSubmitButtonClick = {
             viewModel.saveButtonClicked()

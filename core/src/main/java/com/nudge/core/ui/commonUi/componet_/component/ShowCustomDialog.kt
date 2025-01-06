@@ -1,5 +1,6 @@
 package com.nudge.core.ui.commonUi.componet_.component
 
+import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,12 +15,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
+import androidx.compose.material.Icon
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -31,6 +34,7 @@ import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.black100Percent
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
@@ -40,6 +44,7 @@ import com.nudge.core.ui.theme.white
 fun ShowCustomDialog(
     title: String = BLANK_STRING,
     message: String,
+    @DrawableRes icon: Int? = null,
     positiveButtonTitle: String? = BLANK_STRING,
     negativeButtonTitle: String? = BLANK_STRING,
     dismissOnBackPress: Boolean? = true,
@@ -47,8 +52,10 @@ fun ShowCustomDialog(
     onNegativeButtonClick: () -> Unit
 ) {
     Dialog(
-        onDismissRequest = { }, properties = DialogProperties(
-            dismissOnClickOutside = false,
+        onDismissRequest = {
+            onNegativeButtonClick()
+        }, properties = DialogProperties(
+            dismissOnClickOutside = dismissOnBackPress ?: false,
             dismissOnBackPress = dismissOnBackPress ?: true
         )
     ) {
@@ -68,15 +75,25 @@ fun ShowCustomDialog(
                         if (title.isNotEmpty()) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.SpaceAround,
+                                horizontalArrangement = Arrangement.spacedBy(dimen_6_dp),
                                 modifier = Modifier
                             ) {
+                                icon?.let {
+                                    Icon(
+                                        painterResource(icon),
+                                        null,
+                                        modifier = Modifier
+                                            .weight(0.2f)
+                                            .align(Alignment.CenterVertically)
+                                    )
+                                }
+
                                 MainTitle(
                                     title,
                                     Modifier
                                         .weight(1f)
                                         .fillMaxWidth(),
-                                    align = TextAlign.Center
+                                    align = TextAlign.Start
                                 )
                             }
                             Divider(thickness = 1.dp, color = greyBorder)
@@ -149,3 +166,5 @@ fun MainTitle(title: String, modifier: Modifier, align: TextAlign = TextAlign.St
         overflow = TextOverflow.Ellipsis,
     )
 }
+
+data class AlertDialogState(val showDialog: Boolean = false)

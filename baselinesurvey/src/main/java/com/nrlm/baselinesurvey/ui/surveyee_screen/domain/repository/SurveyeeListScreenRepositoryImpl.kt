@@ -13,7 +13,6 @@ import com.nrlm.baselinesurvey.PREF_MOBILE_NUMBER
 import com.nrlm.baselinesurvey.SUCCESS
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
@@ -26,6 +25,7 @@ import com.nrlm.baselinesurvey.utils.states.SectionStatus
 import com.nrlm.baselinesurvey.utils.states.SurveyState
 import com.nrlm.baselinesurvey.utils.states.SurveyeeCardState
 import com.nudge.core.ENGLISH_LANGUAGE_CODE
+import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
@@ -74,17 +74,16 @@ class SurveyeeListScreenRepositoryImpl @Inject constructor(
                 baseLineApiService.userAndVillageListAPI(languageId = userViewApiRequest)
             if (userApiResponse.status.equals(SUCCESS, true)) {
                 userApiResponse.data?.let {
-                    prefBSRepo.savePref(PREF_KEY_USER_NAME, it.username ?: "")
-                    prefBSRepo.savePref(PREF_KEY_NAME, it.name ?: "")
-                    prefBSRepo.savePref(PREF_KEY_EMAIL, it.email ?: "")
-                    prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: "")
-                    prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: "")
-                    prefBSRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: "")
-                    prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: "")
+                    prefBSRepo.savePref(PREF_KEY_USER_NAME, it.username ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_NAME, it.name ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_EMAIL, it.email ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, it.identityNumber ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_PROFILE_IMAGE, it.profileImage ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_ROLE_NAME, it.roleName ?: BLANK_STRING)
+                    prefBSRepo.savePref(PREF_KEY_TYPE_NAME, it.typeName ?: BLANK_STRING)
                     updateCoreEventFileName(
                         context = BaselineCore.getAppContext(),
-                        mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING)
-                            ?: BLANK_STRING
+                        mobileNo = prefBSRepo.getPref(PREF_MOBILE_NUMBER, BLANK_STRING) ?: BLANK_STRING
                     )
                 }
                 val apiResponse = userApiResponse.data?.username?.toInt()

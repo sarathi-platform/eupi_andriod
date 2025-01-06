@@ -30,6 +30,7 @@ fun LivelihoodTaskScreen(
     viewModel: LivelihoodTaskScreenViewModel = hiltViewModel(),
     missionId: Int,
     activityName: String,
+    missionSubTitle: String,
     activityId: Int,
     programId: Int,
     onSettingClick: () -> Unit
@@ -41,6 +42,7 @@ fun LivelihoodTaskScreen(
     }
 
     TaskScreen(
+        missionSubTitle = missionSubTitle,
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,
@@ -149,7 +151,7 @@ fun LivelihoodTaskRowView(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
-                viewModel.isActivityCompleted()
+                viewModel.checkIsActivityCompleted()
 
             }
             viewModel.getActivityList(viewModel.missionId)

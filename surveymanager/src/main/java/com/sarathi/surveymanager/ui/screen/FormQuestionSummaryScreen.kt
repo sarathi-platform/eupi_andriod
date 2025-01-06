@@ -140,6 +140,7 @@ fun FormQuestionSummaryScreen(
                     surveyAnswerFormSummaryUiModelList = formResponseSummaryScreenViewModel.formQuestionResponseMap[key].value(),
                     isEditAllowed = !formResponseSummaryScreenViewModel.isActivityCompleted,
                     surveyConfig = formResponseSummaryScreenViewModel.surveyConfig,
+                    secretKeyPass = formResponseSummaryScreenViewModel.getAESSecretKey(),
                     isPictureRequired = formResponseSummaryScreenViewModel.surveyConfig.containsKey(
                         SurveyConfigCardSlots.FORM_SUMMARY_CARD_IMAGE.name
                     ),

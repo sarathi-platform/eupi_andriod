@@ -6,8 +6,8 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_NAME
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.NudgeLogger

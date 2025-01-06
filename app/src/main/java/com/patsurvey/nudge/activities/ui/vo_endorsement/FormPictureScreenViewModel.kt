@@ -133,6 +133,9 @@ class FormPictureScreenViewModel @Inject constructor(
                     repository.prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_C, i)), "")
                 if (imagePath != "") {
                     it.add(it.size + 1)
+                    formCImageList.value = formCImageList.value.also { imageList ->
+                        imageList["Page_$i"] = imagePath.toString()
+                    }
                 }
                 Log.d("FormPictureScreenViewModel", "init: FORM_C -> ${it}")
             }
@@ -142,8 +145,10 @@ class FormPictureScreenViewModel @Inject constructor(
                     repository.prefRepo.getPref(getFormPathKey(getFormSubPath(FORM_D, i)), "")
                 if (imagePath != "") {
                     it.add(it.size + 1)
+                    formDImageList.value = formDImageList.value.also { imageList ->
+                        imageList["Page_$i"] = imagePath.toString()
+                    }
                 }
-                Log.d("FormPictureScreenViewModel", "init: FORM_D -> ${it}")
             }
         }
     }
@@ -828,7 +833,7 @@ class FormPictureScreenViewModel @Inject constructor(
                 )
 
             val didiList = repository.getAllDidisForVillage()
-                .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE }
+                .filter { it.forVoEndorsement == FOR_VO_ENDORSEMENT_VALUE && it.voEndorsementEdit }
 
             val tolaDeviceIdMap: Map<Int, String> = repository.getTolaDeviceIdMap(
                 villageId = villageId,
@@ -849,6 +854,8 @@ class FormPictureScreenViewModel @Inject constructor(
             addRankingFlagEditEventList.forEach { rankingEditEvent ->
                 repository.saveEventToMultipleSources(rankingEditEvent, listOf())
             }
+            updateVoEndorsementEditFlag()
+
         }
     }
 }

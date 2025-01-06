@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.settings.domain
 
 enum class SettingTagEnum {
-    SYNC_NOW,
     PROFILE,
     FORMS,
     TRAINING_VIDEOS,
@@ -17,6 +16,8 @@ enum class SettingTagEnum {
     REGENERATE_EVENTS,
     EXPORT_BASELINE_QNA,
     MARK_ACTIVITY_IN_PROGRESS,
+    SYNC_DATA_NOW,
+    SYNC_STOP,
     APP_CONFIG,
     EXPORT_DATA_BACKUP_FILE,
     EXPORT_EVENT_FILE,

@@ -28,26 +28,36 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.LayoutCoordinates
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInRoot
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.surveymanager.R
 
 @Composable
 fun <T> DropDownComponent(
+    content: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     hint: String = stringResource(R.string.select),
     items: List<T>,
     title: String = BLANK_STRING,
@@ -62,7 +72,11 @@ fun <T> DropDownComponent(
     diableItem: Int = DEFAULT_LIVELIHOOD_ID,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
+    showCardView: Boolean = false,
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
+    navigateToMediaPlayerScreen: (ContentList) -> Unit = {},
+
     onItemSelected: (T) -> Unit,
 ) {
     // Up Icon when expanded and down icon when collapsed
@@ -71,15 +85,22 @@ fun <T> DropDownComponent(
     else
         Icons.Filled.KeyboardArrowDown
 
+    var textFieldPositionY by remember { mutableStateOf(0f) }
+    var dropdownBelow by remember { mutableStateOf(true) }
+    val screenHeight = LocalConfiguration.current.screenHeightDp.dp
+    val density = LocalDensity.current
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.Start
     ) {
         if (title.isNotBlank()) {
             QuestionComponent(
+                isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                 title = title,
                 questionNumber = questionNumber,
-                isRequiredField = isMandatory
+                isRequiredField = isMandatory,
+                onDetailIconClicked = { onDetailIconClicked() }
             )
         }
         CustomOutlineTextField(
@@ -106,6 +127,13 @@ fun <T> DropDownComponent(
                     // the DropDown the same width
                     onGlobalPositioned(coordinates)
 //                    mTextFieldSize = coordinates.size.toSize()
+
+                    textFieldPositionY = coordinates.positionInRoot().y
+                    dropdownBelow = with(density) {
+                        val screenHeightPx = screenHeight.toPx()
+                        val textFieldBottom = textFieldPositionY + coordinates.size.height
+                        textFieldBottom < ((2 * screenHeightPx) / 3)
+                    }
                 },
             textStyle = newMediumTextStyle.copy(blueDark),
             singleLine = true,
@@ -129,6 +157,7 @@ fun <T> DropDownComponent(
         // when clicked, set the Text Field text as the city selected
         DropdownMenu(
             expanded = expanded,
+            offset = if (dropdownBelow) DpOffset.Zero else DpOffset(dimen_0_dp, dimen_30_dp),
             onDismissRequest = { onDismissRequest() },
             modifier = Modifier.width(with(LocalDensity.current) { mTextFieldSize.width.toDp() })
         ) {
@@ -160,6 +189,19 @@ fun <T> DropDownComponent(
                     )
                 }
             }
+        }
+
+        if (showCardView && content?.isNotEmpty() == true) {
+            CustomVerticalSpacer(size = dimen_6_dp)
+            ContentBottomViewComponent(
+                contents = content,
+                questionIndex = 0,
+                showCardView = showCardView,
+                questionDetailExpanded = {},
+                navigateToMediaPlayerScreen = { content ->
+                    navigateToMediaPlayerScreen(content)
+                }
+            )
         }
     }
 }
@@ -198,5 +240,6 @@ fun DropDownWithTittleCompoentPerview() {
         onDismissRequest = { },
         onGlobalPositioned = {},
         onItemSelected = {},
+        navigateToMediaPlayerScreen = {}
     )
 }

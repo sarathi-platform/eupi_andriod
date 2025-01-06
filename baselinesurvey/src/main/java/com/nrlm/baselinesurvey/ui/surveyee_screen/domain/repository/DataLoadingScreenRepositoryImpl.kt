@@ -22,7 +22,6 @@ import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nrlm.baselinesurvey.database.dao.ActivityTaskDao
 import com.nrlm.baselinesurvey.database.dao.ContentDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -32,7 +31,6 @@ import com.nrlm.baselinesurvey.database.dao.SurveyEntityDao
 import com.nrlm.baselinesurvey.database.dao.SurveyeeEntityDao
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -75,8 +73,11 @@ import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.PREF_KEY_IS_SETTING_SCREEN_OPEN
 import com.nudge.core.database.dao.ApiStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.entities.ApiStatusEntity
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.toDate
 import com.nudge.core.updateCoreEventFileName
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
@@ -100,6 +101,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
     val baselineDatabase: NudgeBaselineDatabase,
     val didiSectionProgressEntityDao: DidiSectionProgressEntityDao,
     val apiStatusDao: ApiStatusDao,
+    val corePrefRepo: CorePrefRepo,
     val downloaderManager: DownloaderManager
 ) : DataLoadingScreenRepository {
     override suspend fun fetchLocalLanguageList(): List<LanguageEntity> {
@@ -421,6 +423,7 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         BaselineLogger.d("User Details        ","Mobile Number: ${prefBSRepo.getPref(PREF_MOBILE_NUMBER,BLANK_STRING)}")
         BaselineLogger.d("User Details        ","User Email: ${userDetailsResponse.email}")
         prefBSRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
+        corePrefRepo.savePref(PREF_KEY_USER_NAME, userDetailsResponse.username ?: "")
         prefBSRepo.savePref(PREF_KEY_NAME, userDetailsResponse.name ?: "")
         prefBSRepo.savePref(PREF_KEY_EMAIL, userDetailsResponse.email ?: "")
         prefBSRepo.savePref(PREF_KEY_IDENTITY_NUMBER, userDetailsResponse.identityNumber ?: "")
@@ -582,10 +585,6 @@ class DataLoadingScreenRepositoryImpl @Inject constructor(
         activityTaskDao.deleteActivityTask(
             userId = getBaseLineUserId()
         )
-    }
-
-    override suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>> {
-        return baseLineApiService.getCasteList(languageId)
     }
 
     override fun saveCasteList(castes: String) {

@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.showCustomToast
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
@@ -26,20 +27,26 @@ fun TypeMultiSelectedDropDownComponent(
     isEditAllowed: Boolean = true,
     showCardView: Boolean = false,
     maxCustomHeight: Dp,
+    content: List<ContentList?>? = listOf(),
+    isFromTypeQuestion: Boolean = false,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>,
-    optionStateMap: Map<Pair<Int, Int>, Boolean> = emptyMap(),
+    optionStateMap: Map<Int, Boolean?> = mapOf(),
+    onDetailIconClicked: () -> Unit = {}, // Default empty lambda
+    navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
 ) {
     val context = LocalContext.current
     val defaultSourceList = sources
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    var selectedItems by remember {
+    var selectedItems by remember(optionStateMap.values) {
         mutableStateOf(getSelectedOptionsValue(sources))
     }
 
     MultiSelectSelectDropDown(
+        content = content,
+        isFromTypeQuestion = isFromTypeQuestion,
         questionIndex = questionIndex,
         title = title,
         isMandatory = isMandatory,
@@ -51,6 +58,11 @@ fun TypeMultiSelectedDropDownComponent(
         selectedItems = selectedItems,
         maxCustomHeight = maxCustomHeight,
         showCardView = showCardView,
+        enabledOptions = optionStateMap,
+        onDetailIconClicked = { onDetailIconClicked() },
+        navigateToMediaPlayerScreen = { contentList ->
+            navigateToMediaPlayerScreen(contentList)
+        },
         onExpandedChange = {
             if (isEditAllowed) {
                 expanded = !it

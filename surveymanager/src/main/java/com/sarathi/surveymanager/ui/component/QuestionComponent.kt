@@ -6,45 +6,68 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Text
+import androidx.compose.foundation.layout.size
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.red
-
+import com.sarathi.surveymanager.R
 
 @Composable
 fun QuestionComponent(
     isRequiredField: Boolean = true,
     title: String = BLANK_STRING,
     questionNumber: String = BLANK_STRING,
-    subTitle: String = BLANK_STRING
+    subTitle: String = BLANK_STRING,
+    isFromTypeQuestionInfoIconVisible: Boolean = false,
+    onDetailIconClicked: () -> Unit = {},
 ) {
-    Column(modifier = Modifier
-        .fillMaxWidth()
-        .padding(vertical = dimen_4_dp)) {
-        Row(
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.Top
+    ) {
+        Column(
             modifier = Modifier
-                .fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+                .weight(0.8f)
+                .padding(vertical = dimen_4_dp)
         ) {
-            Text(
-                modifier = Modifier.fillMaxWidth(),
-                text = buildAnnotatedString {
-                    if (!TextUtils.isEmpty(questionNumber)) {
+            Row(
+                modifier = Modifier,
+                horizontalArrangement = Arrangement.Start, // Align text to start
+                verticalAlignment = Alignment.Top
+            ) {
+                androidx.compose.material.Text(
+                    text = buildAnnotatedString {
+                        if (!TextUtils.isEmpty(questionNumber)) {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = blueDark,
+                                    fontSize = 16.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append(questionNumber)
+                            }
+                        }
                         withStyle(
                             style = SpanStyle(
                                 color = blueDark,
@@ -53,45 +76,53 @@ fun QuestionComponent(
                                 fontFamily = NotoSans
                             )
                         ) {
-                            append(questionNumber)
+                            append(title)
                         }
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            color = blueDark,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        )
-                    ) {
-                        append(title)
-                    }
-                    if (isRequiredField) {
-                        withStyle(
-                            style = SpanStyle(
-                                color = red,
-                                fontSize = 14.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                fontFamily = NotoSans
-                            )
-                        ) {
-                            append("*")
+                        if (isRequiredField) {
+                            withStyle(
+                                style = SpanStyle(
+                                    color = red,
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontFamily = NotoSans
+                                )
+                            ) {
+                                append("*")
+                            }
                         }
-                    }
+                    },
+                    softWrap = true,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+            if (subTitle.isNotBlank()) {
+                Row(
+                    modifier = Modifier,
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    androidx.compose.material.Text(
+                        // modifier = Modifier.fillMaxWidth(),
+                        text = subTitle,
+                        style = newMediumTextStyle.copy(color = grayColor)
+                    )
                 }
-            )
+            }
         }
-        if (subTitle.isNotBlank()) {
-            Row(
+        if (isFromTypeQuestionInfoIconVisible) {
+            IconButton(
+                onClick = {
+                    onDetailIconClicked()
+                },
                 modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                    .weight(0.2f)
+                    .align(Alignment.CenterVertically)
+                    .size(dimen_40_dp)
             ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = subTitle,
-                    style = newMediumTextStyle.copy(color = grayColor)
+                Icon(
+                    painter = painterResource(id = R.drawable.info_icon),
+                    contentDescription = "section info screen",
+                    tint = blueDark
                 )
             }
         }

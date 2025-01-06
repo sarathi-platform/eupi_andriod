@@ -1070,7 +1070,7 @@ class SurveySummaryViewModel @Inject constructor(
                 )
 
             val didiList = repository.getAllDidisForVillage(villageId)
-                .filter { it.wealth_ranking == WealthRank.POOR.rank }
+                .filter { it.wealth_ranking == WealthRank.POOR.rank && it.patEdit }
 
             val tolaDeviceIdMap: Map<Int, String> =
                 repository.getTolaDeviceIdMap(villageId = villageId, tolaDao = repository.tolaDao)
@@ -1089,6 +1089,7 @@ class SurveySummaryViewModel @Inject constructor(
                 repository.saveEventToMultipleSources(rankingEditEvent, listOf())
             }
 
+            updatePatEditFlag()
         }
     }
 

@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.navigation.selection
 
+import android.text.TextUtils
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -14,8 +15,11 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_DETAIL_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
+import com.nudge.core.SYNC_DATA
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.MissionUiModel
 import com.nudge.incomeexpensemodule.navigation.IncomeExpenseNavigation
@@ -26,6 +30,7 @@ import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.utils.NavigationParams
 import com.patsurvey.nudge.activities.AddDidiScreen
 import com.patsurvey.nudge.activities.DidiScreen
 import com.patsurvey.nudge.activities.FinalStepCompletionScreen
@@ -37,12 +42,15 @@ import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
+import com.patsurvey.nudge.activities.forms.presentation.SettingFormsScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.survey.PatSuccessScreen
 import com.patsurvey.nudge.activities.survey.PatSurvaySectionTwoSummaryScreen
 import com.patsurvey.nudge.activities.survey.QuestionScreen
 import com.patsurvey.nudge.activities.survey.SingleQuestionScreen
 import com.patsurvey.nudge.activities.survey.SurveySummary
+import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
+import com.patsurvey.nudge.activities.sync.home.presentation.SyncHomeScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_add_more_did_screens.BpcAddMoreDidiScreen
 import com.patsurvey.nudge.activities.ui.bpc.bpc_didi_list_screens.BpcDidiListScreen
 import com.patsurvey.nudge.activities.ui.bpc.progress_screens.BpcProgressScreen
@@ -188,7 +196,11 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
                 finishActivity()
             },
             onNavigateToBaselineMission = { mission: MissionUiModel ->
-                navController.navigate("$DATA_LOADING_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}")
+                var missionSubtitleWithNullable =
+                    if (!TextUtils.isEmpty(mission.missionSubtitle)) mission.missionSubtitle else null
+                var missionSubtitlDetaileWithNullable =
+                    if (!TextUtils.isEmpty(mission.missionSubTitleDetail)) mission.missionSubTitleDetail else null
+                navController.navigate("$DATA_LOADING_SCREEN_ROUTE_NAME/${mission.missionId}/${mission.description}/${missionSubtitleWithNullable}/${missionSubtitlDetaileWithNullable}")
             }
         )
         SmallGroupNavigation(
@@ -775,14 +787,33 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         composable(route = SettingScreens.EXPORT_BACKUP_FILE_SCREEN.route) {
             ExportBackupScreen(navController = navController, viewModel = hiltViewModel())
         }
+        composable(route = SettingScreens.SYNC_DATA_NOW_SCREEN.route){
+            SyncHomeScreen(navController = navController, viewModel = hiltViewModel())
+        }
+        composable(route = SettingScreens.SYNC_HISTORY_SCREEN.route,
+            arguments = listOf(
+                navArgument(NavigationParams.ARG_SYNC_TYPE.value){
+                    type=NavType.StringType
+                }
+            )
+        ){
+            SyncHistoryScreen(
+                navController = navController,
+                syncType = it.arguments?.getString(
+                    NavigationParams.ARG_SYNC_TYPE.value
+                ) ?: SYNC_DATA,
+                viewModel = hiltViewModel()
+            )
+        }
 
         composable(SettingScreens.ACTIVITY_REOPENING_SCREEN.route) {
             ActivityReopeningScreen(navController = navController)
         }
-
+        composable(route = SettingScreens.SETTING_FORMS_SCREEN.route) {
+            SettingFormsScreen(navController = navController, viewModel = hiltViewModel())
+        }
     }
 }
-
 
 
 fun NavGraphBuilder.voEndorsmentNavGraph(navController: NavHostController) {
@@ -960,12 +991,25 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
             },
                 navArgument(ARG_MISSION_NAME) {
                     type = NavType.StringType
-                })) {
+                },
+                navArgument(ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument(ARG_SUB_MISSION_DETAIL_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                }
+            )) {
             DataLoadingScreenComponent(
                 viewModel = hiltViewModel(),
                 navController = navController,
                 missionId = it.arguments?.getInt(ARG_MISSION_ID) ?: -1,
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+                missionSubDescription = it.arguments?.getString(ARG_SUB_MISSION_NAME)
+                    ?: BLANK_STRING,
+                missionSubDescriptionDetail = it.arguments?.getString(ARG_SUB_MISSION_DETAIL_NAME)
+                    ?: BLANK_STRING
             )
         }
     }

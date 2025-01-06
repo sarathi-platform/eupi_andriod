@@ -7,13 +7,17 @@ import javax.inject.Inject
 class FetchSurveyDataFromDB @Inject constructor(
     private val repository: ISurveyRepository
 ) {
+
     suspend fun invoke(
         surveyId: Int,
         subjectId: Int,
         sectionId: Int,
         referenceId: String,
         activityConfigId: Int,
-        grantId: Int
+        grantId: Int,
+        missionId: Int,
+        activityId: Int,
+        isFromRegenerate: Boolean = false
     ): List<QuestionUiModel> {
         return repository.getQuestion(
             surveyId = surveyId,
@@ -21,7 +25,10 @@ class FetchSurveyDataFromDB @Inject constructor(
             subjectId = subjectId,
             referenceId = referenceId,
             activityConfigId = activityConfigId,
-            grantId = grantId
+            grantId = grantId,
+            missionId = missionId,
+            activityId = activityId,
+            isFromRegenerate = isFromRegenerate
         )
     }
 
@@ -32,7 +39,9 @@ class FetchSurveyDataFromDB @Inject constructor(
         referenceId: String,
         activityConfigId: Int,
         grantId: Int,
-        formId: Int
+        formId: Int,
+        missionId: Int,
+        activityId: Int
     ): List<QuestionUiModel> {
         return repository.getFormQuestion(
             surveyId = surveyId,
@@ -41,7 +50,9 @@ class FetchSurveyDataFromDB @Inject constructor(
             referenceId = referenceId,
             activityConfigId = activityConfigId,
             grantId = grantId,
-            formId = formId
+            formId = formId,
+            missionId = missionId,
+            activityId = activityId
         )
     }
 }

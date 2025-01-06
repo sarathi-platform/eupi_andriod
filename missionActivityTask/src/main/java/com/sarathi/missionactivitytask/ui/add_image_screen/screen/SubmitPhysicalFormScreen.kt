@@ -58,12 +58,11 @@ fun SubmitPhysicalFormScreen(
         bottomBar = {
             BottomAppBar(
                 backgroundColor = white, modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxWidth().padding(dimen_10_dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(dimen_10_dp)
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),

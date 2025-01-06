@@ -43,7 +43,8 @@ enum class QuestionType {
             TextField.name.toLowerCase(),
             InputText.name.toLowerCase(),
             NumericField.name.toLowerCase(),
-            InputHrsMinutes.name.toLowerCase()
+            InputHrsMinutes.name.toLowerCase(),
+            InputYrsMonths.name.toLowerCase()
         )
 
         val numericUseInputQuestionTypeList = listOf(

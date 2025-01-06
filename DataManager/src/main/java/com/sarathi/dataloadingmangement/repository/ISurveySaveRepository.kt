@@ -60,7 +60,7 @@ interface ISurveySaveRepository {
         grantType: String
     ): Boolean
 
-    fun getFormResponseMap(
+    suspend fun getFormResponseMap(
         surveyId: Int,
         taskId: Int,
         sectionId: Int,

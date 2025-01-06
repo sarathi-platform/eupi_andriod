@@ -4,14 +4,24 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.*
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -34,7 +44,11 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
+import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
+import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.KOKBOROK_LANGUAGE_CODE
+import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.R
@@ -46,9 +60,14 @@ import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
-import com.patsurvey.nudge.database.LanguageEntity
 import com.patsurvey.nudge.navigation.ScreenRoutes
-import com.patsurvey.nudge.utils.*
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
+import com.patsurvey.nudge.utils.BLANK_STRING
+import com.patsurvey.nudge.utils.NudgeLogger
+import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
+import com.patsurvey.nudge.utils.PageFrom
+import com.patsurvey.nudge.utils.UPCM_USER
+import com.patsurvey.nudge.utils.showCustomToast
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
@@ -65,35 +84,63 @@ fun LanguageScreen(
     }
 
     HandleBackPress(pageFrom, viewModel, navController, context)
+    Scaffold(
+        backgroundColor = white,
+        modifier = Modifier.fillMaxSize(),
+        topBar = {
+            if (pageFrom != ARG_FROM_HOME) {
+                ToolbarComponent(
+                    title = stringResource(R.string.language_text),
+                    modifier = Modifier
+                ) {
+                    navController.navigateUp()
 
-    Box(
-        modifier = Modifier
-            .background(color = Color.White)
-            .fillMaxSize()
-            .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
-            .padding(vertical = dimensionResource(id = R.dimen.padding_32dp))
-            .then(modifier)
-    ) {
-        Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
-            SarathiLogoTextView()
-            Text(
-                text = stringResource(id = R.string.choose_language),
-                color = textColorBlueLight,
-                fontSize = 18.sp,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_20))
-            )
-            LanguageList(viewModel, context)
+                }
+            }
+        },
+        bottomBar = {
+
+        }) {
+        Box(
+            modifier = Modifier
+                .background(color = Color.White)
+                .fillMaxSize()
+                .padding(
+                    top = it.calculateTopPadding() + dimen_32_dp,
+                    start = dimensionResource(id = R.dimen.padding_16dp),
+                    end = dimensionResource(id = R.dimen.padding_16dp),
+                    bottom = dimensionResource(id = R.dimen.padding_32dp)
+                )
+                .then(modifier)
+        ) {
+            Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+                if (pageFrom == ARG_FROM_HOME) {
+                    SarathiLogoTextView()
+                    Text(
+                        text = stringResource(id = R.string.choose_language),
+                        color = textColorBlueLight,
+                        fontSize = 18.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_20))
+                    )
+                }
+                LanguageList(viewModel, context)
+            }
+            Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+                ContinueButton(pageFrom, viewModel, navController, context)
+            }
         }
-        Box(modifier = Modifier.align(Alignment.BottomCenter)) {
-            ContinueButton(pageFrom, viewModel, navController, context)
-        }
+
     }
 
     LaunchedEffect(Unit) {
         viewModel.languageList.value?.mapIndexed { index, languageEntity ->
-            if (languageEntity.langCode.equals(viewModel.languageRepository.prefRepo.getAppLanguage(), true)) {
+            if (languageEntity.langCode.equals(
+                    viewModel.languageRepository.prefRepo.getAppLanguage(),
+                    true
+                )
+            ) {
                 viewModel.languagePosition.value = index
             }
         }
@@ -112,15 +159,22 @@ fun HandleNetworkError(viewModel: LanguageViewModel, context: Context) {
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun RequestPermissions() {
-    val permissionsState = rememberMultiplePermissionsState(
-        permissions = listOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION,
-            Manifest.permission.CAMERA,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE
-        )
+    val permissionList = mutableListOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
     )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissionList.add(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = permissionList
+    )
+
     val lifecycleOwner = LocalLifecycleOwner.current
     DisposableEffect(lifecycleOwner) {
         val observer = LifecycleEventObserver { _, event ->
@@ -136,7 +190,12 @@ fun RequestPermissions() {
 }
 
 @Composable
-fun HandleBackPress(pageFrom: String, viewModel: LanguageViewModel, navController: NavController, context: Context) {
+fun HandleBackPress(
+    pageFrom: String,
+    viewModel: LanguageViewModel,
+    navController: NavController,
+    context: Context
+) {
     BackHandler {
         if (pageFrom == ARG_FROM_HOME) {
             if (viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
@@ -157,12 +216,19 @@ fun LanguageList(viewModel: LanguageViewModel, context: Context) {
         viewModel.languageList?.value?.let {
             LazyColumn {
                 itemsIndexed(it) { index, item ->
-                    LanguageItem(languageModel = item, index, viewModel.languagePosition.value) { i ->
-                        if(viewModel.languageRepository.isUserLoggedIn() && viewModel.languageRepository.loggedInUserType() != UPCM_USER){
+                    LanguageItem(
+                        languageModel = item,
+                        index,
+                        viewModel.languagePosition.value
+                    ) { i ->
+                        if (viewModel.languageRepository.isUserLoggedIn() && viewModel.languageRepository.loggedInUserType() != UPCM_USER) {
                             if (item.langCode == KOKBOROK_LANGUAGE_CODE) {
-                                showCustomToast(context, context.getString(R.string.this_language_is_not_available_for_selection))
-                            }else viewModel.languagePosition.value = i
-                        }else{
+                                showCustomToast(
+                                    context,
+                                    context.getString(R.string.this_language_is_not_available_for_selection)
+                                )
+                            } else viewModel.languagePosition.value = i
+                        } else {
                             viewModel.languagePosition.value = i
 
                         }
@@ -177,7 +243,12 @@ fun LanguageList(viewModel: LanguageViewModel, context: Context) {
 }
 
 @Composable
-fun ContinueButton(pageFrom: String, viewModel: LanguageViewModel, navController: NavController, context: Context) {
+fun ContinueButton(
+    pageFrom: String,
+    viewModel: LanguageViewModel,
+    navController: NavController,
+    context: Context
+) {
     Button(
         onClick = {
             try {

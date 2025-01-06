@@ -208,7 +208,6 @@ fun ParticipatoryWealthRankingSurvey(
                         viewModel.updateWorkflowStatusInEvent(
                             StepStatus.COMPLETED, stepId, villageId = viewModel.villageId
                         )
-                        viewModel.updateWealthRankingFlagForDidis()
                         viewModel.addRankingFlagEditEvent(stepId = stepId)
                         viewModel.saveWealthRankingCompletionDate()
                         if ((context as MainActivity).isOnline.value ?: false) {

@@ -53,6 +53,7 @@ enum class SurveyConfigCardSlots {
         const val CONFIG_SLOT_TYPE_QUESTION_CARD = "QuestionCard"
 
         const val CALCULATION_TYPE = "calculation"
+        const val CASTE_ID = "casteId"
     }
 }
 

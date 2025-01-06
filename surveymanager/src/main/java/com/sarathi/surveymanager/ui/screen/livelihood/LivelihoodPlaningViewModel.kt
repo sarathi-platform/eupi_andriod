@@ -169,56 +169,58 @@ class LivelihoodPlaningViewModel @Inject constructor(
             isButtonEnable.value = primaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID && secondaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID }
     }
 
-    fun saveButtonClicked() {
+    fun saveButtonClicked(callBack: suspend () -> Unit) {
         ioViewModelScope {
-            saveLivelihoodMappingToDb()
+            saveLivelihoodMappingToDb(callBack = callBack)
         }
     }
 
-     fun saveLivelihoodMappingToDb() {
-        ioViewModelScope {
-            subjectId?.let {
-                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
-                    primaryLivelihoodId.value, LivelihoodTypeEnum.PRIMARY.typeId,it
-                )
-                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
-                 secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId,it
-                )
-            }
-            val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
-            livelihoodTypeEventDto.add(
-                LivelihoodTypeEventDto(
-                    programLivelihoodId = primaryLivelihoodId.value,
-                    order = LivelihoodTypeEnum.PRIMARY.typeId,
-                )
+    private suspend fun saveLivelihoodMappingToDb(callBack: suspend () -> Unit) {
+        subjectId?.let {
+            saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                primaryLivelihoodId.value, LivelihoodTypeEnum.PRIMARY.typeId, it
             )
-            livelihoodTypeEventDto.add(
-                LivelihoodTypeEventDto(
-                    programLivelihoodId = secondaryLivelihoodId.value,
-                    order = LivelihoodTypeEnum.SECONDARY.typeId
-                )
+            saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                secondaryLivelihoodId.value, LivelihoodTypeEnum.SECONDARY.typeId, it
             )
-            val livelihoodPlanActivityDto =
-                LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(),
-                    livelihoodTypeEventDto,
-                    activityId!!,missionId!!,subjectId!!,DIDI)
-                livelihoodEventWriterUseCase.writeLivelihoodEvent(
-                    livelihoodPlanActivityDto)
-
-            taskStatusUseCase.markTaskCompleted(
-                    taskId = taskId!!
-                )
-            taskEntity = getTaskUseCase.getTask(taskId!!)
-                taskEntity?.let {
-                    matStatusEventWriterUseCase.markMATStatus(
-                        surveyName = LIVELIHOOD,
-                        subjectType = coreSharedPrefs.getUserType(),
-                        missionId = missionId?: DEFAULT_ID,
-                        activityId = activityId?: DEFAULT_ID,
-                        taskId = taskId?: DEFAULT_ID
-
-                    )
-                }
         }
+        val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
+        livelihoodTypeEventDto.add(
+            LivelihoodTypeEventDto(
+                programLivelihoodId = primaryLivelihoodId.value,
+                order = LivelihoodTypeEnum.PRIMARY.typeId,
+            )
+        )
+        livelihoodTypeEventDto.add(
+            LivelihoodTypeEventDto(
+                programLivelihoodId = secondaryLivelihoodId.value,
+                order = LivelihoodTypeEnum.SECONDARY.typeId
+            )
+        )
+        val livelihoodPlanActivityDto =
+            LivelihoodPlanActivityEventDto(
+                coreSharedPrefs.getUserName(),
+                livelihoodTypeEventDto,
+                activityId!!, missionId!!, subjectId!!, DIDI
+            )
+        livelihoodEventWriterUseCase.writeLivelihoodEvent(
+            livelihoodPlanActivityDto
+        )
+
+        taskStatusUseCase.markTaskCompleted(
+            taskId = taskId!!
+        )
+        taskEntity = getTaskUseCase.getTask(taskId!!)
+        taskEntity?.let {
+            matStatusEventWriterUseCase.markMATStatus(
+                surveyName = LIVELIHOOD,
+                subjectType = coreSharedPrefs.getUserType(),
+                missionId = missionId ?: DEFAULT_ID,
+                activityId = activityId ?: DEFAULT_ID,
+                taskId = taskId ?: DEFAULT_ID
+
+            )
+        }
+        callBack()
     }
 }

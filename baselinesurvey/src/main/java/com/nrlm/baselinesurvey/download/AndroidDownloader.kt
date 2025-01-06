@@ -8,7 +8,6 @@ import android.os.Environment
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
-import com.nrlm.baselinesurvey.KEY_HEADER_AUTH
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
 import com.nrlm.baselinesurvey.download.interfaces.Downloader
 import com.nrlm.baselinesurvey.download.utils.DownloadStatus
@@ -16,6 +15,7 @@ import com.nrlm.baselinesurvey.download.utils.FileType
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nrlm.baselinesurvey.utils.getAuthImageFileNameFromURL
 import com.nrlm.baselinesurvey.utils.getFileNameFromURL
+import com.nudge.core.KEY_HEADER_AUTH
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
@@ -39,28 +39,6 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
     val currentDownloadingId = mutableStateOf(-1)
 
     private val downloadManager = context.getSystemService(DownloadManager::class.java)
-
-    /*fun init(mTrainingVideos: List<TrainingVideoEntity>) {
-        mTrainingVideos.forEach { videoEntity ->
-            _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
-                it[videoEntity.id] = DownloadStatus.fromInt(videoEntity.isDownload)
-            }
-        }
-    }*/
-
-/*
-    override fun downloadFile(videoItem: TrainingVideoEntity, fileType: FileType): Long {
-        val request = DownloadManager.Request(videoItem.url.toUri())
-            .setTitle("Training Videos")
-            .setDescription("Downloading")
-            .setMimeType(if (fileType == FileType.VIDEO) "video/mp4" else if (fileType == FileType.IMAGE) "image/jpeg" else "application/pdf")
-            .setAllowedNetworkTypes(DownloadManager.Request.NETWORK_WIFI or DownloadManager.Request.NETWORK_MOBILE)
-            .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE_NOTIFY_COMPLETED)
-            .setDestinationInExternalFilesDir(context, Environment.DIRECTORY_MOVIES, "${videoItem.id}.mp4")
-        return downloadManager.enqueue(request)
-
-    }
-*/
 
     override fun downloadImageFile(imageUrl: String, fileType: FileType): Long {
         val request = DownloadManager.Request(imageUrl.toUri())
@@ -202,7 +180,6 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                                 _downloadStatus.value = _downloadStatus.value.toMutableMap().also {
                                     it[id] = status
                                 }
-                                /*BaselineLogger.d("AndroidDownloader", "checkDownloadStatus -> downloadId: $downloadId, id: $id, status: $status, ")*/
                             }
 
                             DownloadManager.STATUS_FAILED -> {
@@ -218,7 +195,6 @@ class AndroidDownloader @Inject constructor(@ApplicationContext private val cont
                     }
                     cursor.close()
                 }
-//                val downloadUrl = getVideoPath(context = context, videoItemId = id).absoluteFile
                 val downloadPercentage =
                     if (status == DownloadStatus.UNAVAILABLE) 0F else progress.toFloat()
                 initialPosition[id] = downloadPercentage

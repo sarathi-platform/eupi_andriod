@@ -27,5 +27,7 @@ data class MissionResponse(
     @SerializedName("startOffset")
     val startOffset: Int,
     @SerializedName("validations")
-    val validations: List<Any>
+    val validations: List<Any>,
+    @SerializedName("order")
+    val order: Int? = 1,
 )

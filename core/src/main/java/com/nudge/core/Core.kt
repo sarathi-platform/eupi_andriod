@@ -24,7 +24,11 @@ class Core {
         fun setContext(context: Context) {
             mContext = context
         }
+
+
     }
+
+
 
 
     private fun initializeFirebaseDb() {

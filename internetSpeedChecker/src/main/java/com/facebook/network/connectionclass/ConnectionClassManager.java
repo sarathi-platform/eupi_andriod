@@ -10,9 +10,12 @@
 
 package com.facebook.network.connectionclass;
 
-import javax.annotation.Nonnull;
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.concurrent.atomic.AtomicReference;
+
+import javax.annotation.Nonnull;
 
 /**
  * <p>
@@ -179,6 +182,7 @@ public class ConnectionClassManager {
   }
 
   private ConnectionQuality mapBandwidthQuality(double average) {
+    Log.d("NetworkSpeed Average", "Speed " + average);
     if (average < 0) {
       return ConnectionQuality.UNKNOWN;
     }

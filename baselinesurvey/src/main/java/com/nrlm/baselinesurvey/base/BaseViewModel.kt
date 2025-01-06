@@ -32,6 +32,10 @@ import com.nrlm.baselinesurvey.ui.common_components.common_events.ApiStatusEvent
 import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCase
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.usecase.AnalyticsEventUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
@@ -43,12 +47,15 @@ import kotlinx.coroutines.withContext
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
+import javax.inject.Inject
 
 abstract class BaseViewModel() : ViewModel() {
 
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
+    @Inject
+    lateinit var analyticsEventUseCase: AnalyticsEventUseCase
 
     fun ViewModel.ioViewModelScope(
         start: CoroutineStart = CoroutineStart.DEFAULT,
@@ -88,6 +95,14 @@ abstract class BaseViewModel() : ViewModel() {
     var networkErrorMessage = mutableStateOf(BLANK_STRING)
     val exceptionHandler = CoroutineExceptionHandler { coroutineContext, e ->
         BaselineLogger.e("BaseViewModel", "exceptionHandler: ${e.message}", e)
+        val eventParams = mapOf(
+            AnalyticsEventsParam.EXCEPTION.eventParam to (e?.stackTraceToString()
+                ?:BLANK_STRING)
+        )
+        analyticsEventUseCase.sendAnalyticsEvent(
+            AnalyticsEvents.CATCHED_EXCEPTION.eventName,
+            eventParams
+        )
         onCatchError(e)
 
     }
@@ -96,6 +111,7 @@ abstract class BaseViewModel() : ViewModel() {
     open fun onError(tag: String = "BaseViewModel", message: String) {
         BaselineLogger.e(tag, message)
     }
+
     open fun onServerError(error: ErrorModel?) {
         viewModelScope.launch(Dispatchers.Main) {
             BaselineLogger.e("Error", error?.message ?: BLANK_STRING)
@@ -109,8 +125,6 @@ abstract class BaseViewModel() : ViewModel() {
             )
         }
     }
-
-
 
 
 //    abstract fun onServerError(errorModel: ErrorModelWithApi?)
@@ -128,9 +142,11 @@ abstract class BaseViewModel() : ViewModel() {
                     RESPONSE_CODE_UNAUTHORIZED -> {
                         return ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE)
                     }
+
                     RESPONSE_CODE_CONFLICT -> {
                         return ErrorModel(e.response()?.code() ?: 0, UNAUTHORISED_MESSAGE)
                     }
+
                     RESPONSE_CODE_NOT_FOUND ->
                         return ErrorModel(
                             message = UNREACHABLE_ERROR_MSG,
@@ -154,6 +170,7 @@ abstract class BaseViewModel() : ViewModel() {
                             message = BAD_GATEWAY_ERROR_MESSAGE,
                             statusCode = e.response()?.code() ?: -1
                         )
+
                     RESPONSE_CODE_SERVICE_TEMPORARY_UNAVAILABLE ->
                         return ErrorModel(
                             statusCode = e.response()?.code() ?: -1,
@@ -167,13 +184,16 @@ abstract class BaseViewModel() : ViewModel() {
                         )
                 }
             }
+
             is SocketTimeoutException -> {
                 return ErrorModel(statusCode = RESPONSE_CODE_TIMEOUT, message = TIMEOUT_ERROR_MSG)
             }
+
             is IOException -> {
                 return ErrorModel(statusCode = RESPONSE_CODE_NETWORK_ERROR)
             }
-            is JsonSyntaxException ->{
+
+            is JsonSyntaxException -> {
                 return ErrorModel(
                     -1,
                     statusCode = RESPONSE_CODE_NO_DATA,
@@ -190,16 +210,18 @@ abstract class BaseViewModel() : ViewModel() {
         onServerError(parseException(e))
     }
 
-    fun refreshData(fetchDataUseCase: FetchDataUseCase) {
+    fun refreshData(
+        fetchDataUseCase: FetchDataUseCase
+    ) {
         currentApiCount = 0
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-                callSurveyApi(fetchDataUseCase)
-                fetchMissionData(fetchDataUseCase)
-                fetchCastes(fetchDataUseCase)
-                fetchUserDetail(fetchDataUseCase)
-                fetchSurveyeeList(fetchDataUseCase)
-                fetchContentData(fetchDataUseCase)
+            callSurveyApi(fetchDataUseCase)
+            fetchMissionData(fetchDataUseCase)
+            fetchCastes(fetchDataUseCase.casteConfigNetworkUseCase)
+            fetchUserDetail(fetchDataUseCase)
+            fetchSurveyeeList(fetchDataUseCase)
+            fetchContentData(fetchDataUseCase)
 
 
         }
@@ -250,9 +272,9 @@ abstract class BaseViewModel() : ViewModel() {
         }
     }
 
-    private fun fetchCastes(fetchDataUseCase: FetchDataUseCase) {
+    private fun fetchCastes(fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase) {
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            fetchDataUseCase.fetchCastesFromNetworkUseCase.invoke(false)
+            fetchCasteConfigNetworkUseCase.invoke()
             currentApiCount++
             updateLoaderEvent()
         }

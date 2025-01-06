@@ -1,8 +1,9 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
 import com.nudge.core.BLANK_STRING
+import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 
-class QuestionUiModel(
+data class QuestionUiModel(
     var questionId: Int,
     var isMandatory: Boolean,
     var surveyId: Int,
@@ -22,7 +23,12 @@ class QuestionUiModel(
     var subjectType: String = BLANK_STRING,
     var isConditional: Boolean = false,
     var showQuestion: Boolean = false,
-    var sectionName: String
+    var sectionName: String,
+    var formDescriptionInEnglish: String?,
+    val contentEntities: List<ContentList> = listOf(),
+    val formOrder: Int,
+    val sortingKey: Int,
+    val formContent: List<ContentList> = listOf()
 ) {
 
 

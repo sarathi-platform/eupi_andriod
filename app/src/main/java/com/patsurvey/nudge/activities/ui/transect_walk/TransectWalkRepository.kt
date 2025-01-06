@@ -113,14 +113,12 @@ class TransectWalkRepository @Inject constructor(
                     modified_date = System.currentTimeMillis().toDate(),
                     request_payload = requestPayload,
                     payloadLocalId = (eventItem as TolaEntity).localUniqueId,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
                         depends_on = emptyList(),
                         request_payload_size = requestPayload.getSizeInLong(),
                     ).json(),
-                    consumer_status = BLANK_STRING,
-                    result = null
                 )
                 return addTolaEvent
             }
@@ -135,7 +133,7 @@ class TransectWalkRepository @Inject constructor(
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
                     request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     payloadLocalId = (eventItem as TolaEntity).localUniqueId,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,
@@ -143,8 +141,6 @@ class TransectWalkRepository @Inject constructor(
                         request_payload_size = requestPayload.getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, EventName.UPDATE_TOLA)
                     ).json(),
-                    consumer_status = BLANK_STRING,
-                    result = null
                 )
                 val dependsOn = createEventDependency(eventItem, eventName, updateTolaEvent)
                 val metadata = updateTolaEvent.metadata?.getMetaDataDtoFromString()
@@ -166,7 +162,7 @@ class TransectWalkRepository @Inject constructor(
                     mobile_number = prefRepo.getMobileNumber(),
                     modified_date = System.currentTimeMillis().toDate(),
                     request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     payloadLocalId = (eventItem as TolaEntity).localUniqueId,
 
                     metadata = MetadataDto(
@@ -175,8 +171,6 @@ class TransectWalkRepository @Inject constructor(
                         request_payload_size = requestPayload.getSizeInLong(),
                         parentEntity = getParentEntityMapForEvent(eventItem, eventName)
                     ).json(),
-                    consumer_status = BLANK_STRING,
-                    result = null
                 )
                 val dependsOn = createEventDependency(eventItem, eventName, deleteTolaEvent)
                 val metadata = deleteTolaEvent.metadata?.getMetaDataDtoFromString()
@@ -204,10 +198,8 @@ class TransectWalkRepository @Inject constructor(
                     createdBy = prefRepo.getUserId(),
                     mobile_number = prefRepo.getMobileNumber(),
                     request_payload = requestPayload,
-                    status = EventSyncStatus.OPEN.name,
+                    status = EventSyncStatus.OPEN.eventSyncStatus,
                     modified_date = System.currentTimeMillis().toDate(),
-                    result = null,
-                    consumer_status = BLANK_STRING,
                     payloadLocalId = (eventItem as DidiEntity).localUniqueId,
                     metadata = MetadataDto(
                         mission = SELECTION_MISSION,

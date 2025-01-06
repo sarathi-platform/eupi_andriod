@@ -35,7 +35,7 @@ class UpdateBaselineStatusOnInitUseCase @Inject constructor(
                 onSuccess(true)
             }
         } catch (ex: Exception) {
-            CoreLogger.e(tag = tag, msg = "invoke: exception -> $ex", ex = ex, stackTrace = true)
+            CoreLogger.e(tag = tag, msg = "invoke: exception -> $ex", ex = ex, stackTrace = false)
             onSuccess(false)
         }
 

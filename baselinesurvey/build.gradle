@@ -117,7 +117,7 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'androidx.activity:activity-compose:1.8.0'
-    implementation platform('androidx.compose:compose-bom:2023.03.00')
+    implementation platform('androidx.compose:compose-bom:2024.06.00')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
@@ -127,6 +127,8 @@ dependencies {
     implementation "androidx.compose.runtime:runtime-livedata:1.4.3"
     implementation project(":core")
     implementation project(':DataManager')
+    implementation 'androidx.work:work-runtime-ktx:2.9.0'
+    implementation project(':internetSpeedChecker')
 
 //    implementation project(path: ':baselinesurvey')
     testImplementation 'junit:junit:4.13.2'
@@ -184,12 +186,10 @@ dependencies {
     implementation "com.google.android.exoplayer:exoplayer-ui:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-mediasession:$exoplayer_version"
     implementation "com.google.android.exoplayer:extension-okhttp:$exoplayer_version"
-
     implementation "androidx.media3:media3-exoplayer:1.1.1"
     implementation "androidx.media3:media3-exoplayer-dash:1.1.1"
     implementation "androidx.media3:media3-ui:1.1.1"
     implementation "com.google.accompanist:accompanist-systemuicontroller:0.30.1"
-
     implementation(project(":syncManager"))
     implementation(project(":CommunicationModule"))
     implementation(project(":navigationManager"))
