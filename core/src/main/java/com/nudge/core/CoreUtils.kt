@@ -1421,7 +1421,9 @@ fun Int.intToFloat(): Float {
     }
 }
 
-fun getTimeAgoDetailed(timeInMillis: Long): String {
+
+@SuppressLint("StringFormatMatches")
+fun getTimeAgoDetailed(timeInMillis: Long, context: Context): String {
     val currentTime = System.currentTimeMillis()
     val diff = currentTime - timeInMillis
 
@@ -1440,9 +1442,18 @@ fun getTimeAgoDetailed(timeInMillis: Long): String {
     }
 
     return when {
-        days > 0 -> "$days days, $hours hours, $minutes minutes ago"
-        hours > 0 -> "$hours hours, $minutes minutes ago"
-        minutes > 0 -> "$minutes minutes ago"
-        else -> "Just now"
+        days > 0 -> "${context.getString(R.string.days, days)}," +
+                " ${context.getString(R.string.hours, hours)}, " +
+                " ${context.getString(R.string.minutes, minutes)} " +
+                context.getString(R.string.ago)
+
+        hours > 0 -> " ${context.getString(R.string.hours, hours)}, " +
+                " ${context.getString(R.string.minutes, minutes)} " +
+                context.getString(R.string.ago)
+
+        minutes > 0 -> " ${context.getString(R.string.minutes, minutes)} " +
+                context.getString(R.string.ago)
+
+        else -> context.getString(R.string.just_now)
     }
 }

@@ -52,6 +52,9 @@ fun ExportBackupScreen(
                 SettingTagEnum.EXPORT_LOG_FILE.name -> {
                     viewModel.exportOnlyLogFile(context)
                 }
+                SettingTagEnum.EXPORT_BASELINE_QNA.name -> {
+                    viewModel.exportOldAndNewBaselineQnA(context)
+                }
             }
         },
         onLogoutClick = {},
