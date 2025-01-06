@@ -13,7 +13,11 @@ data class LivelihoodUiEntity(
             livelihoodUiModel: LivelihoodModel,
             isSelected: Boolean
         ): LivelihoodUiEntity {
-            return LivelihoodUiEntity(livelihoodUiModel.livelihoodId, livelihoodUiModel, isSelected)
+            return LivelihoodUiEntity(
+                livelihoodUiModel.programLivelihoodId,
+                livelihoodUiModel,
+                isSelected
+            )
         }
 
         fun getLivelihoodUiEntityList(
@@ -24,9 +28,9 @@ data class LivelihoodUiEntity(
             livelihoodUiModelList.forEach { livelihoodDropDownUiModel ->
                 livelihoodUIEntityList.add(
                     LivelihoodUiEntity(
-                        livelihoodDropDownUiModel.livelihoodId,
+                        livelihoodDropDownUiModel.programLivelihoodId,
                         livelihoodDropDownUiModel,
-                        isSelected = selectedIds.contains(livelihoodDropDownUiModel.livelihoodId)
+                        isSelected = selectedIds.contains(livelihoodDropDownUiModel.programLivelihoodId)
                     )
                 )
             }
