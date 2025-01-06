@@ -1440,17 +1440,17 @@ fun getTimeAgoDetailed(timeInMillis: Long, context: Context): String {
     }
 
     return when {
-        days > 0 -> "${context.getString(R.string.days, days)}," +
-                " ${context.getString(R.string.hours, hours)}, " +
-                " ${context.getString(R.string.minutes, minutes)} " +
-                context.getString(R.string.ago)
+        days > 0 -> "${context.getString(R.string.sync_days, days)}, " +
+                "${context.getString(R.string.sync_hours, hours)}, " +
+                "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
 
-        hours > 0 -> " ${context.getString(R.string.hours, hours)}, " +
-                " ${context.getString(R.string.minutes, minutes)} " +
-                context.getString(R.string.ago)
+        hours > 0 -> "${context.getString(R.string.sync_hours, hours)}, " +
+                "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
 
-        minutes > 0 -> " ${context.getString(R.string.minutes, minutes)} " +
-                context.getString(R.string.ago)
+        minutes > 0 -> "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
 
         else -> context.getString(R.string.just_now)
     }
