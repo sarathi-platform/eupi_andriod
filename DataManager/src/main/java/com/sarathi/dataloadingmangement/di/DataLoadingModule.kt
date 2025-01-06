@@ -16,7 +16,6 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
@@ -229,7 +228,8 @@ class DataLoadingModule {
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_2_3,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_4_5,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_5_6
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_5_6,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_6_7
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())

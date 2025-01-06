@@ -75,10 +75,12 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUR
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_TABLE_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_CONDITIONS_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_ASSET_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_MAPPING_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_EVENT_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_LANGUAGE_REFRENCE_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_LIVELIHOOD_TABLE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MISSION_CONFIG_ENTITY_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_MONEY_JOUNRAL_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_ASSET_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.CREATE_NEW_LIVELIHOOD_LANGUAGE_REFERENCE_TABLE
@@ -138,7 +140,7 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 6
+const val NUDGE_GRANT_DATABASE_VERSION = 7
 
 @Database(
     entities = [
@@ -348,6 +350,18 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                 migration(
                     db,
                     listOf(DROP_LANGUAGE_TABLE, ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID)
+                )
+            }
+        }
+        val NUDGE_GRANT_DATABASE_MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_6_7")
+                migration(
+                    db,
+                    listOf(
+                        CREATE_MISSION_CONFIG_ENTITY_TABLE,
+                        CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE
+                    )
                 )
             }
         }

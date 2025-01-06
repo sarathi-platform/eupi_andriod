@@ -7,9 +7,11 @@ import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.CONDITIONS_TABLE_NAME
+import com.sarathi.dataloadingmangement.LIVELIHOOD_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
@@ -260,6 +262,24 @@ object MigrationQueries {
     val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
     val ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID =
         "ALTER TABLE $LIVELIHOOD_TABLE_NAME ADD COLUMN programLivelihoodId INTEGER DEFAULT 0 NOT NULL"
+    val CREATE_MISSION_CONFIG_ENTITY_TABLE =
+        "CREATE TABLE $MISSION_CONFIG_TABLE_NAME (\n" +
+                "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    userId TEXT,\n" +
+                "    missionName TEXT NOT NULL,\n" +
+                "    missionId INTEGER NOT NULL,\n" +
+                "    missionType TEXT NOT NULL\n" +
+                ");"
+    val CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE =
+        "CREATE TABLE $LIVELIHOOD_CONFIG_TABLE_NAME (\n" +
+                "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    userId TEXT,\n" +
+                "    missionId INTEGER NOT NULL,\n" +
+                "    missionType TEXT NOT NULL,\n" +
+                "    livelihoodType TEXT NOT NULL,\n" +
+                "    livelihoodOrder INTEGER NOT NULL,\n" +
+                "    languageCode TEXT NOT NULL\n" +
+                ");"
 
 }
 
