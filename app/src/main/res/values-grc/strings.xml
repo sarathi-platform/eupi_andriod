@@ -563,5 +563,6 @@
     <string name="sync_only_images">Sync Only Images</string>
     <string name="sync_started">Sync Started. Please wait…</string>
     <string name="sync_data_history">Sync Data History</string>
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data .</string>
 
 </resources>
