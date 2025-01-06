@@ -15,19 +15,10 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         val list = ArrayList<SettingOptionModel>()
         val context = BaselineCore.getAppContext()
 
-        if (repository.getLoggedInUserType() == UPCM_USER) {
-            list.add(
-                SettingOptionModel(
-                    1,
-                    context.getString(R.string.export_baseline_qna),
-                    BLANK_STRING,
-                    SettingTagEnum.EXPORT_BASELINE_QNA.name
-                )
-            )
-        }
+
         list.add(
             SettingOptionModel(
-                2,
+                1,
                 context.getString(R.string.import_data),
                 BLANK_STRING,
                 SettingTagEnum.IMPORT_DATA.name
@@ -36,7 +27,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                3,
+                2,
                 context.getString(R.string.load_server_data),
                 BLANK_STRING,
                 SettingTagEnum.LOAD_SERVER_DATA.name
@@ -45,7 +36,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                4,
+                3,
                 context.getString(R.string.regenerate_all_events),
                 BLANK_STRING,
                 SettingTagEnum.REGENERATE_EVENTS.name
@@ -54,7 +45,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
-                    5,
+                    4,
                     context.getString(R.string.mark_activity_inprogress_label),
                     BLANK_STRING,
                     SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
@@ -63,7 +54,7 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
         }
         list.add(
             SettingOptionModel(
-                6,
+                5,
                 context.getString(R.string.refresh_config),
                 BLANK_STRING,
                 SettingTagEnum.APP_CONFIG.name
@@ -113,6 +104,17 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 trailingIcon = R.drawable.ic_share_icon
             )
         )
+        if (repository.getLoggedInUserType() == UPCM_USER) {
+            list.add(
+                SettingOptionModel(
+                    5,
+                    context.getString(R.string.export_baseline_qna),
+                    BLANK_STRING,
+                    SettingTagEnum.EXPORT_BASELINE_QNA.name,
+                    trailingIcon = R.drawable.ic_share_icon
+                )
+            )
+        }
         return list.ifEmpty { arrayListOf() }
     }
 
