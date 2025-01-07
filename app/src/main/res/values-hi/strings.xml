@@ -541,4 +541,6 @@
     <string name="sync_only_images">केवल डाटा को सिंक करें </string>
     <string name="sync_started">सिंक सुरु हो गया, कृपया इंतज़ार करें…</string>
     <string name="sync_data_history">डाटा हिस्ट्री को सिंक करें </string>
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data.</string>
+    <string name="blank_string"></string>
 </resources>

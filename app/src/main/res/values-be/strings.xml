@@ -519,5 +519,6 @@
     <string name="sync_only_images">Sync सावगारिफोरखौल\'</string>
     <string name="sync_started">Sync आ जागायबाय। अननानै नेथ\'....</string>
     <string name="sync_data_history">Sync Data History</string>
-
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data.</string>
+    <string name="blank_string"></string>
 </resources>

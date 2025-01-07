@@ -142,4 +142,6 @@
     <string name="sync_already_cancelled">"सिंक पहले से ही रद्ध कर दिया गया है "</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">"आय/खर्च "</string>
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data.</string>
+
 </resources>

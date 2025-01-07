@@ -142,4 +142,6 @@
     <string name="sync_already_cancelled">"সিঙ্ক আগে থেকে বাতিল করা রয়েছে "</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">আয় / ব্যয়</string>
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data.</string>
+
 </resources>

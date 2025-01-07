@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,7 +42,10 @@ import com.patsurvey.nudge.utils.UPCM_USER
 fun ExportImportScreen(
     viewModel: ExportImportViewModel = hiltViewModel(),
     navController: NavController) {
-        val context=LocalContext.current
+    LaunchedEffect(Unit) {
+        viewModel.getAllEventForUser()
+    }
+    val context=LocalContext.current
         val filePicker =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
             viewModel.showRestartAppDialog.value=false
@@ -140,31 +144,32 @@ fun ExportImportScreen(
                                         viewModel.showConfirmationDialog.value = false
                                         viewModel.loadServerDataAnalytic()
 
-                                if (viewModel.loggedInUserType.value == UPCM_USER) {
-                                    navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
-                                        launchSingleTop = true
-                                    }
-                                } else {
-                                    when (navController.graph.route) {
-                                        NudgeNavigationGraph.ROOT -> navController.navigate(
-                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                        )
+                                        if (viewModel.loggedInUserType.value == UPCM_USER) {
+                                            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                                                launchSingleTop = true
+                                            }
+                                        } else {
+                                            when (navController.graph.route) {
+                                                NudgeNavigationGraph.ROOT -> navController.navigate(
+                                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                                )
 
-                                        NudgeNavigationGraph.HOME -> navController.navigate(
-                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                        )
+                                                NudgeNavigationGraph.HOME -> navController.navigate(
+                                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                                )
 
-                                        NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
-                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                        )
+                                                NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
+                                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                                )
 
-                                        else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                                                else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                                            }
+                                        }
                                     }
                                 }
                             }
-                        }
-                    }
 
+                        }
                     SettingTagEnum.REGENERATE_EVENTS.name -> {
                         viewModel.showConfirmationDialog.value = false
                         viewModel.regenerateEvents(context.getString(R.string.share_export_file))
@@ -199,11 +204,12 @@ fun ExportImportScreen(
             )
         }
     }
+    }
 
 
-}
 
-private fun findTitleAndMessageForDialog(selectedTag: String,arg:Any?=null): Tuple4<Int, Int, Int, Int> {
+
+ fun findTitleAndMessageForDialog(selectedTag: String,arg:Any?=null): Tuple4<Int, Int, Int, Int> {
     return when (selectedTag) {
         SettingTagEnum.LOAD_SERVER_DATA.name -> Tuple4(
             if((arg as Boolean )  ) AppRes.string.blank_string  else R.string.are_you_sure,
