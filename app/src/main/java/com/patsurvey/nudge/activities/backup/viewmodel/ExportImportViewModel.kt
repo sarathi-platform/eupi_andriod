@@ -18,11 +18,15 @@ import com.nrlm.baselinesurvey.utils.openShareSheet
 import com.nrlm.baselinesurvey.utils.showCustomToast
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.CoreDispatchers
+import com.nudge.core.DEFAULT_LANGUAGE_ID
+import com.nudge.core.EXCEL_TYPE
+import com.nudge.core.EventSyncStatus
 import com.nudge.core.NUDGE_DATABASE
 import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.entities.Events
 import com.nudge.core.exportDatabase
 import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
@@ -34,11 +38,11 @@ import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
-import com.nudge.core.utils.AESHelper
-import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.activities.sync.history.domain.use_case.SyncHistoryUseCase
+import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
@@ -58,7 +62,8 @@ class ExportImportViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
-    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val syncHistoryUseCase: SyncHistoryUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -71,6 +76,9 @@ class ExportImportViewModel @Inject constructor(
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
     val loggedInUserType = mutableStateOf(BLANK_STRING)
+    private val _eventList = mutableStateOf<List<Events>>(emptyList())
+    val eventList: State<List<Events>> get() = _eventList
+
 
     init {
         mAppContext = NudgeCore.getAppContext()
@@ -79,7 +87,19 @@ class ExportImportViewModel @Inject constructor(
         _optionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
+        getAllEventForUser()
     }
+     fun getAllEventForUser(){
+         CoroutineScope(CoreDispatchers.ioDispatcher).launch {
+             _eventList.value = syncHistoryUseCase.getSyncHistoryUseCase.getAllEventsForUser()
+         }
+     }
+     fun isEventPending():Boolean{
+       return  eventList.value .any {
+                it.status == EventSyncStatus.OPEN.eventSyncStatus
+                        || it.status == EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+            }
+     }
 
     override fun <T> onEvent(event: T) {
         when (event) {
