@@ -81,7 +81,6 @@ fun ExportImportScreen(
                 SettingTagEnum.APP_CONFIG.name -> {
                     viewModel.showConfirmationDialog.value = true
                 }
-
                 SettingTagEnum.IMPORT_DATA.name ->{
                     viewModel.showRestartAppDialog.value=true
                 }
@@ -141,31 +140,31 @@ fun ExportImportScreen(
                                         viewModel.showConfirmationDialog.value = false
                                         viewModel.loadServerDataAnalytic()
 
-                                        if (viewModel.loggedInUserType.value == UPCM_USER) {
-                                            navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
-                                                launchSingleTop = true
-                                            }
-                                        } else {
-                                            when (navController.graph.route) {
-                                                NudgeNavigationGraph.ROOT -> navController.navigate(
-                                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                                )
+                                if (viewModel.loggedInUserType.value == UPCM_USER) {
+                                    navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                                        launchSingleTop = true
+                                    }
+                                } else {
+                                    when (navController.graph.route) {
+                                        NudgeNavigationGraph.ROOT -> navController.navigate(
+                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                        )
 
-                                                NudgeNavigationGraph.HOME -> navController.navigate(
-                                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                                )
+                                        NudgeNavigationGraph.HOME -> navController.navigate(
+                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                        )
 
-                                                NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
-                                                    AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                                )
+                                        NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
+                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                                        )
 
-                                                else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
-                                            }
-                                        }
+                                        else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
                                     }
                                 }
                             }
+                        }
                     }
+
                     SettingTagEnum.REGENERATE_EVENTS.name -> {
                         viewModel.showConfirmationDialog.value = false
                         viewModel.regenerateEvents(context.getString(R.string.share_export_file))
@@ -207,10 +206,10 @@ fun ExportImportScreen(
 private fun findTitleAndMessageForDialog(selectedTag: String,arg:Any?=null): Tuple4<Int, Int, Int, Int> {
     return when (selectedTag) {
         SettingTagEnum.LOAD_SERVER_DATA.name -> Tuple4(
-            if((arg as Boolean)) AppRes.string.blank_string  else R.string.are_you_sure,
-            if((arg as Boolean))  AppRes.string.pending_event_in_load_server else  R.string.are_you_sure_you_want_to_load_data_from_server,
-            if((arg as Boolean)) AppRes.string.blank_string  else R.string.yes_text,
-            if((arg as Boolean)) AppRes.string.ok   else R.string.option_no
+            if((arg as Boolean )  ) AppRes.string.blank_string  else R.string.are_you_sure,
+            if((arg as Boolean )  )  AppRes.string.pending_event_in_load_server else  R.string.are_you_sure_you_want_to_load_data_from_server,
+            if((arg as Boolean )  ) AppRes.string.blank_string  else R.string.yes_text,
+            if((arg as Boolean )  ) AppRes.string.ok   else R.string.option_no
         )
 
         SettingTagEnum.IMPORT_DATA.name -> Tuple4(
