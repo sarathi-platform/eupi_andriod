@@ -325,8 +325,6 @@ open class TaskScreenViewModel @Inject constructor(
                 _taskList.value.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
                     .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
-            if (filterTaskMap.isNotEmpty())
-                expandFirstNotStartedItem()
 
             updateListForAllFilter()
 
@@ -338,6 +336,8 @@ open class TaskScreenViewModel @Inject constructor(
 
             isActivityCompleted()
             updateProgress()
+            if (filterTaskMap.isNotEmpty())
+                expandFirstNotStartedItem()
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))

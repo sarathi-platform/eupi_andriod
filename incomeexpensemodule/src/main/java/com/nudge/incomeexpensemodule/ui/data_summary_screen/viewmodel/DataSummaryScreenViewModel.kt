@@ -15,6 +15,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
@@ -108,6 +109,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataSummaryScreenState -> {
+                setTranslationConfig()
                 loadAddDataSummaryData(subjectId = event.subjectId)
             }
 
@@ -121,7 +123,7 @@ class DataSummaryScreenViewModel @Inject constructor(
 
             is CommonEvents.UpdateDateRange -> {
                 if (event.startDate != null && event.endDate != null) {
-                    _dateRangeFilter.value =
+                      _dateRangeFilter.value =
                         _dateRangeFilter.value.copy(event.startDate!!, event.endDate!!)
                 }
             }
@@ -198,7 +200,7 @@ class DataSummaryScreenViewModel @Inject constructor(
         var result = if (livelihoodFilter == ALL_DATA) {
             livelihoodModel.mapNotNull { _livelihoodModel ->
                 subjectLivelihoodEventSummaryUiModelList
-                    .filter { it.livelihoodId == _livelihoodModel.livelihoodId }
+                    .filter { it.livelihoodId == _livelihoodModel.programLivelihoodId }
                     .takeIf { it.isNotEmpty() }
             }.flatten()
         } else {
@@ -387,9 +389,9 @@ class DataSummaryScreenViewModel @Inject constructor(
         livelihoodModel.forEach {
             _livelihoodDropdownList.add(
                 ValuesDto(
-                    it.livelihoodId,
+                    it.programLivelihoodId,
                     it.name,
-                    selectedLivelihood.value == it.livelihoodId
+                    selectedLivelihood.value == it.programLivelihoodId
                 )
             )
         }
@@ -447,10 +449,14 @@ class DataSummaryScreenViewModel @Inject constructor(
     fun getEventsList(): List<LivelihoodEventUiModel>? {
         return if (selectedLivelihood.value == ALL_DATA) {
             livelihoodModel.flatMap { _livelihoodModel ->
-                livelihoodEventMap[_livelihoodModel.livelihoodId] ?: emptyList()
+                livelihoodEventMap[_livelihoodModel.programLivelihoodId] ?: emptyList()
             }
         } else {
             livelihoodEventMap[selectedLivelihood.value]
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DataSummaryScreen
     }
 }

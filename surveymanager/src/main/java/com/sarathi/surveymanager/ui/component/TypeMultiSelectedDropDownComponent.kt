@@ -31,7 +31,7 @@ fun TypeMultiSelectedDropDownComponent(
     isFromTypeQuestion: Boolean = false,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>,
-    optionStateMap: Map<Pair<Int, Int>, Boolean> = emptyMap(),
+    optionStateMap: Map<Int, Boolean?> = mapOf(),
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
@@ -40,7 +40,7 @@ fun TypeMultiSelectedDropDownComponent(
     val defaultSourceList = sources
     var expanded by remember { mutableStateOf(false) }
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-    var selectedItems by remember {
+    var selectedItems by remember(optionStateMap.values) {
         mutableStateOf(getSelectedOptionsValue(sources))
     }
 
@@ -58,6 +58,7 @@ fun TypeMultiSelectedDropDownComponent(
         selectedItems = selectedItems,
         maxCustomHeight = maxCustomHeight,
         showCardView = showCardView,
+        enabledOptions = optionStateMap,
         onDetailIconClicked = { onDetailIconClicked() },
         navigateToMediaPlayerScreen = { contentList ->
             navigateToMediaPlayerScreen(contentList)

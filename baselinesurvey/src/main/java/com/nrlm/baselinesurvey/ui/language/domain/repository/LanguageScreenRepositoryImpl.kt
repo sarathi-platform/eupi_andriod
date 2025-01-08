@@ -3,10 +3,10 @@ package com.nrlm.baselinesurvey.ui.language.domain.repository
 import android.content.Context
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.VillageListDao
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.entities.language.LanguageEntity
 import javax.inject.Inject
 
 class LanguageScreenRepositoryImpl @Inject constructor(

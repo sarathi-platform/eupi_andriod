@@ -632,4 +632,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
+    fun getOptionStateMapForMutliSelectDropDownQuestion(questionId: Int): Map<Int, Boolean?> {
+        return conditionsUtils.getOptionStateMapForMutliSelectDropDownQuestion(questionId)
+    }
+
 }

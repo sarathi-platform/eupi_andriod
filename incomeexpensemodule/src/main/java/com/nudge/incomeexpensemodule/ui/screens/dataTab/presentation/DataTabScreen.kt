@@ -104,10 +104,22 @@ fun DataTabScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message = stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
+            title = dataTabScreenViewModel.stringResource(
+                context,
+                resId = R.string.are_you_sure
+            ),
+            message = dataTabScreenViewModel.stringResource(
+                context,
+                resId = R.string.do_you_want_to_exit_the_app
+            ),
+            positiveButtonTitle = dataTabScreenViewModel.stringResource(
+                context,
+                resId = R.string.exit
+            ),
+            negativeButtonTitle = dataTabScreenViewModel.stringResource(
+                context,
+                resId = R.string.cancel
+            ),
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
             },
@@ -122,7 +134,7 @@ fun DataTabScreen(
             dataTabScreenViewModel.incomeExpenseSummaryUiModel[dataTabScreenViewModel.showAssetDialog.value.second],
             dataTabScreenViewModel.livelihoodModelList.filter {
                 dataTabScreenViewModel.showAssetDialog.value.third.contains(
-                    it.livelihoodId
+                    it.programLivelihoodId
                 )
             },
             onDismissRequest = {
@@ -170,13 +182,16 @@ fun DataTabScreen(
             onBottomSheetItemSelected = {
                 dataTabScreenViewModel.onEvent(
                     DataTabEvents.LivelihoodFilterApplied(
-                        dataTabScreenViewModel.filters[it].livelihoodId
+                        dataTabScreenViewModel.filters[it].programLivelihoodId
                     )
                 )
             }
         ) {
             ToolBarWithMenuComponent(
-                title = stringResource(id = com.sarathi.dataloadingmangement.R.string.app_name),
+                title = dataTabScreenViewModel.stringResource(
+                    context,
+                    resId = com.sarathi.dataloadingmangement.R.string.app_name
+                ),
                 modifier = modifier,
                 isSearch = true,
                 iconResId = R.drawable.ic_sarathi_logo,
@@ -250,7 +265,10 @@ fun DataTabScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(1f),
-                                        placeholderString = stringResource(DataRes.string.search_by_didis),
+                                        placeholderString = dataTabScreenViewModel.stringResource(
+                                            context,
+                                            DataRes.string.search_by_didis
+                                        ),
                                         searchFieldHeight = dimen_50_dp,
                                         onSearchValueChange = {
                                             dataTabScreenViewModel.onEvent(
@@ -318,7 +336,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(
                                                         dataTabScreenViewModel.filters.toList()
-                                                            .find { it.livelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                            .find { it.programLivelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
                                                     )
                                                 }
                                             }

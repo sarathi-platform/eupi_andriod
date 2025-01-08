@@ -46,6 +46,7 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -55,6 +56,7 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -67,6 +69,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
+import com.sarathi.dataloadingmangement.util.constants.OptionType
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -284,6 +287,7 @@ fun QuestionUiContent(
                     ),
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = sanctionedAmount,
+                    totalSubmittedAmount = totalSubmittedAmount,
                     remainingAmount = getSanctionedAmountMessage(
                         question,
                         sanctionedAmount = sanctionedAmount,
@@ -299,6 +303,9 @@ fun QuestionUiContent(
                     optionsItem = question.options?.firstOrNull(),
                     title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
+                    isError = !viewModel.fieldValidationAndMessageMap.get(question.questionId)?.first.value(
+                        true
+                    ),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -309,8 +316,8 @@ fun QuestionUiContent(
                     },
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING
-                ) { selectedValue, remainingAmout ->
-                    viewModel.totalRemainingAmount = remainingAmout
+                ) { selectedValue, totalSubmittedAmount ->
+                    viewModel.totalRemainingAmount = totalSubmittedAmount
                     saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
                 }
@@ -430,7 +437,9 @@ fun QuestionUiContent(
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
-                    optionStateMap = viewModel.optionStateMap,
+                    optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
+                        question.questionId
+                    ),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -449,6 +458,8 @@ fun QuestionUiContent(
                                 options.isSelected = false
                             }
                         }
+                        val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                        runNoneCheckForMultiSelectDropDownQuestions(noneOptionCheckResult, question)
                         onAnswerSelect(question)
 
                     }
@@ -618,14 +629,43 @@ fun QuestionUiContent(
             }
 
         }
-        Text(
-            text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                ?: BLANK_STRING,
-            modifier = Modifier
-                .padding(horizontal = dimen_5_dp)
-                .padding(top = dimen_8_dp, bottom = dimen_10_dp),
-            style = quesOptionTextStyle.copy(color = eventTextColor)
-        )
+        viewModel.fieldValidationAndMessageMap[question.questionId]?.second?.let {
+            if (it != BLANK_STRING) {
+                Text(
+                    text = it,
+                    modifier = Modifier
+                        .padding(horizontal = dimen_5_dp)
+                        .padding(top = dimen_8_dp, bottom = dimen_10_dp),
+                    style = quesOptionTextStyle.copy(
+                        color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
+                                true
+                            )
+                        ) eventTextColor else redOffline
+                    )
+                )
+                CustomVerticalSpacer()
+            } else {
+                CustomVerticalSpacer(size = dimen_20_dp)
+            }
+        } ?: CustomVerticalSpacer(size = dimen_20_dp)
+    }
+}
+
+fun runNoneCheckForMultiSelectDropDownQuestions(
+    noneOptionCheckResult: Boolean,
+    question: QuestionUiModel
+) {
+    if (noneOptionCheckResult) {
+        question.options?.forEach {
+            it.isSelected = false
+            it.selectedValue = BLANK_STRING
+        }
+
+        question.options?.forEach { options ->
+            if (options.optionType.equals(OptionType.None.name, true)) {
+                options.isSelected = true
+            }
+        }
     }
 }
 
@@ -765,7 +805,6 @@ fun runEditCheck(
 
 }
 
-@Composable
 fun getSanctionedAmountMessage(
     question: QuestionUiModel,
     sanctionedAmount: Int,

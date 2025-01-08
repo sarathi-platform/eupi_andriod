@@ -11,6 +11,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.nrlm.baselinesurvey.ARG_MISSION_ID
 import com.nrlm.baselinesurvey.ARG_MISSION_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_DETAIL_NAME
+import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.SYNC_DATA
@@ -24,6 +26,7 @@ import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
+import com.patsurvey.nudge.activities.forms.presentation.SettingFormsScreen
 import com.patsurvey.nudge.activities.settings.BugLogggingMechanismScreen
 import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
@@ -127,8 +130,14 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 navArgument(ARG_MISSION_NAME) {
                     type = NavType.StringType
                 },
-
-
+                navArgument(ARG_SUB_MISSION_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                },
+                navArgument(ARG_SUB_MISSION_DETAIL_NAME) {
+                    type = NavType.StringType
+                    nullable = true
+                }
                 )
         ) {
             DataLoadingScreenComponent(
@@ -138,6 +147,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                     ARG_MISSION_ID
                 ) ?: -1,
                 missionDescription = it.arguments?.getString(ARG_MISSION_NAME) ?: BLANK_STRING,
+                missionSubDescription = it.arguments?.getString(ARG_SUB_MISSION_NAME)
+                    ?: BLANK_STRING,
+                missionSubDescriptionDetail = it.arguments?.getString(ARG_SUB_MISSION_DETAIL_NAME)
+                    ?: BLANK_STRING
             )
         }
 
@@ -172,9 +185,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 viewModel = hiltViewModel()
             )
         }
-    }
 
-//    settingNavGraph(navController)
-//   logoutGraph(navController =navController)
+        composable(route = SettingScreens.SETTING_FORMS_SCREEN.route) {
+            SettingFormsScreen(navController = navController, viewModel = hiltViewModel())
+        }
+    }
 }
 

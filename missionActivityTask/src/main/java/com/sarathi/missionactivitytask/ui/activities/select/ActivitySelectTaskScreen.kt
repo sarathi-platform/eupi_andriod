@@ -58,7 +58,6 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
@@ -90,6 +89,7 @@ fun ActivitySelectTaskScreen(
     navController: NavController = rememberNavController(),
     viewModel: ActivitySelectTaskViewModel = hiltViewModel(),
     missionId: Int,
+    missionSubTitle: String,
     activityName: String,
     activityId: Int,
     programId:Int,
@@ -101,6 +101,7 @@ fun ActivitySelectTaskScreen(
     }
 
     TaskScreen(
+        missionSubTitle = missionSubTitle,
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,
@@ -567,7 +568,8 @@ private fun OptionsUI(
     Divider(
         Modifier
             .fillMaxWidth()
-            .height(dimen_2_dp)
+            .height(dimen_1_dp),
+        color = languageItemInActiveBorderBg.copy(alpha = 0.30f)
     )
     CustomVerticalSpacer()
     NotAvailableUI(
