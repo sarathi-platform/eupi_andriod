@@ -1,5 +1,6 @@
 package com.nudge.core.ui.commonUi
 
+import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import androidx.compose.foundation.BorderStroke
@@ -23,10 +24,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.rememberImagePainter
+import com.nudge.core.R
+import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_1_dp
@@ -75,25 +80,20 @@ fun FilterRowItem(
                     .border(dimen_1_dp, colors.second, CircleShape)
                     .size(dimen_60_dp)
             ) {
-                val imageUri =
-                    if (TextUtils.isEmpty(item.imageFileName)) Uri.EMPTY else item.imageFileName?.let {
-                        FileUtils.getImageUri(
-                            context = context,
-                            fileName = it
-                        )
-                    }
-                Image(
-                    painter = rememberImagePainter(
-                        imageUri
-                    ),
-                    contentDescription = "filter icon",
-                    contentScale = ContentScale.Inside,
-                    modifier = Modifier
-                        .align(Alignment.Center)
-                        .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                        .width(dimen_45_dp)
-                        .height(dimen_45_dp)
-                )
+                val iconPainter: Painter? = getIconPainterForFilterItem(context, item)
+
+                iconPainter?.let { painter ->
+                    Image(
+                        painter = painter,
+                        contentDescription = "filter icon",
+                        contentScale = ContentScale.Inside,
+                        modifier = Modifier
+                            .align(Alignment.Center)
+                            .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                            .width(dimen_45_dp)
+                            .height(dimen_45_dp)
+                    )
+                }
             }
         }
 
@@ -106,6 +106,37 @@ fun FilterRowItem(
         )
 
     }
+
+}
+
+@Composable
+private fun getIconPainterForFilterItem(context: Context, item: FilterUiModel): Painter? {
+
+    item.imageFileName?.let {
+        val imageUri =
+            if (TextUtils.isEmpty(item.imageFileName)) Uri.EMPTY else FileUtils.getImageUri(
+                context = context,
+                fileName = it
+            )
+        return rememberImagePainter(
+            imageUri
+        )
+    }
+
+    return when (item.type) {
+        FilterType.ALL -> {
+            painterResource(R.drawable.all_mission_icon)
+        }
+
+        FilterType.GENERAL -> {
+            painterResource(R.drawable.general_mission_icon)
+        }
+
+        else -> {
+            null
+        }
+    }
+
 
 }
 
