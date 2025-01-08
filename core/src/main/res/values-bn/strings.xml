@@ -63,4 +63,9 @@
     <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
     <string name="last_sync_date_time">আগের সিঙ্ক সময়:</string>
     <string name="profile_phone">ফোন নম্বর</string>
+    <string name="sync_days">%1$s দিন</string>
+    <string name="sync_hours">%1$s ঘন্টা</string>
+    <string name="sync_minutes">%1$s মিনিট</string>
+    <string name="sync_ago">আগে</string>
+    <string name="just_now">মাত্ৰ এতিয়াই</string>
 </resources>

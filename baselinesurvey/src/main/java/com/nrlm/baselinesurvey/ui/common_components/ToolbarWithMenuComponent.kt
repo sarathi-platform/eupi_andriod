@@ -30,7 +30,6 @@ import androidx.navigation.compose.rememberNavController
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.ui.theme.blueDark
-import com.nrlm.baselinesurvey.ui.theme.largeTextStyle
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.grayColor
@@ -98,7 +97,7 @@ fun ToolbarWithMenuComponent(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = com.nudge.core.ui.theme.blueDark,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Start
                             )
                             if (!TextUtils.isEmpty(subTitle)) {
                                 Spacer(modifier = Modifier.height(2.dp))

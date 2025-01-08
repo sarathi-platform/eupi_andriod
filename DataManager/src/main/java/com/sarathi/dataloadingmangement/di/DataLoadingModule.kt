@@ -16,7 +16,6 @@ import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
