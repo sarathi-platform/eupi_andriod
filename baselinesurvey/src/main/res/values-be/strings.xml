@@ -471,8 +471,8 @@
     <string name="content">Content</string>
     <string name="average_cost">दावबायनायनि सानजेर बेसेन: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">मोनसेल\' एन्ट्रि दाजाबदेरनो हागोन।</string>
-    <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
-    <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="all_activities_marked_as_in_progress">सोलिगासिनो दं होन्ना सिनायथि होजानाय हाबाफारिफोर</string>
+    <string name="mark_activity_inprogress_label">आखुथायखौ सोलिबाय थानाय मार्क खालाम।</string>
     <string name="form_e">र्फम C</string>
     <string name="export_data">Share Data</string>
     <string name="refresh_config">Reset Configuration</string>
