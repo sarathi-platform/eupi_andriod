@@ -483,8 +483,8 @@
     <string name="content">Content</string>
     <string name="average_cost">औसत लागत: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">केवल एक प्रविष्टि जोड़ी जा सकती है</string>
-    <string name="all_activities_marked_as_in_progress">सभी गतिविधियाँ प्रगति पर चिह्नित हैं</string>
-    <string name="mark_activity_inprogress_label">गतिविधि को प्रगति पर चिह्नित करें</string>
+    <string name="all_activities_marked_as_in_progress">"गतिविधियाँ प्रगति में चिन्हित है "</string>
+    <string name="mark_activity_inprogress_label">" चिन्जहित करें की गतिविधि प्रगति  में है  "</string>
     <string name="form_e">फॉर्म E</string>
     <string name="export_data">Share Data</string>
     <string name="refresh_config">कॉन्फ़िगरेशन रीसेट करें</string>
