@@ -93,7 +93,7 @@ fun ToolBarWithMenuComponent(
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = blueDark,
-                                textAlign = TextAlign.Center
+                                textAlign = TextAlign.Start
                             )
                             if (!TextUtils.isEmpty(subTitle)) {
                                 Spacer(modifier = Modifier.height(2.dp))
