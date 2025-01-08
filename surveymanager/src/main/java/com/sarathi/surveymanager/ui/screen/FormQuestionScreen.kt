@@ -59,11 +59,9 @@ import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_8_dp
-import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
-import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
@@ -343,7 +341,15 @@ fun FormQuestionScreen(
                                     viewModel.runConditionCheck(question)
                                     viewModel.runValidationCheck(question.questionId) { isValid, message ->
                                         viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                            Pair(isValid, message)
+                                            Triple(
+                                                isValid,
+                                                message,
+                                                if (QuestionType.userInputQuestionTypeList.contains(
+                                                        question.type.toLowerCase()
+                                                    )
+                                                ) (question.options?.firstOrNull()?.selectedValue
+                                                    ?: BLANK_STRING) else null
+                                            )
                                     }
                                 }
                             )
@@ -707,10 +713,10 @@ fun FormScreenQuestionUiContent(
                         text = it,
                         modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
                         style = quesOptionTextStyle.copy(
-                            color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
-                                    true
-                                )
-                            ) eventTextColor else redOffline
+                            color = getValidationMessageColor(
+                                question,
+                                viewModel.fieldValidationAndMessageMap[question.questionId]
+                            )
                         )
                     )
                     CustomVerticalSpacer()
