@@ -39,6 +39,8 @@ class FetchAllDataUseCase @Inject constructor(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
+        fetchUserDetailUseCase.invoke()
+
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
             fetchMissionDataUseCase.getAllMissionList()
             fetchContentDataFromNetworkUseCase.invoke()
@@ -57,7 +59,6 @@ class FetchAllDataUseCase @Inject constructor(
         } else {
             onComplete(true, BLANK_STRING)
         }
-        fetchUserDetailUseCase.invoke()
     }
 
     suspend fun fetchMissionRelatedData(
