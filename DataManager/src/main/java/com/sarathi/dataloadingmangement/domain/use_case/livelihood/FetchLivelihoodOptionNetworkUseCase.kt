@@ -61,10 +61,12 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
     suspend fun invoke(): Boolean {
         try {
 
-            var getActivityIdForLivelihood =repository.getActivityIdForLivelihood()
-            getSubjectLivelihoodMapping(
-                activityId = getActivityIdForLivelihood,
+            if (!repository.isLivelihoodAlreadyFetched()) {
+                var getActivityIdForLivelihood = repository.getActivityIdForLivelihood()
+                getSubjectLivelihoodMapping(
+                    activityId = getActivityIdForLivelihood,
                 )
+            }
         } catch (ex: Exception) {
             throw ex
         }
