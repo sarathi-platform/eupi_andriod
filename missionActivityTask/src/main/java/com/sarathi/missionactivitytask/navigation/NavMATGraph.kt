@@ -257,7 +257,7 @@ fun NavGraphBuilder.MatNavigation(
                     ARG_ACTIVITY_NAME
                 ) ?: BLANK_STRING,
               missionSubTitle = it.arguments?.getString(
-                  ARG_ACTIVITY_NAME
+                  ARG_SUB_MISSION_NAME
               ) ?: BLANK_STRING,
               programId = it.arguments?.getInt(
                   ARG_PROGRAM_ID
