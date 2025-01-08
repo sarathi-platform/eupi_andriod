@@ -40,7 +40,6 @@ class FetchAllDataUseCase @Inject constructor(
         isRefresh: Boolean = true
     ) {
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
             fetchContentDataFromNetworkUseCase.invoke()
             languageConfigUseCase.invoke()
@@ -56,9 +55,9 @@ class FetchAllDataUseCase @Inject constructor(
             fetchTranslationConfigUseCase.invoke()
 
         } else {
-            fetchUserDetailUseCase.invoke()
             onComplete(true, BLANK_STRING)
         }
+        fetchUserDetailUseCase.invoke()
     }
 
     suspend fun fetchMissionRelatedData(
