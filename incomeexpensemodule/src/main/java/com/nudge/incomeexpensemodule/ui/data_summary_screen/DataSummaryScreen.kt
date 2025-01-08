@@ -361,7 +361,6 @@ private fun DataSummaryView(
         CustomDateRangePickerDisplay(
             value = "${viewModel.dateRangeFilter.value.first.getDate()} - ${viewModel.dateRangeFilter.value.second.getDate()}",
             label = viewModel.stringResource(
-                context,
                 R.string.date_range_picker_label_text
             )
         ) {
@@ -478,10 +477,9 @@ fun EventsListHeaderWithDropDownFilter(
 
         Text(
             if (showMoreItems) viewModel.stringResource(
-                context,
                 R.string.all_events
             ) else viewModel.stringResource(
-                context, R.string.last_events,
+                R.string.last_events,
                 DEFAULT_EVENT_LIST_VIEW_SIZE
             ),
             style = getTextColor(defaultTextStyle)
@@ -531,10 +529,9 @@ fun ShowMoreButton(
             ) {
                 Text(
                     text = if (showMoreItems) viewModel.stringResource(
-                        context = context,
                         R.string.show_less
                     ) else viewModel.stringResource(
-                        context, R.string.show_more
+                        R.string.show_more
                     ),
                     textAlign = TextAlign.Center,
                     style = getTextColor(defaultTextStyle),
@@ -724,7 +721,7 @@ private fun EventHeader(
     ) {
         Row {
             TextWithPaddingEnd(
-                text = viewModel.stringResource(context, R.string.event),
+                text = viewModel.stringResource(R.string.event),
                 style = getTextColor(smallTextStyle, color = eventTextColor)
             )
             StrikethroughText(
@@ -758,7 +755,6 @@ private fun EventDetails(
             Row {
                 TextWithPaddingEnd(
                     text = viewModel.stringResource(
-                        context,
                         resId = R.string.amount
                     ),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
@@ -774,7 +770,7 @@ private fun EventDetails(
         item.assetCount?.let {
             Row {
                 TextWithPaddingEnd(
-                    text = viewModel.stringResource(context, resId = R.string.asset),
+                    text = viewModel.stringResource(resId = R.string.asset),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
                 )
                 StrikethroughText(
@@ -842,9 +838,8 @@ private fun AddEventButton(
     viewModel: DataSummaryScreenViewModel,
     onAddEventButtonClicked: () -> Unit
 ) {
-    val context = LocalContext.current
     ButtonPositive(
-        buttonTitle = viewModel.stringResource(context, R.string.add_event),
+        buttonTitle = viewModel.stringResource(R.string.add_event),
         isActive = true,
         isArrowRequired = true
     ) {

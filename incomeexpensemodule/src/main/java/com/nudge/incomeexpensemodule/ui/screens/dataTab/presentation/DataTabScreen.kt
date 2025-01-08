@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -105,19 +104,15 @@ fun DataTabScreen(
     if (showAppExitDialog.value) {
         ShowCustomDialog(
             title = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.are_you_sure
             ),
             message = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.do_you_want_to_exit_the_app
             ),
             positiveButtonTitle = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.exit
             ),
             negativeButtonTitle = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.cancel
             ),
             onNegativeButtonClick = {
@@ -158,7 +153,7 @@ fun DataTabScreen(
             } else {
                 showCustomToast(
                     context,
-                    context.getString(R.string.refresh_failed_please_try_again)
+                    dataTabScreenViewModel.getString(R.string.refresh_failed_please_try_again)
                 )
             }
         }
@@ -189,7 +184,6 @@ fun DataTabScreen(
         ) {
             ToolBarWithMenuComponent(
                 title = dataTabScreenViewModel.stringResource(
-                    context,
                     resId = com.sarathi.dataloadingmangement.R.string.app_name
                 ),
                 modifier = modifier,
@@ -266,7 +260,6 @@ fun DataTabScreen(
                                             .fillMaxWidth()
                                             .weight(1f),
                                         placeholderString = dataTabScreenViewModel.stringResource(
-                                            context,
                                             DataRes.string.search_by_didis
                                         ),
                                         searchFieldHeight = dimen_50_dp,
@@ -318,7 +311,7 @@ fun DataTabScreen(
                                         textProperties = TextProperties.getBasicTextProperties(
                                             text = buildAnnotatedString {
                                                 //TODO write function to get this string for the filter applied.
-                                                append(stringResource(R.string.showing))
+                                                append(dataTabScreenViewModel.stringResource(R.string.showing))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
@@ -327,7 +320,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
                                                 }
-                                                append(stringResource(R.string.results_for))
+                                                append(dataTabScreenViewModel.stringResource(R.string.results_for))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,

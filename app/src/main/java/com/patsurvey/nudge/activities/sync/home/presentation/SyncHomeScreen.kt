@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -58,7 +57,6 @@ import com.nudge.core.DATA_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.IMAGE_PRODUCER_STRING
 import com.nudge.core.IMAGE_STRING
-import com.nudge.core.SYNC_VIEW_DATE_TIME_FORMAT
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
 import com.nudge.core.isDataEvent
@@ -79,7 +77,6 @@ import com.nudge.syncmanager.utils.SYNC_UNIQUE_NAME
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.viewmodel.SyncHomeViewModel
-import com.patsurvey.nudge.activities.ui.theme.syncMediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.utils.showCustomDialog
@@ -87,8 +84,6 @@ import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
-import java.util.Locale
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable

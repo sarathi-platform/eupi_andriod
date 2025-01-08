@@ -34,7 +34,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -90,7 +89,7 @@ fun LanguageScreen(
         topBar = {
             if (pageFrom != ARG_FROM_HOME) {
                 ToolbarComponent(
-                    title = stringResource(R.string.language_text),
+                    title = viewModel.stringResource(R.string.language_text),
                     modifier = Modifier
                 ) {
                     navController.navigateUp()
@@ -117,7 +116,7 @@ fun LanguageScreen(
                 if (pageFrom == ARG_FROM_HOME) {
                     SarathiLogoTextView()
                     Text(
-                        text = stringResource(id = R.string.choose_language),
+                        text = viewModel.stringResource(R.string.choose_language),
                         color = textColorBlueLight,
                         fontSize = 18.sp,
                         fontFamily = NotoSans,
@@ -225,7 +224,7 @@ fun LanguageList(viewModel: LanguageViewModel, context: Context) {
                             if (item.langCode == KOKBOROK_LANGUAGE_CODE) {
                                 showCustomToast(
                                     context,
-                                    context.getString(R.string.this_language_is_not_available_for_selection)
+                                    viewModel.getString(R.string.this_language_is_not_available_for_selection)
                                 )
                             } else viewModel.languagePosition.value = i
                         } else {
@@ -293,7 +292,7 @@ fun ContinueButton(
         shape = RoundedCornerShape(6.dp)
     ) {
         Text(
-            text = stringResource(id = R.string.continue_text),
+            text = viewModel.stringResource(R.string.continue_text),
             color = Color.White,
             fontSize = 18.sp,
             fontFamily = NotoSans,

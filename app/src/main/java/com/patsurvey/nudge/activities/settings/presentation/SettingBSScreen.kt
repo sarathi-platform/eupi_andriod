@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.settings.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
@@ -31,6 +30,7 @@ fun SettingBSScreen(
     val loaderState = viewModel.loaderState
 
     LaunchedEffect(key1 = true) {
+        viewModel.setTranslationConfig()
         viewModel.initOptions(context)
     }
 
@@ -40,7 +40,7 @@ fun SettingBSScreen(
             showCustomDialog(
                 title = context.getString(R.string.logout),
                 message = context.getString(R.string.sync_running),
-                positiveButtonTitle = stringResource(id = R.string.ok),
+                positiveButtonTitle = viewModel.stringResource(R.string.ok),
                 onPositiveButtonClick = {
                     viewModel.showLogoutDialog.value = false
                 },
@@ -48,10 +48,10 @@ fun SettingBSScreen(
             )
         }else {
             showCustomDialog(
-                title = context.getString(com.patsurvey.nudge.R.string.logout),
-                message = context.getString(R.string.logout_confirmation),
-                positiveButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.logout),
-                negativeButtonTitle = stringResource(id = com.patsurvey.nudge.R.string.cancel),
+                title = viewModel.stringResource(R.string.logout),
+                message = viewModel.stringResource(R.string.logout_confirmation),
+                positiveButtonTitle = viewModel.stringResource(R.string.logout),
+                negativeButtonTitle = viewModel.stringResource(R.string.cancel),
                 onNegativeButtonClick = {
                     viewModel.showLogoutDialog.value = false
                 },
@@ -71,7 +71,7 @@ fun SettingBSScreen(
                             }
                         } else showCustomToast(
                             context,
-                            context.getString(R.string.something_went_wrong)
+                            viewModel.stringResource(R.string.something_went_wrong)
                         )
                     }
                 })
@@ -84,7 +84,7 @@ fun SettingBSScreen(
             isSyncEnable = viewModel.isSyncEnable.value,
             mobileNumber = viewModel.getUserMobileNumber(),
             lastSyncTime = viewModel.lastSyncTime.value,
-            title = stringResource(id = R.string.settings_screen_title),
+            title = viewModel.stringResource(R.string.settings_screen_title),
             isScreenHaveLogoutButton = true,
             optionList = viewModel.optionList.value ?: emptyList(),
             versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
@@ -123,7 +123,7 @@ fun SettingBSScreen(
                         navController.navigate(SettingScreens.BACKUP_RECOVERY_SCREEN.route)
                     }
                     SettingTagEnum.EXPORT_BACKUP_FILE.name ->{
-                        viewModel.compressEventData(context.getString(R.string.share_export_file))
+                        viewModel.compressEventData(viewModel.stringResource(R.string.share_export_file))
                     }
 
                     SettingTagEnum.SHARE_LOGS.name -> {
@@ -140,7 +140,7 @@ fun SettingBSScreen(
                     navController.navigate(SettingScreens.SYNC_DATA_NOW_SCREEN.route)
                 else showCustomToast(
                     context,
-                    context.getString(R.string.data_is_not_available_for_sync_please_perform_some_action)
+                    viewModel.stringResource(R.string.data_is_not_available_for_sync_please_perform_some_action)
                 )
             }
         )

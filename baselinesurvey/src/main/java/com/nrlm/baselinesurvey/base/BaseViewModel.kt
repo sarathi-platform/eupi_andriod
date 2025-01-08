@@ -34,6 +34,8 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.FetchDataUseCa
 import com.nrlm.baselinesurvey.utils.BaselineLogger
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import kotlinx.coroutines.CoroutineDispatcher
@@ -50,7 +52,8 @@ import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 abstract class BaseViewModel() : ViewModel() {
-
+    @Inject
+    lateinit var translationHelper: TranslationHelper
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
@@ -67,6 +70,12 @@ abstract class BaseViewModel() : ViewModel() {
     }
 
     abstract fun <T> onEvent(event: T)
+
+    fun setTranslationConfig() {
+        ioViewModelScope {
+            translationHelper.initTranslationHelper(getScreenName())
+        }
+    }
 
     open fun updateQuestionStateForCondition(
         conditionResult: Boolean,
@@ -304,6 +313,26 @@ abstract class BaseViewModel() : ViewModel() {
             updateLoaderEvent()
         }
     }
+
+    open fun getScreenName(): TranslationEnum {
+        return TranslationEnum.NoScreen
+    }
+
+    fun getString(resId: Int): String {
+        return translationHelper.getString(resId)
+    }
+
+    fun stringResource(resId: Int): String {
+        return translationHelper.stringResource(resId)
+    }
+
+    fun stringResource(resId: Int, vararg formatArgs: Any): String {
+        return translationHelper.getString(
+            resId = resId,
+            formatArgs = formatArgs
+        )
+    }
+
 
 
 }

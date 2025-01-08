@@ -8,7 +8,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -25,14 +24,13 @@ import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 @Composable
 fun ExportBackupScreen(
     viewModel: ExportBackupScreenViewModel = hiltViewModel(),
-
     navController: NavController) {
     val context=LocalContext.current
     val settingConfig = CommonSettingScreenConfig(
         isSyncEnable = false,
         mobileNumber = viewModel.getMobileNumber(),
         lastSyncTime = 0L,
-        title = stringResource(id = R.string.export_data),
+        title = viewModel.stringResource(R.string.export_data),
         isScreenHaveLogoutButton = false,
         optionList = viewModel.exportOptionList.value,
         versionText = BLANK_STRING
@@ -55,7 +53,7 @@ fun ExportBackupScreen(
                 }
 
                 SettingTagEnum.EXPORT_EVENT_FILE.name -> {
-                    viewModel.compressEventData(context.getString(R.string.export_event_file))
+                    viewModel.compressEventData(viewModel.getString(R.string.export_event_file))
                 }
                 SettingTagEnum.EXPORT_LOG_FILE.name -> {
                     viewModel.exportOnlyLogFile(context)
