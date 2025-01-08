@@ -636,10 +636,15 @@ fun QuestionUiContent(
                         .padding(horizontal = dimen_5_dp)
                         .padding(top = dimen_8_dp, bottom = dimen_10_dp),
                     style = quesOptionTextStyle.copy(
-                        color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
-                                true
-                            )
-                        ) eventTextColor else redOffline
+                        color = if (question.options?.all { op -> (op.isSelected == true) && op.selectedValue != com.nudge.core.BLANK_STRING } == true) {
+                            if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
+                                    true
+                                )
+                            ) eventTextColor else redOffline
+                        } else {
+                            eventTextColor
+                        }
+
                     )
                 )
                 CustomVerticalSpacer()

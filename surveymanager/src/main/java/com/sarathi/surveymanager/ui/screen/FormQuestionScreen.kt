@@ -343,7 +343,15 @@ fun FormQuestionScreen(
                                     viewModel.runConditionCheck(question)
                                     viewModel.runValidationCheck(question.questionId) { isValid, message ->
                                         viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                            Pair(isValid, message)
+                                            Triple(
+                                                isValid,
+                                                message,
+                                                if (QuestionType.userInputQuestionTypeList.contains(
+                                                        question.type.toLowerCase()
+                                                    )
+                                                ) (question.options?.firstOrNull()?.selectedValue
+                                                    ?: BLANK_STRING) else null
+                                            )
                                     }
                                 }
                             )
@@ -707,10 +715,14 @@ fun FormScreenQuestionUiContent(
                         text = it,
                         modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
                         style = quesOptionTextStyle.copy(
-                            color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
-                                    true
-                                )
-                            ) eventTextColor else redOffline
+                            color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.third?.value() != BLANK_STRING) {
+                                if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
+                                        true
+                                    )
+                                ) eventTextColor else redOffline
+                            } else {
+                                eventTextColor
+                            }
                         )
                     )
                     CustomVerticalSpacer()
