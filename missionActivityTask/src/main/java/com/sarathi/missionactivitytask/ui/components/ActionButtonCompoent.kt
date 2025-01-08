@@ -22,10 +22,12 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ElevatedAssistChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -44,9 +46,12 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
+import com.nudge.core.ui.theme.chipCornerRadius
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_30_dp
+import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -285,5 +290,66 @@ fun ButtonPositiveWithLoaderComponent(
                 )
             }
         }
+    }
+}
+
+
+@Composable
+fun PrimaryButtonChip(
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+    color: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = blueDark,
+        contentColor = white
+    ),
+    isIcon: Boolean = true
+) {
+    ElevatedAssistChip(
+        enabled = enabled,
+        onClick = onClick,
+        shape = RoundedCornerShape(chipCornerRadius),
+        colors = AssistChipDefaults.assistChipColors(
+            containerColor = blueDark
+        ),
+        label = {},
+        trailingIcon = {
+            Icon(
+                Icons.Default.ArrowForward,
+                contentDescription = "Proceed",
+                tint = white,
+                modifier = Modifier
+            )
+        },
+        modifier = modifier
+            .size(width = dimen_40_dp, height = dimen_30_dp)
+    )
+}
+
+@Composable
+fun SecondaryButtonChip(
+    text: String,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    onClick: () -> Unit,
+    color: ButtonColors = ButtonDefaults.buttonColors(
+        containerColor = blueDark,
+        contentColor = white
+    ),
+    isIcon: Boolean = true
+) {
+
+    Button(
+        enabled = enabled,
+        onClick = onClick,
+        shape = RoundedCornerShape(chipCornerRadius),
+        colors = color,
+        modifier = modifier
+            .size(width = dimen_30_dp, height = dimen_20_dp)
+    ) {
+        Text(
+            text = text,
+            style = smallTextStyleNormalWeight
+        )
     }
 }

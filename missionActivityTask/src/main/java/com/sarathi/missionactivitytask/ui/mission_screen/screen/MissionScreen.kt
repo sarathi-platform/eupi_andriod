@@ -2,6 +2,7 @@ package com.sarathi.missionactivitytask.ui.mission_screen.screen
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,7 +11,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -29,16 +32,25 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
+import com.nudge.core.model.FilterUiModel
+import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
+import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.FilterRowItem
+import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_12_dp
+import com.nudge.core.ui.theme.dimen_14_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.missionactivitytask.R
-import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCard
+import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCardV2
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
@@ -140,7 +152,24 @@ fun MissionScreen(
                 Column(
                     Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = dimen_5_dp)) {
+                        .padding(horizontal = dimen_5_dp),
+                    verticalArrangement = Arrangement.spacedBy(dimen_14_dp)
+                )
+                {
+
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = dimen_16_dp)
+                    ) {
+                        CustomSubTabLayoutWithCallBack(
+                            parentTabIndex = TabsEnum.MissionTab.tabIndex,
+                            tabs = viewModel.tabs,
+                            countMap = viewModel.countMap
+                        ) {
+                            viewModel.onEvent(CommonEvents.OnSubTabChanged)
+                        }
+                    }
+
                     SearchWithFilterViewComponent(
                         placeholderString = stringResource(id = R.string.search),
                         filterSelected = false,
@@ -149,7 +178,23 @@ fun MissionScreen(
                         onFilterSelected = {},
                         onSearchValueChange = { queryTerm ->
                             onSearchValueChanged(queryTerm)
-                        })
+                        }
+                    )
+                }
+
+                LazyRow(
+                    modifier = Modifier
+                        .padding(horizontal = dimen_12_dp)
+                ) {
+                    itemsIndexed(viewModel.missionFilterList) { index: Int, item: FilterUiModel ->
+                        FilterRowItem(
+                            item = item,
+                            isSelected = viewModel.selectedMissionFilter.value == item
+                        ) {
+                            viewModel.onEvent(CommonEvents.OnFilterUiModelSelected(item))
+                        }
+                        CustomHorizontalSpacer()
+                    }
                 }
 
             }
@@ -158,8 +203,7 @@ fun MissionScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .pullRefresh(pullRefreshState)
-            )
-            {
+            ) {
                 PullRefreshIndicator(
                     refreshing = viewModel.loaderState.value.isLoaderVisible,
                     state = pullRefreshState,
@@ -172,9 +216,10 @@ fun MissionScreen(
                     Spacer(modifier = Modifier.height(10.dp))
                     LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
                         items(viewModel.filterMissionList.value) { mission ->
-                            BasicMissionCard(
+                            BasicMissionCardV2(
                                 status = mission.missionStatus,
-                                countStatusText = context.getString(R.string.activities_completed),
+//                                countStatusText = context.getString(R.string.activities_completed),
+                                filterUiModel = viewModel.getFilterUiModelForMission(mission.livelihoodType),
                                 totalCount = mission.activityCount,
                                 pendingCount = mission.pendingActivityCount,
                                 title = mission.description,
