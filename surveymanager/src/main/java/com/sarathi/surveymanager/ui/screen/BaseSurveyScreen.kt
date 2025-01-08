@@ -287,6 +287,7 @@ fun QuestionUiContent(
                     ),
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = sanctionedAmount,
+                    totalSubmittedAmount = totalSubmittedAmount,
                     remainingAmount = getSanctionedAmountMessage(
                         question,
                         sanctionedAmount = sanctionedAmount,
@@ -315,8 +316,8 @@ fun QuestionUiContent(
                     },
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING
-                ) { selectedValue, remainingAmout ->
-                    viewModel.totalRemainingAmount = remainingAmout
+                ) { selectedValue, totalSubmittedAmount ->
+                    viewModel.totalRemainingAmount = totalSubmittedAmount
                     saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
                 }
@@ -804,7 +805,6 @@ fun runEditCheck(
 
 }
 
-@Composable
 fun getSanctionedAmountMessage(
     question: QuestionUiModel,
     sanctionedAmount: Int,
