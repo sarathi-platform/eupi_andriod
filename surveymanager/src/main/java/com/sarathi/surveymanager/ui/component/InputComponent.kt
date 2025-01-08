@@ -64,6 +64,7 @@ fun InputComponent(
     isEditable: Boolean = true,
     sanctionedAmount: Int = 0,
     remainingAmount: Int = 0,
+    totalSubmittedAmount: Int = 0,
     isZeroNotAllowed: Boolean = false,
     showCardView: Boolean = false,
     isFromTypeQuestion: Boolean = false,
@@ -71,7 +72,7 @@ fun InputComponent(
     optionsItem: OptionsUiModel? = null,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
-    onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
+    onAnswerSelection: (selectValue: String, totalSubmittedAmount: Int) -> Unit,
 ) {
     val txt = remember(resetResponse, optionsItem?.optionId) {
         mutableStateOf(defaultValue)
@@ -134,7 +135,7 @@ fun InputComponent(
                             txt.value = value
                         }
                     }
-                    onAnswerSelection(txt.value, remainingAmount)
+                    onAnswerSelection(txt.value, totalSubmittedAmount)
                 },
                 placeholder = {
                     androidx.compose.material3.Text(
@@ -162,7 +163,7 @@ fun InputComponent(
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
                     keyboardController?.hide()
-                    onAnswerSelection(txt.value, remainingAmount)
+                    onAnswerSelection(txt.value, totalSubmittedAmount)
                 }),
                 maxLines = 2,
                 colors = TextFieldDefaults.outlinedTextFieldColors(
