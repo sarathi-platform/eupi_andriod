@@ -62,4 +62,6 @@
     <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
     <string name="last_sync_date_time">जोबथा sync time:</string>
     <string name="profile_phone">फन नम्बर</string>
+    <string name="ongoing_tab_title">Ongoing</string>
+    <string name="completed_tab_title">Completed</string>
 </resources>

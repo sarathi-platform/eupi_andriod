@@ -184,8 +184,8 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.CustomDateRange -> stringResource(R.string.custom_date)
         SubTabs.Step1 -> stringResource(R.string.reopen_activity_step_1)
         SubTabs.Step2 -> stringResource(R.string.reopen_activity_step_2)
-        SubTabs.OngoingMissions -> "Ongoing"
-        SubTabs.CompletedMissions -> "Completed" // TODO move all static strings to string file and find a way to make it dynamic
+        SubTabs.OngoingMissions -> stringResource(R.string.ongoing_tab_title)
+        SubTabs.CompletedMissions -> stringResource(R.string.completed_tab_title) // TODO move all static strings to string file and find a way to make it dynamic
         else -> {
             BLANK_STRING
         }
