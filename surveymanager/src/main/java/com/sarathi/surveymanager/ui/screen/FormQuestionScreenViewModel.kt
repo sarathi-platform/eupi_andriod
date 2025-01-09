@@ -331,6 +331,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                             selectedValue = BLANK_STRING
                         )
                     }
+                    runNoneOptionCheck(it)
                 }
         }
     }
@@ -369,6 +370,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                         selectedValue = BLANK_STRING
                     )
                 }
+                runNoneOptionCheck(it)
                 checkAndUpdateNonVisibleQuestionResponseInDb(question = it)
             }
             onSaveComplete()
