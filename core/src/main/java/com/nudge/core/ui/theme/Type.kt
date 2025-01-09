@@ -204,3 +204,9 @@ val syncMediumTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )
+
+val syncTimeSmallTextStyle = TextStyle(
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.SemiBold,
+    fontSize = 14.sp
+)

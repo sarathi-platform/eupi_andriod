@@ -30,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
@@ -287,6 +288,7 @@ fun QuestionUiContent(
                     ),
                     isZeroNotAllowed = question.tagId.contains(DISBURSED_AMOUNT_TAG),
                     sanctionedAmount = sanctionedAmount,
+                    totalSubmittedAmount = totalSubmittedAmount,
                     remainingAmount = getSanctionedAmountMessage(
                         question,
                         sanctionedAmount = sanctionedAmount,
@@ -315,8 +317,8 @@ fun QuestionUiContent(
                     },
                     hintText = question.options?.firstOrNull()?.description
                         ?: BLANK_STRING
-                ) { selectedValue, remainingAmout ->
-                    viewModel.totalRemainingAmount = remainingAmout
+                ) { selectedValue, totalSubmittedAmount ->
+                    viewModel.totalRemainingAmount = totalSubmittedAmount
                     saveInputTypeAnswer(selectedValue, question)
                     onAnswerSelect(question)
                 }
@@ -636,10 +638,10 @@ fun QuestionUiContent(
                         .padding(horizontal = dimen_5_dp)
                         .padding(top = dimen_8_dp, bottom = dimen_10_dp),
                     style = quesOptionTextStyle.copy(
-                        color = if (viewModel.fieldValidationAndMessageMap[question.questionId]?.first.value(
-                                true
-                            )
-                        ) eventTextColor else redOffline
+                        color = getValidationMessageColor(
+                            question,
+                            viewModel.fieldValidationAndMessageMap[question.questionId]
+                        )
                     )
                 )
                 CustomVerticalSpacer()
@@ -650,6 +652,20 @@ fun QuestionUiContent(
     }
 }
 
+@Composable
+fun getValidationMessageColor(
+    question: QuestionUiModel,
+    fieldValidationAndMessageMap: Triple<Boolean, String, String?>?
+): Color {
+    return if (question.options?.all { op -> (op.isSelected == true) && op.selectedValue != com.nudge.core.BLANK_STRING } == true) {
+        if (fieldValidationAndMessageMap?.first.value(
+                true
+            )
+        ) eventTextColor else redOffline
+    } else {
+        eventTextColor
+    }
+}
 fun runNoneCheckForMultiSelectDropDownQuestions(
     noneOptionCheckResult: Boolean,
     question: QuestionUiModel
@@ -804,7 +820,6 @@ fun runEditCheck(
 
 }
 
-@Composable
 fun getSanctionedAmountMessage(
     question: QuestionUiModel,
     sanctionedAmount: Int,

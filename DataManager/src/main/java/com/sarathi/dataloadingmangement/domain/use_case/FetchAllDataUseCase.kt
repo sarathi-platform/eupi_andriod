@@ -39,8 +39,9 @@ class FetchAllDataUseCase @Inject constructor(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
+        fetchUserDetailUseCase.invoke()
+
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
             livelihoodUseCase.invoke()
             contentDownloaderUseCase.livelihoodContentDownload()

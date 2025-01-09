@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.CoreLogger
@@ -23,6 +24,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -122,7 +124,15 @@ class SurveyScreenViewModel @Inject constructor(
                 runValidationCheck(it.questionId) { isValid, message ->
                     try {
                         fieldValidationAndMessageMap[it.questionId] =
-                            Pair(isValid, message)
+                            Triple(
+                                isValid,
+                                message,
+                                if (QuestionType.userInputQuestionTypeList.contains(
+                                        it.type.toLowerCase()
+                                    )
+                                ) (it.options?.firstOrNull()?.selectedValue
+                                    ?: BLANK_STRING) else null
+                            )
                     } catch (ex: Exception) {
                         CoreLogger.e(
                             tag = LOGGER_TAG,

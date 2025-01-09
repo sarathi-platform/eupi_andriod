@@ -14,6 +14,7 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.surveymanager.R
 
@@ -67,7 +68,13 @@ fun SurveyScreen(
         onAnswerSelect = { questionUiModel ->
             viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
                 viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                    Pair(isValid, message)
+                    Triple(
+                        isValid, message, if (QuestionType.userInputQuestionTypeList.contains(
+                                questionUiModel.type.toLowerCase()
+                            )
+                        ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                            ?: com.nudge.core.BLANK_STRING) else null
+                    )
             }
             viewModel.saveSingleAnswerIntoDb(questionUiModel)
             viewModel.updateTaskStatus(taskId)
@@ -116,7 +123,15 @@ fun SurveyScreen(
                     viewModel.runConditionCheck(questionUiModel)
                     viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
                         viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                            Pair(isValid, message)
+                            Triple(
+                                isValid,
+                                message,
+                                if (QuestionType.userInputQuestionTypeList.contains(
+                                        questionUiModel.type.toLowerCase()
+                                    )
+                                ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                                    ?: com.nudge.core.BLANK_STRING) else null
+                            )
                     }
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)

@@ -528,8 +528,8 @@
     <string name="content">Content</string>
     <string name="average_cost">Average Cost: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">Only one entry can be added</string>
-    <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
-    <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="all_activities_marked_as_in_progress">Activities marked In Progress</string>
+    <string name="mark_activity_inprogress_label">Mark Activity In Progress</string>
     <string name="form_e">Form E</string>
     <string name="refresh_config">Reset Configuration</string>
     <string name="are_you_sure_you_want_to_reset_app_configuration">Are you sure you want to Reset App Configurations?</string>
