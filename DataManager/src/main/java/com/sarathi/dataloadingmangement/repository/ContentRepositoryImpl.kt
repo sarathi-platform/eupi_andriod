@@ -76,7 +76,7 @@ class ContentRepositoryImpl @Inject constructor(
 
         // Handle content from activityConfigDao
         activityConfigDao.getAllActivityIconsKey(userIdentifier)?.forEach {
-            addContentRequest(coreSharedPrefs.getAppLanguage(), it)
+            addContentRequest(DEFAULT_LANGUAGE_CODE, it)
         }
 
         // Handle survey answers
