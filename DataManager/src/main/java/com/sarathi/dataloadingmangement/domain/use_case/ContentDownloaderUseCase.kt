@@ -57,9 +57,7 @@ class ContentDownloaderUseCase @Inject constructor(
                         downloaderManager.downloadItem(url = it)
                     }
                 }
-
             }
-
         } catch (ex: Exception) {
             CoreLogger.e(tag = "ContentDownloader", msg = "downloadItem exception", ex = ex)
         }

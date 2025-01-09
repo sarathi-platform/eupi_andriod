@@ -160,9 +160,8 @@ fun MissionScreen(
                         .fillMaxWidth()
                         .padding(horizontal = dimen_5_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_14_dp)
-                )
-                {
-
+                ) {
+                    
                     Box(
                         modifier = Modifier
                             .padding(horizontal = dimen_16_dp)

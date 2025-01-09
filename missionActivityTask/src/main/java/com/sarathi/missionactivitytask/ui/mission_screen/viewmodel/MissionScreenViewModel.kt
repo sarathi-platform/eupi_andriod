@@ -16,6 +16,7 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.toCamelCase
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -347,11 +348,16 @@ class MissionScreenViewModel @Inject constructor(
         var filterLabel = selectedMissionFilter.value?.filterLabel.value()
         val filterValueCount = "(${filterMissionList.value.size})"
         if (filterLabel == BLANK_STRING) {
-            filterLabel = "$ALL_MISSION_FILTER_VALUE"
+            filterLabel = ALL_MISSION_FILTER_VALUE
         }
 
-        if (!filterLabel.contains("Mission")) {
-            filterLabel = "$filterLabel Mission"
+
+
+        if (!filterLabel.contains("Missions")) {
+            val livelihoodType =
+                (selectedMissionFilter.value?.type as FilterType.OTHER).filterValue.toString()
+                    .toCamelCase()
+            filterLabel = "$livelihoodType Missions"
         }
 
         filterLabel = "$filterLabel $filterValueCount"
