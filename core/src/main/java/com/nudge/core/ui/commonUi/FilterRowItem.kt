@@ -38,7 +38,7 @@ import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_60_dp
-import com.nudge.core.ui.theme.dimen_72_dp
+import com.nudge.core.ui.theme.dimen_80_dp
 import com.nudge.core.ui.theme.filterItemSelectedDark
 import com.nudge.core.ui.theme.filterItemSelectedLight
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
@@ -59,7 +59,7 @@ fun FilterRowItem(
 
     Column(
         modifier = Modifier
-            .widthIn(dimen_60_dp, dimen_72_dp)
+            .widthIn(dimen_60_dp, dimen_80_dp)
             .padding(horizontal = dimen_4_dp)
             .clickable {
                 onClick()
