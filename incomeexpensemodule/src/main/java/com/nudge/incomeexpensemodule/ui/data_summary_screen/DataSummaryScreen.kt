@@ -43,6 +43,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -165,6 +166,12 @@ fun DataSummaryScreen(
         )
         viewModel.onEvent(InitDataEvent.InitDataSummaryScreenState(subjectId = subjectId))
 
+    }
+    DisposableEffect(key1 = LocalContext.current) {
+        onDispose {
+            eventMessage?.value = BLANK_STRING
+            newlyAddedEvent?.value = BLANK_STRING
+        }
     }
 
     val sheetState = rememberCustomDateRangePickerSheetState(

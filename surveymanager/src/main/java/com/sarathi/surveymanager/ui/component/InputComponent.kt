@@ -116,7 +116,7 @@ fun InputComponent(
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
-                isError = isError,
+                isError = isError && txt.value.isNotEmpty(),
                 onValueChange = { value ->
                     if (value.isEmpty()) {
                         // Allow clearing the field

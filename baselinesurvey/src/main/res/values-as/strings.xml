@@ -481,8 +481,8 @@
     <string name="content">Content</string>
     <string name="average_cost">গড় ভ্ৰমণ ব্যয: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">কেৱল এটা প্ৰবিষ্টি যোগ কৰিব পাৰি</string>
-    <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
-    <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="all_activities_marked_as_in_progress">প্ৰগতিশীল কাৰ্যকলাপ চিহ্নিত কৰা হৈছে</string>
+    <string name="mark_activity_inprogress_label">প্ৰগতিশীল কাৰ্যকলাপ চিহ্নিত কৰক</string>
     <string name="form_e">Form C</string>
     <string name="export_data">ডাটা শ্বেয়াৰ কৰক</string>
     <string name="refresh_config">বিন্যাস পুনৰায় সেট কৰক</string>
