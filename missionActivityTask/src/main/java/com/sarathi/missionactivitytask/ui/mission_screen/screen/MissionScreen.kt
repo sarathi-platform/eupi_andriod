@@ -15,6 +15,7 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -35,18 +36,23 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.ui.commonUi.CustomFixedCountSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
-import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.FilterRowItem
+import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.missionactivitytask.R
@@ -161,7 +167,12 @@ fun MissionScreen(
                         modifier = Modifier
                             .padding(horizontal = dimen_16_dp)
                     ) {
-                        CustomSubTabLayoutWithCallBack(
+                        CustomFixedCountSubTabLayoutWithCallBack(
+                            tabTextModifier = Modifier
+                                .padding(
+                                    vertical = dimen_8_dp,
+                                    horizontal = dimen_12_dp,
+                                ),
                             parentTabIndex = TabsEnum.MissionTab.tabIndex,
                             tabs = viewModel.tabs,
                             countMap = viewModel.countMap
@@ -173,7 +184,7 @@ fun MissionScreen(
                     SearchWithFilterViewComponent(
                         placeholderString = stringResource(id = R.string.search),
                         filterSelected = false,
-                        modifier = Modifier.padding(horizontal = 10.dp),
+                        modifier = Modifier.padding(horizontal = dimen_10_dp),
                         showFilter = false,
                         onFilterSelected = {},
                         onSearchValueChange = { queryTerm ->
@@ -212,51 +223,61 @@ fun MissionScreen(
                         .zIndex(1f),
                     contentColor = blueDark,
                 )
-                if (viewModel.filterMissionList.value.isNotEmpty()) {
-                    Spacer(modifier = Modifier.height(10.dp))
-                    LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
-                        items(viewModel.filterMissionList.value) { mission ->
-                            BasicMissionCardV2(
-                                status = mission.missionStatus,
-//                                countStatusText = context.getString(R.string.activities_completed),
-                                filterUiModel = viewModel.getFilterUiModelForMission(mission.livelihoodType),
-                                totalCount = mission.activityCount,
-                                pendingCount = mission.pendingActivityCount,
-                                title = mission.description,
-                                needToShowProgressBar = true,
-                                livelihoodType = mission.livelihoodType,
-                                livelihoodOrder = mission.livelihoodOrder,
-                                primaryButtonText = context.getString(R.string.start),
-                                onPrimaryClick = {
-                                    viewModel.isMissionLoaded(
-                                        missionId = mission.missionId,
-                                        programId = mission.programId,
-                                        onComplete = { isDataLoaded ->
-                                            if (!isDataLoaded && !isOnline(context = context)) {
-                                                dataNotLoadedDialog.value = true
-                                            } else {
-                                                onNavigationToActivity(
-                                                    viewModel.isBaselineV1Mission(mission.description), //TODO Temp code to be removed after data is fetched from server.
-                                                    mission
-                                                )
-                                            }
+                Spacer(modifier = Modifier.height(10.dp))
+                LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
 
-                                        })
-                                    //TODO handle navigation to activity based on mission.
-                                    /*navigateToActivityScreen(
-                                        navController,
-                                        missionName = mission.description,
-                                        missionId = mission.missionId,
-                                        isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
-                                    )*/
-                                }
-                            )
-                            CustomVerticalSpacer()
-                        }
-                        item {
-                            CustomVerticalSpacer(size = dimen_56_dp)
-                        }
+                    customVerticalSpacer()
+
+                    item {
+                        Text(
+                            text = viewModel.filteredListLabel.value,
+                            style = smallTextStyle.copy(color = textColorDark),
+                            modifier = Modifier.padding(horizontal = dimen_16_dp)
+                        )
                     }
+
+                    customVerticalSpacer()
+
+                    items(viewModel.filterMissionList.value) { mission ->
+                        BasicMissionCardV2(
+                            status = mission.missionStatus,
+                            filterUiModel = viewModel.getFilterUiModelForMission(mission.livelihoodType),
+                            totalCount = mission.activityCount,
+                            pendingCount = mission.pendingActivityCount,
+                            title = mission.description,
+                            needToShowProgressBar = true,
+                            livelihoodType = mission.livelihoodType,
+                            livelihoodOrder = mission.livelihoodOrder,
+                            primaryButtonText = context.getString(R.string.start),
+                            onPrimaryClick = {
+                                viewModel.isMissionLoaded(
+                                    missionId = mission.missionId,
+                                    programId = mission.programId,
+                                    onComplete = { isDataLoaded ->
+                                        if (!isDataLoaded && !isOnline(context = context)) {
+                                            dataNotLoadedDialog.value = true
+                                        } else {
+                                            onNavigationToActivity(
+                                                viewModel.isBaselineV1Mission(mission.description), //TODO Temp code to be removed after data is fetched from server.
+                                                mission
+                                            )
+                                        }
+
+                                    })
+                                //TODO handle navigation to activity based on mission.
+                                /*navigateToActivityScreen(
+                                    navController,
+                                    missionName = mission.description,
+                                    missionId = mission.missionId,
+                                    isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
+                                )*/
+                            }
+                        )
+                        CustomVerticalSpacer()
+                    }
+
+                    customVerticalSpacer(size = dimen_56_dp)
+
                 }
             }
 

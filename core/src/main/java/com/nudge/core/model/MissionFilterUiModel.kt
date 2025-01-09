@@ -2,18 +2,37 @@ package com.nudge.core.model
 
 data class FilterUiModel(
     val type: FilterType,
-    val filterTitle: String,
+    val filterValue: String,
+    val filterLabel: String,
     val imageFileName: String?
 ) {
 
     companion object {
 
-        fun getAllFilter(title: String, imageFileName: String?): FilterUiModel {
-            return FilterUiModel(FilterType.ALL, title, imageFileName)
+        fun getAllFilter(
+            filterValue: String,
+            filterLabel: String,
+            imageFileName: String?
+        ): FilterUiModel {
+            return FilterUiModel(
+                type = FilterType.ALL,
+                filterValue = filterValue,
+                filterLabel = filterLabel,
+                imageFileName = imageFileName
+            )
         }
 
-        fun getGeneralFilter(title: String, imageFileName: String?): FilterUiModel {
-            return FilterUiModel(FilterType.GENERAL, title, imageFileName)
+        fun getGeneralFilter(
+            filterValue: String,
+            filterLabel: String,
+            imageFileName: String?
+        ): FilterUiModel {
+            return FilterUiModel(
+                type = FilterType.GENERAL,
+                filterValue = filterValue,
+                filterLabel = filterLabel,
+                imageFileName = imageFileName
+            )
         }
 
     }

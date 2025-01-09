@@ -49,9 +49,9 @@ import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.chipCornerRadius
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_30_dp
-import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -322,7 +322,7 @@ fun PrimaryButtonChip(
             )
         },
         modifier = modifier
-            .size(width = dimen_40_dp, height = dimen_30_dp)
+            .size(width = dimen_30_dp, height = dimen_24_dp)
     )
 }
 

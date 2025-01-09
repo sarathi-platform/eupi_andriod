@@ -188,7 +188,7 @@ fun BasicMissionCardV2(
                         }
 
                         Text(
-                            filterUiModel.filterTitle,
+                            filterUiModel.filterValue,
                             style = smallerTextStyleMediumWeight.copy(color = textColorBrown),
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis

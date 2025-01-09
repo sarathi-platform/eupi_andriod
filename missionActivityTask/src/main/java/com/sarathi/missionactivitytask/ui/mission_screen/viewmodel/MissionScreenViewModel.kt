@@ -7,7 +7,9 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.ALL_MISSION_FILTER_VALUE
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.GENERAL_MISSION_FILTER_VALUE
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
@@ -62,6 +64,8 @@ class MissionScreenViewModel @Inject constructor(
 
     val selectedMissionFilter: MutableState<FilterUiModel?> = mutableStateOf(null)
 
+    val filteredListLabel = mutableStateOf(BLANK_STRING)
+
     private var baseCurrentApiCount = 0 // only count api survey count
     private var TOTAL_API_CALL = 0
 
@@ -101,6 +105,7 @@ class MissionScreenViewModel @Inject constructor(
     private fun updateMissionListForSubTab(subTabs: SubTabs, selectedFilter: FilterUiModel?) {
         _filterMissionList.value =
             getMissionListForSubTab(subTabs, selectedFilter)
+        filteredListLabel.value = getFilteredListLabel()
     }
 
     private fun getMissionListForSubTab(
@@ -193,14 +198,17 @@ class MissionScreenViewModel @Inject constructor(
 
             createMissionFilters()
 
-            onEvent(
-                CommonEvents.OnFilterUiModelSelected(
-                    FilterUiModel.getAllFilter(
-                        "All Missions",
-                        null
+            if (selectedMissionFilter.value == null) {
+                onEvent(
+                    CommonEvents.OnFilterUiModelSelected(
+                        FilterUiModel.getAllFilter(
+                            ALL_MISSION_FILTER_VALUE,
+                            filterLabel = "All Missions",
+                            null
+                        )
                     )
                 )
-            )
+            }
 
             updateCountMap()
 
@@ -214,22 +222,35 @@ class MissionScreenViewModel @Inject constructor(
         val filterList = ArrayList<FilterUiModel>()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
 
-        filterList.add(FilterUiModel.getAllFilter("All Missions", null))
-        filterList.add(FilterUiModel.getGeneralFilter("General Missions", null))
+        filterList.add(
+            FilterUiModel.getAllFilter(
+                filterValue = ALL_MISSION_FILTER_VALUE,
+                filterLabel = "All Missions",
+                imageFileName = null
+            )
+        )
+        filterList.add(
+            FilterUiModel.getGeneralFilter(
+                filterValue = GENERAL_MISSION_FILTER_VALUE,
+                filterLabel = "General Missions",
+                imageFileName = null
+            )
+        )
 
         with(livelihoods) {
             iterator().forEach {
                 filterList.add(
                     FilterUiModel(
-                        FilterType.OTHER(it.type),
-                        it.name,
-                        getFileNameFromURL(it.image.value())
+                        type = FilterType.OTHER(it.type),
+                        filterValue = it.name,
+                        filterLabel = it.name,
+                        imageFileName = getFileNameFromURL(it.image.value())
                     )
                 )
             }
         }
         withContext(Dispatchers.IO) {
-            missionFilterList.addAll(filterList.distinctBy { it.filterTitle })
+            missionFilterList.addAll(filterList.distinctBy { it.filterValue })
         }
     }
 
@@ -320,5 +341,21 @@ class MissionScreenViewModel @Inject constructor(
                 true
             )
         }
+    }
+
+    fun getFilteredListLabel(): String {
+        var filterLabel = selectedMissionFilter.value?.filterLabel.value()
+        val filterValueCount = "(${filterMissionList.value.size})"
+        if (filterLabel == BLANK_STRING) {
+            filterLabel = "$ALL_MISSION_FILTER_VALUE"
+        }
+
+        if (!filterLabel.contains("Mission")) {
+            filterLabel = "$filterLabel Mission"
+        }
+
+        filterLabel = "$filterLabel $filterValueCount"
+
+        return filterLabel
     }
 }
