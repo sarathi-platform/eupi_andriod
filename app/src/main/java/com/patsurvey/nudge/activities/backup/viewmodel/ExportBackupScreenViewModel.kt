@@ -106,7 +106,7 @@ class ExportBackupScreenViewModel @Inject constructor(
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val eventWriterHelperImpl: EventWriterHelperImpl,
     ) : BaseViewModel() {
-    var mAppContext: Context
+    lateinit var mAppContext: Context
     val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val exportOptionList: State<List<SettingOptionModel>> get() = _exportOptionList
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
@@ -115,11 +115,11 @@ class ExportBackupScreenViewModel @Inject constructor(
     var userType: String = BLANK_STRING
     val loaderState: State<LoaderState> get() = _loaderState
 
-    init {
+    fun initOptions() {
         mAppContext = NudgeCore.getAppContext()
         userType =
             settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
-
+        setTranslationConfig()
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
         _exportOptionList.value = fetchExportDataOptionList()

@@ -38,7 +38,8 @@ fun SettingFormsScreen(
         optionList = viewModel.optionList.value,
         versionText = BLANK_STRING,
         isItemCard = true,
-        errorMessage = viewModel.stringResource(R.string.no_form_available_yet_text)
+        errorMessage = viewModel.stringResource(R.string.no_form_available_yet_text),
+        translationHelper = viewModel.translationHelper
     )
     CommonSettingScreen(
         settingScreenConfig = settingConfig,

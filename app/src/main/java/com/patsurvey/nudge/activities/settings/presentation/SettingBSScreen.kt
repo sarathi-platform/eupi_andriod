@@ -87,7 +87,8 @@ fun SettingBSScreen(
             title = viewModel.stringResource(R.string.settings_screen_title),
             isScreenHaveLogoutButton = true,
             optionList = viewModel.optionList.value ?: emptyList(),
-            versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+            versionText = " ${BuildConfig.FLAVOR.uppercase(Locale.getDefault())} v${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+            translationHelper = viewModel.translationHelper
         )
         CommonSettingScreen(
             settingScreenConfig = settingConfig,

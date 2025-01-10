@@ -22,9 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.work.WorkInfo
 import com.nrlm.baselinesurvey.ui.theme.dimen_0_dp
@@ -38,6 +36,7 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_8_dp
 import com.nrlm.baselinesurvey.ui.theme.mediumTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallTextStyle
 import com.nrlm.baselinesurvey.ui.theme.smallerTextStyleNormalWeight
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.smallTextStyleWithUnderline
 import com.nudge.core.utils.CoreLogger
@@ -62,6 +61,7 @@ fun EventTypeCard(
     isStatusVisible: Boolean=true,
     isImageSyncCard: Boolean,
     isConsumerBarVisible: Boolean,
+    translationHelper: TranslationHelper,
     onCardClick: () -> Unit,
     onSyncButtonClick: () -> Unit,
     onViewProcessClick: () ->Unit,
@@ -119,7 +119,9 @@ fun EventTypeCard(
 
             if (isStatusVisible) {
                 Text(
-                    text = if(isWorkerInfoState==WorkInfo.State.RUNNING.name ||isWorkerInfoState==WorkInfo.State.ENQUEUED.name) stringResource(R.string.sync_on)  else stringResource(R.string.sync_off),
+                    text = if (isWorkerInfoState == WorkInfo.State.RUNNING.name || isWorkerInfoState == WorkInfo.State.ENQUEUED.name) translationHelper.stringResource(
+                        R.string.sync_on
+                    ) else translationHelper.stringResource(R.string.sync_off),
                     style = smallerTextStyleNormalWeight,
                     color = grayColor,
                     modifier = Modifier.constrainAs(statusText) {
@@ -132,7 +134,7 @@ fun EventTypeCard(
             }
 
             Text(
-                text = stringResource(
+                text = translationHelper.stringResource(
                     id = if (isImageSyncCard) R.string.images_send_to_server
                     else R.string.data_send_to_server
                 ),
@@ -178,7 +180,7 @@ fun EventTypeCard(
             )
             if (isConsumerBarVisible) {
                 Text(
-                    text = stringResource(
+                    text = translationHelper.stringResource(
                         id = if (isImageSyncCard) R.string.images_processes_by_server
                         else R.string.data_processes_by_server
                     ),
@@ -234,7 +236,7 @@ fun EventTypeCard(
                 producerProgress?.let { producerPer ->
                     if (producerPer > 0) {
                         Text(
-                            text = stringResource(R.string.sync_view_progress),
+                            text = translationHelper.stringResource(R.string.sync_view_progress),
                             style = smallTextStyleWithUnderline,
                             color = blueDark,
                             textAlign = TextAlign.Start,
@@ -250,7 +252,7 @@ fun EventTypeCard(
                 progress?.let { per ->
                     if (per >= 1) {
                         Text(
-                            text = stringResource(R.string.synced),
+                            text = translationHelper.stringResource(R.string.synced),
                             style = smallTextStyle,
                             color = greenDark,
                             textAlign = TextAlign.End,
@@ -292,23 +294,4 @@ fun EventTypeCard(
         }
     }
 
-}
-
-@Preview(showBackground = true)
-@Composable
-fun CommonSyncScreenPreview() {
-    EventTypeCard(
-        title = "Sync Data",
-        progress = 1f,
-        producerProgress = .5f,
-        isProgressBarVisible = false,
-        onCardClick = {},
-        syncButtonTitle = "Sync Data",
-        isStatusVisible = true,
-        onSyncButtonClick = {},
-        onViewProcessClick = {},
-        isImageSyncCard = true,
-        isConsumerBarVisible = false,
-        isWorkerInfoState = BLANK_STRING
-    )
 }

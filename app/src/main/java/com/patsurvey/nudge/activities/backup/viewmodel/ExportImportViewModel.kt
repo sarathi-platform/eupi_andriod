@@ -60,7 +60,7 @@ class ExportImportViewModel @Inject constructor(
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 ) : BaseViewModel() {
-    var mAppContext: Context
+    lateinit var mAppContext: Context
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
@@ -72,7 +72,7 @@ class ExportImportViewModel @Inject constructor(
     val loaderState: State<LoaderState> get() = _loaderState
     val loggedInUserType = mutableStateOf(BLANK_STRING)
 
-    init {
+    fun initOptions() {
         mAppContext = NudgeCore.getAppContext()
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID

@@ -32,7 +32,6 @@ class LanguageViewModel @Inject constructor(
     val languagePosition = mutableStateOf(0)
 
     init {
-        setTranslationConfig()
         fetchLanguageList()
     }
 

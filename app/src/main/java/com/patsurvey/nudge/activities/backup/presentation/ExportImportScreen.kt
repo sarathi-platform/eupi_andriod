@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -39,6 +40,11 @@ import com.patsurvey.nudge.utils.UPCM_USER
 fun ExportImportScreen(
     viewModel: ExportImportViewModel = hiltViewModel(),
     navController: NavController) {
+
+    LaunchedEffect(key1 = true) {
+        viewModel.setTranslationConfig()
+        viewModel.initOptions()
+    }
         val context=LocalContext.current
         val filePicker =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
@@ -65,7 +71,8 @@ fun ExportImportScreen(
         isScreenHaveLogoutButton = false,
         optionList = viewModel.optionList.value,
         versionText = BLANK_STRING,
-        isItemCard = true
+        isItemCard = true,
+        translationHelper = viewModel.translationHelper
     )
     CommonSettingScreen(
         settingScreenConfig = settingConfig,

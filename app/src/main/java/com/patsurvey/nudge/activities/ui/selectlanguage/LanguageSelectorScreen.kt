@@ -134,6 +134,7 @@ fun LanguageScreen(
     }
 
     LaunchedEffect(Unit) {
+        viewModel.setTranslationConfig()
         viewModel.languageList.value?.mapIndexed { index, languageEntity ->
             if (languageEntity.langCode.equals(
                     viewModel.languageRepository.prefRepo.getAppLanguage(),

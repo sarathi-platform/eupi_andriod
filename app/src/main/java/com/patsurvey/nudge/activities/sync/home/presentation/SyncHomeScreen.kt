@@ -37,7 +37,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -100,6 +99,7 @@ fun SyncHomeScreen(
     val uploadWorkerInfo = rememberUploadWorkerInfo(context, workInfo, viewModel)
     val isNetworkAvailable = remember { mutableStateOf(false) }
     LaunchedEffect(key1 = Unit) {
+        viewModel.setTranslationConfig()
         viewModel.fetchConsumerBarStatus()
     }
 
@@ -219,24 +219,13 @@ fun SyncHomeContent(
     val pullRefreshState = rememberPullRefreshState(
         viewModel.isPullToRefreshVisible.value,
         {
-//            if (isOnline(context)) {
-//                viewModel.loaderState.value.isLoaderVisible = true
-//                viewModel.refreshConsumerStatus()
-//            } else {
-//                Toast.makeText(
-//                    context,
-//                    context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
-//                    Toast.LENGTH_LONG
-//                ).show()
-//            }
-
         }
     )
     if (viewModel.isSyncDataFirstDialog.value) {
         showCustomDialog(
-            title = stringResource(R.string.alert_dialog_title_text),
-            message = stringResource(R.string.sync_data_first_message),
-            positiveButtonTitle = stringResource(id = R.string.ok_text),
+            title = viewModel.stringResource(R.string.alert_dialog_title_text),
+            message = viewModel.stringResource(R.string.sync_data_first_message),
+            positiveButtonTitle = viewModel.stringResource(R.string.ok_text),
             onPositiveButtonClick = {
                 viewModel.isSyncDataFirstDialog.value = false
             },
@@ -246,8 +235,8 @@ fun SyncHomeContent(
         )
     }
     ToolbarWithMenuComponent(
-        title = stringResource(
-            id = R.string.sync_all_data
+        title = viewModel.stringResource(
+            R.string.sync_all_data
         ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = true,
@@ -260,7 +249,7 @@ fun SyncHomeContent(
                     } else {
                         Toast.makeText(
                             context,
-                            context.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
+                            viewModel.getString(com.sarathi.missionactivitytask.R.string.refresh_failed_please_try_again),
                             Toast.LENGTH_LONG
                         ).show()
                     }
@@ -307,12 +296,13 @@ fun SyncHomeContent(
                     item {
                         LastSyncTimeView(
                             lastSyncTime = viewModel.lastSyncTime.longValue,
-                            mobileNumber = viewModel.getUserPhoneNumber()
+                            mobileNumber = viewModel.getUserPhoneNumber(),
+                            translationHelper = viewModel.translationHelper
                         ) {
                             viewModel.onLastSyncTimeClick {
                                 showCustomToast(
                                     context = context,
-                                    msg = context.getString(it)
+                                    msg = viewModel.getString(it)
                                 )
                             }
 
@@ -343,7 +333,7 @@ fun SyncHomeContent(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .padding(dimen_5_dp),
-                                text = stringResource(id = R.string.sync_failed_message),
+                                text = viewModel.stringResource(R.string.sync_failed_message),
                                 style = smallTextStyle,
                                 color = textColorDark
                             )
@@ -383,7 +373,7 @@ fun BottomContent(
                         if (viewModel.failedEventList.value.isNotEmpty()) {
                             ButtonPositive(
                                 modifier = Modifier.wrapContentHeight(),
-                                buttonTitle = stringResource(id = R.string.export_failed_event),
+                                buttonTitle = viewModel.stringResource(R.string.export_failed_event),
                                 isActive = true,
                                 isArrowRequired = false,
                                 textColor = white,
@@ -415,7 +405,7 @@ fun BottomContent(
             }
 
             ButtonPositive(
-                buttonTitle = stringResource(id = R.string.sync_all_data),
+                buttonTitle = viewModel.stringResource(R.string.sync_all_data),
                 isArrowRequired = false,
                 isActive = isSyncAllDataActive && isWorkerInfoState != WorkInfo.State.RUNNING.name,
             ) {
@@ -540,13 +530,13 @@ private fun SyncDataCard(
     onViewProcessClick: () -> Unit
 ) {
     EventTypeCard(
-        title = stringResource(id = R.string.sync_data),
+        title = viewModel.stringResource(R.string.sync_data),
         progress = viewModel.dataEventProgress.floatValue,
         producerProgress = viewModel.dataProducerEventProgress.floatValue,
         isProgressBarVisible = viewModel.isDataPBVisible.value,
-        syncButtonTitle = stringResource(id = R.string.sync_only_data),
+        syncButtonTitle = viewModel.stringResource(R.string.sync_only_data),
         isImageSyncCard = false,
-
+        translationHelper = viewModel.translationHelper,
         onSyncButtonClick = {
             viewModel.selectedSyncType.intValue = SyncType.SYNC_ONLY_DATA.ordinal
             CoreLogger.d(
@@ -577,11 +567,12 @@ private fun SyncImageCard(
 ) {
     if (totalImageEventCount.value > 0) {
         EventTypeCard(
-            title = stringResource(id = R.string.sync_images),
+            title = viewModel.stringResource(R.string.sync_images),
             progress = viewModel.imageEventProgress.floatValue,
             producerProgress = viewModel.imageProducerEventProgress.floatValue,
             isProgressBarVisible = viewModel.isImagePBVisible.value,
             isImageSyncCard = true,
+            translationHelper = viewModel.translationHelper,
             onSyncButtonClick = {
                 if (viewModel.isSyncImageActive.value) {
 
@@ -594,10 +585,10 @@ private fun SyncImageCard(
                     startSyncProcess(context, viewModel, isNetworkAvailable.value)
                 } else {
                     viewModel.isSyncDataFirstDialog.value = true
-                    showCustomToast(context, context.getString(R.string.sync_data_first_message))
+                    showCustomToast(context, viewModel.getString(R.string.sync_data_first_message))
                 }
             },
-            syncButtonTitle = stringResource(id = R.string.sync_only_images),
+            syncButtonTitle = viewModel.stringResource(R.string.sync_only_images),
             isWorkerInfoState =viewModel.workerState.value ,
             onCardClick = {
             },
@@ -616,11 +607,11 @@ private fun startSyncProcess(
     isNetworkAvailable: Boolean
 ) {
     if (isNetworkAvailable) {
-        showCustomToast(context, context.getString(R.string.sync_started))
+        showCustomToast(context, viewModel.getString(R.string.sync_started))
         viewModel.syncAllPending(
             networkSpeed = ConnectionMonitor.DoesNetworkHaveInternet.getNetworkStrength()
         )
-    } else showCustomToast(context, context.getString(R.string.logout_no_internet_error_message))
+    } else showCustomToast(context, viewModel.getString(R.string.logout_no_internet_error_message))
 }
 
 @Preview(showBackground = true)

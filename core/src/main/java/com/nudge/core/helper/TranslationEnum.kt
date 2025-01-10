@@ -141,7 +141,10 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "cancel",
             "data_is_not_available_for_sync_please_perform_some_action",
             "share_export_file",
-            "something_went_wrong"
+            "something_went_wrong",
+            "last_sync_date_time",
+            "profile_phone",
+            "sync"
         )
     ),
     LanguageScreen(
@@ -218,6 +221,49 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "profile_block_name",
             "profile_district_name",
             "profile_state_name"
+        )
+    ),
+
+    SyncHomeScreen(
+        "SyncHomeScreen",
+        listOf(
+            "sync_all_data",
+            "alert_dialog_title_text",
+            "sync_data_first_message",
+            "ok_text",
+            "refresh_failed_please_try_again",
+            "sync_already_cancelled",
+            "sync_worker_cancelled",
+            "sync_failed_message",
+            "export_failed_event",
+            "sync_data",
+            "sync_only_data",
+            "sync_images",
+            "sync_only_images",
+            "sync_started",
+            "logout_no_internet_error_message",
+            "sync_on",
+            "sync_off",
+            "images_send_to_server",
+            "data_send_to_server",
+            "images_processes_by_server",
+            "data_processes_by_server",
+            "sync_view_progress",
+            "synced",
+            "last_sync_date_time",
+            "profile_phone"
+        )
+    ),
+
+    SyncHistoryScreen(
+        "SyncHistoryScreen",
+        listOf(
+            "sync_data_history",
+            "sync_data",
+            "sync_images",
+            "no_history_available_right_now",
+            "last_sync_date_time",
+            "profile_phone"
         )
     )
 
