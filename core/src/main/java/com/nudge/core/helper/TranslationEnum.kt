@@ -104,6 +104,19 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "absent"
         )
     ),
-    NoScreen("NoScreen", emptyList())
+    NoScreen("NoScreen", emptyList()),
+    LivelihoodDropDownScreen(
+        "LivelihoodDropDownScreen",
+        listOf(
+            "are_you_sure",
+            "form_alert_dialog_message",
+            "proceed_txt",
+            "cancel_txt",
+            "primary_and_secondary_value_not_same",
+            "submit",
+            "select_first_livelihood_for_didi",
+            "select_second_livelihood_for_didi"
+        )
+    )
 
 }
