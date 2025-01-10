@@ -263,13 +263,6 @@ fun MissionScreen(
                                         }
 
                                     })
-                                //TODO handle navigation to activity based on mission.
-                                /*navigateToActivityScreen(
-                                    navController,
-                                    missionName = mission.description,
-                                    missionId = mission.missionId,
-                                    isMissionCompleted = mission.missionStatus == SurveyStatusEnum.COMPLETED.name
-                                )*/
                             }
                         )
                         CustomVerticalSpacer()

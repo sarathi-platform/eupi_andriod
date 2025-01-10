@@ -27,7 +27,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.calculateProgress
@@ -37,7 +36,6 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_27_dp
 import com.nudge.core.ui.theme.dimen_35_dp
@@ -48,18 +46,15 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.iconBgColor
-import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleMediumWeight
 import com.nudge.core.ui.theme.textColorBrown
-import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.utils.FileUtils
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
 import com.sarathi.missionactivitytask.ui.components.PrimaryButtonChip
-import com.sarathi.missionactivitytask.ui.components.SecondaryButtonChip
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.statusColor
 
@@ -205,116 +200,6 @@ fun BasicMissionCardV2(
                     modifier = Modifier
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun ProgressComponent(
-    needToShowProgressBar: Boolean,
-    totalCount: Int,
-    pendingCount: Int
-) {
-    if (needToShowProgressBar && totalCount > 0) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = dimen_16_dp, end = dimen_16_dp)
-        ) {
-            LinearProgressBarComponent(
-                progress = calculateProgress(
-                    pendingCount = pendingCount,
-                    totalCount = totalCount
-                ),
-            )
-            Text(
-                text = "$pendingCount / $totalCount",
-                style = smallTextStyle.copy(color = blueDark),
-            )
-        }
-    }
-}
-
-@Composable
-fun ContentBodyV2(
-    title: String,
-    prefixIcon: Int,
-    needToShowProgressBar: Boolean,
-    totalCount: Int,
-    pendingCount: Int
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                start = dimen_16_dp,
-                end = dimen_16_dp,
-                top = dimen_16_dp,
-                bottom = dimen_5_dp
-            ),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .size(dimen_56_dp)
-                .background(
-                    color = iconBgColor,
-                    shape = RoundedCornerShape(roundedCornerRadiusDefault)
-                ),
-            contentAlignment = Alignment.Center
-
-        ) {
-            Icon(
-                painter = painterResource(id = prefixIcon),
-                tint = blueDark,
-                contentDescription = null,  // Ideally, provide meaningful descriptions
-                modifier = Modifier.size(dimen_27_dp)
-            )
-        }
-
-        Column {
-            Text(
-                text = title,
-                style = largeTextStyle
-                    .copy(color = blueDark)
-                    .copy(fontSize = 20.sp),
-                modifier = Modifier
-                    .padding(start = dimen_5_dp)
-                    .weight(weight_100_percent),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2
-            )
-            ProgressComponent(needToShowProgressBar, totalCount, pendingCount)
-        }
-    }
-}
-
-@Composable
-fun ActionButtonsV2(
-    primaryButtonText: String,
-    secondaryButtonText: String,
-    onPrimaryClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(dimen_18_dp),
-        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
-    ) {
-        Spacer(modifier = Modifier.weight(weight_100_percent))
-
-        if (secondaryButtonText.isNotEmpty()) {
-            SecondaryButtonChip(
-                text = secondaryButtonText,
-                onClick = { /*TODO*/ },
-                modifier = Modifier.weight(weight_100_percent)
-            )
-        }
-        if (primaryButtonText.isNotEmpty()) {
-            PrimaryButtonChip(
-                onClick = { onPrimaryClick() },
-                modifier = Modifier.weight(weight_100_percent)
-            )
         }
     }
 }
