@@ -152,3 +152,8 @@ val assetValueIconColor = Color(0xFF1041CC)
 val tabBgColor = Color(0xFFDCE2FF)
 val eventTextColor = Color(0xFF9096A7)
 val darkBlueColor = Color(0xFF007AFF)
+
+val filterItemSelectedDark = Color(0xFF1C44CA)
+val filterItemSelectedLight = Color(0xFFDCE2FF)
+val iconBgColor = Color(0xFFF3F4F7)
+val textColorBrown = Color(0xFF361911)

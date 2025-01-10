@@ -119,6 +119,7 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
                     )
                 )
                 .padding(bottom = dimen_8_dp)
+                .padding(horizontal = dimen_8_dp)
         ) {
             QuestionUiContent(
                 question,

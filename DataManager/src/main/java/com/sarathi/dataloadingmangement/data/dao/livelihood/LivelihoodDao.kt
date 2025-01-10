@@ -19,14 +19,14 @@ interface LivelihoodDao {
     @Query("DELETE FROM $LIVELIHOOD_TABLE_NAME where userId=:userId ")
     fun deleteLivelihoodForUser(userId: String)
 
-    @Query("SELECT lr.name,lt.name as originalName,lt.status,lt.validations ,lt.type, lt.programLivelihoodId from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType ")
+    @Query("SELECT lr.name,lt.name as originalName,lt.status,lt.validations ,lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType ")
     fun getLivelihoodList(
         userId: String,
         languageCode: String,
         referenceType: String = LivelihoodLanguageReferenceType.Livelihood.name
     ): List<LivelihoodModel>
 
-    @Query("SELECT lr.name,lt.name as originalName,lt.status, lt.validations,lt.type, lt.programLivelihoodId  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.programLivelihoodId!=-1 ")
+    @Query("SELECT lr.name,lt.name as originalName,lt.status, lt.validations,lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.programLivelihoodId!=-1 ")
     fun getLivelihoodListWithoutNotDecided(
         userId: String,
         languageCode: String,

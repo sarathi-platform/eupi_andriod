@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
@@ -23,18 +24,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.R
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.tabBgColor
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
 
 @Composable
@@ -71,6 +74,9 @@ fun CustomSubTabLayout(
 
 @Composable
 fun CustomSubTabLayoutWithCallBack(
+    modifier: Modifier = Modifier,
+    tabModifier: Modifier = Modifier,
+    tabTextModifier: Modifier = Modifier,
     parentTabIndex: Int,
     tabs: List<SubTabs>,
     countMap: Map<SubTabs, Int> = mapOf(),
@@ -81,12 +87,20 @@ fun CustomSubTabLayoutWithCallBack(
 
     LazyRow(
         horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-        modifier = Modifier.fillMaxWidth(),
-        state = state
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
+        state = state,
     ) {
 
         itemsIndexed(tabs) { index, tab ->
             TabItem(
+                modifier = tabModifier,
+                tabTextModifier = tabTextModifier
+                    .padding(
+                        vertical = dimen_8_dp,
+                        horizontal = dimen_12_dp,
+                    ),
                 isSelected = TabsCore.getSubTabForTabIndex(parentTabIndex) == index,
                 onClick = {
                     TabsCore.setSubTabIndex(parentTabIndex, index)
@@ -100,8 +114,48 @@ fun CustomSubTabLayoutWithCallBack(
 }
 
 @Composable
+fun CustomFixedCountSubTabLayoutWithCallBack(
+    modifier: Modifier = Modifier,
+    tabModifier: Modifier = Modifier,
+    tabTextModifier: Modifier = Modifier,
+    parentTabIndex: Int,
+    tabs: List<SubTabs>,
+    countMap: Map<SubTabs, Int> = mapOf(),
+    onClick: () -> Unit
+) {
+
+    Row(
+        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier),
+    ) {
+        if (tabs.size <= 2) {
+            tabs.forEachIndexed { index, tab ->
+                TabItem(
+                    modifier = tabModifier
+                        .weight(weight_100_percent),
+                    tabTextModifier = tabTextModifier
+                        .padding(
+                            vertical = dimen_8_dp,
+                            horizontal = dimen_12_dp,
+                        ),
+                    isSelected = TabsCore.getSubTabForTabIndex(parentTabIndex) == index,
+                    onClick = {
+                        TabsCore.setSubTabIndex(parentTabIndex, index)
+                        onClick()
+                    },
+                    text = getTabTitle(countMap, tab)
+                )
+            }
+        }
+    }
+}
+
+@Composable
 fun TabItem(
     modifier: Modifier = Modifier,
+    tabTextModifier: Modifier = Modifier,
     isSelected: Boolean,
     onClick: () -> Unit,
     text: String,
@@ -131,7 +185,8 @@ fun TabItem(
                 role = Role.Tab,
                 interactionSource = interactionSource,
                 indication = ripple
-            ),
+            )
+            .then(modifier),
         contentAlignment = Alignment.Center
     ) {
 
@@ -141,10 +196,7 @@ fun TabItem(
                 .clickable {
                     onClick()
                 }
-                .padding(
-                    vertical = 8.dp,
-                    horizontal = 12.dp,
-                ),
+                .then(tabTextModifier),
             text = text,
             color = textColorDark,
             style = mediumTextStyle,
@@ -184,6 +236,8 @@ fun getTabName(tab: SubTabs): String {
         SubTabs.CustomDateRange -> stringResource(R.string.custom_date)
         SubTabs.Step1 -> stringResource(R.string.reopen_activity_step_1)
         SubTabs.Step2 -> stringResource(R.string.reopen_activity_step_2)
+        SubTabs.OngoingMissions -> stringResource(R.string.ongoing_tab_title)
+        SubTabs.CompletedMissions -> stringResource(R.string.completed_tab_title) // TODO move all static strings to string file and find a way to make it dynamic
         else -> {
             BLANK_STRING
         }
