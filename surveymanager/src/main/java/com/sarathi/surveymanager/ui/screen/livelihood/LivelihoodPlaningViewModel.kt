@@ -7,6 +7,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
@@ -71,6 +72,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
             }
 
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 initLivelihoodPlanningScreen()
             }
 
@@ -222,5 +224,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
             )
         }
         callBack()
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.LivelihoodDropDownScreen
     }
 }
