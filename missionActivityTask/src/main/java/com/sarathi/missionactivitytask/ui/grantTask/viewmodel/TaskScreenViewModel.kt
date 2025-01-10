@@ -338,7 +338,7 @@ open class TaskScreenViewModel @Inject constructor(
             updateProgress()
             if (filterTaskMap.isNotEmpty())
                 expandFirstNotStartedItem()
-
+            initChildScreen()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -640,5 +640,6 @@ open class TaskScreenViewModel @Inject constructor(
             onSuccess(it)
         }
     }
+    open suspend fun initChildScreen() {}
 
 }
