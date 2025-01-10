@@ -14,12 +14,13 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(missionId: Int): Boolean {
         try {
-            repository.getSurveyIds(missionId).forEach {
+            repository.getActivityConfig(missionId = missionId)?.forEach {
                 callSurveAnsweryApi(
                     GetSurveyAnswerRequest(
-                        surveyId = it,
+                        surveyId = it.surveyId,
                         mobileNumber = sharedPrefs.getMobileNo(),
-                        userId = sharedPrefs.getUserName().toInt()
+                        userId = sharedPrefs.getUserName().toInt(),
+                        activityId = it.activityId
                     )
                 )
             }

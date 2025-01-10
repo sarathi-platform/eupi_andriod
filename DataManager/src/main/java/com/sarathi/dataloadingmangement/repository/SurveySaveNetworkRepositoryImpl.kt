@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
@@ -14,6 +15,7 @@ import com.sarathi.dataloadingmangement.data.dao.OptionItemDao
 import com.sarathi.dataloadingmangement.data.dao.QuestionEntityDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyAnswersDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
@@ -38,47 +40,55 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
         return dataLoadingApiService.getSurveyAnswers(surveyAnswerRequest)
     }
 
-    override suspend fun getSurveyIds(missionId: Int): List<Int> {
-        return activityConfigDao.getSurveyIds(missionId, coreSharedPrefs.getUniqueUserIdentifier())
+    override suspend fun getActivityConfig(missionId: Int): List<ActivityConfigEntity>? {
+        return activityConfigDao.getActivityConfigUiModel(
+            missionId = missionId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
     }
 
+
     override fun saveSurveyAnswerToDb(surveyApiResponse: List<QuestionAnswerResponseModel>) {
-
-        surveyApiResponse.forEach { questionAnswerResponse ->
-            val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
-                languageId = coreSharedPrefs.getAppLanguage(),
-                sectionId = questionAnswerResponse.sectionId.toInt(),
-                surveyId = questionAnswerResponse.surveyId,
-                referenceType = LanguageAttributeReferenceType.OPTION.name,
-                userId = coreSharedPrefs.getUniqueUserIdentifier()
-            )
-
-
-            val questionEntity = questionEntityDao.getQuestionEntity(
-                userid = coreSharedPrefs.getUniqueUserIdentifier(),
-                questionId = questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
-                surveyId = questionAnswerResponse.surveyId,
-                sectionId = questionAnswerResponse.sectionId.toInt()
-            )
-
-            surveyAnswersDao.insertSurveyAnswer(
-                SurveyAnswerEntity.getSurveyAnswerEntityFromQuestionAnswerResponse(
-                    questionAnswerResponse = questionAnswerResponse,
-                    questionSummary = questionEntity?.originalValue ?: BLANK_STRING,
-                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                    optionsUiModel = getOptionUiModels(
-                        questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
-                        optionItems,
-                        questionAnswerResponse.question?.options ?: listOf(),
-                        questionAnswerResponse.question?.tag ?: listOf(),
-                        surveyId = questionAnswerResponse.surveyId,
-                        sectionId = questionAnswerResponse.sectionId.toInt(),
-                        grantId = questionAnswerResponse.grantId ?: 0,
-                        taskId = questionAnswerResponse.taskId
-                    )
-
+        try {
+            surveyApiResponse.forEach { questionAnswerResponse ->
+                val optionItems = optionItemDao.getSurveySectionQuestionOptionsForLanguage(
+                    languageId = coreSharedPrefs.getAppLanguage(),
+                    sectionId = questionAnswerResponse.sectionId.toInt(),
+                    surveyId = questionAnswerResponse.surveyId,
+                    referenceType = LanguageAttributeReferenceType.OPTION.name,
+                    userId = coreSharedPrefs.getUniqueUserIdentifier()
                 )
-            )
+
+
+                val questionEntity = questionEntityDao.getQuestionEntity(
+                    userid = coreSharedPrefs.getUniqueUserIdentifier(),
+                    questionId = questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
+                    surveyId = questionAnswerResponse.surveyId,
+                    sectionId = questionAnswerResponse.sectionId.toInt()
+                )
+
+                surveyAnswersDao.insertSurveyAnswer(
+                    SurveyAnswerEntity.getSurveyAnswerEntityFromQuestionAnswerResponse(
+                        questionAnswerResponse = questionAnswerResponse,
+                        questionSummary = questionEntity?.originalValue ?: BLANK_STRING,
+                        userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                        optionsUiModel = getOptionUiModels(
+                            questionAnswerResponse.question?.questionId ?: DEFAULT_ID,
+                            optionItems,
+                            questionAnswerResponse.question?.options ?: listOf(),
+                            questionAnswerResponse.question?.tag ?: listOf(),
+                            surveyId = questionAnswerResponse.surveyId,
+                            sectionId = questionAnswerResponse.sectionId.toInt(),
+                            grantId = questionAnswerResponse.grantId ?: 0,
+                            taskId = questionAnswerResponse.taskId
+                        )
+
+                    )
+                )
+            }
+
+        } catch (exception: Exception) {
+            Log.e("SurveyAnswer", exception.stackTraceToString())
         }
     }
 
