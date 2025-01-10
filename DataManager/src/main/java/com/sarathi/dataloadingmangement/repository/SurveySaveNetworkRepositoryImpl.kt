@@ -1,12 +1,12 @@
 package com.sarathi.dataloadingmangement.repository
 
-import android.util.Log
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.MODE_TAG
 import com.sarathi.dataloadingmangement.NATURE_TAG
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
@@ -88,7 +88,7 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
             }
 
         } catch (exception: Exception) {
-            Log.e("SurveyAnswer", exception.stackTraceToString())
+            CoreLogger.e(tag = "SurveyAnswerException", msg = exception.stackTraceToString())
         }
     }
 
