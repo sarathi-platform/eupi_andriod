@@ -17,6 +17,7 @@ data class QuestionScreenUseCase(
     val saveFormQuestionResponseUseCase: SaveFormQuestionResponseUseCase,
     val updateFormQuestionResponseUseCase: UpdateFormQuestionResponseUseCase,
     val deleteFormQuestionResponseUseCase: DeleteFormQuestionResponseUseCase,
+    val deleteFormQuestionOptionResponseUseCase: DeleteFormQuestionOptionResponseUseCase,
     val getSurveyeeDetailsUserCase: GetSurveyeeDetailsUserCase,
     val getPendingTaskCountLiveUseCase: GetPendingTaskCountLiveUseCase,
     val eventsWriterUseCase: EventsWriterUserCase
