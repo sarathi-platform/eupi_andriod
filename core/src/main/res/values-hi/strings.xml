@@ -61,5 +61,7 @@
     <string name="sync_minutes">%1$s मिनट</string>
     <string name="sync_ago">पहले</string>
     <string name="just_now">अभी</string>
+    <string name="ongoing_tab_title">Ongoing</string>
+    <string name="completed_tab_title">Completed</string>
 
 </resources>

@@ -252,7 +252,7 @@ fun DataTabScreen(
                                 CustomSubTabLayoutWithCallBack(
                                     parentTabIndex = TabsEnum.DataTab.tabIndex,
                                     tabs = dataTabScreenViewModel.tabs,
-                                    dataTabScreenViewModel.countMap
+                                    countMap = dataTabScreenViewModel.countMap
                                 ) {
                                     dataTabScreenViewModel.onEvent(DataTabEvents.OnSubTabChanged)
                                 }

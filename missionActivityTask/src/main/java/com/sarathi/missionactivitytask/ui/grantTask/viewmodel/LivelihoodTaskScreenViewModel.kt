@@ -65,9 +65,12 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitLivelihoodPlanningScreenState -> {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                initLivelihoodPlanningScreen()
             }
         }
+    }
+
+    override suspend fun initChildScreen() {
+        initLivelihoodPlanningScreen()
     }
     fun getPrimaryLivelihoodValue(key: Int):String {
           return livelihoodsEntityList.find {
@@ -93,8 +96,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
          }
     }
 
-    private  fun initLivelihoodPlanningScreen() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+    private suspend fun initLivelihoodPlanningScreen() {
             livelihoodsEntityList.clear()
             livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
 
@@ -109,6 +111,6 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
-    }
-    }
+
+}
 

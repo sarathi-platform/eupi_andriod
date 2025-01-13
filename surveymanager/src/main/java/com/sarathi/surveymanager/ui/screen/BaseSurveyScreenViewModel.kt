@@ -473,6 +473,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                             selectedValue = BLANK_STRING
                         )
                     }
+                    runNoneOptionCheck(it)
                     if (saveSurveyAnswerUseCase.isAnswerAvailableInDb(
                             it,
                             taskEntity?.subjectId ?: DEFAULT_ID,

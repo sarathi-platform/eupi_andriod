@@ -43,6 +43,8 @@ class FetchAllDataUseCase @Inject constructor(
 
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
             fetchMissionDataUseCase.getAllMissionList()
+            livelihoodUseCase.invoke()
+            contentDownloaderUseCase.livelihoodContentDownload()
             fetchContentDataFromNetworkUseCase.invoke()
             languageConfigUseCase.invoke()
             fetchCasteConfigNetworkUseCase.invoke()
@@ -98,7 +100,7 @@ class FetchAllDataUseCase @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
-                contentDownloaderUseCase.livelihoodContentDownlaod()
+
             }
             fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
             onComplete(true, BLANK_STRING)

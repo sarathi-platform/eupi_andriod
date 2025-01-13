@@ -49,6 +49,7 @@ import com.sarathi.missionactivitytask.ui.components.TagComponent
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.statusColor
 
+@Deprecated("Old Mission Card UI, Updated to BasicMissionCardV2")
 @Composable
 fun BasicMissionCard(
     title: String = BLANK_STRING,

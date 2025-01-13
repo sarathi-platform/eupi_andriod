@@ -67,4 +67,6 @@
     <string name="sync_minutes">%1$s minutes</string>
     <string name="sync_ago">ago</string>
     <string name="just_now">Just Now</string>
+    <string name="ongoing_tab_title">Ongoing</string>
+    <string name="completed_tab_title">Completed</string>
 </resources>
