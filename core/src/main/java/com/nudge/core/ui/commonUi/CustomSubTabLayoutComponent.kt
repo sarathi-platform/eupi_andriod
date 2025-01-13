@@ -58,6 +58,11 @@ fun CustomSubTabLayout(
 
         itemsIndexed(tabs) { index, tab ->
             TabItem(
+                tabTextModifier = Modifier
+                    .padding(
+                        vertical = dimen_8_dp,
+                        horizontal = dimen_12_dp,
+                    ),
                 isSelected = TabsCore.getSubTabForTabIndex(parentTabIndex) == index,
                 onClick = {
                     if (enableClickOnTab.invoke()) {
