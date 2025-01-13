@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -40,6 +41,7 @@ class ActivityScreenViewModel @Inject constructor(
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var showDialog = mutableStateOf<Boolean>(false)
+    var missionInfoUIModel = mutableStateOf(MissionInfoUIModel.getDefaultValue())
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -71,7 +73,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
+            missionInfoUIModel.value = fetchAllDataUseCase.fetchMissionInfo(missionId)
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,

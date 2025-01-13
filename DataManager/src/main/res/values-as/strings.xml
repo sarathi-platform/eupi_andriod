@@ -8,7 +8,7 @@
     <string name="retry">"পুনৰ চেষ্টা কৰক "</string>
     <string name="in_progress">"চলি আছে "</string>
     <string name="received">"প্ৰাপ্ত হৈছে : "</string>
-    <string name="complete_activity">সম্পূৰ্ণ কাৰ্যকলাপ  Activity</string>
+    <string name="complete_activity">কাৰ্যকলাপসমূহ সম্পূৰ্ণ কৰক</string>
     <string name="complete_mission">"মিছন সম্পূৰ্ণ কৰক "</string>
     <string name="task_view">চাওক</string>
     <string name="continue_text">অব্যাহত ৰাখক</string>

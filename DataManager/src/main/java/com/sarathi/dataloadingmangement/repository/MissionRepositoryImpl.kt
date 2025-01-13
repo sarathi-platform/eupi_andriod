@@ -52,7 +52,9 @@ import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -75,7 +77,7 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao,
     val surveyConfigEntityDao: SurveyConfigEntityDao,
     val missionConfigEntityDao: MissionConfigEntityDao,
-    val livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+    val livelihoodConfigEntityDao: LivelihoodConfigEntityDao,
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -578,6 +580,23 @@ class MissionRepositoryImpl @Inject constructor(
             isActive = 1,
             activityId = activityId,
             order = order
+        )
+    }
+
+    override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
+        return missionLanguageAttributeDao.fetchMissionInfo(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
+    override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
+        return activityLanguageDao.fetchActivityInfo(
+            missionId = missionId,
+            activityId = activityId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
         )
     }
 
