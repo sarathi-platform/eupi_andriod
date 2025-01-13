@@ -369,53 +369,60 @@ fun PrimarySecondaryButtonView(
 
 ) {
     val context = LocalContext.current
-    if (secondaryButtonText.isNotBlank()) {
-        PrimaryButton(
-            text = secondaryButtonText,
-            enabled = isNotAvailableButtonEnable,
-            isIcon = false,
-            onClick = {
-                if (!isActivityCompleted) {
-                    taskMarkedNotAvailable.value = true
-                    taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
-                    onNotAvailable()
-                } else {
-                    showCustomToast(
-                        context,
-                        context.getString(R.string.activity_completed_unable_to_edit)
-                    )
-                }
-            },
-            color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
-                containerColor = blueDark,
-                contentColor = white
-            ) else ButtonDefaults.buttonColors(
-                containerColor = languageItemActiveBg,
-                contentColor = blueDark
-            ),
-            modifier = Modifier
-        )
-    } else {
-        Spacer(modifier = modifier)
-    }
-    if (primaryButtonText.isNotBlank()) {
-        PrimaryButton(
-            text = primaryButtonText,
-            color = if (!isActivityCompleted && !taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
-                containerColor = blueDark,
-                contentColor = white
-            ) else ButtonDefaults.buttonColors(
-                containerColor = languageItemActiveBg,
-                contentColor = blueDark
-            ),
-            onClick = {
-                if (!isActivityCompleted) {
-                    taskMarkedNotAvailable.value = false
-                }
-                onPrimaryButtonClick(title)
-            },
-            modifier = modifier
-        )
+    Row(modifier = Modifier.fillMaxWidth()) {
+        if (secondaryButtonText.isNotBlank()) {
+            PrimaryButton(
+                text = secondaryButtonText,
+                enabled = isNotAvailableButtonEnable,
+                isIcon = false,
+                onClick = {
+                    if (!isActivityCompleted) {
+                        taskMarkedNotAvailable.value = true
+                        taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
+                        onNotAvailable()
+                    } else {
+                        showCustomToast(
+                            context,
+                            context.getString(R.string.activity_completed_unable_to_edit)
+                        )
+                    }
+                },
+                color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                    containerColor = blueDark,
+                    contentColor = white
+                ) else ButtonDefaults.buttonColors(
+                    containerColor = languageItemActiveBg,
+                    contentColor = blueDark
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp) // Space between buttons
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+        if (primaryButtonText.isNotBlank()) {
+            PrimaryButton(
+                text = primaryButtonText,
+                color = if (!isActivityCompleted && !taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                    containerColor = blueDark,
+                    contentColor = white
+                ) else ButtonDefaults.buttonColors(
+                    containerColor = languageItemActiveBg,
+                    contentColor = blueDark
+                ),
+                onClick = {
+                    if (!isActivityCompleted) {
+                        taskMarkedNotAvailable.value = false
+                    }
+                    onPrimaryButtonClick(title)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            )
+        }
     }
 }
 
