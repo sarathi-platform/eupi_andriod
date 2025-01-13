@@ -196,20 +196,17 @@ class MissionScreenViewModel @Inject constructor(
                 tabs.indexOf(SubTabs.OngoingMissions)
             )
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
-
             createMissionFilters()
-
-            if (selectedMissionFilter.value == null) {
-                onEvent(
-                    CommonEvents.OnFilterUiModelSelected(
-                        FilterUiModel.getAllFilter(
-                            ALL_MISSION_FILTER_VALUE,
-                            filterLabel = "All Missions",
-                            null
-                        )
+            onEvent(
+                CommonEvents.OnFilterUiModelSelected(
+                    selectedMissionFilter.value ?: FilterUiModel.getAllFilter(
+                        ALL_MISSION_FILTER_VALUE,
+                        filterLabel = "All Missions",
+                        null
                     )
                 )
-            }
+            )
+
 
             updateCountMap()
 
