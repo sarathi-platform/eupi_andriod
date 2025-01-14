@@ -273,8 +273,8 @@ fun TaskScreen(
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
             ToolBarWithMenuComponent(
-                title = if (TextUtils.isEmpty(viewModel.activityInfoUIModel.value.activityName)) activityName else viewModel.activityInfoUIModel.value.activityName,
-                subTitle = viewModel.activityInfoUIModel.value.getTaskScreenSubTitle(),
+                title = if (TextUtils.isEmpty(viewModel.activityInfoUIModel.activityName)) activityName else viewModel.activityInfoUIModel.activityName,
+                subTitle = viewModel.activityInfoUIModel.getTaskScreenSubTitle(),
                 subTitleColorId = brownDark,
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,

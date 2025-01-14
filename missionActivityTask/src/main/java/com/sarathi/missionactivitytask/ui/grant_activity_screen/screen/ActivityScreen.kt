@@ -72,8 +72,8 @@ fun ActivityScreen(
 
         })
     ToolBarWithMenuComponent(
-        title = if (TextUtils.isEmpty(viewModel.missionInfoUIModel.value.title)) missionName else viewModel.missionInfoUIModel.value.title,
-        subTitle = viewModel.missionInfoUIModel.value.getActivityScreenSubTitle(),
+        title = if (TextUtils.isEmpty(viewModel.missionInfoUIModel.title)) missionName else viewModel.missionInfoUIModel.title,
+        subTitle = viewModel.missionInfoUIModel.getActivityScreenSubTitle(),
         subTitleColorId = brownDark,
         modifier = Modifier.fillMaxSize(),
         navController = navController,

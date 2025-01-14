@@ -1,7 +1,9 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
@@ -41,7 +43,7 @@ class ActivityScreenViewModel @Inject constructor(
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var showDialog = mutableStateOf<Boolean>(false)
-    var missionInfoUIModel = mutableStateOf(MissionInfoUIModel.getDefaultValue())
+    var missionInfoUIModel by mutableStateOf(MissionInfoUIModel.getDefaultValue())
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -73,7 +75,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            missionInfoUIModel.value = fetchAllDataUseCase.fetchMissionInfo(missionId)
+            missionInfoUIModel = fetchAllDataUseCase.fetchMissionInfo(missionId)
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,
