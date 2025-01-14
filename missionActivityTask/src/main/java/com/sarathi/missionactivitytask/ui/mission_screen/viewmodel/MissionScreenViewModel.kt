@@ -235,7 +235,7 @@ class MissionScreenViewModel @Inject constructor(
             )
         )
 
-        with(livelihoods) {
+        with(livelihoods.distinctBy { it.programLivelihoodId }) {
             iterator().forEach {
                 filterList.add(
                     FilterUiModel(
