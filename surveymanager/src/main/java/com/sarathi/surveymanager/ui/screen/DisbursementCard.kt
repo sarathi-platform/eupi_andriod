@@ -216,8 +216,7 @@ fun DisbursementCard(
                 } else {
                     Row(
                         Modifier
-                            .fillMaxWidth()
-                            .height(48.dp), horizontalArrangement = Arrangement.SpaceEvenly
+                            .fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly
                     ) {
                         TextButton(modifier = Modifier
                             .fillMaxWidth()
