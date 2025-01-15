@@ -36,8 +36,8 @@ import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
@@ -618,7 +618,7 @@ class MissionRepositoryImpl @Inject constructor(
         missionConfig.livelihoodConfig?.let { livelihoodList ->
             deleteLivelihoodConfig(missionId = missionId)
             livelihoodConfigEntityDao.insertLivelihoodConfigs(
-                LivelihoodConfigEntity.getLivelihoodConfigEntityList(
+                MissionLivelihoodConfigEntity.getLivelihoodConfigEntityList(
                     missionId = missionId,
                     missionType = missionConfig.missionType ?: BLANK_STRING,
                     livelihoodType = livelihoodList?.livelihoodType ?: BLANK_STRING,

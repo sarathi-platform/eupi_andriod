@@ -278,6 +278,7 @@ object MigrationQueries {
                 "    missionType TEXT NOT NULL,\n" +
                 "    livelihoodType TEXT NOT NULL,\n" +
                 "    livelihoodOrder INTEGER NOT NULL,\n" +
+                "    description TEXT, \n" +
                 "    languageCode TEXT NOT NULL\n" +
                 ");"
 

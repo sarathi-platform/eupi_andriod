@@ -11,7 +11,7 @@ import com.sarathi.dataloadingmangement.MISSION_LIVELIHOOD_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.model.mat.response.MissionLivelihoodMission
 
 @Entity(tableName = MISSION_LIVELIHOOD_CONFIG_TABLE_NAME)
-data class LivelihoodConfigEntity(
+data class MissionLivelihoodConfigEntity(
     @PrimaryKey(autoGenerate = true)
     @SerializedName("id")
     @Expose
@@ -34,11 +34,11 @@ data class LivelihoodConfigEntity(
             livelihoodOrder: Int,
             languages: List<MissionLivelihoodMission>?,
             userId: String,
-        ): List<LivelihoodConfigEntity> {
-            val livelihoodConfigEntityList = ArrayList<LivelihoodConfigEntity>()
+        ): List<MissionLivelihoodConfigEntity> {
+            val missionLivelihoodConfigEntityList = ArrayList<MissionLivelihoodConfigEntity>()
             languages?.forEach { language ->
-                livelihoodConfigEntityList.add(
-                    LivelihoodConfigEntity(
+                missionLivelihoodConfigEntityList.add(
+                    MissionLivelihoodConfigEntity(
                         userId = userId,
                         missionId = missionId,
                         missionType = missionType,
@@ -50,7 +50,7 @@ data class LivelihoodConfigEntity(
                 )
             }
 
-            return livelihoodConfigEntityList
+            return missionLivelihoodConfigEntityList
         }
     }
 

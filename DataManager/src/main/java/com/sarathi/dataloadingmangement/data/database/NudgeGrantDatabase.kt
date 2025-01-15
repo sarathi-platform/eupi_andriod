@@ -135,8 +135,8 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEnt
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
-import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
@@ -185,7 +185,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 6
         ConditionsEntity::class,
         SurveyConfigEntity::class,
         MissionConfigEntity::class,
-        LivelihoodConfigEntity::class
+        MissionLivelihoodConfigEntity::class
     ],
 
     version = NUDGE_GRANT_DATABASE_VERSION,
