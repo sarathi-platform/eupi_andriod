@@ -617,17 +617,16 @@ class MissionRepositoryImpl @Inject constructor(
         )
         missionConfig.livelihoodConfig?.let { livelihoodList ->
             deleteLivelihoodConfig(missionId = missionId)
-            val livelihoodEntities = livelihoodList.map { livelihood ->
-                LivelihoodConfigEntity.getLivelihoodConfigEntity(
+            livelihoodConfigEntityDao.insertLivelihoodConfigs(
+                LivelihoodConfigEntity.getLivelihoodConfigEntityList(
                     missionId = missionId,
                     missionType = missionConfig.missionType ?: BLANK_STRING,
-                    livelihoodType = livelihood?.livelihoodType ?: BLANK_STRING,
-                    livelihoodOrder = livelihood?.livelihoodOrder ?: 0,
-                    languageId = livelihood?.languageCode ?: BLANK_STRING,
+                    livelihoodType = livelihoodList?.livelihoodType ?: BLANK_STRING,
+                    livelihoodOrder = livelihoodList?.livelihoodOrder ?: 0,
+                    languages = livelihoodList.languages,
                     userId = userId
                 )
-            }
-            livelihoodConfigEntityDao.insertLivelihoodConfigs(livelihoodEntities)
+            )
         }
     }
 

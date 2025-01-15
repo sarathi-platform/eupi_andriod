@@ -7,11 +7,11 @@ import com.sarathi.dataloadingmangement.ANSWER_TABLE
 import com.sarathi.dataloadingmangement.ASSETS_TABLE_NAME
 import com.sarathi.dataloadingmangement.ASSET_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.CONDITIONS_TABLE_NAME
-import com.sarathi.dataloadingmangement.LIVELIHOOD_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_CONFIG_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_LIVELIHOOD_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
@@ -271,7 +271,7 @@ object MigrationQueries {
                 "    missionType TEXT NOT NULL\n" +
                 ");"
     val CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE =
-        "CREATE TABLE IF NOT EXISTS $LIVELIHOOD_CONFIG_TABLE_NAME (\n" +
+        "CREATE TABLE IF NOT EXISTS $MISSION_LIVELIHOOD_CONFIG_TABLE_NAME (\n" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
                 "    userId TEXT,\n" +
                 "    missionId INTEGER NOT NULL,\n" +
