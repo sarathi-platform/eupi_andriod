@@ -9,5 +9,5 @@ data class MissionConfig(
     @SerializedName("missionType")
     val missionType: String?,
     @SerializedName("livelihoodConfig")
-    val livelihoodConfig: List<LivelihoodConfigLanguageResponse>?
+    val livelihoodConfig: LivelihoodConfigLanguageResponse?
 )
