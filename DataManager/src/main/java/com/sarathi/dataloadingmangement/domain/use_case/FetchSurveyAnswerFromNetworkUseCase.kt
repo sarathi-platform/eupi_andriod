@@ -17,6 +17,7 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
             repository.getActivityConfig(missionId = missionId)?.forEach {
                 callSurveAnsweryApi(
                     GetSurveyAnswerRequest(
+                        referenceId = sharedPrefs.getStateId(),
                         surveyId = it.surveyId,
                         mobileNumber = sharedPrefs.getMobileNo(),
                         userId = sharedPrefs.getUserName().toInt(),

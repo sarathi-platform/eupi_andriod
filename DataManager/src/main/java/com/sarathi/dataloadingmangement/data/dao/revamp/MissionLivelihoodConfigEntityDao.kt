@@ -8,7 +8,7 @@ import com.sarathi.dataloadingmangement.MISSION_LIVELIHOOD_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 
 @Dao
-interface LivelihoodConfigEntityDao {
+interface MissionLivelihoodConfigEntityDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertLivelihoodConfigs(livelihoodConfigEntities: List<MissionLivelihoodConfigEntity>)

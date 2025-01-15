@@ -20,8 +20,8 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributesEntity
@@ -75,7 +75,7 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao,
     val surveyConfigEntityDao: SurveyConfigEntityDao,
     val missionConfigEntityDao: MissionConfigEntityDao,
-    val livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -617,7 +617,7 @@ class MissionRepositoryImpl @Inject constructor(
         )
         missionConfig.livelihoodConfig?.let { livelihoodList ->
             deleteLivelihoodConfig(missionId = missionId)
-            livelihoodConfigEntityDao.insertLivelihoodConfigs(
+            missionLivelihoodConfigEntityDao.insertLivelihoodConfigs(
                 MissionLivelihoodConfigEntity.getLivelihoodConfigEntityList(
                     missionId = missionId,
                     missionType = missionConfig.missionType ?: BLANK_STRING,
@@ -647,7 +647,7 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     private fun deleteLivelihoodConfig(missionId: Int) {
-        livelihoodConfigEntityDao.deleteLivelihoodConfig(
+        missionLivelihoodConfigEntityDao.deleteLivelihoodConfig(
             missionId = missionId,
             uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
         )

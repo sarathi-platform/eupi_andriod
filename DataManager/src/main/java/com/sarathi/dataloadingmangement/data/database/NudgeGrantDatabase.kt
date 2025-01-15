@@ -57,8 +57,8 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
@@ -257,7 +257,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun surveyConfigEntityDao(): SurveyConfigEntityDao
     abstract fun missionConfigEntityDao(): MissionConfigEntityDao
-    abstract fun livelihoodConfigEntityDao(): LivelihoodConfigEntityDao
+    abstract fun missionLivelihoodConfigEntityDao(): MissionLivelihoodConfigEntityDao
 
     class NudgeGrantDatabaseCallback : Callback()
     companion object {
