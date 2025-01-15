@@ -19,11 +19,11 @@ interface MissionLanguageAttributeDao {
     fun deleteMissionLanguageAttributeForUser(userId: String)
 
     @Query(
-        "select description as title ,livelihood_config_table.livelihoodOrder as livelihoodOrder,livelihood_config_table.livelihoodType as livelihoodType " +
+        "select description as title ,mission_livelihood_config_table.livelihoodOrder as livelihoodOrder,mission_livelihood_config_table.livelihoodType as livelihoodType " +
                 "from $MISSION_LANGUAGE_TABLE_NAME" +
-                " left join livelihood_config_table on mission_language_table.missionId=livelihood_config_table.missionId" +
-                "  and livelihood_config_table.userId=:userId " +
-                "and livelihood_config_table.languageCode=:languageCode " +
+                " left join mission_livelihood_config_table on mission_language_table.missionId=mission_livelihood_config_table.missionId" +
+                "  and mission_livelihood_config_table.userId=:userId " +
+                "and mission_livelihood_config_table.languageCode=:languageCode " +
                 "where mission_language_table.missionId =:missionId and mission_language_table.userId=:userId and mission_language_table.languageCode=:languageCode"
     )
     fun fetchMissionInfo(missionId: Int, userId: String, languageCode: String): MissionInfoUIModel?
