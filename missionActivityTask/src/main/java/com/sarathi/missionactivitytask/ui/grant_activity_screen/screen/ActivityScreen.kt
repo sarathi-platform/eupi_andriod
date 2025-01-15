@@ -17,7 +17,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -66,7 +65,7 @@ fun ActivityScreen(
             } else {
                 Toast.makeText(
                     context,
-                    context.getString(R.string.refresh_failed_please_try_again),
+                    viewModel.getString(context, R.string.refresh_failed_please_try_again),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -95,7 +94,7 @@ fun ActivityScreen(
                     .padding(10.dp)
             ) {
                 ButtonPositive(
-                    buttonTitle = stringResource(R.string.complete_mission),
+                    buttonTitle = viewModel.stringResource(context, R.string.complete_mission),
                     isActive = viewModel.isButtonEnable.value,
                     isArrowRequired = false,
                     onClick = {
@@ -139,7 +138,7 @@ fun ActivityScreen(
                         } else {
                             Toast.makeText(
                                 context,
-                                context.getString(R.string.file_not_exists),
+                                viewModel.getString(context, R.string.file_not_exists),
                                 Toast.LENGTH_SHORT
                             ).show()
                         }
@@ -148,9 +147,18 @@ fun ActivityScreen(
 
                 if (viewModel.showDialog.value) {
                     ShowCustomDialog(
-                        message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_mission),
-                        negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
-                        positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                        message = viewModel.stringResource(
+                            context,
+                            R.string.not_be_able_to_make_changes_after_completing_this_mission
+                        ),
+                        negativeButtonTitle = viewModel.stringResource(
+                            context,
+                            com.sarathi.surveymanager.R.string.cancel
+                        ),
+                        positiveButtonTitle = viewModel.stringResource(
+                            context,
+                            com.sarathi.surveymanager.R.string.ok
+                        ),
                         onNegativeButtonClick = {
                             viewModel.showDialog.value = false
                         },

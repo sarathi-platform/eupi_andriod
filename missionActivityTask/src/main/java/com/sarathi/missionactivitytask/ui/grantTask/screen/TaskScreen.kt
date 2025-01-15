@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -55,6 +54,7 @@ import com.nudge.core.NO_FILTER_VALUE
 import com.nudge.core.NO_SG_FILTER_LABEL
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
@@ -146,7 +146,7 @@ fun TaskScreen(
             } else {
                 Toast.makeText(
                     context,
-                    context.getString(R.string.refresh_failed_please_try_again),
+                    viewModel.getString(context, R.string.refresh_failed_please_try_again),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -177,8 +177,12 @@ fun TaskScreen(
 
     BottomSheetScaffoldComponent(
         bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-        defaultValue = getDefaultValueForNoFilterItem(context, viewModel.filterLabel),
-        headerTitle = getFilterLabel(context, viewModel.filterLabel),
+        defaultValue = getDefaultValueForNoFilterItem(
+            viewModel.translationHelper,
+            context,
+            viewModel.filterLabel
+        ),
+        headerTitle = getFilterLabel(viewModel.translationHelper, context, viewModel.filterLabel),
         bottomSheetContentItemList = viewModel.filterByList,
         selectedIndex = FilterCore.getFilterValueForActivity(activityId),
         onBottomSheetItemSelected = {
@@ -210,7 +214,10 @@ fun TaskScreen(
                                     Text(
                                         modifier = Modifier
                                             .weight(1f),
-                                        text = stringResource(R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity),
+                                        text = viewModel.stringResource(
+                                            context,
+                                            R.string.since_you_have_completed_all_the_tasks_please_complete_the_activity
+                                        ),
                                         style = newMediumTextStyle.copy(color = blueDark)
                                     )
 
@@ -228,7 +235,10 @@ fun TaskScreen(
                                 }
                                 Spacer(modifier = Modifier.height(dimen_10_dp))
                                 Text(
-                                    text = stringResource(R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details),
+                                    text = viewModel.stringResource(
+                                        context,
+                                        R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details
+                                    ),
                                     style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
                                 )
                             }
@@ -245,7 +255,10 @@ fun TaskScreen(
                     ) {
                         ButtonPositive(
                             modifier = Modifier.fillMaxWidth(), // Changed from weight to fill width
-                            buttonTitle = stringResource(R.string.complete_activity),
+                            buttonTitle = viewModel.stringResource(
+                                context,
+                                R.string.complete_activity
+                            ),
                             isActive = viewModel.isButtonEnable.value,
                             isArrowRequired = false,
                             onClick = {
@@ -256,7 +269,8 @@ fun TaskScreen(
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
                                     navController = navController,
-                                    activityMsg = context.getString(
+                                    activityMsg = viewModel.stringResource(
+                                        context,
                                         R.string.activity_completion_message,
                                         activityName
                                     ),
@@ -296,7 +310,10 @@ fun TaskScreen(
                         ) {
                             ButtonPositive(
                                 modifier = Modifier.weight(0.5f),
-                                buttonTitle = stringResource(R.string.complete_activity),
+                                buttonTitle = viewModel.stringResource(
+                                    context,
+                                    R.string.complete_activity
+                                ),
                                 isActive = viewModel.isButtonEnable.value,
                                 isArrowRequired = false,
                                 onClick = {
@@ -426,13 +443,16 @@ fun TaskScreen(
                             val message = when {
                                 // When search is disabled and the filter list is empty
                                 !viewModel.isSearchEnable.value && viewModel.filterList.value.isEmpty() ->
-                                    stringResource(R.string.empty_task_list_placeholder)
+                                    viewModel.stringResource(
+                                        context,
+                                        R.string.empty_task_list_placeholder
+                                    )
 
                                 // When search is enabled but no results are found
                                 viewModel.isSearchEnable.value &&
                                         (viewModel.filterList.value.isEmpty() ||
                                                 (viewModel.isGroupingApplied.value && viewModel.filterTaskMap.isEmpty())) ->
-                                    stringResource(R.string.no_result_found)
+                                    viewModel.stringResource(context, R.string.no_result_found)
 
                                 // No message in other cases
                                 else -> null
@@ -550,9 +570,18 @@ fun TaskScreen(
                     }
                     if (viewModel.showDialog.value) {
                         ShowCustomDialog(
-                            message = stringResource(R.string.not_be_able_to_make_changes_after_completing_this_activity),
-                            negativeButtonTitle = stringResource(com.sarathi.surveymanager.R.string.cancel),
-                            positiveButtonTitle = stringResource(com.sarathi.surveymanager.R.string.ok),
+                            message = viewModel.stringResource(
+                                context,
+                                R.string.not_be_able_to_make_changes_after_completing_this_activity
+                            ),
+                            negativeButtonTitle = viewModel.stringResource(
+                                context,
+                                com.sarathi.surveymanager.R.string.cancel
+                            ),
+                            positiveButtonTitle = viewModel.stringResource(
+                                context,
+                                com.sarathi.surveymanager.R.string.ok
+                            ),
                             onNegativeButtonClick = {
                                 viewModel.showDialog.value = false
                             },
@@ -562,7 +591,8 @@ fun TaskScreen(
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
                                     navController = navController,
-                                    activityMsg = context.getString(
+                                    activityMsg = viewModel.stringResource(
+                                        context,
                                         R.string.activity_completion_message,
                                         activityName
                                     ),
@@ -583,10 +613,17 @@ fun TaskScreen(
 
 }
 
-fun getDefaultValueForNoFilterItem(context: Context, filterLabel: String): String {
+fun getDefaultValueForNoFilterItem(
+    translationHelper: TranslationHelper,
+    context: Context,
+    filterLabel: String
+): String {
     var result = BLANK_STRING
     result = when (filterLabel) {
-        FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(R.string.no_small_group_assgned_label)
+        FILTER_BY_SMALL_GROUP_LABEL -> translationHelper.getString(
+            context,
+            R.string.no_small_group_assgned_label
+        )
             .value()
 
         else -> BLANK_STRING
@@ -597,7 +634,6 @@ fun getDefaultValueForNoFilterItem(context: Context, filterLabel: String): Strin
 
 @Composable
 private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewModel): String {
-
     val count = if (viewModel.isGroupingApplied.value) {
         var size = 0
         viewModel.filterTaskMap.forEach {
@@ -607,7 +643,7 @@ private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewMod
     } else {
         viewModel.filterList.value.size.toString()
     }
-    val filterByKey = viewModel.getFilterByValueKeyWithoutLabel(context, viewModel.filterLabel)
+    val filterByKey = viewModel.getFilterByValueKeyWithoutLabel(context!!, viewModel.filterLabel)
     val filterValue = if (filterByKey.equals(
             NO_FILTER_VALUE,
             true
@@ -615,7 +651,12 @@ private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewMod
     ) NO_SG_FILTER_LABEL else filterByKey
 
 
-    return stringResource(id = R.string.filter_item_count_label, count, filterValue)
+    return viewModel.stringResource(
+        LocalContext.current,
+        R.string.filter_item_count_label,
+        count,
+        filterValue
+    )
 }
 
 fun LazyListScope.TaskScreenContent(
@@ -662,6 +703,7 @@ fun TaskRowView(
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
     TaskCard(
+        translationHelper = viewModel.translationHelper,
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
 
@@ -767,13 +809,23 @@ fun TaskRowView(
     )
 }
 
-fun getFilterLabel(context: Context?, filterLabel: String?): String {
+fun getFilterLabel(
+    translationHelper: TranslationHelper,
+    context: Context,
+    filterLabel: String?
+): String {
     var result = BLANK_STRING
     result = when (filterLabel) {
-        FILTER_BY_SMALL_GROUP_LABEL -> context?.getString(CoreRes.string.small_group_filter_label)
+        FILTER_BY_SMALL_GROUP_LABEL -> translationHelper.getString(
+            context,
+            CoreRes.string.small_group_filter_label
+        )
             .value()
 
-        FILTER_BY_VILLAGE_NAME_LABEL -> context?.getString(CoreRes.string.village_filter_label)
+        FILTER_BY_VILLAGE_NAME_LABEL -> translationHelper.getString(
+            context,
+            CoreRes.string.village_filter_label
+        )
             .value()
 
         else -> BLANK_STRING

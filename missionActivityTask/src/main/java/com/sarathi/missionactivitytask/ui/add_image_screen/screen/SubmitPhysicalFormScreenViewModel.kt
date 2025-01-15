@@ -4,6 +4,7 @@ import android.text.TextUtils
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.generateUUID
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
@@ -151,6 +152,10 @@ class SubmitPhysicalFormScreenViewModel @Inject constructor(
             }
 
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.SubmitPhysicalFormScreen
     }
 
 }

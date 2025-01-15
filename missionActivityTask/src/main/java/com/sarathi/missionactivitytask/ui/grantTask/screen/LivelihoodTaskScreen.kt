@@ -112,6 +112,7 @@ fun LivelihoodTaskRowView(
 ) {
     val context = LocalContext.current
     LivelihoodTaskCard(
+        translationHelper = viewModel.translationHelper,
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
                 when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
@@ -127,7 +128,10 @@ fun LivelihoodTaskRowView(
                         } else {
                             showCustomToast(
                                 context,
-                                context.getString(R.string.activity_completed_unable_to_edit)
+                                viewModel.getString(
+                                    context,
+                                    R.string.activity_completed_unable_to_edit
+                                )
                             )
                         }
                     }
