@@ -250,7 +250,6 @@ class MissionRepositoryImpl @Inject constructor(
             val activityConfigId = saveActivityConfig(
                 it,
                 missionActivityModel.id,
-
                 missionId
             )
             deleteGrantConfig(activityConfigId)

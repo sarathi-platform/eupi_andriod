@@ -13,6 +13,7 @@ import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
+import com.sarathi.dataloadingmangement.data.converters.MoneyJournalConfigResponseConverter
 import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.data.converters.StringConverter
@@ -202,7 +203,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 6
     DateConverter::class,
     TagConverter::class,
     ValidationConverter::class,
-    SurveyValidationsConverter::class
+    SurveyValidationsConverter::class,
+    MoneyJournalConfigResponseConverter::class
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 

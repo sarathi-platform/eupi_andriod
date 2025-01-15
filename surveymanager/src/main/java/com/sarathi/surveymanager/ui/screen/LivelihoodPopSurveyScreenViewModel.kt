@@ -8,6 +8,7 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
+import com.sarathi.dataloadingmangement.OUTFLOW
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -19,7 +20,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUse
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MoneyJournalForPopEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalForPopUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -28,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -49,9 +53,9 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
-
-
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val saveTransactionMoneyJournalForPopUseCase: SaveTransactionMoneyJournalForPopUseCase,
+    private val moneyJournalForPopEventWriterUseCase: MoneyJournalForPopEventWriterUseCase
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -112,6 +116,33 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
             }
         }
         return true
+    }
+
+    fun checkAndWriteMoneyJournalEvent() {
+        ioViewModelScope {
+            activityConfig?.moneyJournalConfig?.let { config ->
+                if (!config.tags.isNullOrEmpty()) {
+                    questionUiModel.value.filter { config.tags?.any { tag -> it.tagId.contains(tag) } == true }
+                        .let { filterQuestionList ->
+
+                            val moneyJournalEntity =
+                                saveTransactionMoneyJournalForPopUseCase.saveMoneyJournalForSurvey(
+                                    subjectId = taskEntity?.subjectId.value(),
+                                    subjectType = subjectType,
+                                    transactionId = UUID.randomUUID().toString(),
+                                    referenceId = activityConfig?.referenceId.value(),
+                                    referenceType = activityConfig?.referenceType.value(),
+                                    questionUiModels = filterQuestionList,
+                                    transactionFlow = OUTFLOW
+                                )
+                            moneyJournalForPopEventWriterUseCase.writeMoneyJournalEventForPop(
+                                moneyJournalEntity,
+                                activityConfig?.referenceType.value()
+                            )
+                        }
+                }
+            }
+        }
     }
 
 }
