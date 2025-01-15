@@ -3,9 +3,9 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
-import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
@@ -39,9 +39,12 @@ class FetchAllDataUseCase @Inject constructor(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
+        fetchUserDetailUseCase.invoke()
+
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            fetchUserDetailUseCase.invoke()
             fetchMissionDataUseCase.getAllMissionList()
+            livelihoodUseCase.invoke()
+            contentDownloaderUseCase.livelihoodContentDownload()
             fetchContentDataFromNetworkUseCase.invoke()
             languageConfigUseCase.invoke()
             fetchCasteConfigNetworkUseCase.invoke()
@@ -97,7 +100,7 @@ class FetchAllDataUseCase @Inject constructor(
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
-                contentDownloaderUseCase.livelihoodContentDownlaod()
+
             }
             fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
             onComplete(true, BLANK_STRING)

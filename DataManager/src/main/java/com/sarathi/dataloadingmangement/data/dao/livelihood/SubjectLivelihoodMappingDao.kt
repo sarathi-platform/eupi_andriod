@@ -37,7 +37,8 @@ interface SubjectLivelihoodMappingDao {
     fun deleteSubjectLivelihoodMappingForUser(userId: String)
 
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME" +
-            " where subjectId IN (:subjectIds) and userId = :userId")
+            " where subjectId IN (:subjectIds) and userId = :userId and status=1"
+    )
     suspend fun getSubjectsLivelihoodMapping(
         subjectIds: List<Int>,
         userId: String
@@ -46,9 +47,14 @@ interface SubjectLivelihoodMappingDao {
     @Query("DELETE from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where userId = :userId")
     fun deleteLivelihoodSubjectsForUsers(userId: String)
 
-    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId")
+    @Query("SELECT * from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where subjectId = :subjectId and userId = :userId and status=1")
     suspend fun getSubjectLivelihoodMapping(
         subjectId: Int,
         userId: String
     ): SubjectLivelihoodMappingEntity?
+
+    @Query("SELECT count(*) from $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME where  userId = :userId")
+    suspend fun fetchSavedLivelihoodOptionsForUser(
+        userId: String
+    ): Int
 }

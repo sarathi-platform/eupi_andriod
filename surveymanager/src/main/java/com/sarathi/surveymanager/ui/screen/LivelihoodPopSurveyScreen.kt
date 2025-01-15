@@ -11,11 +11,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 
 @Composable
 fun LivelihoodPopSurveyScreen(
@@ -73,7 +75,15 @@ fun LivelihoodPopSurveyScreen(
 
                     viewModel.runValidationCheck(questionUiModel.questionId) { isValid, message ->
                         viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                            Pair(isValid, message)
+                            Triple(
+                                isValid,
+                                message,
+                                if (QuestionType.userInputQuestionTypeList.contains(
+                                        questionUiModel.type.toLowerCase()
+                                    )
+                                ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                                    ?: BLANK_STRING) else null
+                            )
                     }
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
@@ -109,6 +119,7 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
                     )
                 )
                 .padding(bottom = dimen_8_dp)
+                .padding(horizontal = dimen_8_dp)
         ) {
             QuestionUiContent(
                 question,

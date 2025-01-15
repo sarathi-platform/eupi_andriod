@@ -110,7 +110,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     val showSummaryView = mutableMapOf<Int, Int>()
 
     var validations: List<SurveyValidations>? = mutableListOf()
-    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
+    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Triple<Boolean, String, String?>>()
 
     private var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
 
@@ -473,6 +473,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                             selectedValue = BLANK_STRING
                         )
                     }
+                    runNoneOptionCheck(it)
                     if (saveSurveyAnswerUseCase.isAnswerAvailableInDb(
                             it,
                             taskEntity?.subjectId ?: DEFAULT_ID,

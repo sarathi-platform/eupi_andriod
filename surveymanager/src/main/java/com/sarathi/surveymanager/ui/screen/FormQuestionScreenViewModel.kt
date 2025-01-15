@@ -36,6 +36,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -96,7 +97,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     val visibilityMap: SnapshotStateMap<Int, Boolean> get() = conditionsUtils.questionVisibilityMap
 
     var validations: List<SurveyValidations>? = mutableListOf()
-    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
+    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Triple<Boolean, String, String?>>()
 
     val formTitle = mutableStateOf(BLANK_STRING)
     private val _contentList = mutableStateOf<List<Content>>(emptyList())
@@ -146,7 +147,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                     }
                 validations = getSurveyValidationsFromDbUseCase.invoke(surveyId, sectionId)
                 questionUiModel.value.forEach {
-                    fieldValidationAndMessageMap[it.questionId] = Pair(true, BLANK_STRING)
+                    fieldValidationAndMessageMap[it.questionId] = Triple(true, BLANK_STRING, null)
                 }
             }
 
@@ -158,7 +159,12 @@ open class FormQuestionScreenViewModel @Inject constructor(
                     runConditionCheck(it, true)
                     runValidationCheck(questionId = it.questionId) { isValid, message ->
                         fieldValidationAndMessageMap[it.questionId] =
-                            Pair(isValid, message)
+                            Triple(
+                                isValid,
+                                message,
+                                if (QuestionType.userInputQuestionTypeList.contains(it.type.toLowerCase())) (it.options?.firstOrNull()?.selectedValue
+                                    ?: BLANK_STRING) else null
+                            )
                     }
                 }
                 val nonFormParentQuestion = sourceTargetQuestionMapping.filter {
@@ -325,6 +331,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                             selectedValue = BLANK_STRING
                         )
                     }
+                    runNoneOptionCheck(it)
                 }
         }
     }
@@ -363,6 +370,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
                         selectedValue = BLANK_STRING
                     )
                 }
+                runNoneOptionCheck(it)
                 checkAndUpdateNonVisibleQuestionResponseInDb(question = it)
             }
             onSaveComplete()

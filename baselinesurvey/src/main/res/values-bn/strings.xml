@@ -482,8 +482,8 @@
     <string name="content">Content</string>
     <string name="average_cost">গড় ভ্রমণ খরচ: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">শুধুমাত্র একটি এন্ট্রি যোগ করা যাবে</string>
-    <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
-    <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="all_activities_marked_as_in_progress">কার্যলাপ গুলিকে চলিত ভাবে চিহ্নিত করা হয়েছে</string>
+    <string name="mark_activity_inprogress_label">একটিভিটি কে আবার খুলে ফেলুন</string>
     <string name="form_e">Form C</string>
     <string name="export_data">ডেটা শেয়ার করুন</string>
     <string name="refresh_config">কনফিগারেশন রিসেট করুন</string>
