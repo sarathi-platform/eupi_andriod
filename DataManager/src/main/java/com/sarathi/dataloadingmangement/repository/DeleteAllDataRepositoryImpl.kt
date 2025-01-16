@@ -108,7 +108,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
             surveyConfigEntityDao().deleteSurveyConfigForUser(userId)
             conditionsEntityDao().clearAllConditionsForUser(userId)
             missionConfigEntityDao().deleteMissionConfigForUser(userId)
-            livelihoodConfigEntityDao().deleteLivelihoodConfigForUser(userId)
+            missionLivelihoodConfigEntityDao().deleteLivelihoodConfigForUser(userId)
             casteListDao.deleteCasteTable()
             languageListDao.deleteAllLanguage()
             translationConfigDao.deleteTranslationConfigModelForUser(userId)

@@ -57,8 +57,8 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
@@ -135,8 +135,8 @@ import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEnt
 import com.sarathi.dataloadingmangement.data.entities.livelihood.ProductEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
-import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
@@ -185,7 +185,7 @@ const val NUDGE_GRANT_DATABASE_VERSION = 6
         ConditionsEntity::class,
         SurveyConfigEntity::class,
         MissionConfigEntity::class,
-        LivelihoodConfigEntity::class
+        MissionLivelihoodConfigEntity::class
     ],
 
     version = NUDGE_GRANT_DATABASE_VERSION,
@@ -257,7 +257,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
 
     abstract fun surveyConfigEntityDao(): SurveyConfigEntityDao
     abstract fun missionConfigEntityDao(): MissionConfigEntityDao
-    abstract fun livelihoodConfigEntityDao(): LivelihoodConfigEntityDao
+    abstract fun missionLivelihoodConfigEntityDao(): MissionLivelihoodConfigEntityDao
 
     class NudgeGrantDatabaseCallback : Callback()
     companion object {

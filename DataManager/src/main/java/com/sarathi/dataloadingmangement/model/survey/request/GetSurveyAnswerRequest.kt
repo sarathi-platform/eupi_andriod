@@ -8,6 +8,6 @@ data class GetSurveyAnswerRequest(
     @SerializedName("mobileNumber") val mobileNumber: String,
     @SerializedName("userId") val userId: Int,
     @SerializedName("activityId") val activityId: Int,
-
+    @SerializedName("referenceId") val referenceId: Int
 
     )
