@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.screen
 
+import android.text.TextUtils
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -46,8 +47,6 @@ fun ActivityScreen(
     programId: Int,
     missionId: Int,
     missionName: String,
-    missionSubTitle: String,
-    missionTitleDetail: String,
     isMissionCompleted: Boolean,
     onSettingClick: () -> Unit
 ) {
@@ -72,8 +71,8 @@ fun ActivityScreen(
 
         })
     ToolBarWithMenuComponent(
-        title = missionName,
-        subTitle = missionSubTitle,
+        title = if (TextUtils.isEmpty(viewModel.missionInfoUIModel.title)) missionName else viewModel.missionInfoUIModel.title,
+        subTitle = viewModel.missionInfoUIModel.getActivityScreenSubTitle(),
         subTitleColorId = brownDark,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
@@ -125,7 +124,6 @@ fun ActivityScreen(
                         activities = viewModel.activityList.value,
                         programId = programId,
                         navController = navController,
-                        missionSubTitle = missionTitleDetail
                     ) { contentValue, contentKey, contentType, contentTitle ->
 
                         if (viewModel.isFilePathExists(contentValue) || contentType.uppercase(Locale.getDefault()) == FileType.TEXT.name) {

@@ -5,6 +5,8 @@ import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 
 interface IMissionRepository {
@@ -43,4 +45,6 @@ interface IMissionRepository {
     suspend fun setMissionLoaded(missionId: Int, programId: Int)
     suspend fun getActivityTypesForMission(missionId: Int): List<String>
     suspend fun saveActivityOrderStatus(missionId: Int, activityId: Int, order: Int)
+    suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel?
+    suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel?
 }

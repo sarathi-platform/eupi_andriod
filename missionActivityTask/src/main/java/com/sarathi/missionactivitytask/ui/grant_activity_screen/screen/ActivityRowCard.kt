@@ -29,7 +29,6 @@ import java.util.Locale
 fun ActivityRowCard(
     programId: Int,
     missionId: Int,
-    missionSubTitle: String,
     navController: NavController,
     contents: List<BasicContent> = listOf(),
     activities: List<ActivityUiModel>,
@@ -79,8 +78,7 @@ fun ActivityRowCard(
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
                                 activityName = activity.description,
-                                programId = programId,
-                                missionSubtitle = missionSubTitle
+                                programId = programId
                             )
                         }
 
@@ -93,8 +91,7 @@ fun ActivityRowCard(
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
                                 activityName = activity.description,
-                                programId = programId,
-                                missionSubtitle = missionSubTitle
+                                programId = programId
                             )
                         }
 
@@ -111,7 +108,6 @@ fun ActivityRowCard(
                                 activityId = activity.activityId,
                                 activityName = activity.description,
                                 programId = programId,
-                                missionSubtitle = missionSubTitle
                             )
                         }
 
@@ -127,7 +123,6 @@ fun ActivityRowCard(
                         activityId = activity.activityId,
                         activityName = activity.description,
                         programId = programId,
-                        missionSubtitle = missionSubTitle
                     )
                 }
                     }

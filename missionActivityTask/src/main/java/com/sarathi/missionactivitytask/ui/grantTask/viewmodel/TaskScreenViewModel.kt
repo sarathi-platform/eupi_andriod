@@ -33,6 +33,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
@@ -140,6 +141,9 @@ open class TaskScreenViewModel @Inject constructor(
 
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
+    var activityInfoUIModel by mutableStateOf(ActivityInfoUIModel.getDefaultValue())
+
+
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
             mutableState.value = newValue
@@ -240,7 +244,8 @@ open class TaskScreenViewModel @Inject constructor(
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
+            activityInfoUIModel =
+                fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)
             val context = CoreAppDetails.getContext()
 
             activityConfigUiModelWithoutSurvey =
