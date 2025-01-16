@@ -106,15 +106,8 @@ fun BasicMissionCard(
                         bottom = dimen_5_dp
                     )
                 ) {
-                    TagComponent(
-                        when (livelihoodOrder) {
-                            1, 2 -> "${context.getString(R.string.livelihood)} $livelihoodOrder"
-                            else -> BLANK_STRING
-                        }
-                    )
-                    if (!livelihoodType.isNullOrBlank()) {
-                        TagComponent(livelihoodType)
-                    }
+                    TagComponent("${context.getString(R.string.livelihood)} $livelihoodOrder")
+                    TagComponent(livelihoodType)
                 }
             }
 

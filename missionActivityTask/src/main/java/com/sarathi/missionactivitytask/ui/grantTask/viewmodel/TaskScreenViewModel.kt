@@ -16,6 +16,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_FILTER_VALUE
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
@@ -148,6 +149,7 @@ open class TaskScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitTaskScreenState -> {
+                setTranslationConfig()
                 initTaskScreen(event.taskList)
             }
 
@@ -204,13 +206,13 @@ open class TaskScreenViewModel @Inject constructor(
 
         val tempFilterTaskMap = sortedList
             .filter {
-                getFilterByPredicate(it, context)
+                getFilterByPredicate(it, context!!)
             }.toHashMap()
         filterTaskMap =
             tempFilterTaskMap.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
-        val tempFilterList = sortedList.filter { getFilterByPredicate(it, context) }
+        val tempFilterList = sortedList.filter { getFilterByPredicate(it, context!!) }
         _filterList.value =
             tempFilterList.toList()
                 .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }
@@ -219,7 +221,7 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun getFilterByPredicate(
         mapEntry: Map.Entry<Int, HashMap<String, TaskCardModel>>,
-        context: Context?
+        context: Context
     ): Boolean {
         return mapEntry.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
             getFilterByValueKeyWithoutLabel(
@@ -229,9 +231,9 @@ open class TaskScreenViewModel @Inject constructor(
         ).value()
     }
 
-    fun getFilterByValueKeyWithoutLabel(context: Context?, filterLabel: String?): String {
+    fun getFilterByValueKeyWithoutLabel(context: Context, filterLabel: String?): String {
         return filterByValueKey.value.replace(
-            getFilterLabel(context, filterLabel), BLANK_STRING
+            getFilterLabel(translationHelper, context, filterLabel), BLANK_STRING
         ).trim()
     }
 
@@ -641,5 +643,8 @@ open class TaskScreenViewModel @Inject constructor(
         }
     }
     open suspend fun initChildScreen() {}
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.TaskScreen
+    }
 
 }

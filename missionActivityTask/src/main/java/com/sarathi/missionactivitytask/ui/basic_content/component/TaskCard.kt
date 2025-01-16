@@ -31,12 +31,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
@@ -70,6 +70,7 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun TaskCard(
+    translationHelper: TranslationHelper,
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -97,6 +98,7 @@ fun TaskCard(
     val taskStatus = remember(status?.value) {
         mutableStateOf(status?.value)
     }
+    val context = LocalContext.current
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
@@ -161,7 +163,7 @@ fun TaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = stringResource(id = R.string.not_available),
+                        text = translationHelper.stringResource(R.string.not_available),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -177,7 +179,7 @@ fun TaskCard(
                         )
                     } else {
                         Text(
-                            text = stringResource(id = R.string.in_progress),
+                            text = translationHelper.stringResource(R.string.in_progress),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -239,6 +241,7 @@ fun TaskCard(
                 ) {
 
                     PrimarySecondaryButtonView(
+                        translationHelper = translationHelper,
                         modifier = Modifier.weight(1.0f),
                         secondaryButtonText?.value ?: BLANK_STRING,
                         taskMarkedNotAvailable,
@@ -276,7 +279,9 @@ fun TaskCard(
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
                             Text(
-                                text = stringResource(R.string.task_view),
+                                text = translationHelper.stringResource(
+                                    R.string.task_view
+                                ),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -293,11 +298,14 @@ fun TaskCard(
 
                     } else {
                         PrimarySecondaryButtonView(
+                            translationHelper = translationHelper,
                             modifier = Modifier.weight(1.0f),
                             secondaryButtonText?.value ?: BLANK_STRING,
                             taskMarkedNotAvailable,
                             onNotAvailable,
-                            primaryButtonText = stringResource(R.string.continue_text),
+                            primaryButtonText = translationHelper.stringResource(
+                                R.string.continue_text
+                            ),
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,
@@ -356,6 +364,7 @@ fun ImageViewer(uri: Uri) {
 
 @Composable
 fun PrimarySecondaryButtonView(
+    translationHelper: TranslationHelper,
     modifier: Modifier = Modifier,
     secondaryButtonText: String,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -382,7 +391,9 @@ fun PrimarySecondaryButtonView(
                 } else {
                     showCustomToast(
                         context,
-                        context.getString(R.string.activity_completed_unable_to_edit)
+                        translationHelper.getString(
+                            R.string.activity_completed_unable_to_edit
+                        )
                     )
                 }
             },
