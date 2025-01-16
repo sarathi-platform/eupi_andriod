@@ -594,11 +594,14 @@ fun HistorySummaryCard(
                     itemsIndexed(
                         disburesmentList
                     ) { index, disburesement ->
-                        FormSummaryCardItem(
-                            modifier = modifier,
-                            disburesementtoryState = disburesement,
-                            viewmodel?.getFilePathUri(disburesement.didiImage)
-                        )
+                        viewmodel?.translationHelper?.let {
+                            FormSummaryCardItem(
+                                it,
+                                modifier = modifier,
+                                disburesementtoryState = disburesement,
+                                viewmodel?.getFilePathUri(disburesement.didiImage)
+                            )
+                        }
                     }
                 }
             }
@@ -609,10 +612,15 @@ fun HistorySummaryCard(
 
 @Composable
 fun FormSummaryCardItem(
+    translationHelper: TranslationHelper,
     modifier: Modifier,
     disburesementtoryState: DisbursementFormSummaryUiModel,
     imageUri: Uri?
 ) {
-    MakeDisburesementRow(disbursementFormSummaryUiModel = disburesementtoryState, imageUri)
+    MakeDisburesementRow(
+        translationHelper = translationHelper,
+        disbursementFormSummaryUiModel = disburesementtoryState,
+        imageUri
+    )
 
 }
