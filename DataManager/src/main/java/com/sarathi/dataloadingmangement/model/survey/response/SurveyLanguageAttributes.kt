@@ -6,7 +6,7 @@ import com.nudge.core.BLANK_STRING
 
 data class SurveyLanguageAttributes(
     @SerializedName("languageCode")
-    val languageCode: String,
+    var languageCode: String,
 
     @SerializedName("paraphrase")
     @Expose

@@ -53,6 +53,11 @@ class UserDetailRepository @Inject constructor(
                 userDetailsResponse.referenceId.first().stateId ?: -1
             )
         }
+        userDetailsResponse.referenceId.let {
+            sharedPrefs.setStateCode(
+                userDetailsResponse.referenceId.first().stateCode ?: BLANK_STRING
+            )
+        }
         userDetailsResponse.federationDetail?.let {
             sharedPrefs.savePref(PREF_STATE_NAME, it.stateName ?: BLANK_STRING)
             sharedPrefs.savePref(PREF_DISTRICT_NAME, it.districtName ?: BLANK_STRING)

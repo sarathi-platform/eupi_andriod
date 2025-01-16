@@ -39,5 +39,8 @@ data class ReferenceIdModel(
 
     @SerializedName("stepId")
     @Expose
-    var stepId: String? = null
+    var stepId: String? = null,
+    @SerializedName("stateCode")
+    @Expose
+    var stateCode: String? = null
 )

@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import android.util.Log
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
@@ -145,15 +146,28 @@ class SurveyDownloadRepository @Inject constructor(
         referenceId: Int,
         referenceType: String
     ) {
-        surveyLanguageAttributes?.forEach {
-            surveyLanguageAttributeDao.insertSurveyLanguageAttribute(
+        val stateCode = coreSharedPrefs.getStateCode().uppercase()
+
+        surveyLanguageAttributes?.forEach { languageAttribute ->
+            val languageCodeParts = languageAttribute.languageCode.uppercase().split("-")
+            val updatedLanguageCode =
+                if (languageCodeParts.size > 1 && languageCodeParts[1] == stateCode) {
+                    languageCodeParts.firstOrNull() ?: BLANK_STRING
+                } else {
+                    languageAttribute.languageCode
+                }
+
+            languageAttribute.languageCode = updatedLanguageCode
+
+            val surveyLanguageEntity =
                 SurveyLanguageAttributeEntity.getSurveyLanguageAttributeEntity(
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                    languageAttributes = it,
+                    languageAttributes = languageAttribute,
                     referenceId = referenceId,
                     type = referenceType
                 )
-            )
+
+            surveyLanguageAttributeDao.insertSurveyLanguageAttribute(surveyLanguageEntity)
         }
     }
 
