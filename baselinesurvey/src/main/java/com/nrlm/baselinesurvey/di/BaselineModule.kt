@@ -428,6 +428,9 @@ object BaselineModule {
             deleteFormQuestionResponseUseCase = DeleteFormQuestionResponseUseCase(
                 formQuestionResponseRepository
             ),
+            deleteFormQuestionOptionResponseUseCase = DeleteFormQuestionOptionResponseUseCase(
+                formQuestionResponseRepository
+            ),
             getSurveyeeDetailsUserCase = GetSurveyeeDetailsUserCase(startScreenRepository),
             getPendingTaskCountLiveUseCase = GetPendingTaskCountLiveUseCase(
                 missionSummaryScreenRepository
