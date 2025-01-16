@@ -1,6 +1,9 @@
 package com.nudge.core.helper
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.database.dao.translation.TranslationConfigDao
@@ -71,5 +74,20 @@ class TranslationHelper @Inject constructor(
         } else {
             context.resources.getQuantityString(resId, quantity)
         }
+    }
+}
+
+
+val LocalTranslationHelper = compositionLocalOf<TranslationHelper> {
+    error("No TranslationHelper provided")
+}
+
+@Composable
+fun ProvideTranslationHelper(
+    translationHelper: TranslationHelper,
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalTranslationHelper provides translationHelper) {
+        content()
     }
 }
