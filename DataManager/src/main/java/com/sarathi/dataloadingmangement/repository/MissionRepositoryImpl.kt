@@ -20,8 +20,8 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributesEntity
@@ -36,8 +36,8 @@ import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
@@ -52,7 +52,9 @@ import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -75,7 +77,7 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao,
     val surveyConfigEntityDao: SurveyConfigEntityDao,
     val missionConfigEntityDao: MissionConfigEntityDao,
-    val livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -581,6 +583,23 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
+        return missionLanguageAttributeDao.fetchMissionInfo(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
+    override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
+        return activityLanguageDao.fetchActivityInfo(
+            missionId = missionId,
+            activityId = activityId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
     private fun saveSurveyConfig(
         activityId: Int,
         missionId: Int,
@@ -617,17 +636,16 @@ class MissionRepositoryImpl @Inject constructor(
         )
         missionConfig.livelihoodConfig?.let { livelihoodList ->
             deleteLivelihoodConfig(missionId = missionId)
-            val livelihoodEntities = livelihoodList.map { livelihood ->
-                LivelihoodConfigEntity.getLivelihoodConfigEntity(
+            missionLivelihoodConfigEntityDao.insertLivelihoodConfigs(
+                MissionLivelihoodConfigEntity.getLivelihoodConfigEntityList(
                     missionId = missionId,
                     missionType = missionConfig.missionType ?: BLANK_STRING,
-                    livelihoodType = livelihood?.livelihoodType ?: BLANK_STRING,
-                    livelihoodOrder = livelihood?.livelihoodOrder ?: 0,
-                    languageId = livelihood?.languageCode ?: BLANK_STRING,
+                    livelihoodType = livelihoodList?.livelihoodType ?: BLANK_STRING,
+                    livelihoodOrder = livelihoodList?.livelihoodOrder ?: 0,
+                    languages = livelihoodList.languages,
                     userId = userId
                 )
-            }
-            livelihoodConfigEntityDao.insertLivelihoodConfigs(livelihoodEntities)
+            )
         }
     }
 
@@ -648,7 +666,7 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     private fun deleteLivelihoodConfig(missionId: Int) {
-        livelihoodConfigEntityDao.deleteLivelihoodConfig(
+        missionLivelihoodConfigEntityDao.deleteLivelihoodConfig(
             missionId = missionId,
             uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
         )

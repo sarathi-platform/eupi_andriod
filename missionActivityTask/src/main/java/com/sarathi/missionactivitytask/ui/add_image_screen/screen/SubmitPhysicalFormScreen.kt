@@ -18,7 +18,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -49,7 +48,7 @@ fun SubmitPhysicalFormScreen(
     val outerState = rememberLazyListState()
     val context = LocalContext.current
     LaunchedEffect(key1 = true) {
-
+        viewModel.setTranslationConfig()
         viewModel.setTotalDidi(activityId = activityId, missionId)
     }
     Scaffold(modifier = Modifier.fillMaxWidth(),
@@ -58,7 +57,8 @@ fun SubmitPhysicalFormScreen(
         bottomBar = {
             BottomAppBar(
                 backgroundColor = white, modifier = Modifier
-                    .fillMaxWidth().padding(dimen_10_dp)
+                    .fillMaxWidth()
+                    .padding(dimen_10_dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -66,7 +66,7 @@ fun SubmitPhysicalFormScreen(
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),
-                        buttonTitle = stringResource(R.string.go_back),
+                        buttonTitle = viewModel.stringResource(context, R.string.go_back),
                         isArrowRequired = true,
                         onClick = {
                             navController.popBackStack()

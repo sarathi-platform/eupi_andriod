@@ -2,6 +2,8 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
@@ -93,6 +95,13 @@ class FetchMissionDataUseCase @Inject constructor(
 
     suspend fun getAllMission(): List<MissionUiModel> {
         return repository.getAllMission()
+    }
+    suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
+        return repository.fetchMissionInfo(missionId)
+    }
+
+    suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
+        return repository.fetchActivityInfo(missionId, activityId)
     }
 
     suspend fun getActivityTypesForMission(missionId: Int): List<String> =
