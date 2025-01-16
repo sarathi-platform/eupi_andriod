@@ -19,7 +19,7 @@ interface MissionLanguageAttributeDao {
     fun deleteMissionLanguageAttributeForUser(userId: String)
 
     @Query(
-        "select description as title ,mission_livelihood_config_table.livelihoodOrder as livelihoodOrder,mission_livelihood_config_table.livelihoodType as livelihoodType " +
+        "select mission_language_table.description as title ,mission_livelihood_config_table.livelihoodOrder as livelihoodOrder,mission_livelihood_config_table.livelihoodType as livelihoodType " +
                 "from $MISSION_LANGUAGE_TABLE_NAME" +
                 " left join mission_livelihood_config_table on mission_language_table.missionId=mission_livelihood_config_table.missionId" +
                 "  and mission_livelihood_config_table.userId=:userId " +
