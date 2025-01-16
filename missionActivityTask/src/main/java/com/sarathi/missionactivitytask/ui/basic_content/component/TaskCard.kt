@@ -163,7 +163,7 @@ fun TaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = translationHelper.stringResource(context, R.string.not_available),
+                        text = translationHelper.stringResource(R.string.not_available),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -179,7 +179,7 @@ fun TaskCard(
                         )
                     } else {
                         Text(
-                            text = translationHelper.stringResource(context, R.string.in_progress),
+                            text = translationHelper.stringResource(R.string.in_progress),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -280,7 +280,6 @@ fun TaskCard(
                         }) {
                             Text(
                                 text = translationHelper.stringResource(
-                                    context,
                                     R.string.task_view
                                 ),
                                 modifier = Modifier
@@ -305,7 +304,6 @@ fun TaskCard(
                             taskMarkedNotAvailable,
                             onNotAvailable,
                             primaryButtonText = translationHelper.stringResource(
-                                context,
                                 R.string.continue_text
                             ),
                             onPrimaryButtonClick,
@@ -394,7 +392,6 @@ fun PrimarySecondaryButtonView(
                     showCustomToast(
                         context,
                         translationHelper.getString(
-                            context,
                             R.string.activity_completed_unable_to_edit
                         )
                     )

@@ -466,7 +466,7 @@ fun DisplaySelectedOption(
     var options = BLANK_STRING
 
     options = if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
-        translationHelper.stringResource(context, R.string.not_available)
+        translationHelper.stringResource(R.string.not_available)
     } else {
         questionUiModel?.options?.filter { it.isSelected == true }?.map { it.selectedValue }
             ?.joinToString(",").toString()
@@ -619,7 +619,7 @@ private fun NotAvailableUI(
                 ) white else blueDark,
                 borderColor = if (!taskMarkedNotAvailable.value
                 ) languageItemInActiveBorderBg else blueDark,
-                optionText = translationHelper.stringResource(context, R.string.not_available)
+                optionText = translationHelper.stringResource(R.string.not_available)
             ) {
                 if (!isActivityCompleted) {
                     taskMarkedNotAvailable.value = true
@@ -629,7 +629,6 @@ private fun NotAvailableUI(
                     showCustomToast(
                         context,
                         translationHelper.getString(
-                            context,
                             R.string.activity_completed_unable_to_edit
                         )
                     )

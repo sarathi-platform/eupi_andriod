@@ -621,7 +621,6 @@ fun getDefaultValueForNoFilterItem(
     var result = BLANK_STRING
     result = when (filterLabel) {
         FILTER_BY_SMALL_GROUP_LABEL -> translationHelper.getString(
-            context,
             R.string.no_small_group_assgned_label
         )
             .value()
@@ -817,13 +816,11 @@ fun getFilterLabel(
     var result = BLANK_STRING
     result = when (filterLabel) {
         FILTER_BY_SMALL_GROUP_LABEL -> translationHelper.getString(
-            context,
             CoreRes.string.small_group_filter_label
         )
             .value()
 
         FILTER_BY_VILLAGE_NAME_LABEL -> translationHelper.getString(
-            context,
             CoreRes.string.village_filter_label
         )
             .value()

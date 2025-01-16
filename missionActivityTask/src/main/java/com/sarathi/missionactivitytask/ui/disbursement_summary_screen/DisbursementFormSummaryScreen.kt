@@ -367,7 +367,7 @@ private fun MakeDisburesementRow(
                     style = defaultTextStyle.copy(blueDark),
                 )
                 TextRow(
-                    text1 = translationHelper.stringResource(context, R.string.amount),
+                    text1 = translationHelper.stringResource(R.string.amount),
                     text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
                 )
             }
@@ -381,7 +381,7 @@ private fun MakeDisburesementRow(
             FormSummaryDialog(
                 imageUri = imageUri,
                 disbursementFormSummaryUiModel = disbursementFormSummaryUiModel,
-                positiveButtonTitle = translationHelper.stringResource(context, R.string.close),
+                positiveButtonTitle = translationHelper.stringResource(R.string.close),
                 onPositiveButtonClick = {
                     // TODO: Handle positive button click
                     showDialog.value = false
@@ -556,6 +556,7 @@ fun FormMainSummaryCard(
 
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun HistorySummaryCard(
     modifier: Modifier,

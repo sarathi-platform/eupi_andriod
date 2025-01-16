@@ -171,19 +171,15 @@ fun SmallGroupAttendanceHistoryScreen(
 
         CustomDialogComponent(
             title = smallGroupAttendanceHistoryViewModel.stringResource(
-                context,
                 R.string.confirmation_alert_dialog_title
             ),
             message = smallGroupAttendanceHistoryViewModel.stringResource(
-                context,
                 R.string.do_you_want_mark_all_absent
             ),
             positiveButtonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
-                context,
                 R.string.yes
             ),
             negativeButtonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
-                context,
                 R.string.no
             ),
             positiveButtonColor = deleteButtonBg,
@@ -256,7 +252,6 @@ fun SmallGroupAttendanceHistoryScreen(
                         ) {
                             ButtonPositiveComponent(
                                 buttonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
-                                    context,
                                     R.string.take_attendance_button_text
                                 ),
                                 isActive = true,
@@ -359,7 +354,6 @@ fun SmallGroupAttendanceHistoryScreen(
                                             label = {
                                                 Text(
                                                     text = smallGroupAttendanceHistoryViewModel.stringResource(
-                                                        context,
                                                         R.string.date_range_picker_label_text
                                                     ),
                                                     color = otpBorderColor
@@ -368,7 +362,6 @@ fun SmallGroupAttendanceHistoryScreen(
                                             placeholder = {
                                                 Text(
                                                     text = smallGroupAttendanceHistoryViewModel.stringResource(
-                                                        context,
                                                         R.string.date_range_picker_label_text
                                                     ),
                                                     color = otpBorderColor
@@ -396,7 +389,6 @@ fun SmallGroupAttendanceHistoryScreen(
                             item {
                                 Text(
                                     text = smallGroupAttendanceHistoryViewModel.stringResource(
-                                        context,
                                         R.string.attendance_history_header_text
                                     ),
                                     style = defaultTextStyle,
@@ -484,7 +476,6 @@ fun EmptyHistoryView(
                     blueDark,
                 ), textProperties = TextProperties(
                     text = smallGroupAttendanceHistoryViewModel.stringResource(
-                        context,
                         R.string.total_didis_label_text,
                         smallGroupAttendanceHistoryViewModel.smallGroupDetails.value.didiCount
                     ),
@@ -495,7 +486,6 @@ fun EmptyHistoryView(
             Spacer(modifier = Modifier.padding(vertical = 10.dp))
             ButtonPositiveComponent(
                 buttonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
-                    context,
                     R.string.take_attendance_button_text
                 ),
                 isActive = true,
@@ -586,7 +576,6 @@ fun AttendanceSummaryCard(
             ) {
                 Text(
                     text = translationHelper.stringResource(
-                        context,
                         R.string.attendance_percentage_text,
                         attendancePercentage.value
                     ) + PERCENTAGE_SIGN,
@@ -611,7 +600,6 @@ fun AttendanceSummaryCard(
                         tint = textColorDark
                     ), textProperties = TextProperties(
                         text = translationHelper.stringResource(
-                            context,
                             R.string.total_count_text,
                             counts.value.first,
                             counts.value.second
@@ -675,7 +663,7 @@ fun AttendanceSummaryCard(
                         ),
                         textProperties = TextProperties(
                             text = translationHelper.stringResource(
-                                context, R.string.edit_button_text
+                                R.string.edit_button_text
                             ),
                             style = defaultTextStyle,
                             color = textColorDark,
@@ -708,7 +696,6 @@ fun AttendanceSummaryCard(
                             modifier = Modifier.absolutePadding(top = dimen_2_dp)
                         ), textProperties = TextProperties(
                             text = translationHelper.stringResource(
-                                context,
                                 R.string.delete_button_text
                             ),
                             style = defaultTextStyle,
@@ -822,11 +809,9 @@ fun HistorySummaryCardItem(
         Text(
             text = if (subjectAttendanceHistoryState.attendance)
                 translationHelper.stringResource(
-                    context,
                     R.string.present
                 )
             else translationHelper.stringResource(
-                context,
                 R.string.absent
             ),
             style = defaultTextStyle,

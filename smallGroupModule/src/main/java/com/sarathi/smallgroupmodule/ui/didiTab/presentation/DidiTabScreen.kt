@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -70,16 +69,12 @@ fun DidiTabScreen(
     if (showAppExitDialog.value) {
         ShowCustomDialog(
             title = didiTabViewModel.stringResource(
-                context,
                 R.string.are_you_sure),
             message = didiTabViewModel.stringResource(
-                context,
                 R.string.do_you_want_to_exit_the_app) ,
             positiveButtonTitle =  didiTabViewModel.stringResource(
-                context,
                 R.string.exit) ,
             negativeButtonTitle = didiTabViewModel.stringResource(
-                context,
                 R.string.cancel) ,
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
@@ -100,7 +95,6 @@ fun DidiTabScreen(
                 showCustomToast(
                     context,
                     didiTabViewModel.stringResource(
-                        context,
                         R.string.refresh_failed_please_try_again)
                 )
             }
@@ -123,15 +117,12 @@ fun DidiTabScreen(
 
     ToolBarWithMenuComponent(
         title = didiTabViewModel.stringResource(
-            context,
             DataLoadingRes.string.app_name),
         dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value)
             didiTabViewModel.stringResource(
-                context,
                 R.string.not_able_to_load
         ) else
             didiTabViewModel.stringResource(
-                context,
                 R.string.no_didi_s_assigned_to_you
             ),
         modifier = modifier,
@@ -184,14 +175,11 @@ fun DidiTabScreen(
                             SearchWithFilterViewComponent(
                                 placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
                                     SubTabs.DidiTab.id -> didiTabViewModel.stringResource(
-                                        context,
                                         R.string.search_didi)
                                     SubTabs.SmallGroupTab.id ->
                                         didiTabViewModel.stringResource(
-                                            context,
                                             R.string.search_by_small_groups)
                                     else -> didiTabViewModel.stringResource(
-                                        context,
                                         R.string.search_didi)
 
                                 },

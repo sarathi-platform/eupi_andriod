@@ -29,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
 import com.nudge.core.showCustomToast
@@ -123,19 +121,15 @@ fun SmallGroupAttendanceScreen(
 
         CustomDialogComponent(
             title = smallGroupAttendanceScreenViewModel.stringResource(
-                context,
                 R.string.confirmation_alert_dialog_title
             ),
             message = smallGroupAttendanceScreenViewModel.stringResource(
-                context,
                 R.string.do_you_want_mark_all_absent
             ),
             positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
-                context,
                 R.string.yes
             ),
             negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
-                context,
                 R.string.no
             ),
             onPositiveButtonClick = {
@@ -158,7 +152,6 @@ fun SmallGroupAttendanceScreen(
                         showCustomToast(
                             context = context,
                             msg = smallGroupAttendanceScreenViewModel.stringResource(
-                                context,
                                 R.string.attendance_already_marked,
                                 smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
                             )
@@ -195,7 +188,6 @@ fun SmallGroupAttendanceScreen(
                 ) {
                     ButtonPositiveWithLoaderComponent(
                         buttonTitle = smallGroupAttendanceScreenViewModel.stringResource(
-                            context,
                             R.string.submit
                         ),
                         isActive = true,
@@ -234,7 +226,6 @@ fun SmallGroupAttendanceScreen(
                                         showCustomToast(
                                             context = context,
                                             msg =smallGroupAttendanceScreenViewModel.stringResource(
-                                                context,
                                                 R.string.attendance_already_marked,
                                                 smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
                                             )
@@ -278,7 +269,6 @@ fun SmallGroupAttendanceScreen(
 
                 SearchWithFilterViewComponent(
                     placeholderString = smallGroupAttendanceScreenViewModel.stringResource(
-                        context,
                         R.string.search_didi
                     ),
                     showFilter = false,
@@ -355,7 +345,6 @@ fun SmallGroupAttendanceScreen(
                         ) {
                             Text(
                                 text = smallGroupAttendanceScreenViewModel.stringResource(
-                                    context,
                                     R.string.all
                                 ),
                                 style = defaultTextStyle,

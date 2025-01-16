@@ -152,7 +152,7 @@ fun LivelihoodTaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = translationHelper.stringResource(context, R.string.not_available),
+                        text = translationHelper.stringResource(R.string.not_available),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -168,7 +168,7 @@ fun LivelihoodTaskCard(
                         )
                     } else {
                         Text(
-                            text = translationHelper.stringResource(context, R.string.in_progress),
+                            text = translationHelper.stringResource(R.string.in_progress),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -270,9 +270,8 @@ fun LivelihoodTaskCard(
 
                             Text(
                                 text = if (isActivityCompleted) translationHelper.stringResource(
-                                    context,
                                     R.string.task_view
-                                ) else translationHelper.stringResource(context, R.string.edit),
+                                ) else translationHelper.stringResource(R.string.edit),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -297,7 +296,6 @@ fun LivelihoodTaskCard(
                             taskMarkedNotAvailable,
                             onNotAvailable,
                             primaryButtonText = translationHelper.stringResource(
-                                context,
                                 R.string.continue_text
                             ),
                             onPrimaryButtonClick,
