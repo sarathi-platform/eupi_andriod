@@ -72,7 +72,6 @@ class FetchAllDataUseCase @Inject constructor(
             fetchSurveyDataFromNetworkUseCase.invoke(missionId)
             fetchSectionStatusFromNetworkUsecase.invoke(missionId)
             val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
-            fetchContentDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
                 if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
@@ -89,7 +88,7 @@ class FetchAllDataUseCase @Inject constructor(
 
                 livelihoodUseCase.invoke()
             }
-
+            fetchContentDataFromNetworkUseCase.invoke()
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
