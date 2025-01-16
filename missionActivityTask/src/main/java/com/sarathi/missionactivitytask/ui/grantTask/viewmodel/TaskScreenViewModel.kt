@@ -243,7 +243,7 @@ open class TaskScreenViewModel @Inject constructor(
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             activityInfoUIModel =
-                fetchAllDataUseCase.fetchActivityInfoInfo(missionId, activityId)
+                fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)
             val context = CoreAppDetails.getContext()
 
             activityConfigUiModelWithoutSurvey =

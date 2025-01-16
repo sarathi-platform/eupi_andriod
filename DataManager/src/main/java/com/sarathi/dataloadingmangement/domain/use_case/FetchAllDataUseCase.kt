@@ -122,7 +122,7 @@ class FetchAllDataUseCase @Inject constructor(
             ?: MissionInfoUIModel.getDefaultValue()
     }
 
-    suspend fun fetchActivityInfoInfo(missionId: Int, activityId: Int): ActivityInfoUIModel {
+    suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel {
         return fetchMissionDataUseCase.fetchActivityInfo(missionId, activityId)
             ?: ActivityInfoUIModel.getDefaultValue()
     }
