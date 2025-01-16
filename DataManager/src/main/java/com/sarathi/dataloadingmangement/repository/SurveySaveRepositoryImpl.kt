@@ -154,7 +154,7 @@ class SurveySaveRepositoryImpl @Inject constructor(
     ): List<SurveyAnswerEntity>? {
         return surveyAnswersDao.getSurveyAnswerImageKeys(
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
-            questionType = questionType
+            questionType = listOf(questionType)
         )
     }
 

@@ -82,7 +82,7 @@ class ContentRepositoryImpl @Inject constructor(
         // Handle survey answers
         val surveyAnswers = surveyAnswersDao.getSurveyAnswerImageKeys(
             uniqueUserIdentifier = userIdentifier,
-            questionType = QuestionType.MultiImage.name
+            questionType = listOf(QuestionType.MultiImage.name, QuestionType.SingleImage.name)
         )
         surveyAnswers?.forEach { survey ->
             survey.optionItems.forEach { optionsUiModel ->
