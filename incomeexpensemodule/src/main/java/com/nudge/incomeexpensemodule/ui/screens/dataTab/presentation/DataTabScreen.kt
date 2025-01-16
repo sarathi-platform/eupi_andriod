@@ -105,19 +105,15 @@ fun DataTabScreen(
     if (showAppExitDialog.value) {
         ShowCustomDialog(
             title = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.are_you_sure
             ),
             message = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.do_you_want_to_exit_the_app
             ),
             positiveButtonTitle = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.exit
             ),
             negativeButtonTitle = dataTabScreenViewModel.stringResource(
-                context,
                 resId = R.string.cancel
             ),
             onNegativeButtonClick = {
@@ -189,7 +185,6 @@ fun DataTabScreen(
         ) {
             ToolBarWithMenuComponent(
                 title = dataTabScreenViewModel.stringResource(
-                    context,
                     resId = com.sarathi.dataloadingmangement.R.string.app_name
                 ),
                 modifier = modifier,
@@ -266,7 +261,6 @@ fun DataTabScreen(
                                             .fillMaxWidth()
                                             .weight(1f),
                                         placeholderString = dataTabScreenViewModel.stringResource(
-                                            context,
                                             DataRes.string.search_by_didis
                                         ),
                                         searchFieldHeight = dimen_50_dp,

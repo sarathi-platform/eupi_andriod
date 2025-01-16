@@ -5,11 +5,13 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class TranslationHelper @Inject constructor(
     private val translationConfigDao: TranslationConfigDao,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    @ApplicationContext private val context: Context
 ) {
     private val _translationMap = mutableStateMapOf<String, String>()
     private val translationMap: SnapshotStateMap<String, String> get() = _translationMap
@@ -21,7 +23,7 @@ class TranslationHelper @Inject constructor(
         }
     }
 
-    fun getString(context: Context, resId: Int): String {
+    fun getString(resId: Int): String {
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
         return if (!dbString.isNullOrEmpty()) {
@@ -33,7 +35,7 @@ class TranslationHelper @Inject constructor(
         }
     }
 
-    fun getString(context: Context, resId: Int, vararg formatArgs: Any): String {
+    fun getString(resId: Int, vararg formatArgs: Any): String {
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
         return if (!dbString.isNullOrEmpty()) {
@@ -43,12 +45,12 @@ class TranslationHelper @Inject constructor(
         }
     }
 
-    fun stringResource(context: Context, id: Int): String {
-        return getString(context = context, resId = id)
+    fun stringResource(id: Int): String {
+        return getString(resId = id)
     }
 
-    fun stringResource(context: Context, resId: Int, vararg formatArgs: Any): String {
-        return getString(context = context, resId = resId, formatArgs = formatArgs)
+    fun stringResource(resId: Int, vararg formatArgs: Any): String {
+        return getString(resId = resId, formatArgs = formatArgs)
     }
 
     private suspend fun getScreenNameKeys(translationEnum: TranslationEnum): Map<String, String> {
@@ -60,7 +62,7 @@ class TranslationHelper @Inject constructor(
         return configList.associate { it.key to it.value }
     }
 
-    fun getPluralString(context: Context, resId: Int, quantity: Int): String {
+    fun getPluralString(resId: Int, quantity: Int): String {
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
 

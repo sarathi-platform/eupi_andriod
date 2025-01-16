@@ -15,7 +15,6 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.Text
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.runtime.Composable
@@ -26,8 +25,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -91,17 +88,13 @@ fun SmallGroupAttendanceEditScreen(
 
         CustomDialogComponent(
             title = smallGroupAttendanceEditScreenViewModel.stringResource(
-                context,
                 R.string.confirmation_alert_dialog_title),
 
             message =smallGroupAttendanceEditScreenViewModel.stringResource(
-                context,
                 R.string.delete_attendance_confirmation_msg),
             positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
-                context,
                 R.string.yes),
             negativeButtonTitle =  smallGroupAttendanceEditScreenViewModel.stringResource(
-                context,
                 R.string.no),
             onPositiveButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent)
@@ -136,7 +129,6 @@ fun SmallGroupAttendanceEditScreen(
                 ) {
                     ButtonPositiveComponent(
                         buttonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
-                            context,
                             R.string.submit),
                         isActive = true
                     ) {
@@ -175,10 +167,8 @@ fun SmallGroupAttendanceEditScreen(
                     CustomDialogComponent(
                         title = BLANK_STRING,
                         message =  smallGroupAttendanceEditScreenViewModel.stringResource(
-                            context,
                             R.string.data_change_not_allow) ,
                         positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
-                            context,
                             R.string.ok),
                         onPositiveButtonClick = {
                             showAlertDialog.value = false
@@ -215,7 +205,6 @@ fun SmallGroupAttendanceEditScreen(
                             iconProperties = IconProperties(
                                 painterResource(id = R.drawable.calendar),
                                 contentDescription =smallGroupAttendanceEditScreenViewModel.stringResource(
-                                    context,
                                     R.string.data_selector),
                                 ),
                             textProperties = TextProperties(
@@ -248,7 +237,6 @@ fun SmallGroupAttendanceEditScreen(
                         ) {
                             Text(
                                 text = smallGroupAttendanceEditScreenViewModel.stringResource(
-                                    context,
                                     R.string.all),
                             style = defaultTextStyle,
                                 color = progressIndicatorColor
