@@ -181,7 +181,7 @@ fun CustomTextView(title: String) {
     ) {
         Text(
             text = title,
-            style = buttonTextStyle,
+            style = questionTextStyle,
             color = blueDark
         )
 
@@ -404,7 +404,7 @@ fun CardHeader(
                         }
                         Spacer(modifier = Modifier.width(dimen_3_dp))
                     }
-                    Text(text = title.value, style = questionTextStyle, color = blueDark)
+                    Text(text = title.value, style = buttonTextStyle, color = blueDark)
                 }
             }
             SubContainerView(subTitle1)
