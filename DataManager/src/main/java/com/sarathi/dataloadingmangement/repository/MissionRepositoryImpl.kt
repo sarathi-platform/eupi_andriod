@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
@@ -52,6 +54,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
@@ -508,17 +511,61 @@ class MissionRepositoryImpl @Inject constructor(
         surveyId: Int,
         activityTypeId: Long
     ) {
-        grantConfig.forEach {
+        grantConfig.forEach { grantConfig ->
             grantConfigDao.insertGrantActivityConfig(
                 GrantConfigEntity.getGrantConfigEntity(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
                     activityConfigId = activityTypeId,
                     surveyId = surveyId,
-                    grantConfigResponse = it
+                    grantConfigResponse = getDataForStateOnly(grantConfig)
                 )
             )
         }
     }
+
+    private fun getDataForStateOnly(grantConfigResponse: GrantConfigResponse): GrantConfigResponse {
+        var grantType =
+            object : TypeToken<List<OptionsItem?>?>() {}.type
+        val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
+            grantConfigResponse.grantMode,
+            grantType
+        )
+
+        var grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
+            grantConfigResponse.grantNature,
+            grantType
+        )
+
+
+        grantModeOptions.forEach {
+            checkMulipleLanguageAndSaveStateWise(it)
+        }
+        grantNatureOptions.forEach {
+            checkMulipleLanguageAndSaveStateWise(it)
+        }
+        grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
+        grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
+
+        return grantConfigResponse
+    }
+
+    private fun checkMulipleLanguageAndSaveStateWise(it: OptionsItem) {
+        it.surveyLanguageAttributes?.forEach { languageAttribute ->
+            val stateCode = sharedPrefs.getStateCode().lowercase()
+            val languageCodeParts = languageAttribute.languageCode.lowercase().split("_")
+            val updatedLanguageCode =
+                if (languageCodeParts.size > 1 && languageCodeParts[1].lowercase() == stateCode) {
+                    languageCodeParts.firstOrNull()?.lowercase() ?: com.nudge.core.BLANK_STRING
+                } else {
+                    languageAttribute.languageCode
+                }
+
+            languageAttribute.languageCode = updatedLanguageCode
+        }
+    }
+
+
+
 
     private fun updateTaskAttributes(
         missionId: Int,
