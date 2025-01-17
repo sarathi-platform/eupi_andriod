@@ -97,7 +97,7 @@ fun EditHistoryScreen(
         }
     ) {
         ToolBarWithMenuComponent(
-            title = viewModel.stringResource(context, R.string.edit_history),
+            title = viewModel.stringResource(R.string.edit_history),
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
@@ -112,7 +112,6 @@ fun EditHistoryScreen(
                         modifier = Modifier.padding(horizontal = dimen_15_dp),
                         value = "${viewModel.dateRangeFilter.value.first.getDate()} - ${viewModel.dateRangeFilter.value.second.getDate()}",
                         label = viewModel.stringResource(
-                            context,
                             R.string.date_range_picker_label_text
                         )
                     ) {

@@ -19,7 +19,6 @@ fun GrantTaskScreen(
     activityName: String,
     activityId: Int,
     programId: Int,
-    missionSubTitle: String,
     onSettingClick: () -> Unit
 ) {
     LaunchedEffect(Unit) {
@@ -29,7 +28,6 @@ fun GrantTaskScreen(
     }
     TaskScreen(
         missionId = missionId,
-        missionSubTitle = missionSubTitle,
         activityId = activityId,
         activityName = activityName,
         onSettingClick = onSettingClick,

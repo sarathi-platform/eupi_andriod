@@ -219,6 +219,7 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateSmallGroupAttendanceEntityState() {
+        _smallGroupAttendanceEntityState.value.clear()
         subjectList.value.forEach { subject ->
             _smallGroupAttendanceEntityState.value.add(
                 SmallGroupAttendanceEntityState(
@@ -232,10 +233,11 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     }
 
     private suspend fun fetchDidiListForSmallGroup(smallGroupId: Int) {
+        _subjectList.value.clear()
         _subjectList.value.addAll(
             smallGroupAttendanceUserCase.fetchDidiListForSmallGroupFromDbUseCase.invoke(
                 smallGroupId
-            )
+            ).distinctBy { it.subjectId }
         )
     }
 

@@ -37,7 +37,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -47,6 +46,7 @@ import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.ROTATION_DEGREE_TRANSITION
 import com.nudge.core.TRANSITION
 import com.nudge.core.customGridHeight
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CardArrow
@@ -91,7 +91,6 @@ fun ActivitySelectTaskScreen(
     navController: NavController = rememberNavController(),
     viewModel: ActivitySelectTaskViewModel = hiltViewModel(),
     missionId: Int,
-    missionSubTitle: String,
     activityName: String,
     activityId: Int,
     programId:Int,
@@ -103,7 +102,6 @@ fun ActivitySelectTaskScreen(
     }
 
     TaskScreen(
-        missionSubTitle = missionSubTitle,
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,
@@ -340,6 +338,7 @@ fun ExpandableTaskCard(
             )
 
             CardContent(
+                translationHelper = viewModel.translationHelper,
                 expanded = expanded,
                 questionUiModel = questionUiModel,
                 taskMarkedNotAvailable = taskMarkedNotAvailable,
@@ -428,6 +427,7 @@ fun CardHeader(
 
 @Composable
 fun CardContent(
+    translationHelper: TranslationHelper,
     expanded: Boolean,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -445,6 +445,7 @@ fun CardContent(
     ) {
         if (expanded) {
             OptionsUI(
+                translationHelper = translationHelper,
                 questionUiModel = questionUiModel,
                 taskMarkedNotAvailable = taskMarkedNotAvailable,
                 onAnswerSelection = onAnswerSelection,
@@ -456,17 +457,22 @@ fun CardContent(
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
         } else {
-            DisplaySelectedOption(questionUiModel, taskStatus.value)
+            DisplaySelectedOption(translationHelper, questionUiModel, taskStatus.value)
         }
     }
 }
 
 @Composable
-fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?) {
+fun DisplaySelectedOption(
+    translationHelper: TranslationHelper,
+    questionUiModel: QuestionUiModel?,
+    taskStatus: String?
+) {
+    val context = LocalContext.current
     var options = BLANK_STRING
 
     options = if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
-        stringResource(id = R.string.not_available)
+        translationHelper.stringResource(R.string.not_available)
     } else {
         questionUiModel?.options?.filter { it.isSelected == true }?.map { it.selectedValue }
             ?.joinToString(",").toString()
@@ -509,6 +515,7 @@ fun DisplaySelectedOption(questionUiModel: QuestionUiModel?, taskStatus: String?
 
 @Composable
 private fun OptionsUI(
+    translationHelper: TranslationHelper,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
     onAnswerSelection: (optionValue: String, optionId: Int) -> Unit,
@@ -583,6 +590,7 @@ private fun OptionsUI(
         )
         CustomVerticalSpacer()
         NotAvailableUI(
+            translationHelper = translationHelper,
             isNotAvailableButtonEnable = isNotAvailableButtonEnable,
             taskMarkedNotAvailable = taskMarkedNotAvailable,
             isActivityCompleted = isActivityCompleted,
@@ -598,6 +606,7 @@ private fun OptionsUI(
 
 @Composable
 private fun NotAvailableUI(
+    translationHelper: TranslationHelper,
     isNotAvailableButtonEnable: Boolean,
     taskMarkedNotAvailable: MutableState<Boolean>,
     isActivityCompleted: Boolean,
@@ -606,6 +615,7 @@ private fun NotAvailableUI(
     onNotAvailableClick: () -> Unit,
     context: Context
 ) {
+    val context = LocalContext.current
     if (isNotAvailableButtonEnable) {
         Box(
             modifier = Modifier
@@ -630,7 +640,9 @@ private fun NotAvailableUI(
                 } else {
                     showCustomToast(
                         context,
-                        context.getString(R.string.activity_completed_unable_to_edit)
+                        translationHelper.getString(
+                            R.string.activity_completed_unable_to_edit
+                        )
                     )
                 }
             }

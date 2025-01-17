@@ -14,6 +14,7 @@ import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.toCamelCase
@@ -73,6 +74,7 @@ class MissionScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAllData(false)
             }
 
@@ -196,20 +198,17 @@ class MissionScreenViewModel @Inject constructor(
                 tabs.indexOf(SubTabs.OngoingMissions)
             )
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
-
             createMissionFilters()
-
-            if (selectedMissionFilter.value == null) {
-                onEvent(
-                    CommonEvents.OnFilterUiModelSelected(
-                        FilterUiModel.getAllFilter(
-                            ALL_MISSION_FILTER_VALUE,
-                            filterLabel = "All Missions",
-                            null
-                        )
+            onEvent(
+                CommonEvents.OnFilterUiModelSelected(
+                    selectedMissionFilter.value ?: FilterUiModel.getAllFilter(
+                        ALL_MISSION_FILTER_VALUE,
+                        filterLabel = "All Missions",
+                        null
                     )
                 )
-            }
+            )
+
 
             updateCountMap()
 
@@ -363,5 +362,9 @@ class MissionScreenViewModel @Inject constructor(
         filterLabel = "$filterLabel $filterValueCount"
 
         return filterLabel
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.MissionScreen
     }
 }
