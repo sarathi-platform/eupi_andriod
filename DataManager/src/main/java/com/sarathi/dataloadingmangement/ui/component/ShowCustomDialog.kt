@@ -23,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -30,7 +31,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.black100Percent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_300_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
@@ -87,7 +88,7 @@ fun ShowCustomDialog(
                         }
                         Box(
                             modifier = Modifier
-                                .heightIn(max = dimen_300_dp, min = dimen_100_dp)
+                                .heightIn(max = dimen_300_dp, min = dimen_20_dp)
                                 .padding(horizontal = dimen_5_dp)
                                 .verticalScroll(scrollState)
                         ) {
@@ -143,6 +144,19 @@ fun ShowCustomDialog(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ShowCustomDialogPreview() {
+    ShowCustomDialog(
+        title = "Exit",
+        message = "Are you sure you want to exit?",
+        dismissOnClickOutside = true,
+        onNegativeButtonClick = {},
+        onPositiveButtonClick = {},
+        positiveButtonTitle = "yes",
+        negativeButtonTitle = "no"
+    )
+}
 
 @Composable
 fun MainTitle(title: String, modifier: Modifier, align: TextAlign = TextAlign.Start) {
