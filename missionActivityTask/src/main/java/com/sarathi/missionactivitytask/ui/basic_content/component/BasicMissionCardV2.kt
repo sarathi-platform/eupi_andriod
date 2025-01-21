@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -26,27 +27,28 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.calculateProgress
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_27_dp
 import com.nudge.core.ui.theme.dimen_35_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_50_dp
-import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.iconBgColor
-import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleMediumWeight
@@ -100,7 +102,7 @@ fun BasicMissionCardV2(
         ) {
             Box(
                 modifier = Modifier
-                    .size(dimen_56_dp)
+                    .size(dimen_45_dp)
                     .background(
                         color = iconBgColor,
                         shape = RoundedCornerShape(roundedCornerRadiusDefault)
@@ -112,7 +114,7 @@ fun BasicMissionCardV2(
                     painter = painterResource(id = prefixIcon),
                     tint = blueDark,
                     contentDescription = null,  // Ideally, provide meaningful descriptions
-                    modifier = Modifier.size(dimen_27_dp)
+                    modifier = Modifier.size(dimen_35_dp)
                 )
             }
 
@@ -120,17 +122,17 @@ fun BasicMissionCardV2(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f)
-                    .padding(horizontal = dimen_10_dp)
             ) {
                 Text(
                     text = title,
-                    style = mediumTextStyle
+                    style = largeTextStyle
                         .copy(color = blueDark),
                     modifier = Modifier
                         .padding(start = dimen_5_dp),
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2
                 )
+                CustomVerticalSpacer(size = dimen_5_dp)
                 Row(
                     modifier = Modifier
                         .fillMaxWidth(),
@@ -183,16 +185,19 @@ fun BasicMissionCardV2(
                         }
 
                         Text(
-                            filterUiModel.filterValue,
+                            text = filterUiModel.filterValue,
+                            modifier = Modifier
+                                .widthIn(min = dimen_40_dp, max = dimen_50_dp),
                             style = smallerTextStyleMediumWeight.copy(color = textColorBrown),
-                            maxLines = 1,
+                            maxLines = 2,
+                            textAlign = TextAlign.Center,
                             overflow = TextOverflow.Ellipsis
                         )
                     }
                 } else {
                     Spacer(
                         modifier = Modifier
-                            .size(dimen_50_dp)
+                            .size(dimen_40_dp)
                     )
                 }
                 PrimaryButtonChip(
