@@ -72,7 +72,6 @@ fun LivelihoodPopSurveyScreen(
                 sanctionedAmount = sanctionedAmount,
                 totalSubmittedAmount = totalSubmittedAmount,
                 onAnswerSelect = { questionUiModel ->
-                    viewModel.isButtonEnable.value = viewModel.checkButtonValidation()
 
                     viewModel.updateQuestionResponseMap(questionUiModel)
                     viewModel.runConditionCheck(questionUiModel)

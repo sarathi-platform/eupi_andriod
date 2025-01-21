@@ -1,13 +1,11 @@
 package com.sarathi.surveymanager.ui.screen
 
-import android.text.TextUtils
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.DISBURSED_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.OUTFLOW
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
@@ -99,49 +97,35 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
         }
     }
 
-    override fun checkButtonValidation(): Boolean {
-        questionUiModel.value.filter { it.isMandatory }.forEach { questionUiModel ->
-            if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
-                val disbursedAmount =
-                    if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (sanctionAmount != 0 && (disbursedAmount
-                        ?: 0) + totalRemainingAmount > sanctionAmount
-                ) {
-                    return false
-                }
-            }
-            val result = (questionUiModel.options?.filter { it.isSelected == true }?.size ?: 0) > 0
-            if (!result) {
-                return false
-            }
-        }
-        return true
-    }
 
     fun checkAndWriteMoneyJournalEvent() {
         ioViewModelScope {
-            activityConfig?.moneyJournalConfig?.let { config ->
-                if (!config.tags.isNullOrEmpty()) {
-                    questionUiModel.value.filter { config.tags?.any { tag -> it.tagId.contains(tag) } == true }
-                        .let { filterQuestionList ->
+            val config = activityConfig?.moneyJournalConfig ?: return@ioViewModelScope
+            val tags = config.tags ?: return@ioViewModelScope
+            if (tags.isEmpty()) return@ioViewModelScope
 
-                            val moneyJournalEntity =
-                                saveTransactionMoneyJournalForPopUseCase.saveMoneyJournalForSurvey(
-                                    subjectId = taskEntity?.subjectId.value(),
-                                    subjectType = subjectType,
-                                    transactionId = UUID.randomUUID().toString(),
-                                    referenceId = activityConfig?.referenceId.value(),
-                                    referenceType = activityConfig?.referenceType.value(),
-                                    questionUiModels = filterQuestionList,
-                                    transactionFlow = OUTFLOW
-                                )
-                            moneyJournalForPopEventWriterUseCase.writeMoneyJournalEventForPop(
-                                moneyJournalEntity,
-                                activityConfig?.referenceType.value()
-                            )
-                        }
+            val filteredQuestions = questionUiModel.value
+                .filter {
+                    it.tagId.any { tag -> tags.contains(tag) }
                 }
-            }
+
+            if (!conditionsUtils.areAllQuestionsVisible(filteredQuestions)) return@ioViewModelScope
+
+            val moneyJournalEntity =
+                saveTransactionMoneyJournalForPopUseCase.saveMoneyJournalForSurvey(
+                    subjectId = taskEntity?.subjectId.value(),
+                    subjectType = subjectType,
+                    transactionId = UUID.randomUUID().toString(),
+                    referenceId = activityConfig?.referenceId.value(),
+                    referenceType = activityConfig?.referenceType.value(),
+                    questionUiModels = filteredQuestions,
+                    transactionFlow = OUTFLOW
+                )
+
+            moneyJournalForPopEventWriterUseCase.writeMoneyJournalEventForPop(
+                moneyJournalEntity,
+                activityConfig?.referenceType.value()
+            )
         }
     }
 
