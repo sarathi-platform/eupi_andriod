@@ -184,9 +184,9 @@ interface SurveyAnswersDao {
         referenceType: String = LanguageAttributeReferenceType.QUESTION.name
     ): List<SurveyAnswerUiModel>
 
-    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and questionType=:questionType")
+    @Query("select * from ques_answer_table where userId =:uniqueUserIdentifier and questionType in(:questionType)")
     fun getSurveyAnswerImageKeys(
-        questionType: String,
+        questionType: List<String>,
         uniqueUserIdentifier: String
     ): List<SurveyAnswerEntity>?
 

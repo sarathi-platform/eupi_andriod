@@ -1,17 +1,17 @@
 package com.sarathi.missionactivitytask.viewmodels
 
+import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.nudge.core.model.CoreAppDetails
-import androidx.lifecycle.viewModelScope
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.usecase.AnalyticsEventUseCase
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.nudge.core.utils.CoreLogger
-import com.nudge.core.utils.SyncType
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.missionactivitytask.utils.LoaderState
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -21,7 +21,6 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import retrofit2.http.Field
 import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.EmptyCoroutineContext
@@ -38,6 +37,8 @@ abstract class BaseViewModel : ViewModel() {
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
 
+    @Inject
+    lateinit var translationHelper: TranslationHelper
 
     abstract fun <T> onEvent(event: T)
 
@@ -93,6 +94,30 @@ abstract class BaseViewModel : ViewModel() {
         viewModelScope.launch(context = context, start = start) {
             block()
         }
+    }
+    fun setTranslationConfig() {
+        ioViewModelScope {
+            translationHelper.initTranslationHelper(getScreenName())
+        }
+    }
+
+    open fun getScreenName(): TranslationEnum {
+        return TranslationEnum.NoScreen
+    }
+
+    fun getString(context: Context, resId: Int): String {
+        return translationHelper?.getString(resId) ?: context.getString(resId)
+    }
+
+    fun stringResource(context: Context, resId: Int): String {
+        return translationHelper?.stringResource(resId) ?: context.getString(resId)
+    }
+
+    fun stringResource(context: Context, resId: Int, vararg formatArgs: Any): String {
+        return translationHelper?.getString(
+            resId = resId,
+            formatArgs = formatArgs
+        ) ?: context.getString(resId, formatArgs)
     }
 
 }

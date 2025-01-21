@@ -45,8 +45,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,6 +57,7 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
@@ -117,6 +118,7 @@ fun DisbursementFormSummaryScreen(
             innerState.firstVisibleItemIndex
         }
     }
+    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(
@@ -131,7 +133,7 @@ fun DisbursementFormSummaryScreen(
 
 
     ToolBarWithMenuComponent(
-        title = stringResource(R.string.disbursement_summary),
+        title = viewModel.stringResource(context, R.string.disbursement_summary),
         modifier = Modifier,
         onBackIconClick = { navController.popBackStack() },
         onSearchValueChange = {},
@@ -174,7 +176,7 @@ fun DisbursementFormSummaryScreen(
                                     colorFilter = ColorFilter.tint(blueDark)
                                 )
                                 Text(
-                                    stringResource(R.string.share),
+                                    viewModel.stringResource(context, R.string.share),
                                     style = defaultTextStyle
                                 )
                             }
@@ -208,7 +210,7 @@ fun DisbursementFormSummaryScreen(
                                     colorFilter = ColorFilter.tint(blueDark)
                                 )
                                 Text(
-                                    stringResource(R.string.download),
+                                    viewModel.stringResource(context, R.string.download),
                                     style = defaultTextStyle
                                 )
 
@@ -330,9 +332,11 @@ fun DisbursementFormSummaryScreen(
 
 @Composable
 private fun MakeDisburesementRow(
+    translationHelper: TranslationHelper,
     disbursementFormSummaryUiModel: DisbursementFormSummaryUiModel,
     imageUri: Uri?
 ) {
+    val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
     Column(
         modifier = Modifier
@@ -363,7 +367,7 @@ private fun MakeDisburesementRow(
                     style = defaultTextStyle.copy(blueDark),
                 )
                 TextRow(
-                    text1 = stringResource(R.string.amount),
+                    text1 = translationHelper.stringResource(R.string.amount),
                     text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
                 )
             }
@@ -377,7 +381,7 @@ private fun MakeDisburesementRow(
             FormSummaryDialog(
                 imageUri = imageUri,
                 disbursementFormSummaryUiModel = disbursementFormSummaryUiModel,
-                positiveButtonTitle = stringResource(id = R.string.close),
+                positiveButtonTitle = translationHelper.stringResource(R.string.close),
                 onPositiveButtonClick = {
                     // TODO: Handle positive button click
                     showDialog.value = false
@@ -460,7 +464,7 @@ fun FormMainSummaryCard(
     formDisburesmentMap: Map.Entry<Pair<String, String>, List<DisbursementFormSummaryUiModel>>,
 ) {
 
-
+    val context = LocalContext.current
     BasicCardView(
         colors = CardDefaults.cardColors(
             containerColor = white
@@ -495,11 +499,14 @@ fun FormMainSummaryCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
 
-                Text(
-                    stringResource(R.string.csg_disbursed), style = newMediumTextStyle.copy(
-                        blueDark
+                viewmodel?.let {
+                    Text(
+                        it.stringResource(context, R.string.csg_disbursed),
+                        style = newMediumTextStyle.copy(
+                            blueDark
+                        )
                     )
-                )
+                }
                 Text(
                     text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
                         .toString()),
@@ -514,10 +521,12 @@ fun FormMainSummaryCard(
                     .padding(top = dimen_8_dp), horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    stringResource(R.string.didis),
-                    style = newMediumTextStyle.copy(color = blueDark)
-                )
+                viewmodel?.let {
+                    Text(
+                        it.stringResource(context, R.string.didis),
+                        style = newMediumTextStyle.copy(color = blueDark)
+                    )
+                }
                 Text(
                     "${formDisburesmentMap.value.distinctBy { it.subjectId }.size}",
                     style = defaultTextStyle.copy(color = blueDark)
@@ -547,6 +556,7 @@ fun FormMainSummaryCard(
 
 }
 
+@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun HistorySummaryCard(
     modifier: Modifier,
@@ -585,11 +595,14 @@ fun HistorySummaryCard(
                     itemsIndexed(
                         disburesmentList
                     ) { index, disburesement ->
-                        FormSummaryCardItem(
-                            modifier = modifier,
-                            disburesementtoryState = disburesement,
-                            viewmodel?.getFilePathUri(disburesement.didiImage)
-                        )
+                        viewmodel?.translationHelper?.let {
+                            FormSummaryCardItem(
+                                it,
+                                modifier = modifier,
+                                disburesementtoryState = disburesement,
+                                viewmodel?.getFilePathUri(disburesement.didiImage)
+                            )
+                        }
                     }
                 }
             }
@@ -600,10 +613,15 @@ fun HistorySummaryCard(
 
 @Composable
 fun FormSummaryCardItem(
+    translationHelper: TranslationHelper,
     modifier: Modifier,
     disburesementtoryState: DisbursementFormSummaryUiModel,
     imageUri: Uri?
 ) {
-    MakeDisburesementRow(disbursementFormSummaryUiModel = disburesementtoryState, imageUri)
+    MakeDisburesementRow(
+        translationHelper = translationHelper,
+        disbursementFormSummaryUiModel = disburesementtoryState,
+        imageUri
+    )
 
 }

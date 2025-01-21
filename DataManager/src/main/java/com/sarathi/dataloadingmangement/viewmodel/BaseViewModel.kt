@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
@@ -8,10 +7,10 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.helper.TranslationEnum
-import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.response.LanguageModel
 import com.nudge.core.usecase.AnalyticsEventUseCase
@@ -111,19 +110,18 @@ abstract class BaseViewModel : ViewModel() {
         return TranslationEnum.NoScreen
     }
 
-    fun getString(context: Context, resId: Int): String {
-        return translationHelper?.getString(context, resId) ?: context.getString(resId)
+    fun getString(resId: Int): String {
+        return translationHelper.getString(resId)
     }
 
-    fun stringResource(context: Context, resId: Int): String {
-        return translationHelper?.stringResource(context, resId) ?: context.getString(resId)
+    fun stringResource(resId: Int): String {
+        return translationHelper.stringResource(resId)
     }
 
-    fun stringResource(context: Context, resId: Int, vararg formatArgs: Any): String {
-        return translationHelper?.getString(
-            context = context,
+    fun stringResource(resId: Int, vararg formatArgs: Any): String {
+        return translationHelper.getString(
             resId = resId,
             formatArgs = formatArgs
-        ) ?: context.getString(resId, formatArgs)
+        )
     }
 }
