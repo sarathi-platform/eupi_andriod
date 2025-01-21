@@ -223,6 +223,7 @@ class MissionScreenViewModel @Inject constructor(
     }
     private suspend fun createMissionFilters() {
         val filterList = ArrayList<FilterUiModel>()
+        missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
 
         filterList.add(

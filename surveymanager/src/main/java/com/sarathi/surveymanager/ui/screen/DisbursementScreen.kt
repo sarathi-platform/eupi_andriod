@@ -191,7 +191,7 @@ fun DisbursementSummaryScreen(
                                                         viewModel.grantConfigUi.value.grantType
                                                             ?: BLANK_STRING,
                                                         sanctionedAmount,
-                                                        viewModel.getTotalSubmittedAmount()
+                                                        viewModel.getTotalSubmittedAmount(task.key)
                                                     )
                                                 },
                                                 onDeleteSurvey = {
