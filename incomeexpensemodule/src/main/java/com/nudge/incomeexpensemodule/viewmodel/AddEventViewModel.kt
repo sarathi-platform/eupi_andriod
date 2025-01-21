@@ -437,7 +437,7 @@ class AddEventViewModel @Inject constructor(
             val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
             val selectedValidations =
-                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.originalName }
+                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.eventType }
 
             if (selectedValidations != null && selectedValidations.isNotEmpty()) {
                 var validation =
