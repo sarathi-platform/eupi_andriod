@@ -58,6 +58,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.helper.TranslationHelper
+import com.nudge.core.toSafeInt
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
@@ -508,7 +509,11 @@ fun FormMainSummaryCard(
                     )
                 }
                 Text(
-                    text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
+                    text = formatToIndianRupee(formDisburesmentMap.value.sumOf {
+                        it.amount.toSafeInt(
+                            "0"
+                        )
+                    }
                         .toString()),
                     style = defaultTextStyle.copy(color = blueDark)
                 )
