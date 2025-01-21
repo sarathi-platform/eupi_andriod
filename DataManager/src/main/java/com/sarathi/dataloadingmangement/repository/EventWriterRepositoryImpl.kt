@@ -27,8 +27,8 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.model.events.DeleteAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.LivelihoodPlanActivityEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveAnswerEventDto
@@ -57,7 +57,7 @@ class EventWriterRepositoryImpl @Inject constructor(
     private val eventStatusDao: EventStatusDao,
     private val imageStatusDao: ImageStatusDao,
     private val missionConfigEntityDao: MissionConfigEntityDao,
-    private val livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+    private val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
 ) :
     IEventWriterRepository {
     override suspend fun <T> createAndSaveEvent(
@@ -212,7 +212,7 @@ class EventWriterRepositoryImpl @Inject constructor(
         val missionLivelihoodType = missionConfigEntityDao.getMissionConfigLivelihood(
             missionId = missionId, uniqueUserIdentifier = userId
         )
-        val missionLivelihood = livelihoodConfigEntityDao.getLivelihoodConfigForMission(
+        val missionLivelihood = missionLivelihoodConfigEntityDao.getLivelihoodConfigForMission(
             missionId = missionId, uniqueUserIdentifier = userId, language = languageCode
         )
         if (missionLivelihoodType.isNullOrEmpty() || missionLivelihood?.livelihoodType.isNullOrEmpty()) {

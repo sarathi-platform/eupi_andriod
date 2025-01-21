@@ -89,14 +89,14 @@ fun EditHistoryRow(
                         Spacer(modifier = Modifier.weight(1.0f))
                         Text(
                             modifier = Modifier.padding(horizontal = dimen_5_dp),
-                            text = translationHelper.stringResource(context, R.string.delete),
+                            text = translationHelper.stringResource(R.string.delete),
                             style = smallTextStyle.copy(redIconColor)
                         )
                     }
                 }
                 Column(modifier = Modifier.padding(dimen_10_dp)) {
                     TextDataRowView(
-                        data1 = translationHelper.stringResource(context, R.string.event),
+                        data1 = translationHelper.stringResource(R.string.event),
                         data2textColor = dataChangeTextColor(
                             data1 = getEventValue(savedEvent = currentSavedEvent),
                             data2 = getEventValue(savedEvent = nextSavedEvent),
@@ -107,7 +107,7 @@ fun EditHistoryRow(
                     Divider()
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = translationHelper.stringResource(context, R.string.asset_type),
+                        data1 = translationHelper.stringResource(R.string.asset_type),
                         data2 = if (!TextUtils.isEmpty(currentSavedEvent?.assetTypeValue)) " ${currentSavedEvent?.assetTypeValue}" else "NA",
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
@@ -124,7 +124,6 @@ fun EditHistoryRow(
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
                         data1 = translationHelper.stringResource(
-                            context,
                             R.string.increse_in_number
                         ),
                         data2textColor = dataChangeTextColor(
@@ -135,7 +134,7 @@ fun EditHistoryRow(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = translationHelper.stringResource(context, R.string.event_date),
+                        data1 = translationHelper.stringResource(R.string.event_date),
                         data2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
                         data2textColor = dataChangeTextColor(
                             data1 = getEventDate(currentHistoryData),

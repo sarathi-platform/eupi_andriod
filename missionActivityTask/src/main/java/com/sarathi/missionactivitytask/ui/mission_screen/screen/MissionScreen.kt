@@ -27,7 +27,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -83,7 +82,7 @@ fun MissionScreen(
             } else {
                 Toast.makeText(
                     context,
-                    context.getString(R.string.refresh_failed_please_try_again),
+                    viewModel.getString(context, R.string.refresh_failed_please_try_again),
                     Toast.LENGTH_LONG
                 ).show()
             }
@@ -111,10 +110,10 @@ fun MissionScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message = stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
+            title = viewModel.stringResource(context, R.string.are_you_sure),
+            message = viewModel.stringResource(context, R.string.do_you_want_to_exit_the_app),
+            positiveButtonTitle = viewModel.stringResource(context, R.string.exit),
+            negativeButtonTitle = viewModel.stringResource(context, R.string.cancel),
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
             },
@@ -125,8 +124,8 @@ fun MissionScreen(
     }
     if (dataNotLoadedDialog.value) {
         ShowCustomDialog(
-            message = stringResource(id = R.string.data_not_Loaded),
-            positiveButtonTitle = stringResource(id = R.string.ok),
+            message = viewModel.stringResource(context, R.string.data_not_Loaded),
+            positiveButtonTitle = viewModel.stringResource(context, R.string.ok),
             onNegativeButtonClick = {
                 dataNotLoadedDialog.value = false
             },
@@ -181,7 +180,7 @@ fun MissionScreen(
                     }
 
                     SearchWithFilterViewComponent(
-                        placeholderString = stringResource(id = R.string.search),
+                        placeholderString = viewModel.stringResource(context, R.string.search),
                         filterSelected = false,
                         modifier = Modifier.padding(horizontal = dimen_10_dp),
                         showFilter = false,
@@ -247,7 +246,7 @@ fun MissionScreen(
                             needToShowProgressBar = true,
                             livelihoodType = mission.livelihoodType,
                             livelihoodOrder = mission.livelihoodOrder,
-                            primaryButtonText = context.getString(R.string.start),
+                            primaryButtonText = viewModel.getString(context, R.string.start),
                             onPrimaryClick = {
                                 viewModel.isMissionLoaded(
                                     missionId = mission.missionId,
