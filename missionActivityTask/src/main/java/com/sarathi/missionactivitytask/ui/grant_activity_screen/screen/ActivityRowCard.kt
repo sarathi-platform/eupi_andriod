@@ -16,6 +16,7 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.sarathi.contentmodule.ui.content_screen.screen.BaseContentScreen
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.navigation.navigateToActivitySelectTaskScreen
 import com.sarathi.missionactivitytask.navigation.navigateToContentDetailScreen
 import com.sarathi.missionactivitytask.navigation.navigateToGrantTaskScreen
@@ -66,6 +67,7 @@ fun ActivityRowCard(
                     pendingCount = activity.pendingTaskCount,
                     totalCount = activity.taskCount,
                     index = index,
+                    isCompleted = activity.status == SurveyStatusEnum.COMPLETED.name,
                     isDividerVisible = index != activities.lastIndex,
                     imageUri = getFilePathUri(activity.icon ?: BLANK_STRING)
                 ) {

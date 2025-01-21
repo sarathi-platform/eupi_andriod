@@ -90,10 +90,12 @@ import com.nrlm.baselinesurvey.utils.findOptionFromId
 import com.nrlm.baselinesurvey.utils.mapToOptionItem
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.navigateToBaseLineStartScreen
 import com.nudge.navigationmanager.graphs.navigateToFormQuestionSummaryScreen
 import com.nudge.navigationmanager.graphs.navigateToFormTypeQuestionScreen
 import com.nudge.navigationmanager.graphs.navigateToSearchScreen
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -772,9 +774,14 @@ fun NestedLazyList(
                                 val contentData =
                                     sectionDetails.questionContentMapping[question.questionId]
                                 val itemCount =
-                                    questionScreenViewModel.getFormResponseItemCountForQuestion(
-                                        question.questionId
-                                    )
+                                    remember(questionScreenViewModel.formResponseEntityToQuestionMap.value) {
+                                        mutableStateOf(
+                                            questionScreenViewModel.getFormResponseItemCountForQuestion(
+                                                question.questionId
+                                            )
+                                        )
+                                    }
+
 
                                 val noneOptionItemEntity =
                                     question.optionItemEntityState.find { it.optionItemEntity?.optionType == QuestionType.FormWithNone.name }
@@ -788,13 +795,18 @@ fun NestedLazyList(
                                     )
 
                                 val summaryValue =
-                                    numberInEnglishFormat(
-                                        questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
-                                            context,
-                                            question.questionId ?: 0
-                                        ).toInt(), null
-                                    )
-                                if (itemCount == 0 && noneOptionResponse?.selectedValue.equals(
+                                    remember(viewModel.formResponseEntityToQuestionMap.value) {
+                                        mutableStateOf(
+                                            numberInEnglishFormat(
+                                                questionScreenViewModel.getTotalIncomeForLivelihoodQuestion(
+                                                    context,
+                                                    question.questionId ?: 0
+                                                ).toInt(), null
+                                            )
+                                        )
+                                    }
+
+                                if (itemCount.value == 0 && noneOptionResponse?.selectedValue.equals(
                                         stringResource(id = R.string.option_yes)
                                     )
                                 ) {
@@ -809,9 +821,9 @@ fun NestedLazyList(
                                     noneOptionValue = noneOptionResponse,
                                     questionIndex = index,
                                     contests = contentData,
-                                    itemCount = itemCount,
+                                    itemCount = itemCount.value,
                                     maxCustomHeight = maxHeight,
-                                    summaryValue = summaryValue.toString(),
+                                    summaryValue = summaryValue.value.toString(),
                                     isEditAllowed = questionScreenViewModel.isEditAllowed,
                                     onAnswerSelection = { questionId, isNoneMarkedForForm, isFormOpened ->
                                         if (isNoneMarkedForForm && !isFormOpened) {
@@ -821,25 +833,36 @@ fun NestedLazyList(
                                                     .optionItemEntity?.optionType == QuestionType.FormWithNone.name
                                             }?.optionItemEntity!!
 
-                                            questionScreenViewModel.onEvent(
-                                                QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
-                                                    surveyId = sectionDetails.surveyId,
-                                                    sectionId = sectionDetails.sectionId,
-                                                    questionId = question.questionId ?: 0,
-                                                    subjectId = surveyeeId,
-                                                    formQuestionResponseList = listOf(
-                                                        mOptionItem.copy(selectedValue = mOptionItem.values?.last()?.value,
-                                                            selectedValueId = mOptionItem.values?.last()?.id
-                                                                ?: 0
-                                                        ) //when marked NO
-                                                            .convertOptionItemEntityToFormResponseEntityForFormWithNone(
-                                                                userId = questionScreenViewModel.getUserId(),
-                                                                didiId = surveyeeId,
-                                                                referenceId = questionScreenViewModel.getReferenceIdForFormWithNoneQuestion()
-                                                            )
+                                            itemCount.value = 0
+                                            summaryValue.value = BLANK_STRING
+
+                                            CoroutineScope(Dispatchers.IO).launch {
+                                                viewModel.updateResponsesForNonMarkedFormResponses(
+                                                    question.questionId.value(0),
+                                                    mOptionItem
+                                                )
+
+                                                questionScreenViewModel.onEvent(
+                                                    QuestionTypeEvent.SaveCacheFormQuestionResponseToDbEvent(
+                                                        surveyId = sectionDetails.surveyId,
+                                                        sectionId = sectionDetails.sectionId,
+                                                        questionId = question.questionId ?: 0,
+                                                        subjectId = surveyeeId,
+                                                        formQuestionResponseList = listOf(
+                                                            mOptionItem.copy(
+                                                                selectedValue = mOptionItem.values?.last()?.value,
+                                                                selectedValueId = mOptionItem.values?.last()?.id
+                                                                    ?: 0
+                                                            ) //when marked NO
+                                                                .convertOptionItemEntityToFormResponseEntityForFormWithNone(
+                                                                    userId = questionScreenViewModel.getUserId(),
+                                                                    didiId = surveyeeId,
+                                                                    referenceId = questionScreenViewModel.getReferenceIdForFormWithNoneQuestion()
+                                                                )
+                                                        )
                                                     )
                                                 )
-                                            )
+                                            }
 
                                             answeredQuestionCountIncreased(
                                                 question,
@@ -877,7 +900,7 @@ fun NestedLazyList(
 
                                             answeredQuestionCountIncreased(
                                                 question,
-                                                itemCount == 0
+                                                itemCount.value == 0
                                                 )
 
                                         }

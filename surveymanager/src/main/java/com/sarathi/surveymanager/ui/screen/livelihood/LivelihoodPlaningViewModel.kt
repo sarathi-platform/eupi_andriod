@@ -15,6 +15,7 @@ import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -43,6 +44,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val livelihoodEventWriterUseCase: LivelihoodEventWriterUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
     val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
@@ -62,6 +64,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var checkDialogueValidation = mutableStateOf(false)
     var primaryLivelihoodId = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
+    var isActivityCompleted = mutableStateOf(false)
 
 
     override fun <T> onEvent(event: T) {
@@ -128,7 +131,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         _livelihoodList.value = mLivelihoodUiEntityList
                     }
                     checkButtonValidation()
-
+                    isActivityCompleted()
                 }
 
             } catch (ex: Exception) {
@@ -225,8 +228,15 @@ class LivelihoodPlaningViewModel @Inject constructor(
         }
         callBack()
     }
+    suspend fun isActivityCompleted() {
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
+            missionId = missionId ?: DEFAULT_ID,
+            activityId = activityId ?: DEFAULT_ID
+        )
+    }
 
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.LivelihoodDropDownScreen
     }
+
 }

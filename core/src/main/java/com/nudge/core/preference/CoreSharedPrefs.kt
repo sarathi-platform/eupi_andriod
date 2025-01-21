@@ -41,6 +41,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_STATE_ID = "type_state_id"
+        const val PREF_STATE_CODE = "type_state_code"
         const val PREF_STATE_NAME = "state_name"
         const val PREF_DISTRICT_NAME = "district_name"
         const val PREF_BLOCK_NAME = "block_name"
@@ -216,6 +217,13 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     fun getStateId(): Int {
         return getPref(PREF_STATE_ID, -1)
+    }
+    fun setStateCode(stateCode: String) {
+        savePref(PREF_STATE_CODE, stateCode)
+    }
+
+    fun getStateCode(): String {
+        return getPref(PREF_STATE_CODE, BLANK_STRING)
     }
 
     fun setUserRole(role: String) {
