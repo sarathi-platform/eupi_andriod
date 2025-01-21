@@ -20,6 +20,8 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributesEntity
@@ -34,6 +36,8 @@ import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
@@ -42,12 +46,15 @@ import com.sarathi.dataloadingmangement.model.mat.response.AttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ContentResponse
 import com.sarathi.dataloadingmangement.model.mat.response.FormConfigResponse
 import com.sarathi.dataloadingmangement.model.mat.response.GrantConfigResponse
+import com.sarathi.dataloadingmangement.model.mat.response.MissionConfig
 import com.sarathi.dataloadingmangement.model.mat.response.MissionResponse
 import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -68,7 +75,9 @@ class MissionRepositoryImpl @Inject constructor(
     val attributeValueReferenceDao: AttributeValueReferenceDao,
     val missionDao: MissionDao,
     val grantConfigDao: GrantConfigDao,
-    val surveyConfigEntityDao: SurveyConfigEntityDao
+    val surveyConfigEntityDao: SurveyConfigEntityDao,
+    val missionConfigEntityDao: MissionConfigEntityDao,
+    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -109,6 +118,15 @@ class MissionRepositoryImpl @Inject constructor(
                     missionOrder = mission.order ?: 1
                 )
             }
+            mission.missionConfig?.let {
+                deleteMissionConfig(missionId = mission.id)
+                saveMissionConfig(
+                    missionId = mission.id,
+                    missionName = mission.name,
+                    missionConfig = mission.missionConfig
+                )
+            }
+
             deleteContentConfig(mission.id, ContentCategoryEnum.MISSION.ordinal)
             saveContentConfig(
                 mission.id,
@@ -565,6 +583,23 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
+        return missionLanguageAttributeDao.fetchMissionInfo(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
+    override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
+        return activityLanguageDao.fetchActivityInfo(
+            missionId = missionId,
+            activityId = activityId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+    }
+
     private fun saveSurveyConfig(
         activityId: Int,
         missionId: Int,
@@ -585,11 +620,54 @@ class MissionRepositoryImpl @Inject constructor(
         }
 
     }
+    private fun saveMissionConfig(
+        missionId: Int,
+        missionName: String,
+        missionConfig: MissionConfig,
+    ) {
+        val userId = sharedPrefs.getUniqueUserIdentifier()
+        missionConfigEntityDao.insertMissionConfig(
+            MissionConfigEntity.getMissionConfigEntity(
+                missionId = missionId,
+                missionName = missionName,
+                missionType = missionConfig.missionType ?: BLANK_STRING,
+                userId = userId,
+            )
+        )
+        missionConfig.livelihoodConfig?.let { livelihoodList ->
+            deleteLivelihoodConfig(missionId = missionId)
+            missionLivelihoodConfigEntityDao.insertLivelihoodConfigs(
+                MissionLivelihoodConfigEntity.getLivelihoodConfigEntityList(
+                    missionId = missionId,
+                    missionType = missionConfig.missionType ?: BLANK_STRING,
+                    livelihoodType = livelihoodList?.livelihoodType ?: BLANK_STRING,
+                    livelihoodOrder = livelihoodList?.livelihoodOrder ?: 0,
+                    languages = livelihoodList.languages,
+                    userId = userId
+                )
+            )
+        }
+    }
+
 
     private fun deleteSurveyConfig(activityId: Int, missionId: Int) {
         surveyConfigEntityDao.deleteSurveyConfig(
             missionId = missionId,
             activityId = activityId,
+            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    private fun deleteMissionConfig(missionId: Int) {
+        missionConfigEntityDao.deleteMissionConfig(
+            missionId = missionId,
+            uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
+    private fun deleteLivelihoodConfig(missionId: Int) {
+        missionLivelihoodConfigEntityDao.deleteLivelihoodConfig(
+            missionId = missionId,
             uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
         )
     }

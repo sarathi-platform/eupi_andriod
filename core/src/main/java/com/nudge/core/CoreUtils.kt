@@ -1152,8 +1152,6 @@ fun formatToIndianRupee(amount: String): String {
             formattedAmount
         }
     } catch (ex: Exception) {
-        CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1419,4 +1417,49 @@ fun Int.intToFloat(): Float {
     } catch (e: Exception) {
         0F
     }
+}
+
+
+@SuppressLint("StringFormatMatches")
+fun getTimeAgoDetailed(timeInMillis: Long, context: Context): String {
+    val currentTime = System.currentTimeMillis()
+    val diff = currentTime - timeInMillis
+
+    if (diff < 0) {
+        return BLANK_STRING
+    }
+
+    val days = TimeUnit.MILLISECONDS.toDays(diff)
+    val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
+
+    if (days > 2) {
+        return SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+            timeInMillis
+        )
+    }
+
+    return when {
+        days > 0 -> "${context.getString(R.string.sync_days, days)}, " +
+                "${context.getString(R.string.sync_hours, hours)}, " +
+                "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
+
+        hours > 0 -> "${context.getString(R.string.sync_hours, hours)}, " +
+                "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
+
+        minutes > 0 -> "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
+
+        else -> context.getString(R.string.just_now)
+    }
+}
+
+fun String.toCamelCase(): String {
+    return this.split(" ")
+        .mapIndexed { _, word ->
+            word.lowercase().replaceFirstChar { it.uppercase() }
+        }
+        .joinToString(" ")
 }

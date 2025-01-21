@@ -24,6 +24,6 @@ sealed class SubTabs(val id: Int) {
     object CustomDateRange : SubTabs(8)
     object Step1 : SubTabs(9)
     object Step2 : SubTabs(10)
-
-
+    object OngoingMissions : SubTabs(11)
+    object CompletedMissions : SubTabs(12)
 }

@@ -17,6 +17,8 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
@@ -50,6 +52,9 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCa
 import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
 import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
+import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepository
+import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepositoryImpl
+import com.patsurvey.nudge.activities.forms.domain.usecase.SettingFormsUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryV2
@@ -161,7 +166,9 @@ object UseCaseModule {
         coreSharedPrefs: CoreSharedPrefs,
         syncManagerDatabase: SyncManagerDatabase,
         missionDao: MissionDao,
-        casteListDao: CasteListDao
+        casteListDao: CasteListDao,
+        translationConfigDao: TranslationConfigDao,
+        languageListDao: LanguageListDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
@@ -170,7 +177,9 @@ object UseCaseModule {
             coreSharedPrefs = coreSharedPrefs,
             syncManagerDatabase = syncManagerDatabase,
             missionDao = missionDao,
-            casteListDao = casteListDao
+            casteListDao = casteListDao,
+            languageListDao = languageListDao,
+            translationConfigDao = translationConfigDao
         )
     }
 
@@ -459,4 +468,24 @@ object UseCaseModule {
         return GetSummaryFileRepositoryV2Impl(coreSharedPrefs, taskDao, activityDao, missionDao)
     }
 
+    @Provides
+    @Singleton
+    fun providesSettingFormsRepository(
+        prefRepo: PrefRepo
+    ): SettingFormsRepository {
+        return SettingFormsRepositoryImpl(prefRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingFormsUseCase(
+        repository: SettingFormsRepository,
+        settingBSRepository: SettingBSRepository
+    ): SettingFormsUseCase {
+        return SettingFormsUseCase(
+            repository,
+            getUserDetailsUseCase = GetUserDetailsUseCase(settingBSRepository),
+            getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(settingBSRepository)
+        )
+    }
 }

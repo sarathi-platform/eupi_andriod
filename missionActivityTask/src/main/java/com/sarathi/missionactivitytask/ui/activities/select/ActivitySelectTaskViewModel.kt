@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -74,6 +75,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitActivitySelectTaskScreenState -> {
+                setTranslationConfig()
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 initActivitySelectTaskScreen(event.missionId, event.activityId)
             }
@@ -177,7 +179,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             } else
                 null
 
-            val firstNotStartedTaskIndex = filterList.value.entries.toList()
+            val firstNotStartedTaskIndex =
+                (if (isGroupingApplied.value) filterTaskMap[firstGroupWithNotStatedTask].value() else filterList.value.entries.toList())
                 .indexOfFirst { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
             expandNextItem(firstNotStartedTaskIndex - 1, firstGroupWithNotStatedTask)
 
@@ -271,5 +274,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.ActivitySelectTaskScreen
+    }
 
 }

@@ -29,8 +29,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
 import com.nudge.core.showCustomToast
@@ -46,6 +44,7 @@ import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
+import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveWithLoaderComponent
 import com.sarathi.missionactivitytask.ui.components.IconProperties
@@ -94,6 +93,8 @@ fun SmallGroupAttendanceScreen(
                 smallGroupId
             )
         )
+        smallGroupAttendanceScreenViewModel.onEvent(InitDataEvent.InitDataState)
+
     }
 
     val smallGroupAttendanceList =
@@ -119,10 +120,18 @@ fun SmallGroupAttendanceScreen(
     if (smallGroupAttendanceScreenViewModel.alertDialogState.value.isDialogVisible) {
 
         CustomDialogComponent(
-            title = pluralStringResource(id = R.plurals.confirmation_alert_dialog_title,1),
-            message = pluralStringResource(id = R.plurals.do_you_want_mark_all_absent,1),
-            positiveButtonTitle = stringResource(id = R.string.yes),
-            negativeButtonTitle = stringResource(id = R.string.no),
+            title = smallGroupAttendanceScreenViewModel.stringResource(
+                R.string.confirmation_alert_dialog_title
+            ),
+            message = smallGroupAttendanceScreenViewModel.stringResource(
+                R.string.do_you_want_mark_all_absent
+            ),
+            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+                R.string.yes
+            ),
+            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+                R.string.no
+            ),
             onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
@@ -142,7 +151,10 @@ fun SmallGroupAttendanceScreen(
                         )
                         showCustomToast(
                             context = context,
-                            msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
+                            msg = smallGroupAttendanceScreenViewModel.stringResource(
+                                R.string.attendance_already_marked,
+                                smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
+                            )
                         )
                     }
                 })
@@ -175,7 +187,9 @@ fun SmallGroupAttendanceScreen(
                         .padding(dimen_10_dp)
                 ) {
                     ButtonPositiveWithLoaderComponent(
-                        buttonTitle = stringResource(id = R.string.submit),
+                        buttonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+                            R.string.submit
+                        ),
                         isActive = true,
                         showLoader = smallGroupAttendanceScreenViewModel.loaderState.value.isLoaderVisible
                     ) {
@@ -211,7 +225,10 @@ fun SmallGroupAttendanceScreen(
                                         )
                                         showCustomToast(
                                             context = context,
-                                            msg = "Attendance already marked for the date: ${smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()}"
+                                            msg =smallGroupAttendanceScreenViewModel.stringResource(
+                                                R.string.attendance_already_marked,
+                                                smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
+                                            )
                                         )
                                     }
                                 }
@@ -251,7 +268,9 @@ fun SmallGroupAttendanceScreen(
                 )
 
                 SearchWithFilterViewComponent(
-                    placeholderString = pluralStringResource(id = R.plurals.search_didi,1),
+                    placeholderString = smallGroupAttendanceScreenViewModel.stringResource(
+                        R.string.search_didi
+                    ),
                     showFilter = false,
                     onFilterSelected = {
                         /**
@@ -325,7 +344,9 @@ fun SmallGroupAttendanceScreen(
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             Text(
-                                text = pluralStringResource(id = R.plurals.all, 1),
+                                text = smallGroupAttendanceScreenViewModel.stringResource(
+                                    R.string.all
+                                ),
                                 style = defaultTextStyle,
                                 color = progressIndicatorColor,
                                 overflow = TextOverflow.Ellipsis

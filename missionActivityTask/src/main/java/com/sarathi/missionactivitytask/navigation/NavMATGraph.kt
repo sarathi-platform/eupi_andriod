@@ -123,7 +123,9 @@ fun NavGraphBuilder.MatNavigation(
                             description = mission.description,
                             missionStatus = mission.missionStatus,
                             activityCount = mission.activityCount,
-                            pendingActivityCount = mission.pendingActivityCount
+                            pendingActivityCount = mission.pendingActivityCount,
+                            missionSubtitle = mission.getSubTitle(),
+                            missionSubTitleDetail = mission.getSubTitleDetail()
                         )
                     )
                 } else {
@@ -167,7 +169,7 @@ fun NavGraphBuilder.MatNavigation(
                 programId = it.arguments?.getInt(
                     ARG_PROGRAM_ID
                 ) ?: 0,
-                onSettingClick = onSettingIconClick
+                onSettingClick = onSettingIconClick,
             )
         }
         composable(
@@ -217,7 +219,7 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
-                }
+                },
             )
         ) {
           LivelihoodTaskScreen(
@@ -933,7 +935,7 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
-                },
+                }
                 )
         ) {
             ActivitySelectTaskScreen(
@@ -1390,7 +1392,7 @@ fun navigateToGrantTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
 ) {
     navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
@@ -1419,7 +1421,7 @@ fun navigateToActivitySelectTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
 ) {
     navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }

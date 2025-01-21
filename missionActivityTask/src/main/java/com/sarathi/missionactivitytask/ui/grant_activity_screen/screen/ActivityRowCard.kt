@@ -79,7 +79,6 @@ fun ActivityRowCard(
                                 activityId = activity.activityId,
                                 activityName = activity.description,
                                 programId = programId
-
                             )
                         }
 
@@ -108,7 +107,7 @@ fun ActivityRowCard(
                                 missionId = activity.missionId,
                                 activityId = activity.activityId,
                                 activityName = activity.description,
-                                programId = programId
+                                programId = programId,
                             )
                         }
 
@@ -123,7 +122,7 @@ fun ActivityRowCard(
                         missionId = activity.missionId,
                         activityId = activity.activityId,
                         activityName = activity.description,
-                        programId= programId
+                        programId = programId,
                     )
                 }
                     }

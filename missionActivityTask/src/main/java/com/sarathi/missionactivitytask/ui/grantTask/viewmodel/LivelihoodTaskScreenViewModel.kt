@@ -3,6 +3,7 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.CoreDispatchers
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
 import com.nudge.core.valueAsMinusTwo
@@ -64,21 +65,31 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitLivelihoodPlanningScreenState -> {
+                setTranslationConfig()
                 onEvent(LoaderEvent.UpdateLoaderState(true))
-                initLivelihoodPlanningScreen()
             }
         }
     }
+
+    override suspend fun initChildScreen() {
+        setTranslationConfig()
+        initLivelihoodPlanningScreen()
+    }
     fun getPrimaryLivelihoodValue(key: Int):String {
           return livelihoodsEntityList.find {
-                it.livelihoodId == subjectLivelihoodMappingMap.get(
+              it.programLivelihoodId == subjectLivelihoodMappingMap.get(
                     taskUiModel?.find { it.taskId == key }?.subjectId
                 )
                     ?.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId && it.status == 1 }?.livelihoodId.valueAsMinusTwo()
             }?.name.value() }
 
     fun getSecondaryLivelihoodValue(key: Int):String{
-        return livelihoodsEntityList.find { it.livelihoodId==subjectLivelihoodMappingMap.get(taskUiModel?.find { it.taskId==key }?.subjectId)?.find { it.type==LivelihoodTypeEnum.SECONDARY.typeId && it.status==1  }?.livelihoodId.valueAsMinusTwo() }?.name.value()
+        return livelihoodsEntityList.find {
+            it.programLivelihoodId == subjectLivelihoodMappingMap.get(
+                taskUiModel?.find { it.taskId == key }?.subjectId
+            )
+                ?.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId && it.status == 1 }?.livelihoodId.valueAsMinusTwo()
+        }?.name.value()
     }
      fun getActivityList(missionId: Int){
 
@@ -88,8 +99,7 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
          }
     }
 
-    private  fun initLivelihoodPlanningScreen() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+    private suspend fun initLivelihoodPlanningScreen() {
             livelihoodsEntityList.clear()
             livelihoodsEntityList.addAll(getLivelihoodListFromDbUseCase.invoke())
 
@@ -104,6 +114,9 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.LivelihoodTaskScreen
     }
-    }
+}
 

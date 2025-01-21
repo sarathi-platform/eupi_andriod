@@ -7,8 +7,8 @@ data class LivelihoodSaveEventResponse(
     val transactionId: String,
     @SerializedName("subjectId")
     val subjectId: Int,
-    @SerializedName("livelihoodId")
-    val livelihoodId: Int,
+    @SerializedName("programLivelihoodId")
+    val programLivelihoodId: Int,
     @SerializedName("eventId")
     val eventId: Int,
     @SerializedName("eventType")
