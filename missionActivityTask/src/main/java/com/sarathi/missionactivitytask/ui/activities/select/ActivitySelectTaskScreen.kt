@@ -37,6 +37,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -56,6 +57,7 @@ import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
@@ -202,6 +204,9 @@ fun ExpandableTaskCardRow(
         title = task.value[TaskCardSlots.TASK_TITLE.name],
         subTitle1 = task.value[TaskCardSlots.TASK_SUBTITLE.name],
         status = task.value[TaskCardSlots.TASK_STATUS.name],
+        subtitle2 = task.value[TaskCardSlots.TASK_SUBTITLE_2.name],
+        subtitle3 = task.value[TaskCardSlots.TASK_SUBTITLE_3.name],
+        subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
         imagePath = viewModel.getFilePathUri(
             task.value[TaskCardSlots.TASK_IMAGE.name]?.value ?: BLANK_STRING
         ) ?: Uri.EMPTY,
@@ -271,12 +276,16 @@ fun ExpandableTaskCardRow(
     )
 }
 
+
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun ExpandableTaskCard(
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     status: TaskCardModel?,
+    subtitle2: TaskCardModel?,
+    subtitle3: TaskCardModel?,
+    subtitle4: TaskCardModel?,
     imagePath: Uri,
     modifier: Modifier,
     viewModel: ActivitySelectTaskViewModel,
@@ -316,7 +325,9 @@ fun ExpandableTaskCard(
             .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
-                color = if (taskStatus.value == StatusEnum.COMPLETED.name || taskStatus.value == StatusEnum.NOT_AVAILABLE.name) greenOnline else lightGrayColor,
+                color = if (taskStatus.value == StatusEnum.COMPLETED.name ||
+                    taskStatus.value == StatusEnum.NOT_AVAILABLE.name
+                ) greenOnline else lightGrayColor,
                 shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
@@ -329,6 +340,9 @@ fun ExpandableTaskCard(
             CardHeader(
                 title = title,
                 subTitle1 = subTitle1,
+                subtitle2 = subtitle2,
+                subtitle3 = subtitle3,
+                subtitle4 = subtitle4,
                 imagePath = imagePath,
                 expanded = expanded,
                 onExpendClick = onExpendClick,
@@ -358,6 +372,9 @@ fun ExpandableTaskCard(
 fun CardHeader(
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
+    subtitle2: TaskCardModel?,
+    subtitle3: TaskCardModel?,
+    subtitle4: TaskCardModel?,
     imagePath: Uri,
     expanded: Boolean,
     onExpendClick: (Boolean, TaskCardModel) -> Unit,
@@ -365,58 +382,79 @@ fun CardHeader(
     animateColor: Color,
     viewModel: ActivitySelectTaskViewModel
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(
-                start = dimen_16_dp,
-                top = dimen_10_dp,
-                bottom = dimen_5_dp,
-                end = dimen_16_dp
-            )
-            .clickable {
-                title?.let { onExpendClick(expanded, it) }
-            },
-        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
-        verticalAlignment = Alignment.CenterVertically
+            .background(white)
     ) {
-        if (imagePath != Uri.EMPTY) {
-            CircularImageViewComponent(modifier = Modifier, imagePath = imagePath, onImageClick = {
-                viewModel.isDidiImageDialogVisible.value = true
-            })
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    title?.let { onExpendClick(expanded, it) }
+                }
+                .padding(horizontal = dimen_12_dp, vertical = dimen_5_dp),
+            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            CircularImageViewComponent(
+                modifier = Modifier,
+                imagePath = imagePath,
+                onImageClick = {
+                    viewModel.isDidiImageDialogVisible.value = true
+                })
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.Start
+            ) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    title?.value?.let {
+                        if (it.contains("vo", true)) {
+                            title.icon?.let {
+                                ImageViewer(it)
+                                Spacer(modifier = Modifier.width(dimen_5_dp))
+                            }
+                            Spacer(modifier = Modifier.width(dimen_3_dp))
+                        }
+                        Text(text = title.value, style = buttonTextStyle, color = blueDark)
+                    }
+                }
+                SubContainerView(subTitle1)
+            }
+
+            CardArrow(
+                modifier = Modifier,
+                degrees = arrowRotationDegree,
+                iconColor = animateColor,
+                arrowIcon = R.drawable.ic_baseline_keyboard_arrow_down_24,
+                onClick = { title?.let { onExpendClick(expanded, it) } }
+            )
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = dimen_16_dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            if (subtitle2?.value?.isNotBlank() == true) {
+                SubContainerView(subtitle2)
+            }
         }
         Column(
             modifier = Modifier
-                .weight(1f)
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.Start
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                title?.value?.let {
-                    if (it.contains("vo", true)) {
-                        title.icon?.let {
-                            ImageViewer(it)
-                            Spacer(modifier = Modifier.width(dimen_5_dp))
-                        }
-                        Spacer(modifier = Modifier.width(dimen_3_dp))
-                    }
-                    Text(text = title.value, style = buttonTextStyle, color = blueDark)
-                }
-            }
-            SubContainerView(subTitle1)
+            SubContainerView(subtitle3)
+            SubContainerView(subtitle4, isNumberFormattingRequired = true)
         }
-
-        CardArrow(
-            modifier = Modifier,
-            degrees = arrowRotationDegree,
-            iconColor = animateColor,
-            arrowIcon = R.drawable.ic_baseline_keyboard_arrow_down_24,
-            onClick = { title?.let { onExpendClick(expanded, it) } }
-        )
     }
     if (viewModel.isDidiImageDialogVisible.value) {
         ShowDidiImageDialog(didiName = title?.value ?: BLANK_STRING, imagePath = imagePath) {
@@ -443,7 +481,7 @@ fun CardContent(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        if (expanded) {
+//        if (expanded) {
             OptionsUI(
                 translationHelper = translationHelper,
                 questionUiModel = questionUiModel,
@@ -456,9 +494,9 @@ fun CardContent(
                 context = context,
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
-        } else {
-            DisplaySelectedOption(translationHelper, questionUiModel, taskStatus.value)
-        }
+//        } else {
+//            DisplaySelectedOption(translationHelper, questionUiModel, taskStatus.value)
+//        }
     }
 }
 
