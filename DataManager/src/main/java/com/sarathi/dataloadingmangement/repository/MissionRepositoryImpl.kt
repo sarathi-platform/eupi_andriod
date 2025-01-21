@@ -519,31 +519,31 @@ class MissionRepositoryImpl @Inject constructor(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
                     activityConfigId = activityTypeId,
                     surveyId = surveyId,
-                    grantConfigResponse = getDataForStateOnly(grantConfig)
+                    grantConfigResponse = getGrantConfigForLanguageThatMappedToState(grantConfig)
                 )
             )
         }
     }
 
-    private fun getDataForStateOnly(grantConfigResponse: GrantConfigResponse): GrantConfigResponse {
-        var grantType =
+    private fun getGrantConfigForLanguageThatMappedToState(grantConfigResponse: GrantConfigResponse): GrantConfigResponse {
+        val grantType =
             object : TypeToken<List<OptionsItem?>?>() {}.type
         val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
             grantConfigResponse.grantMode,
             grantType
         )
 
-        var grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
+        val grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
             grantConfigResponse.grantNature,
             grantType
         )
 
 
         grantModeOptions.forEach {
-            checkMulipleLanguageAndSaveStateWise(it)
+            checkLanguageAndSaveForCurrentState(it)
         }
         grantNatureOptions.forEach {
-            checkMulipleLanguageAndSaveStateWise(it)
+            checkLanguageAndSaveForCurrentState(it)
         }
         grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
         grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
@@ -551,7 +551,7 @@ class MissionRepositoryImpl @Inject constructor(
         return grantConfigResponse
     }
 
-    private fun checkMulipleLanguageAndSaveStateWise(it: OptionsItem) {
+    private fun checkLanguageAndSaveForCurrentState(it: OptionsItem) {
         it.surveyLanguageAttributes?.forEach { languageAttribute ->
             val stateCode = sharedPrefs.getStateCode().lowercase()
             val languageCodeParts = languageAttribute.languageCode.lowercase().split("_")
