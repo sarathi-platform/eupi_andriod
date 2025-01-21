@@ -526,29 +526,35 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     private fun getGrantConfigForLanguageThatMappedToState(grantConfigResponse: GrantConfigResponse): GrantConfigResponse {
-        val grantType =
-            object : TypeToken<List<OptionsItem?>?>() {}.type
-        val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
-            grantConfigResponse.grantMode,
-            grantType
-        )
-
-        val grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
-            grantConfigResponse.grantNature,
-            grantType
-        )
+        try {
 
 
-        grantModeOptions.forEach {
-            checkLanguageAndSaveForCurrentState(it)
+            val grantType =
+                object : TypeToken<List<OptionsItem?>?>() {}.type
+            val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
+                grantConfigResponse.grantMode,
+                grantType
+            )
+
+            val grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
+                grantConfigResponse.grantNature,
+                grantType
+            )
+
+            grantModeOptions.forEach {
+                checkLanguageAndSaveForCurrentState(it)
+            }
+            grantNatureOptions.forEach {
+                checkLanguageAndSaveForCurrentState(it)
+            }
+            grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
+            grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
+
+            return grantConfigResponse
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "GrantConfigSave", msg = exception.stackTraceToString())
+            return grantConfigResponse
         }
-        grantNatureOptions.forEach {
-            checkLanguageAndSaveForCurrentState(it)
-        }
-        grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
-        grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
-
-        return grantConfigResponse
     }
 
     private fun checkLanguageAndSaveForCurrentState(it: OptionsItem) {
