@@ -22,6 +22,7 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -80,7 +81,8 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao,
     val surveyConfigEntityDao: SurveyConfigEntityDao,
     val missionConfigEntityDao: MissionConfigEntityDao,
-    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
+    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao,
+    val livelihoodDao: LivelihoodDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -631,11 +633,19 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
-        return missionLanguageAttributeDao.fetchMissionInfo(
+        val missionUIInfoModel = missionLanguageAttributeDao.fetchMissionInfo(
             missionId = missionId,
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
+        val livelihood = livelihoodDao.getLivelihoodList(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+        val livelihoodName =
+            livelihood.find { it.type.equals(missionUIInfoModel?.livelihoodType, true) }?.name
+                ?: missionUIInfoModel?.livelihoodType
+        return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
     }
 
     override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
