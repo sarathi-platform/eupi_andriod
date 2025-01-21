@@ -8,16 +8,17 @@ data class ActivityInfoUIModel(
     var missionName: String,
     var activityName: String,
     var livelihoodOrder: String? = BLANK_STRING,
-    var livelihoodType: String? = BLANK_STRING
+    var livelihoodType: String? = BLANK_STRING,
+    var livelihoodName: String? = BLANK_STRING
 ) {
 
     private fun getActivityScreenSubTitle(): String {
         val livelihoodString =
             CoreAppDetails.getContext()?.getString(R.string.livelihood) ?: BLANK_STRING
-        return if (this.livelihoodType.isNullOrBlank()) {
+        return if (this.livelihoodName.isNullOrBlank()) {
             BLANK_STRING
         } else {
-            "$livelihoodString $livelihoodOrder | ${this.livelihoodType}"
+            "$livelihoodString $livelihoodOrder | ${this.livelihoodName}"
         }
     }
 

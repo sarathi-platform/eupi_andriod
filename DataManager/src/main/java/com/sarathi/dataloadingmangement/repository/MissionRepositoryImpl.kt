@@ -638,23 +638,32 @@ class MissionRepositoryImpl @Inject constructor(
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
+        val livelihoodName =
+            findLivelihoodSubtitle(missionUIInfoModel?.livelihoodType)
+        return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
+    }
+
+    private fun findLivelihoodSubtitle(livelihoodType: String?): String? {
         val livelihood = livelihoodDao.getLivelihoodList(
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
         val livelihoodName =
-            livelihood.find { it.type.equals(missionUIInfoModel?.livelihoodType, true) }?.name
-                ?: missionUIInfoModel?.livelihoodType
-        return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
+            livelihood.find { it.type.equals(livelihoodType, true) }?.name
+                ?: livelihoodType
+        return livelihoodName
     }
 
     override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
-        return activityLanguageDao.fetchActivityInfo(
+        val activityUIInfoModel = activityLanguageDao.fetchActivityInfo(
             missionId = missionId,
             activityId = activityId,
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
+        val livelihoodName =
+            findLivelihoodSubtitle(activityUIInfoModel?.livelihoodType)
+        return activityUIInfoModel?.copy(livelihoodName = livelihoodName)
     }
 
     private fun saveSurveyConfig(
