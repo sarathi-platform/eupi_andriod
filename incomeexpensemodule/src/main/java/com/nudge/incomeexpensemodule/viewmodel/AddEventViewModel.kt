@@ -165,9 +165,8 @@ class AddEventViewModel @Inject constructor(
                 fieldName = it.name,
                 transactionId = transactionId,
                 onValidationComplete = { evalutorResult, message ->
-                    Snapshot.withMutableSnapshot {
-                        fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
-                    }
+                    updateFieldValidationMessageAndMap(key = it.name, Pair(evalutorResult, message))
+
                 }
             )
     }
