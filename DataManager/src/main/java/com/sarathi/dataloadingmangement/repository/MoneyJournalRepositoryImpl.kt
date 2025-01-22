@@ -43,10 +43,10 @@ class MoneyJournalRepositoryImpl @Inject constructor(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = referenceId
             ) == 0
         ) {
-            moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
+            moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
             if (particulars.contains(KIND)) {
                 moneyJournalEntity.transactionFlow = OUTFLOW
-                moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
+                moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
             }
         } else {
 
@@ -67,7 +67,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
 
                 if (particulars.contains(KIND)) {
                     moneyJournalEntity.transactionFlow = OUTFLOW
-                    moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
+                    moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
                 }
             }
 
@@ -103,7 +103,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             createdDate = createdData
 
             )
-        moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
+        moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
 
     }
 

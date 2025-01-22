@@ -43,7 +43,7 @@ class MoneyJournalForPopRepositoryImpl @Inject constructor(
         )
         if (existingTransactionCount == 0
         ) {
-            moneyJournalDao.insetMoneyJournalEntry(moneyJournalEntity)
+            moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
             return moneyJournalEntity
         } else {
             if (existingTransactionCount > 1) {
@@ -86,13 +86,9 @@ class MoneyJournalForPopRepositoryImpl @Inject constructor(
                 createdDate = existingMoneyJournal.createdDate
             )
 
-        moneyJournalDao.updateMoneyJournal(
-            userId = updatedMoneyJournalEntity.userId,
-            transactionId = updatedMoneyJournalEntity.transactionId,
-            amount = updatedMoneyJournalEntity.transactionAmount,
-            date = updatedMoneyJournalEntity.transactionDate,
-            particulars = updatedMoneyJournalEntity.transactionDetails
-        )
+        deleteOldEntries(referenceId, referenceType, subjectId, subjectType)
+        moneyJournalDao.insertMoneyJournalEntry(updatedMoneyJournalEntity)
+
         return updatedMoneyJournalEntity
     }
 

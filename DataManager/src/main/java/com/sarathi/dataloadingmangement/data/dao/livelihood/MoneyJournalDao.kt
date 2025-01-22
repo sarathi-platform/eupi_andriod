@@ -11,7 +11,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpens
 interface MoneyJournalDao {
 
     @Insert
-    suspend fun insetMoneyJournalEntry(moneyJournalEntity: MoneyJournalEntity)
+    suspend fun insertMoneyJournalEntry(moneyJournalEntity: MoneyJournalEntity)
 
     @Insert
     suspend fun insertMoneyJournalEntry(moneyJournalEntity: List<MoneyJournalEntity>)
