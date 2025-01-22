@@ -158,15 +158,16 @@ class AddEventViewModel @Inject constructor(
     }
 
 
-    private suspend fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
+    private fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
         AddEventFieldEnum.values().forEach {
             validateForm(
                 subjectId,
                 fieldName = it.name,
                 transactionId = transactionId,
                 onValidationComplete = { evalutorResult, message ->
-
-
+                    Snapshot.withMutableSnapshot {
+                        fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
+                    }
                 }
             )
     }
@@ -366,9 +367,6 @@ class AddEventViewModel @Inject constructor(
             var fieldValidationFromConfig = true
             onValidationComplete(isValid, message)
 
-//            viewModelScope.launch(mainDispatcher){
-//            onValidationComplete(isValid, message)
-//            }
             fieldValidationAndMessageMap.value.forEach {
 
                 if (!it.value.first) {

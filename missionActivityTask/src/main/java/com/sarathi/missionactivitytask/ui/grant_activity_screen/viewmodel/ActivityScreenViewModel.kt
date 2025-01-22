@@ -77,7 +77,10 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            missionInfoUIModel = fetchAllDataUseCase.fetchMissionInfo(missionId)
+            val missionDetails = fetchAllDataUseCase.fetchMissionInfo(missionId)
+            withContext(mainDispatcher) {
+                missionInfoUIModel = missionDetails
+            }
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,
