@@ -22,6 +22,7 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
@@ -80,7 +81,8 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao,
     val surveyConfigEntityDao: SurveyConfigEntityDao,
     val missionConfigEntityDao: MissionConfigEntityDao,
-    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
+    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao,
+    val livelihoodDao: LivelihoodDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -525,29 +527,35 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     private fun getGrantConfigForLanguageThatMappedToState(grantConfigResponse: GrantConfigResponse): GrantConfigResponse {
-        val grantType =
-            object : TypeToken<List<OptionsItem?>?>() {}.type
-        val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
-            grantConfigResponse.grantMode,
-            grantType
-        )
-
-        val grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
-            grantConfigResponse.grantNature,
-            grantType
-        )
+        try {
 
 
-        grantModeOptions.forEach {
-            checkLanguageAndSaveForCurrentState(it)
+            val grantType =
+                object : TypeToken<List<OptionsItem?>?>() {}.type
+            val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
+                grantConfigResponse.grantMode,
+                grantType
+            )
+
+            val grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
+                grantConfigResponse.grantNature,
+                grantType
+            )
+
+            grantModeOptions.forEach {
+                checkLanguageAndSaveForCurrentState(it)
+            }
+            grantNatureOptions.forEach {
+                checkLanguageAndSaveForCurrentState(it)
+            }
+            grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
+            grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
+
+            return grantConfigResponse
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "GrantConfigSave", msg = exception.stackTraceToString())
+            return grantConfigResponse
         }
-        grantNatureOptions.forEach {
-            checkLanguageAndSaveForCurrentState(it)
-        }
-        grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
-        grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
-
-        return grantConfigResponse
     }
 
     private fun checkLanguageAndSaveForCurrentState(it: OptionsItem) {
@@ -630,20 +638,37 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
-        return missionLanguageAttributeDao.fetchMissionInfo(
+        val missionUIInfoModel = missionLanguageAttributeDao.fetchMissionInfo(
             missionId = missionId,
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
+        val livelihoodName =
+            findLivelihoodSubtitle(missionUIInfoModel?.livelihoodType)
+        return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
+    }
+
+    private fun findLivelihoodSubtitle(livelihoodType: String?): String? {
+        val livelihood = livelihoodDao.getLivelihoodList(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+        val livelihoodName =
+            livelihood.find { it.type.equals(livelihoodType, true) }?.name
+                ?: livelihoodType
+        return livelihoodName
     }
 
     override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
-        return activityLanguageDao.fetchActivityInfo(
+        val activityUIInfoModel = activityLanguageDao.fetchActivityInfo(
             missionId = missionId,
             activityId = activityId,
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
+        val livelihoodName =
+            findLivelihoodSubtitle(activityUIInfoModel?.livelihoodType)
+        return activityUIInfoModel?.copy(livelihoodName = livelihoodName)
     }
 
     private fun saveSurveyConfig(

@@ -494,7 +494,8 @@ class DataLoadingModule {
         formUiConfigDao: FormUiConfigDao,
         surveyConfigEntityDao: SurveyConfigEntityDao,
         missionConfigEntityDao: MissionConfigEntityDao,
-        missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
+        missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao,
+        livelihoodDao: LivelihoodDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -514,7 +515,8 @@ class DataLoadingModule {
             formUiConfigDao = formUiConfigDao,
             surveyConfigEntityDao = surveyConfigEntityDao,
             missionConfigEntityDao = missionConfigEntityDao,
-            missionLivelihoodConfigEntityDao = missionLivelihoodConfigEntityDao
+            missionLivelihoodConfigEntityDao = missionLivelihoodConfigEntityDao,
+            livelihoodDao = livelihoodDao
         )
     }
 

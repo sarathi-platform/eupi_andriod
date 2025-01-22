@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
@@ -159,8 +160,9 @@ class AddEventViewModel @Inject constructor(
                 fieldName = it.name,
                 transactionId = transactionId,
                 onValidationComplete = { evalutorResult, message ->
-                    fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
-
+                    Snapshot.withMutableSnapshot {
+                        fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
+                    }
                 }
             )
     }
@@ -233,7 +235,9 @@ class AddEventViewModel @Inject constructor(
 
         }
         AddEventFieldEnum.values().forEach {
-            fieldValidationAndMessageMap[it.name] = Pair(true, BLANK_STRING)
+            Snapshot.withMutableSnapshot {
+                fieldValidationAndMessageMap[it.name] = Pair(true, BLANK_STRING)
+            }
         }
     }
 
@@ -353,7 +357,6 @@ class AddEventViewModel @Inject constructor(
             transactionId = transactionId
         ) { isValid, message ->
             // Pass the result back through the callback
-            onValidationComplete(isValid, message)
             // Update submit button state based on validation result
             var fieldValidationFromConfig = true
             fieldValidationAndMessageMap.forEach {
@@ -363,7 +366,7 @@ class AddEventViewModel @Inject constructor(
                 }
             }
             isSubmitButtonEnable.value = fieldValidationFromConfig && checkValidData()
-
+            onValidationComplete(isValid, message)
         }
 
     }
@@ -437,7 +440,7 @@ class AddEventViewModel @Inject constructor(
             val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
             val selectedValidations =
-                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.originalName }
+                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.eventType }
 
             if (selectedValidations != null && selectedValidations.isNotEmpty()) {
                 var validation =
