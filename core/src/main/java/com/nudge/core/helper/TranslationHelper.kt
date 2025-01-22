@@ -27,7 +27,7 @@ class TranslationHelper @Inject constructor(
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
         return if (!dbString.isNullOrEmpty()) {
-            dbString
+            dbString.replace("\\n", "\n")
         } else {
             context.getString(
                 resId
@@ -39,7 +39,7 @@ class TranslationHelper @Inject constructor(
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
         return if (!dbString.isNullOrEmpty()) {
-            String.format(dbString, *formatArgs)
+            String.format(dbString.replace("\\n", "\n"), *formatArgs)
         } else {
             context.getString(resId, *formatArgs)
         }
