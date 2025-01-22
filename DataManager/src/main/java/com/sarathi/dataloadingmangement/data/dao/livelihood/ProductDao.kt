@@ -20,12 +20,13 @@ interface ProductDao {
 
 
     @Query(
-        "select product_table.productId as id, livelihood_language_reference_table.name, product_table.name as originalName, product_table.type \n" +
-                " from product_table inner join livelihood_language_reference_table \n" +
-                " on product_table.productId= livelihood_language_reference_table.referenceId \n" +
-                " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +
+        "select product_table.productId as id, COALESCE(livelihood_language_reference_table.name,product_table.name )as name, product_table.name as originalName, product_table.type \n" +
+                " from product_table left join livelihood_language_reference_table \n" +
+                " on product_table.productId= livelihood_language_reference_table.referenceId and  \n" +
+                " livelihood_language_reference_table.languageCode=:languageCode and\n" +
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
-                " livelihood_language_reference_table.userId=:userId and" +
+                " livelihood_language_reference_table.userId=:userId " +
+                " where " +
                 " product_table.userId=:userId  and" +
                 " product_table.livelihoodId=:livelihoodId group by product_table.productId"
     )

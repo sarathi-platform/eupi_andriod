@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.snapshots.Snapshot
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
@@ -37,6 +37,8 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
@@ -86,7 +88,10 @@ class AddEventViewModel @Inject constructor(
     var isSubmitButtonEnable = mutableStateOf(false)
     var selectedDateInLong: Long = 0
     val maxAssetValue = mutableIntStateOf(MAXIMUM_RANGE)
-    var fieldValidationAndMessageMap = mutableStateMapOf<String, Pair<Boolean, String>>()
+    private val _fieldValidationAndMessageMap =
+        MutableStateFlow<Map<String, Pair<Boolean, String>>>(emptyMap())
+    val fieldValidationAndMessageMap: StateFlow<Map<String, Pair<Boolean, String>>> =
+        _fieldValidationAndMessageMap
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -153,16 +158,15 @@ class AddEventViewModel @Inject constructor(
     }
 
 
-    private fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
+    private suspend fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
         AddEventFieldEnum.values().forEach {
             validateForm(
                 subjectId,
                 fieldName = it.name,
                 transactionId = transactionId,
                 onValidationComplete = { evalutorResult, message ->
-                    Snapshot.withMutableSnapshot {
-                        fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
-                    }
+
+
                 }
             )
     }
@@ -234,9 +238,10 @@ class AddEventViewModel @Inject constructor(
             questionVisibilityMap[it] = false
 
         }
-        AddEventFieldEnum.values().forEach {
-            Snapshot.withMutableSnapshot {
-                fieldValidationAndMessageMap[it.name] = Pair(true, BLANK_STRING)
+        AddEventFieldEnum.values().forEach { eventFieldName ->
+            _fieldValidationAndMessageMap.value =
+                _fieldValidationAndMessageMap.value.toMutableMap().apply {
+                    this[eventFieldName.name] = Pair(true, BLANK_STRING)
             }
         }
     }
@@ -359,14 +364,18 @@ class AddEventViewModel @Inject constructor(
             // Pass the result back through the callback
             // Update submit button state based on validation result
             var fieldValidationFromConfig = true
-            fieldValidationAndMessageMap.forEach {
+            onValidationComplete(isValid, message)
+
+//            viewModelScope.launch(mainDispatcher){
+//            onValidationComplete(isValid, message)
+//            }
+            fieldValidationAndMessageMap.value.forEach {
 
                 if (!it.value.first) {
                     fieldValidationFromConfig = false
                 }
             }
             isSubmitButtonEnable.value = fieldValidationFromConfig && checkValidData()
-            onValidationComplete(isValid, message)
         }
 
     }
@@ -440,11 +449,12 @@ class AddEventViewModel @Inject constructor(
             val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
             val selectedValidations =
-                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.eventType }
+                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.originalName }
 
             if (selectedValidations != null && selectedValidations.isNotEmpty()) {
                 var validation =
                     selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
+                        ?: selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
                 if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null) {
                     validation =
@@ -461,6 +471,7 @@ class AddEventViewModel @Inject constructor(
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
                     validation =
                         selectedValidations.find { it.productType == selectedProduct?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
+                            ?: selectedValidations.find { it.productType == selectedProduct?.type }?.validation?.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
                     validateExpression(
                         validation,
@@ -515,7 +526,15 @@ class AddEventViewModel @Inject constructor(
 
         }
     }
+
+    fun updateFieldValidationMessageAndMap(key: String, value: Pair<Boolean, String>) {
+        _fieldValidationAndMessageMap.value =
+            _fieldValidationAndMessageMap.value.toMutableMap().apply {
+                this[key] = value
+            }
 }
+}
+
 
 
 
