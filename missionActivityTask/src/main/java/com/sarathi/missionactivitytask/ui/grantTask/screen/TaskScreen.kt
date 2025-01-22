@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import android.content.Context
-import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -57,7 +56,6 @@ import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.isOnline
-import com.nudge.core.json
 import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
@@ -287,10 +285,6 @@ fun TaskScreen(
             sheetBackgroundColor = Color.White,
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
-            Log.d(
-                TAG,
-                "TaskScreenToolbar: ${viewModel.activityInfoUIModel.json()} :: $activityName"
-            )
             ToolBarWithMenuComponent(
                 title = viewModel.activityInfoUIModel.activityName,
                 subTitle = viewModel.activityInfoUIModel.getTaskScreenSubTitle(),
