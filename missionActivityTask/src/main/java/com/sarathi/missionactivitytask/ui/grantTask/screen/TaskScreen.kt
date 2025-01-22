@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import android.content.Context
+import android.text.TextUtils
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -286,7 +287,7 @@ fun TaskScreen(
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
             ToolBarWithMenuComponent(
-                title = viewModel.activityInfoUIModel.activityName,
+                title = if (TextUtils.isEmpty(viewModel.activityInfoUIModel.activityName)) activityName else viewModel.activityInfoUIModel.activityName,
                 subTitle = viewModel.activityInfoUIModel.getTaskScreenSubTitle(),
                 subTitleColorId = brownDark,
                 modifier = Modifier.fillMaxSize(),
