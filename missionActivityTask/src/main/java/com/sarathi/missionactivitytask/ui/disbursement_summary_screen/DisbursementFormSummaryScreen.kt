@@ -401,17 +401,7 @@ fun TextRow(
     Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier
-                /*.constrainAs(text1Ref) {
-                start.linkTo(parent.start)
-                if (isReadMode) {
-                    top.linkTo(parent.top)
-                } else {
-                    top.linkTo(parent.top)
-                    bottom.linkTo(parent.bottom)
-                }
-                width = Dimension.fillToConstraints
-            }*/,
+                modifier = Modifier,
                 text = text1,
                 style = smallTextStyleWithNormalWeight.copy(color = greyColor)
             )
@@ -421,87 +411,20 @@ fun TextRow(
             if (isReadMode) {
                 TextWithReadMoreComponent(
                     modifier = Modifier
-                        .padding(start = dimen_5_dp)
-                    /*.constrainAs(text2Ref) {
-                        start.linkTo(text1Ref.end)
-                        top.linkTo(parent.top)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    }*/,
+                        .padding(start = dimen_5_dp),
                     title = text1,
                     contentData = text2
                 )
             } else {
                 Text(
                     modifier = Modifier
-                        .padding(start = dimen_5_dp)
-                    /*.constrainAs(text2Ref) {
-                        start.linkTo(text1Ref.end)
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                        end.linkTo(parent.end)
-                        width = Dimension.fillToConstraints
-                    }*/,
+                        .padding(start = dimen_5_dp),
                     text = text2,
                     style = newMediumTextStyle.copy(color = blueDark)
                 )
             }
         }
     }
-
-    /*ConstraintLayout(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        val (text1Ref, text2Ref) = createRefs()
-
-        if (text1.isNotBlank()) {
-            Text(
-                modifier = Modifier.constrainAs(text1Ref) {
-                    start.linkTo(parent.start)
-                    if (isReadMode) {
-                        top.linkTo(parent.top)
-                    } else {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-                    width = Dimension.fillToConstraints
-                },
-                text = text1,
-                style = smallTextStyleWithNormalWeight.copy(color = greyColor)
-            )
-        }
-
-        if (text2.isNotBlank()) {
-            if (isReadMode) {
-                TextWithReadMoreComponent(
-                    modifier = Modifier
-                        .padding(start = dimen_5_dp)
-                        .constrainAs(text2Ref) {
-                            start.linkTo(text1Ref.end)
-                            top.linkTo(parent.top)
-                            end.linkTo(parent.end)
-                            width = Dimension.fillToConstraints
-                        },
-                    title = text1,
-                    contentData = text2
-                )
-            } else {
-                Text(
-                    modifier = Modifier
-                        .padding(start = dimen_5_dp)
-                        .constrainAs(text2Ref) {
-                            start.linkTo(text1Ref.end)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            end.linkTo(parent.end)
-                            width = Dimension.fillToConstraints
-                        },
-                    text = text2,
-                    style = newMediumTextStyle.copy(color = blueDark)
-                )
-            }
-        }
-    }*/
 }
 
 @SuppressLint("RememberReturnType")
