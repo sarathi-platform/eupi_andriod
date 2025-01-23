@@ -19,6 +19,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -48,6 +49,7 @@ import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
+import com.nudge.incomeexpensemodule.ui.component.rememberSearchBarWithDropDownState
 import com.nudge.incomeexpensemodule.utils.EVENT_MESSAGE
 import com.nudge.incomeexpensemodule.utils.NEWLY_ADDED_EVENT_TRANSACTION_ID
 import com.nudge.incomeexpensemodule.utils.SELECTED_LIVELIHOOD_ID
@@ -57,6 +59,7 @@ import com.sarathi.dataloadingmangement.INFLOW
 import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
+import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 
 
@@ -83,6 +86,15 @@ fun AddEventScreen(
             transactionId = BLANK_STRING
         )
     }
+    val context = LocalContext.current
+
+
+    val dropDownWithSearchState = remember(viewModel.livelihoodEventDropdownValue) {
+        rememberSearchBarWithDropDownState<ValuesDto>(
+            dropdownMenuItemList = viewModel.livelihoodEventDropdownValue
+        )
+    }
+
     val datePickerState =
         rememberCustomDatePickerState()
 
@@ -507,7 +519,7 @@ fun AddEventScreen(
                         popBackToPreviousScreen(
                             navController,
                             viewModel,
-                            message = viewModel.getString(R.string.event_deleted_successfully),
+                            message = context.getString(R.string.event_deleted_successfully),
                             transactionId
                         )
 

@@ -33,6 +33,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -111,8 +112,7 @@ fun CommonSettingScreen(
                             style = newMediumTextStyle
                         )
                         ButtonPositive(
-                            buttonTitle =
-                            settingScreenConfig.translationHelper.stringResource(id = R.string.logout),
+                            buttonTitle = stringResource(id = R.string.logout),
                             isArrowRequired = false,
                             isActive = true
                         ) {
@@ -166,7 +166,7 @@ fun CommonSettingScreen(
                             horizontalArrangement = Arrangement.Center
                         ) {
                             Text(
-                                text = settingScreenConfig.translationHelper.stringResource(id = R.string.sync),
+                                text = stringResource(id = R.string.sync),
                                 color = blueDark,
                                 style = TextStyle(
                                     fontFamily = NotoSans,
@@ -180,8 +180,7 @@ fun CommonSettingScreen(
                     LastSyncTimeView(
                         lastSyncTime = settingScreenConfig.lastSyncTime ?: 0L,
                         mobileNumber = settingScreenConfig.mobileNumber,
-                        isShowPhoneNumber = false,
-                        translationHelper = settingScreenConfig.translationHelper
+                        isShowPhoneNumber = false
                     ) { }
                     Spacer(modifier = Modifier.height(dimen_10_dp))
                 }
@@ -274,6 +273,54 @@ fun CommonSettingScreen(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun CommonSettingScreenPreview(){
+ val list= listOf(
+     SettingOptionModel(
+         1,
+         "Sync Now",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_arrow_forward_ios_24
+     ),
+     SettingOptionModel(
+         2,
+         "Forms",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_share_icon
+     ),
+     SettingOptionModel(
+         3,
+         "Language",
+         "",
+         "",
+         leadingIcon = R.drawable.ic_language,
+         trailingIcon = R.drawable.ic_share_icon
+     )
+ )
+    val commonSettingScreenConfig = CommonSettingScreenConfig(
+        isSyncEnable = false,
+        mobileNumber = "9862345078",
+        lastSyncTime = 1735275558303,
+        title = "Setting",
+        isScreenHaveLogoutButton = false,
+        optionList = emptyList(),
+        versionText = "Version 978",
+        isItemCard = true,
+        errorMessage = "No Data available"
+    )
+    CommonSettingScreen(
+        settingScreenConfig = commonSettingScreenConfig,
+        onBackClick = {},
+        onItemClick = { index, item -> },
+        onLogoutClick = {},
+        onSyncDataClick = {}
+    )
+}
 
 @Preview(showBackground = true)
 @Composable

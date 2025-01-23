@@ -7,7 +7,6 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.nudge.core.database.entities.language.LanguageEntity
-import com.nudge.core.helper.TranslationEnum
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -82,9 +81,5 @@ class LanguageViewModel @Inject constructor(
             orderNumber = 1,
             localName = DEFAULT_LANGUAGE_LOCAL_NAME
         )
-    }
-
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.LanguageScreen
     }
 }

@@ -2,13 +2,9 @@ package com.patsurvey.nudge.base
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.google.gson.JsonSyntaxException
-import com.nudge.core.CoreDispatchers.ioDispatcher
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
-import com.nudge.core.helper.TranslationEnum
-import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.componet_.component.AlertDialogState
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.usecase.AnalyticsEventUseCase
@@ -38,19 +34,13 @@ import com.patsurvey.nudge.utils.TIMEOUT_ERROR_MSG
 import com.patsurvey.nudge.utils.UNAUTHORISED_MESSAGE
 import com.patsurvey.nudge.utils.UNREACHABLE_ERROR_MSG
 import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
 import java.net.SocketTimeoutException
 import javax.inject.Inject
 
 abstract class BaseViewModel : ViewModel() {
-    @Inject
-    lateinit var translationHelper: TranslationHelper
-
     @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
     val tokenExpired = RetryHelper.tokenExpired
@@ -334,40 +324,6 @@ abstract class BaseViewModel : ViewModel() {
                 showHardEventLimitAlert.value.copy(showDialog = event.showDialog)
         }
 
-    }
-
-    fun ViewModel.ioViewModelScope(
-        start: CoroutineStart = CoroutineStart.DEFAULT,
-        block: suspend CoroutineScope.() -> Unit
-    ) {
-        viewModelScope.launch(context = ioDispatcher, start = start) {
-            block()
-        }
-    }
-
-    fun setTranslationConfig() {
-        ioViewModelScope {
-            translationHelper.initTranslationHelper(getScreenName())
-        }
-    }
-
-    open fun getScreenName(): TranslationEnum {
-        return TranslationEnum.NoScreen
-    }
-
-    fun getString(resId: Int): String {
-        return translationHelper.getString(resId)
-    }
-
-    fun stringResource(resId: Int): String {
-        return translationHelper.stringResource(resId)
-    }
-
-    fun stringResource(resId: Int, vararg formatArgs: Any): String {
-        return translationHelper.getString(
-            resId = resId,
-            formatArgs = formatArgs
-        )
     }
 
 }

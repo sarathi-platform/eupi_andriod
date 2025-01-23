@@ -12,6 +12,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -40,15 +42,15 @@ fun SyncHistoryScreen(
     syncType: String,
     viewModel: SyncHistoryViewModel
 ) {
+    val context= LocalContext.current
     val screenHeight = LocalConfiguration.current.screenHeightDp.dp
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.setTranslationConfig()
-        viewModel.getAllEventStatusForUser()
+        viewModel.getAllEventStatusForUser(context)
     }
     ToolbarWithMenuComponent(
-        title = viewModel.stringResource(
-            R.string.sync_data_history
+        title = stringResource(
+            id = R.string.sync_data_history
         ),
         modifier = Modifier.fillMaxSize(),
         isMenuIconRequired = false,
@@ -63,8 +65,7 @@ fun SyncHistoryScreen(
         ) {
             LastSyncTimeView(
                 lastSyncTime = viewModel.lastSyncTime.longValue,
-                mobileNumber = viewModel.getUserMobileNumber(),
-                translationHelper = viewModel.translationHelper
+                mobileNumber = viewModel.getUserMobileNumber()
             ) {}
             CreateEventUIList(viewModel, screenHeight)
         }
@@ -79,13 +80,13 @@ private fun CreateEventUIList(
 ) {
     if (viewModel.countDataList.value.isNotEmpty()) {
         EventTypeHistoryCard(
-            cardTitle = viewModel.stringResource(R.string.sync_data),
+            cardTitle = stringResource(R.string.sync_data),
             totalEvents = viewModel.totalDataEventCount.value,
             eventStatusList = viewModel.eventStatusDataUIList
         ) { }
 
         EventTypeHistoryCard(
-            cardTitle = viewModel.stringResource(R.string.sync_images),
+            cardTitle = stringResource(R.string.sync_images),
             totalEvents = viewModel.totalImageEventCount.value,
             eventStatusList = viewModel.eventStatusImageUIList
         ) { }
@@ -110,7 +111,7 @@ private fun CreateEventUIList(
                             )
                         ) {
                             append(
-                                viewModel.stringResource(R.string.no_history_available_right_now)
+                                stringResource(id = R.string.no_history_available_right_now)
                             )
                         }
                     },
