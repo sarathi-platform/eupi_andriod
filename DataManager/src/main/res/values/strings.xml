@@ -141,7 +141,7 @@
     <string name="edit_event">Edit Event</string>
     <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
-    <string name="assets">Assets</string>
+    <string name="assets">Asset Count</string>
     <string name="last_updated_days_ago">Last updated: %1$s days ago</string>
     <string name="last_1_month">Last 1 Month</string>
     <string name="hours">Hours</string>

@@ -19,6 +19,7 @@ import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
+import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
@@ -179,7 +180,7 @@ class DataTabScreenViewModel @Inject constructor(
             _incomeExpenseSummaryUiModel.putAll(
                 dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjectForDuration(
                     subjectLivelihoodMappingEntityList = subjectList.value,
-                    durationStart = getDayPriorCurrentTimeMillis(currentTime),
+                    durationStart = getDayPriorCurrentTimeMillis(IncomeExpenseConstants.MONTH_DURATION),
                     durationEnd = currentTime
                 )
             )
