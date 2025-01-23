@@ -172,18 +172,30 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     }
 
     override fun expandFirstNotStartedItem() {
-        if (!isActivityCompleted.value) {
+        expandedIds.clear()
 
-            val firstGroupWithNotStatedTask = if (isGroupingApplied.value) {
-                getFirstGroupWithNotStatedTask()
-            } else
-                null
+        if (isGroupingApplied.value) {
 
-            val firstNotStartedTaskIndex =
-                (if (isGroupingApplied.value) filterTaskMap[firstGroupWithNotStatedTask].value() else filterList.value.entries.toList())
-                .indexOfFirst { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
-            expandNextItem(firstNotStartedTaskIndex - 1, firstGroupWithNotStatedTask)
+            val groupKeySet = filterTaskMap.keys
+            groupKeySet.forEach { key ->
+                val notStartedTasks = filterTaskMap[key]?.value()?.find { task ->
+                    task.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name
+                }
+                notStartedTasks?.let {
+                    if (!expandedIds.contains(it.key)) {
+                        expandedIds.add(it.key)
+                    }
+                }
+            }
+        } else {
+            val filterIdsList = filterList.value.entries.toList()
+                .filter { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
 
+            filterIdsList.forEach {
+                if (!expandedIds.contains(it.key)) {
+                    expandedIds.add(it.key)
+                }
+            }
         }
     }
 

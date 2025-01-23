@@ -6,7 +6,6 @@ import android.net.Uri
 import android.text.TextUtils
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.animateColor
-import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
 import androidx.compose.foundation.background
@@ -17,15 +16,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -44,7 +48,6 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ANIMATE_COLOR
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
-import com.nudge.core.ROTATION_DEGREE_TRANSITION
 import com.nudge.core.TRANSITION
 import com.nudge.core.customGridHeight
 import com.nudge.core.helper.TranslationHelper
@@ -61,12 +64,14 @@ import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_27_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
 import com.nudge.core.ui.theme.lightGrayColor
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.questionTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -246,8 +251,6 @@ fun ExpandableTaskCardRow(
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
 
-                viewModel.expandNextItem(index, groupKey)
-
                 viewModel.checkIsActivityCompleted()
             }
         },
@@ -269,7 +272,7 @@ fun ExpandableTaskCardRow(
                     taskId = task.key,
                     status = SurveyStatusEnum.COMPLETED.name
                 )
-                viewModel.expandNextItem(index, groupKey)
+                viewModel.onExpandClicked(task)
             }
         }
 
@@ -310,13 +313,7 @@ fun ExpandableTaskCard(
     val animateColor by transition.animateColor({
         tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
     }, label = ANIMATE_COLOR) {
-        if (it) greenOnline else textColorDark
-    }
-
-    val arrowRotationDegree by transition.animateFloat({
-        tween(durationMillis = EXPANSTION_TRANSITION_DURATION)
-    }, label = ROTATION_DEGREE_TRANSITION) {
-        if (it) 180f else 0f
+        if (it) textColorDark else greenOnline
     }
 
     BasicCardView(
@@ -337,28 +334,23 @@ fun ExpandableTaskCard(
                 .fillMaxWidth()
                 .background(white)
         ) {
-            CardHeader(
+            SelectActivityCard(
                 title = title,
                 subTitle1 = subTitle1,
                 subtitle2 = subtitle2,
                 subtitle3 = subtitle3,
                 subtitle4 = subtitle4,
                 imagePath = imagePath,
+                taskStatus = taskStatus,
                 expanded = expanded,
                 onExpendClick = onExpendClick,
-                arrowRotationDegree = arrowRotationDegree,
                 animateColor = animateColor,
-                viewModel = viewModel
-            )
-
-            CardContent(
+                viewModel = viewModel,
                 translationHelper = viewModel.translationHelper,
-                expanded = expanded,
                 questionUiModel = questionUiModel,
                 taskMarkedNotAvailable = taskMarkedNotAvailable,
                 onAnswerSelection = onAnswerSelection,
                 isActivityCompleted = isActivityCompleted,
-                taskStatus = taskStatus,
                 secondaryButtonTitle = secondaryButtonTitle,
                 onNotAvailableClick = onNotAvailableClick,
                 context = context,
@@ -369,7 +361,7 @@ fun ExpandableTaskCard(
 }
 
 @Composable
-fun CardHeader(
+fun SelectActivityCard(
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -378,9 +370,18 @@ fun CardHeader(
     imagePath: Uri,
     expanded: Boolean,
     onExpendClick: (Boolean, TaskCardModel) -> Unit,
-    arrowRotationDegree: Float,
     animateColor: Color,
-    viewModel: ActivitySelectTaskViewModel
+    viewModel: ActivitySelectTaskViewModel,
+    translationHelper: TranslationHelper,
+    questionUiModel: QuestionUiModel?,
+    taskMarkedNotAvailable: MutableState<Boolean>,
+    onAnswerSelection: (optionValue: String, optionId: Int) -> Unit,
+    isActivityCompleted: Boolean,
+    secondaryButtonTitle: String,
+    taskStatus: MutableState<String?>,
+    onNotAvailableClick: () -> Unit,
+    context: Context,
+    isNotAvailableButtonEnable: Boolean
 ) {
     Column(
         modifier = Modifier
@@ -428,13 +429,20 @@ fun CardHeader(
                 SubContainerView(subTitle1)
             }
 
-            CardArrow(
-                modifier = Modifier,
-                degrees = arrowRotationDegree,
-                iconColor = animateColor,
-                arrowIcon = R.drawable.ic_baseline_keyboard_arrow_down_24,
-                onClick = { title?.let { onExpendClick(expanded, it) } }
-            )
+            if (taskStatus.value != StatusEnum.NOT_STARTED.name) {
+                CardArrow(
+                    modifier = Modifier.size(if (expanded) dimen_20_dp else dimen_27_dp),
+                    degrees = 0F,
+                    iconColor = animateColor,
+                    arrowIcon = if (!expanded)
+                        R.drawable.ic_check_circle else R.drawable.icon_close,
+                    onClick = {
+                        if (expanded) {
+                            title?.let { onExpendClick(expanded, it) }
+                        }
+                    }
+                )
+            }
         }
 
         Row(
@@ -461,27 +469,12 @@ fun CardHeader(
             viewModel.isDidiImageDialogVisible.value = false
         }
     }
-}
 
-@Composable
-fun CardContent(
-    translationHelper: TranslationHelper,
-    expanded: Boolean,
-    questionUiModel: QuestionUiModel?,
-    taskMarkedNotAvailable: MutableState<Boolean>,
-    onAnswerSelection: (optionValue: String, optionId: Int) -> Unit,
-    isActivityCompleted: Boolean,
-    secondaryButtonTitle: String,
-    taskStatus: MutableState<String?>,
-    onNotAvailableClick: () -> Unit,
-    context: Context,
-    isNotAvailableButtonEnable: Boolean
-) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-//        if (expanded) {
+        if (expanded) {
             OptionsUI(
                 translationHelper = translationHelper,
                 questionUiModel = questionUiModel,
@@ -494,9 +487,11 @@ fun CardContent(
                 context = context,
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
-//        } else {
-//            DisplaySelectedOption(translationHelper, questionUiModel, taskStatus.value)
-//        }
+        } else {
+            DisplaySelectedOption(translationHelper, questionUiModel, taskStatus.value) {
+                title?.let { onExpendClick(expanded, it) }
+            }
+        }
     }
 }
 
@@ -504,11 +499,10 @@ fun CardContent(
 fun DisplaySelectedOption(
     translationHelper: TranslationHelper,
     questionUiModel: QuestionUiModel?,
-    taskStatus: String?
+    taskStatus: String?,
+    onViewClick: () -> Unit
 ) {
-    val context = LocalContext.current
     var options = BLANK_STRING
-
     options = if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
         translationHelper.stringResource(R.string.not_available)
     } else {
@@ -516,6 +510,25 @@ fun DisplaySelectedOption(
             ?.joinToString(",").toString()
     }
     if (!options.isNullOrEmpty()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = dimen_0_dp,
+                    end = dimen_16_dp,
+                    top = dimen_10_dp
+                )
+                .padding(horizontal = dimen_16_dp),
+            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+        ) {
+            SubContainerView(
+                TaskCardModel(
+                    label = options.toString(),
+                    value = BLANK_STRING,
+                    icon = null
+                )
+            )
+        }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -530,22 +543,32 @@ fun DisplaySelectedOption(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(
-                    start = dimen_0_dp,
-                    end = dimen_16_dp,
-                    bottom = dimen_10_dp,
-                    top = dimen_10_dp
-                )
-                .padding(horizontal = dimen_16_dp),
-            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                .padding(start = 16.dp, end = 16.dp, bottom = 8.dp, top = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            SubContainerView(
-                TaskCardModel(
-                    label = options.toString(),
-                    value = BLANK_STRING,
-                    icon = null
-                )
-            )
+            if (taskStatus == StatusEnum.COMPLETED.name) {
+                Row(modifier = Modifier.clickable {
+                    onViewClick()
+                }) {
+                    Text(
+                        text = translationHelper.stringResource(
+                            R.string.task_view
+                        ),
+                        modifier = Modifier
+                            .padding(horizontal = dimen_5_dp)
+                            .absolutePadding(bottom = 3.dp),
+                        color = blueDark,
+                        style = newMediumTextStyle,
+                    )
+                    Spacer(modifier = Modifier.weight(1f))
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = "",
+                        tint = blueDark,
+                    )
+                }
+            }
         }
     }
 }
