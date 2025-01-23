@@ -3,7 +3,6 @@ package com.patsurvey.nudge.activities.forms.presentation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.BLANK_STRING
@@ -27,18 +26,20 @@ fun SettingFormsScreen(
 
     val context = LocalContext.current
     LaunchedEffect(key1 = true) {
+        viewModel.setTranslationConfig()
         viewModel.initOptions()
     }
     val settingConfig = CommonSettingScreenConfig(
         isSyncEnable = false,
         mobileNumber = viewModel.getUserMobileNumber(),
         lastSyncTime = 0L,
-        title = stringResource(id = R.string.forms),
+        title = viewModel.stringResource(R.string.forms),
         isScreenHaveLogoutButton = false,
         optionList = viewModel.optionList.value,
         versionText = BLANK_STRING,
         isItemCard = true,
-        errorMessage = stringResource(id = R.string.no_form_available_yet_text)
+        errorMessage = viewModel.stringResource(R.string.no_form_available_yet_text),
+        translationHelper = viewModel.translationHelper
     )
     CommonSettingScreen(
         settingScreenConfig = settingConfig,
@@ -64,7 +65,7 @@ fun SettingFormsScreen(
                 } else {
                     showToast(
                         context,
-                        context.getString(com.patsurvey.nudge.R.string.no_data_form_e_not_generated_text)
+                        viewModel.getString(com.patsurvey.nudge.R.string.no_data_form_e_not_generated_text)
                     )
                 }
 
@@ -77,7 +78,7 @@ fun SettingFormsScreen(
                         else
                             showToast(
                                 context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
+                                viewModel.getString(com.patsurvey.nudge.R.string.no_data_form_a_not_generated_text)
                             )
                     }
 
@@ -88,7 +89,7 @@ fun SettingFormsScreen(
                         else
                             showToast(
                                 context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
+                                viewModel.getString(com.patsurvey.nudge.R.string.no_data_form_b_not_generated_text)
                             )
                     }
 
@@ -99,7 +100,7 @@ fun SettingFormsScreen(
                         else
                             showToast(
                                 context,
-                                context.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
+                                viewModel.getString(com.patsurvey.nudge.R.string.no_data_form_c_not_generated_text)
                             )
                     }
                 }

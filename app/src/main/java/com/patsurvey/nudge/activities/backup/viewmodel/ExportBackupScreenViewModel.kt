@@ -59,6 +59,7 @@ import com.nudge.core.exportcsv.ExportService
 import com.nudge.core.exportcsv.Exportable
 import com.nudge.core.exportcsv.Exports
 import com.nudge.core.getFirstName
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
@@ -71,6 +72,7 @@ import com.nudge.core.utils.AESHelper
 import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.utils.NudgeCore
@@ -104,7 +106,7 @@ class ExportBackupScreenViewModel @Inject constructor(
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val eventWriterHelperImpl: EventWriterHelperImpl,
     ) : BaseViewModel() {
-    var mAppContext: Context
+    lateinit var mAppContext: Context
     val _exportOptionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val exportOptionList: State<List<SettingOptionModel>> get() = _exportOptionList
     private val _loaderState = mutableStateOf<LoaderState>(LoaderState(false))
@@ -113,18 +115,69 @@ class ExportBackupScreenViewModel @Inject constructor(
     var userType: String = BLANK_STRING
     val loaderState: State<LoaderState> get() = _loaderState
 
-    init {
+    fun initOptions() {
         mAppContext = NudgeCore.getAppContext()
         userType =
             settingBSUserCase.getSettingOptionListUseCase.getUserType().toString()
-
+        setTranslationConfig()
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
-        _exportOptionList.value =
-            exportImportUseCase.getExportOptionListUseCase.fetchExportDataOptionList()
+        _exportOptionList.value = fetchExportDataOptionList()
 
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
+    }
+
+    fun fetchExportDataOptionList(): List<SettingOptionModel> {
+        val list = ArrayList<SettingOptionModel>()
+        list.add(
+            SettingOptionModel(
+                1,
+                getString(R.string.export_images),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_IMAGES.name,
+                trailingIcon = R.drawable.ic_share_icon
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                2,
+                getString(R.string.export_event_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_EVENT_FILE.name,
+                trailingIcon = R.drawable.ic_share_icon
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                3,
+                getString(R.string.export_database),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_DATABASE.name,
+                trailingIcon = R.drawable.ic_share_icon
+            )
+        )
+        list.add(
+            SettingOptionModel(
+                4,
+                getString(R.string.export_log_file),
+                BLANK_STRING,
+                SettingTagEnum.EXPORT_LOG_FILE.name,
+                trailingIcon = R.drawable.ic_share_icon
+            )
+        )
+        if (loggedInUserType.value == UPCM_USER) {
+            list.add(
+                SettingOptionModel(
+                    5,
+                    getString(R.string.export_baseline_qna),
+                    BLANK_STRING,
+                    SettingTagEnum.EXPORT_BASELINE_QNA.name,
+                    trailingIcon = R.drawable.ic_share_icon
+                )
+            )
+        }
+        return list.ifEmpty { arrayListOf() }
     }
 
     fun exportOnlyLogFile(context: Context) {
@@ -135,7 +188,7 @@ class ExportBackupScreenViewModel @Inject constructor(
                 analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.EXPORT_LOG_FILE.eventName)
                 val logFile = BSLogWriter.buildLogFile(appContext = mAppContext) {
                     onEvent(LoaderEvent.UpdateLoaderState(false))
-                    onEvent(ToastMessageEvent.ShowToastMessage(context.getString(R.string.no_logs_available)))
+                    onEvent(ToastMessageEvent.ShowToastMessage(getString(R.string.no_logs_available)))
                 }
                 if (logFile != null) {
                     exportLogFile(
@@ -574,7 +627,7 @@ class ExportBackupScreenViewModel @Inject constructor(
     private suspend fun handleError(exception: Exception, context: Context) {
         exception.printStackTrace()
         withContext(CoreDispatchers.mainDispatcher) {
-            showCustomToast(context, context.getString(R.string.no_data_available_at_the_moment))
+            showCustomToast(context, getString(R.string.no_data_available_at_the_moment))
         }
         BaselineLogger.e(
             "ExportImportViewModel",
@@ -648,6 +701,10 @@ class ExportBackupScreenViewModel @Inject constructor(
             hamletListQna
         }
         return list ?: emptyList()
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.ExportBackupScreen
     }
 
 

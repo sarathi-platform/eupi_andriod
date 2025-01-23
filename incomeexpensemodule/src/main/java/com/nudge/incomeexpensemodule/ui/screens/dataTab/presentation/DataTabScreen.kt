@@ -28,7 +28,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -154,7 +153,7 @@ fun DataTabScreen(
             } else {
                 showCustomToast(
                     context,
-                    context.getString(R.string.refresh_failed_please_try_again)
+                    dataTabScreenViewModel.getString(R.string.refresh_failed_please_try_again)
                 )
             }
         }
@@ -296,7 +295,7 @@ fun DataTabScreen(
                                         textProperties = TextProperties.getBasicTextProperties(
                                             text = buildAnnotatedString {
                                                 //TODO write function to get this string for the filter applied.
-                                                append(stringResource(R.string.showing))
+                                                append(dataTabScreenViewModel.stringResource(R.string.showing))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,
@@ -305,7 +304,7 @@ fun DataTabScreen(
                                                 ) {
                                                     append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
                                                 }
-                                                append(stringResource(R.string.results_for))
+                                                append(dataTabScreenViewModel.stringResource(R.string.results_for))
                                                 withStyle(
                                                     SpanStyle(
                                                         color = textColorDark,

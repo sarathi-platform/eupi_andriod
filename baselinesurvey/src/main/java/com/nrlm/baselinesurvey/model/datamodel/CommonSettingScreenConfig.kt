@@ -1,6 +1,7 @@
 package com.nrlm.baselinesurvey.model.datamodel
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.SettingOptionModel
 
 data class CommonSettingScreenConfig(
@@ -12,5 +13,6 @@ data class CommonSettingScreenConfig(
     val lastSyncTime: Long? = 0L,
     val mobileNumber: String,
     val isItemCard: Boolean = false,
-    val errorMessage: String = BLANK_STRING
+    val errorMessage: String = BLANK_STRING,
+    val translationHelper: TranslationHelper
 )

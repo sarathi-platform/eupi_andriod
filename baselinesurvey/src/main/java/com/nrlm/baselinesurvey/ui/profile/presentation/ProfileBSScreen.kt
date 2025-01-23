@@ -1,9 +1,6 @@
 package com.nrlm.baselinesurvey.ui.profile.presentation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -17,11 +14,8 @@ fun ProfileBSScreen(
      viewModel:ProfileBSViewModel?=null,
      navController: NavController
 ){
-    val context = LocalContext.current
-    LaunchedEffect(key1 = Unit) {
-        viewModel?.getAllUserDetails(context)
-    }
-    CommonProfileScreen(title = stringResource(id = R.string.profile),
+    CommonProfileScreen(
+        title = viewModel?.stringResource(R.string.profile) ?: BLANK_STRING,
         userDetailList = viewModel?.userDetailList ?: emptyList()
     ) {
         navController.popBackStack()

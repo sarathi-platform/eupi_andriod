@@ -15,7 +15,6 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 @Module
 class TranslationHelperModule {
-    @Singleton
     @Provides
     fun provideTranslationHelper(
         translationConfigDao: TranslationConfigDao, coreSharedPrefs: CoreSharedPrefs,
@@ -26,5 +25,11 @@ class TranslationHelperModule {
             coreSharedPrefs = coreSharedPrefs,
             context = context
         )
+    }
+
+    @Singleton
+    @Provides
+    fun provideCoreSharedPrefs(@ApplicationContext context: Context): CoreSharedPrefs {
+        return CoreSharedPrefs(context)
     }
 }

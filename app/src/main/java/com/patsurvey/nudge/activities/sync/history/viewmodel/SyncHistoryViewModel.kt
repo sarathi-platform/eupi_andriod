@@ -1,13 +1,13 @@
 package com.patsurvey.nudge.activities.sync.history.viewmodel
 
-import android.content.Context
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.lifecycle.ViewModel
+import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.database.entities.Events
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.isDataEvent
 import com.nudge.core.isImageEvent
 import com.patsurvey.nudge.activities.sync.history.domain.use_case.SyncHistoryUseCase
@@ -19,7 +19,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SyncHistoryViewModel @Inject constructor(
         val syncHistoryUseCase: SyncHistoryUseCase
-):ViewModel() {
+) : BaseViewModel() {
         private val _eventList = mutableStateOf<List<Events>>(emptyList())
         val eventList: State<List<Events>> get() = _eventList
         val _countDataList = mutableStateOf<List<Pair<String, Int>>>(emptyList())
@@ -30,7 +30,7 @@ class SyncHistoryViewModel @Inject constructor(
         val totalImageEventCount = mutableStateOf(0)
         val lastSyncTime = mutableLongStateOf(0L)
 
-        fun getAllEventStatusForUser(context: Context) {
+    fun getAllEventStatusForUser() {
                 CoroutineScope(CoreDispatchers.ioDispatcher).launch {
                         _eventList.value =
                                 syncHistoryUseCase.getSyncHistoryUseCase.getAllEventsForUser()
@@ -122,4 +122,11 @@ class SyncHistoryViewModel @Inject constructor(
                 }
         }
         fun getUserMobileNumber() = syncHistoryUseCase.getSyncHistoryUseCase.getUserMobileNumber()
+    override fun <T> onEvent(event: T) {
+        TODO("Not yet implemented")
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.SyncHistoryScreen
+    }
 }
