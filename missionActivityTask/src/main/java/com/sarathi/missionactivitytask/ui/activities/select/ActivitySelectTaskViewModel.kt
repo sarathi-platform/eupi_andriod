@@ -178,10 +178,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
 
             val groupKeySet = filterTaskMap.keys
             groupKeySet.forEach { key ->
-                val notStartedTasks = filterTaskMap[key]?.value()?.find { task ->
+                val notStartedTasks = filterTaskMap[key]?.value()?.filter { task ->
                     task.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name
                 }
-                notStartedTasks?.let {
+                notStartedTasks?.forEach {
                     if (!expandedIds.contains(it.key)) {
                         expandedIds.add(it.key)
                     }
