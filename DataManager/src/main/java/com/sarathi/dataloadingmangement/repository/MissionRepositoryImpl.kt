@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
@@ -20,8 +22,9 @@ import com.sarathi.dataloadingmangement.data.dao.SubjectAttributeDao
 import com.sarathi.dataloadingmangement.data.dao.SurveyConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
 import com.sarathi.dataloadingmangement.data.dao.UiConfigDao
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.livelihood.LivelihoodDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityLanguageAttributesEntity
@@ -36,8 +39,8 @@ import com.sarathi.dataloadingmangement.data.entities.ProgrammeEntity
 import com.sarathi.dataloadingmangement.data.entities.SubjectAttributeEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.UiConfigEntity
-import com.sarathi.dataloadingmangement.data.entities.revamp.LivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.revamp.MissionConfigEntity
+import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodConfigEntity
 import com.sarathi.dataloadingmangement.domain.ActivityRequest
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityResponse
@@ -52,7 +55,10 @@ import com.sarathi.dataloadingmangement.model.mat.response.ProgrameResponse
 import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttributeResponse
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
+import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -75,7 +81,8 @@ class MissionRepositoryImpl @Inject constructor(
     val grantConfigDao: GrantConfigDao,
     val surveyConfigEntityDao: SurveyConfigEntityDao,
     val missionConfigEntityDao: MissionConfigEntityDao,
-    val livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+    val missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao,
+    val livelihoodDao: LivelihoodDao
 ) : IMissionRepository {
 
     override suspend fun fetchActivityDataFromServer(
@@ -508,17 +515,67 @@ class MissionRepositoryImpl @Inject constructor(
         surveyId: Int,
         activityTypeId: Long
     ) {
-        grantConfig.forEach {
+        grantConfig.forEach { grantConfig ->
             grantConfigDao.insertGrantActivityConfig(
                 GrantConfigEntity.getGrantConfigEntity(
                     userId = sharedPrefs.getUniqueUserIdentifier(),
                     activityConfigId = activityTypeId,
                     surveyId = surveyId,
-                    grantConfigResponse = it
+                    grantConfigResponse = getGrantConfigForLanguageThatMappedToState(grantConfig)
                 )
             )
         }
     }
+
+    private fun getGrantConfigForLanguageThatMappedToState(grantConfigResponse: GrantConfigResponse): GrantConfigResponse {
+        try {
+
+
+            val grantType =
+                object : TypeToken<List<OptionsItem?>?>() {}.type
+            val grantModeOptions = Gson().fromJson<List<OptionsItem>>(
+                grantConfigResponse.grantMode,
+                grantType
+            )
+
+            val grantNatureOptions = Gson().fromJson<List<OptionsItem>>(
+                grantConfigResponse.grantNature,
+                grantType
+            )
+
+            grantModeOptions.forEach {
+                checkLanguageAndSaveForCurrentState(it)
+            }
+            grantNatureOptions.forEach {
+                checkLanguageAndSaveForCurrentState(it)
+            }
+            grantConfigResponse.grantMode = Gson().toJson(grantModeOptions)
+            grantConfigResponse.grantNature = Gson().toJson(grantNatureOptions)
+
+            return grantConfigResponse
+        } catch (exception: Exception) {
+            CoreLogger.e(tag = "GrantConfigSave", msg = exception.stackTraceToString())
+            return grantConfigResponse
+        }
+    }
+
+    private fun checkLanguageAndSaveForCurrentState(it: OptionsItem) {
+        it.surveyLanguageAttributes?.forEach { languageAttribute ->
+            val stateCode = sharedPrefs.getStateCode().lowercase()
+            val languageCodeParts = languageAttribute.languageCode.lowercase().split("_")
+            val updatedLanguageCode =
+                if (languageCodeParts.size > 1 && languageCodeParts[1].lowercase() == stateCode) {
+                    languageCodeParts.firstOrNull()?.lowercase() ?: com.nudge.core.BLANK_STRING
+                } else {
+                    languageAttribute.languageCode
+                }
+
+            languageAttribute.languageCode = updatedLanguageCode
+        }
+    }
+
+
+
 
     private fun updateTaskAttributes(
         missionId: Int,
@@ -581,6 +638,40 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
+        val missionUIInfoModel = missionLanguageAttributeDao.fetchMissionInfo(
+            missionId = missionId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+        val livelihoodName =
+            findLivelihoodSubtitle(missionUIInfoModel?.livelihoodType)
+        return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
+    }
+
+    private fun findLivelihoodSubtitle(livelihoodType: String?): String? {
+        val livelihood = livelihoodDao.getLivelihoodList(
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+        val livelihoodName =
+            livelihood.find { it.type.equals(livelihoodType, true) }?.name
+                ?: livelihoodType
+        return livelihoodName
+    }
+
+    override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
+        val activityUIInfoModel = activityLanguageDao.fetchActivityInfo(
+            missionId = missionId,
+            activityId = activityId,
+            userId = sharedPrefs.getUniqueUserIdentifier(),
+            languageCode = sharedPrefs.getSelectedLanguageCode()
+        )
+        val livelihoodName =
+            findLivelihoodSubtitle(activityUIInfoModel?.livelihoodType)
+        return activityUIInfoModel?.copy(livelihoodName = livelihoodName)
+    }
+
     private fun saveSurveyConfig(
         activityId: Int,
         missionId: Int,
@@ -617,17 +708,16 @@ class MissionRepositoryImpl @Inject constructor(
         )
         missionConfig.livelihoodConfig?.let { livelihoodList ->
             deleteLivelihoodConfig(missionId = missionId)
-            val livelihoodEntities = livelihoodList.map { livelihood ->
-                LivelihoodConfigEntity.getLivelihoodConfigEntity(
+            missionLivelihoodConfigEntityDao.insertLivelihoodConfigs(
+                MissionLivelihoodConfigEntity.getLivelihoodConfigEntityList(
                     missionId = missionId,
                     missionType = missionConfig.missionType ?: BLANK_STRING,
-                    livelihoodType = livelihood?.livelihoodType ?: BLANK_STRING,
-                    livelihoodOrder = livelihood?.livelihoodOrder ?: 0,
-                    languageId = livelihood?.languageCode ?: BLANK_STRING,
+                    livelihoodType = livelihoodList?.livelihoodType ?: BLANK_STRING,
+                    livelihoodOrder = livelihoodList?.livelihoodOrder ?: 0,
+                    languages = livelihoodList.languages,
                     userId = userId
                 )
-            }
-            livelihoodConfigEntityDao.insertLivelihoodConfigs(livelihoodEntities)
+            )
         }
     }
 
@@ -648,7 +738,7 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     private fun deleteLivelihoodConfig(missionId: Int) {
-        livelihoodConfigEntityDao.deleteLivelihoodConfig(
+        missionLivelihoodConfigEntityDao.deleteLivelihoodConfig(
             missionId = missionId,
             uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier()
         )

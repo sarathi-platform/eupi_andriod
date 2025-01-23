@@ -53,7 +53,7 @@
     <string name="details_have_already_been_added">Details have already been added!</string>
     <string name="no_result_found">No result found</string>
     <string name="proceed">Proceed</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="last_sync_date_time">Last Sync Time:</string>
     <string name="profile_phone">Phone Number</string>
     <string name="sync_days">%1$s days</string>
@@ -63,4 +63,5 @@
     <string name="just_now">Just Now</string>
     <string name="ongoing_tab_title">Ongoing</string>
     <string name="completed_tab_title">Completed</string>
+    <string name="search_by_mission">Search by Mission</string>
 </resources>

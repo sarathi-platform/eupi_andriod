@@ -59,8 +59,8 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.ProductDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
-import com.sarathi.dataloadingmangement.data.dao.revamp.LivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.revamp.MissionConfigEntityDao
+import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigEntityDao
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
@@ -404,7 +404,8 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
-    fun provideLivelihoodConfigEntityDao(db: NudgeGrantDatabase) = db.livelihoodConfigEntityDao()
+    fun provideLivelihoodConfigEntityDao(db: NudgeGrantDatabase) =
+        db.missionLivelihoodConfigEntityDao()
 
 
     @Provides
@@ -487,7 +488,8 @@ class DataLoadingModule {
         formUiConfigDao: FormUiConfigDao,
         surveyConfigEntityDao: SurveyConfigEntityDao,
         missionConfigEntityDao: MissionConfigEntityDao,
-        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+        missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao,
+        livelihoodDao: LivelihoodDao
     ): IMissionRepository {
         return MissionRepositoryImpl(
             apiInterface = apiService,
@@ -507,7 +509,8 @@ class DataLoadingModule {
             formUiConfigDao = formUiConfigDao,
             surveyConfigEntityDao = surveyConfigEntityDao,
             missionConfigEntityDao = missionConfigEntityDao,
-            livelihoodConfigEntityDao = livelihoodConfigEntityDao
+            missionLivelihoodConfigEntityDao = missionLivelihoodConfigEntityDao,
+            livelihoodDao = livelihoodDao
         )
     }
 
@@ -758,7 +761,7 @@ class DataLoadingModule {
         eventStatusDao: EventStatusDao,
         imageStatusDao: ImageStatusDao,
         missionConfigEntityDao: MissionConfigEntityDao,
-        livelihoodConfigEntityDao: LivelihoodConfigEntityDao
+        missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao
 
     ): IEventWriterRepository {
         return EventWriterRepositoryImpl(
@@ -769,7 +772,7 @@ class DataLoadingModule {
             eventStatusDao = eventStatusDao,
             imageStatusDao = imageStatusDao,
             missionConfigEntityDao = missionConfigEntityDao,
-            livelihoodConfigEntityDao = livelihoodConfigEntityDao
+            missionLivelihoodConfigEntityDao = missionLivelihoodConfigEntityDao
         )
     }
 

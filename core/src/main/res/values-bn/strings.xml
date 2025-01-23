@@ -60,7 +60,7 @@
     <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
     <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
     <string name="proceed">এগিয়ে যান</string>
-    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
+    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\n আপনি কি অবিরত করতে চান?</string>
     <string name="last_sync_date_time">আগের সিঙ্ক সময়:</string>
     <string name="profile_phone">ফোন নম্বর</string>
     <string name="sync_days">%1$s দিন</string>
@@ -70,4 +70,5 @@
     <string name="just_now">মাত্ৰ এতিয়াই</string>
     <string name="ongoing_tab_title">Ongoing</string>
     <string name="completed_tab_title">Completed</string>
+    <string name="search_by_mission">Search by Mission</string>
 </resources>

@@ -70,10 +70,10 @@ fun LivelihoodDropDownScreen(
     }
     if (viewModel.showCustomDialog.value.isDialogVisible ) {
         ShowCustomDialog(
-            title = viewModel.stringResource(context, R.string.are_you_sure),
-            message = viewModel.stringResource(context, R.string.form_alert_dialog_message),
-            positiveButtonTitle = viewModel.stringResource(context, R.string.proceed_txt),
-            negativeButtonTitle = viewModel.stringResource(context, R.string.cancel_txt),
+            title = viewModel.stringResource(R.string.are_you_sure),
+            message = viewModel.stringResource(R.string.form_alert_dialog_message),
+            positiveButtonTitle = viewModel.stringResource(R.string.proceed_txt),
+            negativeButtonTitle = viewModel.stringResource(R.string.cancel_txt),
             onPositiveButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navController.popBackStack()
@@ -119,7 +119,6 @@ fun LivelihoodDropDownScreen(
                             ) {
                                 androidx.compose.material.Text(
                                     text = viewModel.stringResource(
-                                        context,
                                         R.string.primary_and_secondary_value_not_same
                                     ),
                                     color = Color.Red,
@@ -132,8 +131,8 @@ fun LivelihoodDropDownScreen(
                     }
 
                     ButtonPositive(
-                        buttonTitle = viewModel.stringResource(context, R.string.submit),
-                        isActive = viewModel.isButtonEnable.value,
+                        buttonTitle = viewModel.stringResource(R.string.submit),
+                        isActive = viewModel.isButtonEnable.value && !viewModel.isActivityCompleted.value,
                         isLeftArrow = false,
                         onClick = {
                             viewModel.saveButtonClicked() {
@@ -154,6 +153,7 @@ fun LivelihoodDropDownScreen(
                 }
             } else {
                 DropdownView(
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     translationHelper = viewModel.translationHelper,
                     livelihoodList = viewModel.livelihoodList.value,
                     primaryLivelihoodId = viewModel.primaryLivelihoodId.value,
@@ -197,6 +197,7 @@ fun DropdownView(
     livelihoodList: List<LivelihoodUiEntity>,
     primaryLivelihoodId: Int,
     secondaryLivelihoodId: Int,
+    isEditAllowed: Boolean,
     onPrimaryLivelihoodSelected: (primaryLivelihoodId: Int) -> Unit,
     onSecondaryLivelihoodSelected: (secondaryLivelihoodId: Int) -> Unit,
 ) {
@@ -208,9 +209,8 @@ fun DropdownView(
         val firstDropDownItems = livelihoodList
 
         LivelihoodPlanningDropDownComponent(
-            isEditAllowed = true,
+            isEditAllowed = isEditAllowed,
             title = translationHelper.stringResource(
-                context,
                 R.string.select_first_livelihood_for_didi
             ),
             isMandatory = true,
@@ -226,9 +226,9 @@ fun DropdownView(
         val secondaryDropDownItems = livelihoodList
         LivelihoodPlanningDropDownComponent(
             title = translationHelper.stringResource(
-                context,
                 R.string.select_second_livelihood_for_didi
             ),
+            isEditAllowed = isEditAllowed,
             isMandatory = true,
             diableItem = selectedItem1 ?: 0,
             enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,

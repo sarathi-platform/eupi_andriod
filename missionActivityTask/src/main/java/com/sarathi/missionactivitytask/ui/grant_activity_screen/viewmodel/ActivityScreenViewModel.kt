@@ -1,10 +1,13 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.helper.TranslationEnum
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
@@ -12,6 +15,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -40,10 +44,12 @@ class ActivityScreenViewModel @Inject constructor(
     val activityList: State<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var showDialog = mutableStateOf<Boolean>(false)
+    var missionInfoUIModel by mutableStateOf(MissionInfoUIModel.getDefaultValue())
 
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadMissionRelatedData(isRefresh = false)
             }
 
@@ -71,7 +77,10 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-
+            val missionDetails = fetchAllDataUseCase.fetchMissionInfo(missionId)
+            withContext(mainDispatcher) {
+                missionInfoUIModel = missionDetails
+            }
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,
@@ -145,5 +154,9 @@ class ActivityScreenViewModel @Inject constructor(
 
         loadMissionRelatedData(isRefresh = true)
 
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.ActivityScreen
     }
 }

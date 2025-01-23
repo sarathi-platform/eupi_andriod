@@ -26,10 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
@@ -56,6 +57,7 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun LivelihoodTaskCard(
+    translationHelper: TranslationHelper,
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -83,6 +85,7 @@ fun LivelihoodTaskCard(
     val taskStatus = remember(status?.value) {
         mutableStateOf(status?.value)
     }
+    val context = LocalContext.current
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
@@ -149,7 +152,7 @@ fun LivelihoodTaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = stringResource(id = R.string.not_available),
+                        text = translationHelper.stringResource(R.string.not_available),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -165,7 +168,7 @@ fun LivelihoodTaskCard(
                         )
                     } else {
                         Text(
-                            text = stringResource(id = R.string.in_progress),
+                            text = translationHelper.stringResource(R.string.in_progress),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -227,6 +230,7 @@ fun LivelihoodTaskCard(
                 ) {
 
                     PrimarySecondaryButtonView(
+                        translationHelper = translationHelper,
                         modifier = Modifier.weight(1.0f),
                         secondaryButtonText?.value ?: BLANK_STRING,
                         taskMarkedNotAvailable,
@@ -265,7 +269,9 @@ fun LivelihoodTaskCard(
                         }) {
 
                             Text(
-                                text = if (isActivityCompleted) stringResource(R.string.task_view) else stringResource(R.string.edit),
+                                text = if (isActivityCompleted) translationHelper.stringResource(
+                                    R.string.task_view
+                                ) else translationHelper.stringResource(R.string.edit),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -284,11 +290,14 @@ fun LivelihoodTaskCard(
                     }
                     else {
                         PrimarySecondaryButtonView(
+                            translationHelper = translationHelper,
                             modifier = Modifier.weight(1.0f),
                             secondaryButtonText?.value ?: BLANK_STRING,
                             taskMarkedNotAvailable,
                             onNotAvailable,
-                            primaryButtonText = stringResource(R.string.continue_text),
+                            primaryButtonText = translationHelper.stringResource(
+                                R.string.continue_text
+                            ),
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,

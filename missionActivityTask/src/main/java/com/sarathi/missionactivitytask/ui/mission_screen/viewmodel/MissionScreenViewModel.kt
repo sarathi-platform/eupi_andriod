@@ -14,6 +14,7 @@ import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.toCamelCase
@@ -73,6 +74,7 @@ class MissionScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAllData(false)
             }
 
@@ -191,11 +193,8 @@ class MissionScreenViewModel @Inject constructor(
 
             }
 
-            TabsCore.setSubTabIndex(
-                TabsEnum.MissionTab.tabIndex,
-                tabs.indexOf(SubTabs.OngoingMissions)
-            )
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
+            checkAndUpdateDefaultTabAndCount()
             createMissionFilters()
             onEvent(
                 CommonEvents.OnFilterUiModelSelected(
@@ -206,18 +205,25 @@ class MissionScreenViewModel @Inject constructor(
                     )
                 )
             )
-
-
-            updateCountMap()
-
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
+    private suspend fun checkAndUpdateDefaultTabAndCount() {
+        val currentSubTabIndex = TabsCore.getSubTabForTabIndex(TabsEnum.MissionTab.tabIndex)
+        val newSubTabIndex = if (currentSubTabIndex == -1) {
+            tabs.indexOf(SubTabs.OngoingMissions)
+        } else {
+            currentSubTabIndex
+        }
+        TabsCore.setSubTabIndex(TabsEnum.MissionTab.tabIndex, newSubTabIndex)
+        updateCountMap()
+    }
     private suspend fun createMissionFilters() {
         val filterList = ArrayList<FilterUiModel>()
+        missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
 
         filterList.add(
@@ -235,7 +241,7 @@ class MissionScreenViewModel @Inject constructor(
             )
         )
 
-        with(livelihoods) {
+        with(livelihoods.distinctBy { it.programLivelihoodId }) {
             iterator().forEach {
                 filterList.add(
                     FilterUiModel(
@@ -252,7 +258,7 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateCountMap() {
+    private suspend fun updateCountMap() {
         countMap.put(
             SubTabs.OngoingMissions,
             missionList.value.filter { it.missionStatus != SurveyStatusEnum.COMPLETED.name }.size
@@ -360,5 +366,9 @@ class MissionScreenViewModel @Inject constructor(
         filterLabel = "$filterLabel $filterValueCount"
 
         return filterLabel
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.MissionScreen
     }
 }

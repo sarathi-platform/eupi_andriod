@@ -17,14 +17,13 @@ import javax.inject.Singleton
 class TranslationHelperModule {
     @Provides
     fun provideTranslationHelper(
-        translationConfigDao: TranslationConfigDao,
-        coreSharedPrefs: CoreSharedPrefs,
-        @ApplicationContext applicationContext: Context
+        translationConfigDao: TranslationConfigDao, coreSharedPrefs: CoreSharedPrefs,
+        @ApplicationContext context: Context
     ): TranslationHelper {
         return TranslationHelper(
             translationConfigDao = translationConfigDao,
             coreSharedPrefs = coreSharedPrefs,
-            context = applicationContext
+            context = context
         )
     }
 

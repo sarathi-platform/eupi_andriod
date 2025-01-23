@@ -8,9 +8,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
@@ -23,22 +25,27 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.greenActiveIcon
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.lightGrayColor
 import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.surveymanager.R
 
 @Composable
 fun RadioOptionTypeComponent(
@@ -91,6 +98,7 @@ fun RadioOptionTypeComponent(
                 optionItemEntityState.forEachIndexed { index, optionValueText ->
                     OptionCard(
                         modifier = Modifier.weight(1f),
+                        index = index,
                         textColor = selectTextColor(
                             selectedValueState,
                             optionValueText,
@@ -106,7 +114,10 @@ fun RadioOptionTypeComponent(
                             optionValueText = optionValueText,
                             isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
                         ),
-                        optionText = optionValueText.description.toString()
+                        optionText = optionValueText.description.toString(),
+                        isOptionSelected = selectedValueState.value.equals(
+                            optionValueText.description.toString(), ignoreCase = true
+                        )
                     ) {
                         if (!isActivityCompleted) {
                             selectedValueState.value = optionValueText.description.toString()
@@ -207,6 +218,9 @@ fun OptionCard(
     optionText: String,
     backgroundColor: Color,
     borderColor: Color,
+    isOptionSelected: Boolean = false,
+    isNotAvailableOption: Boolean = false,
+    index: Int? = 0,
     onClick: () -> Unit
 ) {
     TextButton(
@@ -224,6 +238,25 @@ fun OptionCard(
             .then(modifier)
 
     ) {
+        if (!isNotAvailableOption) {
+            Icon(
+                if (index == 0)
+                    painterResource(id = R.drawable.icon_check)
+                else
+                    painterResource(id = R.drawable.icon_close),
+                contentDescription = "Button Icon",
+                tint = if (isOptionSelected) {
+                    white
+                } else {
+                    if (index == 0)
+                        greenActiveIcon
+                    else
+                        redOffline
+                },
+                modifier = Modifier.height(dimen_12_dp)
+            )
+            Spacer(modifier = Modifier.width(dimen_5_dp))
+        }
         Text(
             text = optionText, color = textColor
         )
