@@ -2,6 +2,30 @@ package com.nudge.core.helper
 
 
 enum class TranslationEnum(val screenName: String, val keys: List<String> = emptyList()) {
+    CommonStrings(
+        "CommonStrings",
+        listOf(
+            "didi_sub_tab_title",
+            "small_group_sub_tab_title",
+            "all",
+            "no_entry_this_month",
+            "no_entry_this_week",
+            "last_week",
+            "last_month",
+            "last_3_months",
+            "custom_date",
+            "reopen_activity_step_1",
+            "reopen_activity_step_2",
+            "ongoing_tab_title",
+            "completed_tab_title",
+            "mission",
+            "data",
+            "didis_item_text_plural",
+            "progress_item_text",
+            "didis_item_text_plural",
+
+            )
+    ),
     AddEventScreen(
         "AddEventScreen",
         listOf(

@@ -38,6 +38,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.TabsEnum
+import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.isOnline
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -71,6 +72,9 @@ fun HomeNavScreen(navController: NavHostController = rememberNavController(), pr
 
 @Composable
 fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
+
+    val translationHelper = LocalTranslationHelper.current
+
     val dataNotLoadedDialog = remember {
         mutableStateOf(false)
     }
@@ -90,7 +94,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
     if (prefRepo.getPref(PREF_KEY_TYPE_NAME, BLANK_STRING).equals(UPCM_USER)) {
         screenList.add(
             BottomNavItem(
-                stringResource(R.string.mission),
+                translationHelper.stringResource(R.string.mission),
                 MATHomeScreens.MissionScreen.route,
                 painterResource(R.drawable.ic_mission_icon),
                 TabsEnum.MissionTab
@@ -99,7 +103,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
         if (prefRepo.isDataTabVisible()) {
             screenList.add(
                 BottomNavItem(
-                    "Data",
+                    translationHelper.stringResource(R.string.data),
                     HomeScreens.DATA_TAB_SCREEN.route,
                     painterResource(id = R.drawable.data_tab_icon),
                     TabsEnum.DataTab
@@ -108,7 +112,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
         }
         screenList.add(
             BottomNavItem(
-                stringResource(R.string.didis_item_text_plural),
+                translationHelper.stringResource(R.string.didis_item_text_plural),
                 HomeScreens.DIDI_TAB_SCREEN.route,
                 painterResource(R.drawable.didi_icon),
                 TabsEnum.DidiUpcmTab
@@ -117,7 +121,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
     } else {
         screenList = mutableListOf(
             BottomNavItem(
-                stringResource(R.string.progress_item_text),
+                translationHelper.stringResource(R.string.progress_item_text),
                 if ((prefRepo.getPref(PREF_KEY_TYPE_NAME, "") ?: "").equals(BPC_USER_TYPE, true))
                     HomeScreens.BPC_PROGRESS_SEL_SCREEN.route
                 else
@@ -126,7 +130,7 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
                 TabsEnum.ProgressTab
             ),
             BottomNavItem(
-                stringResource(R.string.didis_item_text_plural),
+                translationHelper.stringResource(R.string.didis_item_text_plural),
                 HomeScreens.DIDI_SEL_SCREEN.route,
                 painterResource(R.drawable.didi_icon),
                 TabsEnum.DidiCrpTab

@@ -21,13 +21,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.R
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
@@ -229,20 +229,22 @@ private fun getTabTitle(
 @Composable
 fun getTabName(tab: SubTabs): String {
 
+    val translationHelper = LocalTranslationHelper.current
+
     return when (tab) {
-        SubTabs.DidiTab -> stringResource(R.string.didi_sub_tab_title)
-        SubTabs.SmallGroupTab -> stringResource(R.string.small_group_sub_tab_title)
-        SubTabs.All -> stringResource(R.string.all)
-        SubTabs.NoEntryMonthTab -> stringResource(R.string.no_entry_this_month)
-        SubTabs.NoEntryWeekTab -> stringResource(R.string.no_entry_this_week)
-        SubTabs.LastWeekTab -> stringResource(R.string.last_week)
-        SubTabs.LastMonthTab -> stringResource(R.string.last_month)
-        SubTabs.Last3MonthsTab -> stringResource(R.string.last_3_months)
-        SubTabs.CustomDateRange -> stringResource(R.string.custom_date)
-        SubTabs.Step1 -> stringResource(R.string.reopen_activity_step_1)
-        SubTabs.Step2 -> stringResource(R.string.reopen_activity_step_2)
-        SubTabs.OngoingMissions -> stringResource(R.string.ongoing_tab_title)
-        SubTabs.CompletedMissions -> stringResource(R.string.completed_tab_title) // TODO move all static strings to string file and find a way to make it dynamic
+        SubTabs.DidiTab -> translationHelper.stringResource(R.string.didi_sub_tab_title)
+        SubTabs.SmallGroupTab -> translationHelper.stringResource(R.string.small_group_sub_tab_title)
+        SubTabs.All -> translationHelper.stringResource(R.string.all)
+        SubTabs.NoEntryMonthTab -> translationHelper.stringResource(R.string.no_entry_this_month)
+        SubTabs.NoEntryWeekTab -> translationHelper.stringResource(R.string.no_entry_this_week)
+        SubTabs.LastWeekTab -> translationHelper.stringResource(R.string.last_week)
+        SubTabs.LastMonthTab -> translationHelper.stringResource(R.string.last_month)
+        SubTabs.Last3MonthsTab -> translationHelper.stringResource(R.string.last_3_months)
+        SubTabs.CustomDateRange -> translationHelper.stringResource(R.string.custom_date)
+        SubTabs.Step1 -> translationHelper.stringResource(R.string.reopen_activity_step_1)
+        SubTabs.Step2 -> translationHelper.stringResource(R.string.reopen_activity_step_2)
+        SubTabs.OngoingMissions -> translationHelper.stringResource(R.string.ongoing_tab_title)
+        SubTabs.CompletedMissions -> translationHelper.stringResource(R.string.completed_tab_title)
         else -> {
             BLANK_STRING
         }
