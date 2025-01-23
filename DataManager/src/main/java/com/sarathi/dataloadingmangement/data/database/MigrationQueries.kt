@@ -282,5 +282,8 @@ object MigrationQueries {
                 "    languageCode TEXT NOT NULL\n" +
                 ");"
 
+    val ALTER_ACTIVITY_CONFIG_TABLE_ADD_MONEY_JOURNAL_CONFIG =
+        "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME \n" +
+                "            ADD COLUMN moneyJournalConfig TEXT"
 }
 
