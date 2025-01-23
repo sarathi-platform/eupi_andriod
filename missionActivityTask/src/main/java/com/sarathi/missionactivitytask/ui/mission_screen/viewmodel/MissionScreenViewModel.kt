@@ -354,8 +354,6 @@ class MissionScreenViewModel @Inject constructor(
             filterLabel = ALL_MISSION_FILTER_VALUE
         }
 
-
-
         if (selectedMissionFilter.value?.type != FilterType.ALL && selectedMissionFilter.value?.type != FilterType.GENERAL) {
             val livelihoodType =
                 (selectedMissionFilter.value?.type as FilterType.OTHER).filterValue.toString()
