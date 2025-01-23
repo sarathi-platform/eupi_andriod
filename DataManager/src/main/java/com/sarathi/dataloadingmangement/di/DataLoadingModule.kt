@@ -87,8 +87,10 @@ import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyConfigFromDbUse
 import com.sarathi.dataloadingmangement.domain.use_case.GetSurveyValidationsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.MoneyJournalForPopEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.RegenerateGrantEventUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalForPopUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SearchScreenUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriterUserCase
@@ -150,6 +152,10 @@ import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopEventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopRepository
+import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
 import com.sarathi.dataloadingmangement.repository.MoneyJournalRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.RegenerateGrantEventRepositoryImpl
@@ -1682,6 +1688,50 @@ class DataLoadingModule {
             getTaskUseCase = getTaskUseCase,
             getSectionListUseCase = getSectionListUseCase,
             fetchSurveyDataUseCase = fetchSurveyDataFromDB
+        )
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesMoneyJournalForPopRepository(
+        moneyJournalDao: MoneyJournalDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): MoneyJournalForPopRepository {
+        return MoneyJournalForPopRepositoryImpl(
+            moneyJournalDao,
+            coreSharedPrefs
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSaveTransactionMoneyJournalForPopUseCase(
+        moneyJournalForPopRepository: MoneyJournalForPopRepository
+    ): SaveTransactionMoneyJournalForPopUseCase {
+        return SaveTransactionMoneyJournalForPopUseCase(
+            moneyJournalForPopRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesMoneyJournalForPopEventWriterRepository(
+        moneyJournalDao: MoneyJournalDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): MoneyJournalForPopEventWriterRepository {
+        return MoneyJournalForPopEventWriterRepositoryImpl(moneyJournalDao, coreSharedPrefs)
+    }
+
+    @Provides
+    @Singleton
+    fun providesMoneyJournalForPopEventWriterUseCase(
+        moneyJournalForPopEventWriterRepository: MoneyJournalForPopEventWriterRepository,
+        eventWriterRepository: IEventWriterRepository
+    ): MoneyJournalForPopEventWriterUseCase {
+        return MoneyJournalForPopEventWriterUseCase(
+            moneyJournalForPopEventWriterRepository,
+            eventWriterRepository
         )
 
     }

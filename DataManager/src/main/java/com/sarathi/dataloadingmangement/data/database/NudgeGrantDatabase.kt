@@ -13,6 +13,7 @@ import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ContentListConverter
 import com.sarathi.dataloadingmangement.data.converters.ContentMapConverter
+import com.sarathi.dataloadingmangement.data.converters.MoneyJournalConfigResponseConverter
 import com.sarathi.dataloadingmangement.data.converters.OptionQuestionConverter
 import com.sarathi.dataloadingmangement.data.converters.QuestionsOptionsConverter
 import com.sarathi.dataloadingmangement.data.converters.StringConverter
@@ -63,6 +64,7 @@ import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappin
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ADD_COLUMN_IS_DATA_LOADED_MISSION_TABLE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_MONEY_JOURNAL_CONFIG
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID
@@ -202,7 +204,8 @@ const val NUDGE_GRANT_DATABASE_VERSION = 6
     DateConverter::class,
     TagConverter::class,
     ValidationConverter::class,
-    SurveyValidationsConverter::class
+    SurveyValidationsConverter::class,
+    MoneyJournalConfigResponseConverter::class
 )
 abstract class NudgeGrantDatabase : RoomDatabase() {
 
@@ -353,7 +356,8 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         DROP_LANGUAGE_TABLE,
                         ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID,
                         CREATE_MISSION_CONFIG_ENTITY_TABLE,
-                        CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE
+                        CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE,
+                        ALTER_ACTIVITY_CONFIG_TABLE_ADD_MONEY_JOURNAL_CONFIG
                     )
                 )
             }

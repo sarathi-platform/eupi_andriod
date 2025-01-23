@@ -475,7 +475,7 @@
     <string name="load_server_data">"सर्वर डाटा लोड करें "</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">क्या आप सर्वर से नया डेटा पुनः लोड करने के बारे में सुनिश्चित हैं, जिससे असमन्वित डेटा नष्ट हो सकता है?</string>
     <string name="export_baseline_qna">"केवल बेसलाइन के सवाल जवाब को एक्सपोर्ट करें "</string>
-    <string name="form_alert_dialog_message">यदि आप फॉर्म जमा किए बिना आगे बढ़ते हैं तो ये परिवर्तन खो जाएंगे। \n\nक्या आप जारी रखना चाहते हैं?</string>
+    <string name="form_alert_dialog_message">यदि आप फॉर्म जमा किए बिना आगे बढ़ते हैं तो ये परिवर्तन खो जाएंगे। \n\n क्या आप जारी रखना चाहते हैं?</string>
     <string name="no_data_available_at_the_moment">फिलहाल कोई डेटा उपलब्ध नहीं है</string>
     <string name="start_baseline">बेसलाइन शुरू करें </string>
     <string name="start_activity">%s शुरू</string>

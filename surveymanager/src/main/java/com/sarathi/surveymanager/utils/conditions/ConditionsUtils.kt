@@ -785,6 +785,18 @@ class ConditionsUtils {
         return optionStateMapForMutliSelectDropDownQuestion
     }
 
+    fun areAllQuestionsVisible(questionList: List<QuestionUiModel>?): Boolean {
+        if (questionList.isNullOrEmpty())
+            return false
+
+        questionList.forEach {
+            if (questionVisibilityMap[it.questionId] != true)
+                return false
+        }
+
+        return true
+    }
+
 }
 
 fun findNoneOption(sourceQuestion: QuestionUiModel): OptionsUiModel? {

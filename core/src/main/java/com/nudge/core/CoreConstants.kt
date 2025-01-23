@@ -261,3 +261,5 @@ const val ARG_IS_FROM_BACKSTACK = "isFromBackstack"
 
 const val ALL_MISSION_FILTER_VALUE = "All Missions"
 const val GENERAL_MISSION_FILTER_VALUE = "General Missions"
+const val DOUBLE_SLASH_N = "\\n"
+const val SLASH_N = "\n"

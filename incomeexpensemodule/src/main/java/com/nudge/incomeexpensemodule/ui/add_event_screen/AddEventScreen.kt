@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -311,15 +312,17 @@ fun AddEventScreen(
                                 if (isValid) {
                                     viewModel.loadAssetAndProduct()
                                 }
-                                viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.EVENT_TYPE.name] =
-                                    Pair(isValid, message)
+                                viewModel.updateFieldValidationMessageAndMap(
+                                    key = AddEventFieldEnum.EVENT_TYPE.name,
+                                    value = Pair(isValid, message)
+                                )
 
                             }
                         })
-                    if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.EVENT_TYPE.name]?.second)) {
+                    if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.second)) {
 
                         Text(
-                            text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.EVENT_TYPE.name]?.second
+                            text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.second
                                 ?: BLANK_STRING,
                             modifier = Modifier.padding(horizontal = dimen_5_dp),
                             style = quesOptionTextStyle.copy(color = eventTextColor)
@@ -344,20 +347,24 @@ fun AddEventScreen(
                             sources = viewModel.livelihoodAssetDropdownValue,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
+                                resetAmountAssetType(viewModel)
+
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.ASSET_TYPE.name,
                                     transactionId = transactionId
                                 ) { isValid, message ->
+                                    viewModel.updateFieldValidationMessageAndMap(
+                                        key = AddEventFieldEnum.ASSET_TYPE.name,
+                                        value = Pair(isValid, message)
+                                    )
 
-                                    viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_TYPE.name] =
-                                        Pair(isValid, message)
                                 }
                             }
                         )
-                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_TYPE.name]?.second)) {
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.second)) {
                             Text(
-                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_TYPE.name]?.second
+                                text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
@@ -379,20 +386,24 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
+                                resetAmountAssetType(viewModel)
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.PRODUCT_TYPE.name,
                                     transactionId = transactionId,
                                 ) { isValid, message ->
 
-                                    viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.PRODUCT_TYPE.name] =
+                                    viewModel.updateFieldValidationMessageAndMap(
+                                        key = AddEventFieldEnum.PRODUCT_TYPE.name,
                                         Pair(isValid, message)
+                                    )
+
                                 }
                             }
                         )
-                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.PRODUCT_TYPE.name]?.second)) {
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.second)) {
                             Text(
-                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.PRODUCT_TYPE.name]?.second
+                                text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
@@ -426,17 +437,18 @@ fun AddEventScreen(
                                     AddEventFieldEnum.ASSET_COUNT.name,
                                     transactionId = transactionId
                                 ) { isValid, message ->
-                                    viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name] =
-                                        Pair(isValid, message)
+                                    viewModel.updateFieldValidationMessageAndMap(
+                                        key = AddEventFieldEnum.ASSET_COUNT.name,
+                                        value = Pair(isValid, message)
+                                    )
 
                                 }
-                                viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name]?.first
-                                    ?: false
+
                             }
                         )
-                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name]?.second)) {
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.second)) {
                             Text(
-                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.ASSET_COUNT.name]?.second
+                                text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
@@ -465,14 +477,16 @@ fun AddEventScreen(
                                 fieldName = AddEventFieldEnum.AMOUNT.name,
                                 transactionId = transactionId,
                             ) { isValid, message ->
-                                viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.AMOUNT.name] =
-                                    Pair(isValid, message)
+                                viewModel.updateFieldValidationMessageAndMap(
+                                    key = AddEventFieldEnum.AMOUNT.name,
+                                    value = Pair(isValid, message)
+                                )
 
                             }
                         }
-                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.AMOUNT.name]?.second)) {
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.second)) {
                             Text(
-                                text = viewModel.fieldValidationAndMessageMap[AddEventFieldEnum.AMOUNT.name]?.second
+                                text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
@@ -515,6 +529,21 @@ fun AddEventScreen(
             }
         }
     )
+}
+
+private fun resetAmountAssetType(viewModel: AddEventViewModel) {
+    viewModel.assetCount.value = BLANK_STRING
+    viewModel.amount.value = BLANK_STRING
+    viewModel.updateFieldValidationMessageAndMap(
+        key = AddEventFieldEnum.ASSET_COUNT.name,
+        value = Pair(true, BLANK_STRING)
+    )
+
+    viewModel.updateFieldValidationMessageAndMap(
+        key = AddEventFieldEnum.AMOUNT.name,
+        value = Pair(true, BLANK_STRING)
+    )
+
 }
 
 private fun popBackToPreviousScreen(

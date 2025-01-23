@@ -78,7 +78,10 @@ const val SMALL_GROUP_DIDI_MAPPING_TABLE = "small_group_didi_mapping_table"
 const val MANUAL_TASK_COMPLETION = "Manual"
 const val SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED = "sanctioned = disbursed + form e"
 const val ZERO = '0'
+const val ZERO_STRING = "0"
 const val NUMBER_ZERO = 0
 const val FORM_E = "form"
 
 const val ALL = "All"
+const val MONEY_JOURNAL_AMOUNT_TAG = 153
+const val MONEY_JOURNAL_DATE_TAG = 152

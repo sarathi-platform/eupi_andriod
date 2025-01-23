@@ -35,8 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
-import com.nudge.core.ui.commonUi.CustomFixedCountSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
+import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.FilterRowItem
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -49,7 +49,6 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
@@ -165,12 +164,7 @@ fun MissionScreen(
                         modifier = Modifier
                             .padding(horizontal = dimen_16_dp)
                     ) {
-                        CustomFixedCountSubTabLayoutWithCallBack(
-                            tabTextModifier = Modifier
-                                .padding(
-                                    vertical = dimen_8_dp,
-                                    horizontal = dimen_12_dp,
-                                ),
+                        CustomSubTabLayoutWithCallBack(
                             parentTabIndex = TabsEnum.MissionTab.tabIndex,
                             tabs = viewModel.tabs,
                             countMap = viewModel.countMap
@@ -180,7 +174,10 @@ fun MissionScreen(
                     }
 
                     SearchWithFilterViewComponent(
-                        placeholderString = viewModel.stringResource(context, R.string.search),
+                        placeholderString = viewModel.stringResource(
+                            context,
+                            R.string.search_by_mission
+                        ),
                         filterSelected = false,
                         modifier = Modifier.padding(horizontal = dimen_10_dp),
                         showFilter = false,

@@ -1,8 +1,13 @@
 package com.nudge.core.helper
 
 import android.content.Context
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import com.nudge.core.DOUBLE_SLASH_N
+import com.nudge.core.SLASH_N
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -27,7 +32,7 @@ class TranslationHelper @Inject constructor(
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
         return if (!dbString.isNullOrEmpty()) {
-            dbString
+            dbString.replace(DOUBLE_SLASH_N, SLASH_N)
         } else {
             context.getString(
                 resId
@@ -39,7 +44,7 @@ class TranslationHelper @Inject constructor(
         val resourceKey = context.resources?.getResourceEntryName(resId)
         val dbString = translationMap[resourceKey]
         return if (!dbString.isNullOrEmpty()) {
-            String.format(dbString, *formatArgs)
+            String.format(dbString.replace(DOUBLE_SLASH_N, SLASH_N), *formatArgs)
         } else {
             context.getString(resId, *formatArgs)
         }
@@ -71,5 +76,20 @@ class TranslationHelper @Inject constructor(
         } else {
             context.resources.getQuantityString(resId, quantity)
         }
+    }
+}
+
+
+val LocalTranslationHelper = compositionLocalOf<TranslationHelper> {
+    error("No TranslationHelper provided")
+}
+
+@Composable
+fun ProvideTranslationHelper(
+    translationHelper: TranslationHelper,
+    content: @Composable () -> Unit
+) {
+    CompositionLocalProvider(LocalTranslationHelper provides translationHelper) {
+        content()
     }
 }

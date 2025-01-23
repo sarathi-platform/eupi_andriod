@@ -157,3 +157,5 @@ val filterItemSelectedDark = Color(0xFF1C44CA)
 val filterItemSelectedLight = Color(0xFFDCE2FF)
 val iconBgColor = Color(0xFFF3F4F7)
 val textColorBrown = Color(0xFF361911)
+
+val textColorGreyLight = Color(0xFF8B909E)

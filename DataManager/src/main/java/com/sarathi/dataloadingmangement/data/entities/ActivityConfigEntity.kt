@@ -3,11 +3,14 @@ package com.sarathi.dataloadingmangement.data.entities
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.data.converters.MoneyJournalConfigResponseConverter
 import com.sarathi.dataloadingmangement.model.mat.response.ActivityConfig
+import com.sarathi.dataloadingmangement.model.mat.response.MoneyJournalConfigResponse
 
 
 @Entity(tableName = ACTIVITY_CONFIG_TABLE_NAME)
@@ -29,7 +32,9 @@ data class ActivityConfigEntity(
     var missionId: Int,
     var icon: String,
     val referenceId: Int?,
-    val referenceType: String?
+    val referenceType: String?,
+    @TypeConverters(MoneyJournalConfigResponseConverter::class)
+    val moneyJournalConfig: MoneyJournalConfigResponse?
 ) {
     companion object {
         fun getActivityConfigEntity(
@@ -52,7 +57,8 @@ data class ActivityConfigEntity(
                 taskCompletion = activityConfig.taskCompletion ?: BLANK_STRING,
                 icon = activityConfig.icon ?: BLANK_STRING,
                 referenceId = activityConfig.referenceId,
-                referenceType = activityConfig.referenceType
+                referenceType = activityConfig.referenceType,
+                moneyJournalConfig = activityConfig.moneyJournalConfig
             )
 
         }

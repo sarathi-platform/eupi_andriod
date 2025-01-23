@@ -85,13 +85,13 @@ import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.ImageViewer
 import com.sarathi.missionactivitytask.ui.basic_content.component.SubContainerView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
-import com.sarathi.missionactivitytask.ui.components.OptionCard
-import com.sarathi.missionactivitytask.ui.components.RadioOptionTypeComponent
 import com.sarathi.missionactivitytask.ui.components.ShowDidiImageDialog
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
+import com.sarathi.surveymanager.ui.component.OptionCard
+import com.sarathi.surveymanager.ui.component.RadioOptionTypeComponent
 
 @Composable
 fun ActivitySelectTaskScreen(

@@ -87,7 +87,9 @@ class FetchAllDataUseCase @Inject constructor(
 
                     fetchLivelihoodOptionNetworkUseCase.invoke()
                 }
-                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
+                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))
+                    || activityTypes.contains(ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH))
+                ) {
                     formUseCase.invoke(missionId)
                     moneyJournalUseCase.invoke()
                 }

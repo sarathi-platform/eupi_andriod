@@ -193,11 +193,8 @@ class MissionScreenViewModel @Inject constructor(
 
             }
 
-            TabsCore.setSubTabIndex(
-                TabsEnum.MissionTab.tabIndex,
-                tabs.indexOf(SubTabs.OngoingMissions)
-            )
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
+            checkAndUpdateDefaultTabAndCount()
             createMissionFilters()
             onEvent(
                 CommonEvents.OnFilterUiModelSelected(
@@ -208,18 +205,25 @@ class MissionScreenViewModel @Inject constructor(
                     )
                 )
             )
-
-
-            updateCountMap()
-
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
         }
     }
 
+    private suspend fun checkAndUpdateDefaultTabAndCount() {
+        val currentSubTabIndex = TabsCore.getSubTabForTabIndex(TabsEnum.MissionTab.tabIndex)
+        val newSubTabIndex = if (currentSubTabIndex == -1) {
+            tabs.indexOf(SubTabs.OngoingMissions)
+        } else {
+            currentSubTabIndex
+        }
+        TabsCore.setSubTabIndex(TabsEnum.MissionTab.tabIndex, newSubTabIndex)
+        updateCountMap()
+    }
     private suspend fun createMissionFilters() {
         val filterList = ArrayList<FilterUiModel>()
+        missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
 
         filterList.add(
@@ -237,7 +241,7 @@ class MissionScreenViewModel @Inject constructor(
             )
         )
 
-        with(livelihoods) {
+        with(livelihoods.distinctBy { it.programLivelihoodId }) {
             iterator().forEach {
                 filterList.add(
                     FilterUiModel(
@@ -254,7 +258,7 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    private fun updateCountMap() {
+    private suspend fun updateCountMap() {
         countMap.put(
             SubTabs.OngoingMissions,
             missionList.value.filter { it.missionStatus != SurveyStatusEnum.COMPLETED.name }.size
@@ -349,8 +353,6 @@ class MissionScreenViewModel @Inject constructor(
         if (filterLabel == BLANK_STRING) {
             filterLabel = ALL_MISSION_FILTER_VALUE
         }
-
-
 
         if (selectedMissionFilter.value?.type != FilterType.ALL && selectedMissionFilter.value?.type != FilterType.GENERAL) {
             val livelihoodType =
