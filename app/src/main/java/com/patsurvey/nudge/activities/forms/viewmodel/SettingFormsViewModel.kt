@@ -10,7 +10,6 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.CoreDispatchers
-import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.patsurvey.nudge.BuildConfig
@@ -75,7 +74,7 @@ class SettingFormsViewModel @Inject constructor(
             list.add(
                 SettingOptionModel(
                     1,
-                    getString(R.string.digital_form_a_title),
+                    mAppContext.getString(R.string.digital_form_a_title),
                     BLANK_STRING,
                     SettingTagEnum.FORMS.name
                 )
@@ -83,7 +82,7 @@ class SettingFormsViewModel @Inject constructor(
             list.add(
                 SettingOptionModel(
                     2,
-                    getString(R.string.digital_form_b_title),
+                    mAppContext.getString(R.string.digital_form_b_title),
                     BLANK_STRING,
                     SettingTagEnum.FORMS.name
                 )
@@ -91,7 +90,7 @@ class SettingFormsViewModel @Inject constructor(
             list.add(
                 SettingOptionModel(
                     3,
-                    getString(R.string.digital_form_c_title),
+                    mAppContext.getString(R.string.digital_form_c_title),
                     BLANK_STRING,
                     SettingTagEnum.FORMS.name
                 )
@@ -258,10 +257,6 @@ class SettingFormsViewModel @Inject constructor(
                 )
             }
         }
-    }
-
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.SettingFormsScreen
     }
 
 }

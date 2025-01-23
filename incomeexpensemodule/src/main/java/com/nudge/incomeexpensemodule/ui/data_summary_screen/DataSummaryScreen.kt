@@ -845,6 +845,7 @@ private fun AddEventButton(
     viewModel: DataSummaryScreenViewModel,
     onAddEventButtonClicked: () -> Unit
 ) {
+    val context = LocalContext.current
     ButtonPositive(
         buttonTitle = viewModel.stringResource(R.string.add_event),
         isActive = true,

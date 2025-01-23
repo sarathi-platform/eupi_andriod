@@ -38,7 +38,6 @@ import com.nudge.core.exportDbFiles
 import com.nudge.core.exportLogFile
 import com.nudge.core.findImagesExistInPictureFolder
 import com.nudge.core.getFirstName
-import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
 import com.nudge.core.moduleNameAccToLoggedInUser
@@ -117,7 +116,7 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 1,
-                getString(R.string.language_text),
+                context.getString(R.string.language_text),
                 BLANK_STRING,
                 SettingTagEnum.LANGUAGE.name,
                 leadingIcon = R.drawable.ic_language
@@ -128,7 +127,7 @@ class SettingBSViewModel @Inject constructor(
                 list.add(
                     SettingOptionModel(
                         2,
-                        getString(R.string.forms),
+                        context.getString(R.string.forms),
                         BLANK_STRING,
                         SettingTagEnum.FORMS.name,
                         leadingIcon = R.drawable.ic_forms
@@ -139,7 +138,7 @@ class SettingBSViewModel @Inject constructor(
             list.add(
                 SettingOptionModel(
                     3,
-                    getString(R.string.training_videos),
+                    context.getString(R.string.training_videos),
                     BLANK_STRING,
                     SettingTagEnum.TRAINING_VIDEOS.name,
                     leadingIcon = R.drawable.ic_bottom_task_icon
@@ -149,7 +148,7 @@ class SettingBSViewModel @Inject constructor(
             list.add(
                 SettingOptionModel(
                     2,
-                    getString(R.string.forms),
+                    context.getString(R.string.forms),
                     BLANK_STRING,
                     SettingTagEnum.FORMS.name,
                     leadingIcon = R.drawable.ic_forms
@@ -159,7 +158,7 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 5,
-                getString(R.string.export_backup_file),
+                context.getString(R.string.export_backup_file),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_BACKUP_FILE.name,
                 leadingIcon = R.drawable.ic_backup_file,
@@ -169,7 +168,7 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 6,
-                getString(R.string.export_data),
+                context.getString(R.string.export_data),
                 BLANK_STRING,
                 SettingTagEnum.EXPORT_DATA_BACKUP_FILE.name,
                 leadingIcon = R.drawable.ic_share_data
@@ -178,7 +177,7 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 7,
-                getString(R.string.backup_recovery),
+                context.getString(R.string.backup_recovery),
                 BLANK_STRING,
                 SettingTagEnum.BACKUP_RECOVERY.name,
                 leadingIcon = R.drawable.ic_backup_recovery
@@ -187,7 +186,7 @@ class SettingBSViewModel @Inject constructor(
         list.add(
             SettingOptionModel(
                 8,
-                getString(R.string.profile),
+                context.getString(R.string.profile),
                 BLANK_STRING,
                 SettingTagEnum.PROFILE.name,
                 leadingIcon = R.drawable.ic_profile
@@ -199,9 +198,6 @@ class SettingBSViewModel @Inject constructor(
         fetchEventCount()
     }
 
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.SettingBSScreen
-    }
     fun fetchEventCount() {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             syncEventCount.value = settingBSUserCase.getSyncEventsUseCase.getTotalEventCount()

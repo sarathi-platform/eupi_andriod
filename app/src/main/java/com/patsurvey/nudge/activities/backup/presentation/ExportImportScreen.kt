@@ -8,10 +8,10 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -40,11 +40,6 @@ import com.patsurvey.nudge.utils.UPCM_USER
 fun ExportImportScreen(
     viewModel: ExportImportViewModel = hiltViewModel(),
     navController: NavController) {
-
-    LaunchedEffect(key1 = true) {
-        viewModel.setTranslationConfig()
-        viewModel.initOptions()
-    }
         val context=LocalContext.current
         val filePicker =
         rememberLauncherForActivityResult(contract = ActivityResultContracts.GetContent()) {
@@ -67,12 +62,11 @@ fun ExportImportScreen(
         isSyncEnable = false,
         mobileNumber = viewModel.getMobileNumber(),
         lastSyncTime = 0L,
-        title = viewModel.stringResource(R.string.backup_recovery),
+        title = stringResource(id = R.string.backup_recovery),
         isScreenHaveLogoutButton = false,
         optionList = viewModel.optionList.value,
         versionText = BLANK_STRING,
-        isItemCard = true,
-        translationHelper = viewModel.translationHelper
+        isItemCard = true
     )
     CommonSettingScreen(
         settingScreenConfig = settingConfig,
@@ -102,10 +96,10 @@ fun ExportImportScreen(
 
     if (viewModel.showRestartAppDialog.value) {
         ShowCustomDialog(
-            title = viewModel.stringResource(R.string.are_you_sure),
-            message = viewModel.stringResource(R.string.import_restart_dialog_message),
-            positiveButtonTitle = viewModel.stringResource(R.string.proceed),
-            negativeButtonTitle = viewModel.stringResource(R.string.cancel_text),
+            title = stringResource(id = R.string.are_you_sure),
+            message = stringResource(id = R.string.import_restart_dialog_message),
+            positiveButtonTitle = stringResource(id = R.string.proceed),
+            negativeButtonTitle = stringResource(id = R.string.cancel_text),
             onNegativeButtonClick = {
                 BaselineLogger.d("ExportImportScreen", "Restart Dialog Cancel Click")
                 viewModel.showRestartAppDialog.value = false
@@ -119,10 +113,10 @@ fun ExportImportScreen(
     if (viewModel.showConfirmationDialog.value) {
         val messageTouple = findTitleAndMessageForDialog(viewModel.selectedTag.value)
         ShowCustomDialog(
-            title = viewModel.stringResource(messageTouple.first),
-            message = viewModel.stringResource(messageTouple.second),
-            positiveButtonTitle = viewModel.stringResource(messageTouple.third),
-            negativeButtonTitle = viewModel.stringResource(messageTouple.fourth),
+            title = stringResource(id = messageTouple.first),
+            message = stringResource(id = messageTouple.second),
+            positiveButtonTitle = stringResource(id = messageTouple.third),
+            negativeButtonTitle = stringResource(id = messageTouple.fourth),
             onNegativeButtonClick = {
                 BaselineLogger.d(
                     "ExportImportScreen",
@@ -171,7 +165,7 @@ fun ExportImportScreen(
 
                     SettingTagEnum.REGENERATE_EVENTS.name -> {
                         viewModel.showConfirmationDialog.value = false
-                        viewModel.regenerateEvents(viewModel.getString(R.string.share_export_file))
+                        viewModel.regenerateEvents(context.getString(R.string.share_export_file))
                     }
 
                     SettingTagEnum.APP_CONFIG.name -> {
@@ -182,7 +176,7 @@ fun ExportImportScreen(
                         } else {
                             showCustomToast(
                                 context,
-                                msg = viewModel.getString(com.patsurvey.nudge.R.string.network_not_available_message)
+                                msg = context.getString(com.patsurvey.nudge.R.string.network_not_available_message)
                             )
                         }
                     }

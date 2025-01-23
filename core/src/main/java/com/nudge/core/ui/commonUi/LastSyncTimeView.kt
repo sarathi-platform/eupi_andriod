@@ -12,10 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import com.nudge.core.R
 import com.nudge.core.getTimeAgoDetailed
-import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -26,7 +26,6 @@ fun LastSyncTimeView(
     lastSyncTime: Long,
     mobileNumber: String,
     isShowPhoneNumber: Boolean = true,
-    translationHelper: TranslationHelper,
     onCancelWorker: () -> Unit
 ) {
     val context = LocalContext.current
@@ -42,7 +41,7 @@ fun LastSyncTimeView(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = translationHelper.stringResource(id = R.string.last_sync_date_time),
+                    text = stringResource(id = R.string.last_sync_date_time),
                     style = syncTimeSmallTextStyle,
                     color = blueDark
                 )
@@ -62,7 +61,7 @@ fun LastSyncTimeView(
                         .padding(dimen_10_dp),
                 ) {
                     Text(
-                        text = translationHelper.stringResource(R.string.profile_phone) + ":",
+                        text = stringResource(id = R.string.profile_phone) + ":",
                         style = syncTimeSmallTextStyle,
                         color = blueDark
                     )

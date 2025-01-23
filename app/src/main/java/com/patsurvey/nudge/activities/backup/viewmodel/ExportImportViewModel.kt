@@ -9,7 +9,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toFile
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
-import com.nrlm.baselinesurvey.R
 import com.nrlm.baselinesurvey.base.BaseViewModel
 import com.nrlm.baselinesurvey.data.domain.EventWriterHelperImpl
 import com.nrlm.baselinesurvey.data.prefs.PrefBSRepo
@@ -26,7 +25,6 @@ import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
 import com.nudge.core.exportDatabase
 import com.nudge.core.getFirstName
-import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.importDbFile
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.SettingOptionModel
@@ -34,11 +32,13 @@ import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.AESHelper
+import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
-import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
@@ -60,7 +60,7 @@ class ExportImportViewModel @Inject constructor(
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
 ) : BaseViewModel() {
-    lateinit var mAppContext: Context
+    var mAppContext: Context
 
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val optionList: State<List<SettingOptionModel>> get() = _optionList
@@ -72,64 +72,13 @@ class ExportImportViewModel @Inject constructor(
     val loaderState: State<LoaderState> get() = _loaderState
     val loggedInUserType = mutableStateOf(BLANK_STRING)
 
-    fun initOptions() {
+    init {
         mAppContext = NudgeCore.getAppContext()
         applicationId.value =
             CoreAppDetails.getApplicationDetails()?.applicationID ?: BuildConfig.APPLICATION_ID
-        setTranslationConfig()
-        _optionList.value = fetchExportOptionList()
+        _optionList.value = exportImportUseCase.getExportOptionListUseCase.fetchExportOptionList()
         loggedInUserType.value =
             exportImportUseCase.getUserDetailsExportUseCase.getLoggedInUserType()
-    }
-
-    fun fetchExportOptionList(): List<SettingOptionModel> {
-        val list = ArrayList<SettingOptionModel>()
-        list.add(
-            SettingOptionModel(
-                1,
-                getString(R.string.import_data),
-                BLANK_STRING,
-                SettingTagEnum.IMPORT_DATA.name
-            )
-        )
-
-        list.add(
-            SettingOptionModel(
-                2,
-                getString(R.string.load_server_data),
-                BLANK_STRING,
-                SettingTagEnum.LOAD_SERVER_DATA.name
-            )
-        )
-
-        list.add(
-            SettingOptionModel(
-                3,
-                getString(R.string.regenerate_all_events),
-                BLANK_STRING,
-                SettingTagEnum.REGENERATE_EVENTS.name
-            )
-        )
-        if (loggedInUserType.value == UPCM_USER) {
-            list.add(
-                SettingOptionModel(
-                    4,
-                    getString(R.string.mark_activity_inprogress_label),
-                    BLANK_STRING,
-                    SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
-                )
-            )
-        }
-        list.add(
-            SettingOptionModel(
-                5,
-                getString(R.string.refresh_config),
-                BLANK_STRING,
-                SettingTagEnum.APP_CONFIG.name
-
-            )
-        )
-        return list.ifEmpty { arrayListOf() }
     }
 
     override fun <T> onEvent(event: T) {
@@ -317,9 +266,5 @@ class ExportImportViewModel @Inject constructor(
             fetchAppConfigFromNetworkUseCase.invoke()
             onEvent(LoaderEvent.UpdateLoaderState(false))
         }
-    }
-
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.ExportImportScreen
     }
 }

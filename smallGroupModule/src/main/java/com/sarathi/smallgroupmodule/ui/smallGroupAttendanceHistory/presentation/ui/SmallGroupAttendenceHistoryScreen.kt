@@ -535,6 +535,8 @@ fun AttendanceSummaryCard(
 
     val isExpanded = remember { mutableStateOf(false) }
 
+    val context = LocalContext.current
+
     BasicCardView(
         colors = CardDefaults.cardColors(
             containerColor = white
@@ -643,6 +645,8 @@ fun AttendanceSummaryCard(
                     .heightIn(min = dimen_48_dp, max = dimen_100_dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
+
+                val interactionSource = remember { MutableInteractionSource() }
 
                 TextButton(modifier = Modifier
                     .fillMaxWidth()
@@ -772,6 +776,7 @@ fun HistorySummaryCardItem(
     subjectAttendanceHistoryState: SubjectAttendanceHistoryState,
     translationHelper: TranslationHelper,
 ) {
+    val context = LocalContext.current
     ContentWithImage(
         modifier = modifier.padding(horizontal = dimen_10_dp),
         imageProperties = ImageProperties(

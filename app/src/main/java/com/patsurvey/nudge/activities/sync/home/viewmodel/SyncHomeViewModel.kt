@@ -36,7 +36,6 @@ import com.nudge.core.enums.EventType
 import com.nudge.core.enums.NetworkSpeed
 import com.nudge.core.exportDbFile
 import com.nudge.core.getFirstName
-import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
@@ -379,8 +378,4 @@ class SyncHomeViewModel @Inject constructor(
     }
     fun getUserPhoneNumber() =
         syncEventDetailUseCase.getUserDetailsSyncUseCase.getUserMobileNumber()
-
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.SyncHomeScreen
-    }
 }
