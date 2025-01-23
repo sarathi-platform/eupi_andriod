@@ -1,6 +1,7 @@
 package com.nudge.core.utils
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.toSafeInt
 import com.nudge.core.value
 import java.util.Stack
 
@@ -165,32 +166,32 @@ object ExpressionEvaluator {
         // Handle comparison operations with >=, <=, >, <, ==, !=
         return when {
             expression.contains(">=") -> {
-                val (left, right) = expression.split(">=").map { it.trim().toInt() }
+                val (left, right) = expression.split(">=").map { it.trim().toSafeInt("0") }
                 left >= right
             }
 
             expression.contains("<=") -> {
-                val (left, right) = expression.split("<=").map { it.trim().toInt() }
+                val (left, right) = expression.split("<=").map { it.trim().toSafeInt("0") }
                 left <= right
             }
 
             expression.contains("<") -> {
-                val (left, right) = expression.split("<").map { it.trim().toInt() }
+                val (left, right) = expression.split("<").map { it.trim().toSafeInt("0") }
                 left < right
             }
 
             expression.contains(">") -> {
-                val (left, right) = expression.split(">").map { it.trim().toInt() }
+                val (left, right) = expression.split(">").map { it.trim().toSafeInt("0") }
                 left > right
             }
 
             expression.contains("==") -> {
-                val (left, right) = expression.split("==").map { it.trim().toInt() }
+                val (left, right) = expression.split("==").map { it.trim().toSafeInt("0") }
                 left == right
             }
 
             expression.contains("!=") -> {
-                val (left, right) = expression.split("!=").map { it.trim().toInt() }
+                val (left, right) = expression.split("!=").map { it.trim().toSafeInt("0") }
                 left != right
             }
 
