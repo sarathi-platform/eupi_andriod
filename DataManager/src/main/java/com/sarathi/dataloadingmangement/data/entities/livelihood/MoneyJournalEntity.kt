@@ -27,7 +27,9 @@ data class MoneyJournalEntity(
     val subjectType: String,
     val status: Int,
     val modifiedDate: Long,
-    val createdDate: Long
+    val createdDate: Long,
+    val eventId: Int?,
+    val eventType: String?
 ) {
     companion object {
 
@@ -43,7 +45,9 @@ data class MoneyJournalEntity(
             subjectId: Int,
             transactionFlow: String,
             dateFormat: String = DD_MMM_YYYY_FORMAT,
-            createdDate: Long
+            createdDate: Long,
+            eventId: Int? = null,
+            eventType: String? = null
         ): MoneyJournalEntity {
             return MoneyJournalEntity(
                 id = 0,
@@ -60,7 +64,10 @@ data class MoneyJournalEntity(
                 status = 1,
                 transactionType = grantType,
                 modifiedDate = System.currentTimeMillis(),
-                createdDate = createdDate
+                createdDate = createdDate,
+                eventId = eventId,
+                eventType = eventType
+
             )
 
         }
@@ -84,7 +91,9 @@ data class MoneyJournalEntity(
                 status = moneyJournalApiResponse.status,
                 transactionType = moneyJournalApiResponse.transactionType,
                 modifiedDate = moneyJournalApiResponse.modifiedDate,
-                createdDate = moneyJournalApiResponse.createdDate
+                createdDate = moneyJournalApiResponse.createdDate,
+                eventId = moneyJournalApiResponse.eventId,
+                eventType = moneyJournalApiResponse.eventType
 
             )
 
