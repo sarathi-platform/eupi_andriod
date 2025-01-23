@@ -146,10 +146,5 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
             }
         }
     }
-    /*itemsIndexed(viewModel.questionUiModel.value) { index, question ->
-
-
-
-    }*/
 
 }
