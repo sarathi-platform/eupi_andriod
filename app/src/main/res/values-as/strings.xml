@@ -541,6 +541,7 @@
     <string name="sync_only_images">কেৱল ছবিসমূহ চিংক কৰক</string>
     <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।…</string>
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
-
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data.</string>
+    <string name="blank_string"></string>
 
 </resources>

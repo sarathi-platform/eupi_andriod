@@ -558,5 +558,6 @@
     <string name="sync_only_images">Mangphili no simi Sync khlai di</string>
     <string name="sync_started">Sync chenkha. Kisi sa naising di…</string>
     <string name="sync_data_history">Sync data ni Laibuma</string>
-
+    <string name="pending_event_in_load_server">There are unsynced event please Sync before load server data.</string>
+    <string name="blank_string"></string>
 </resources>
