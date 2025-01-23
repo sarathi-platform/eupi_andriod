@@ -19,14 +19,14 @@ interface LivelihoodDao {
     @Query("DELETE FROM $LIVELIHOOD_TABLE_NAME where userId=:userId ")
     fun deleteLivelihoodForUser(userId: String)
 
-    @Query("SELECT  COALESCE(lr.name, lt.name) AS name,lt.name as originalName,lt.status,lt.validations ,lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId And lr.userId= :userId And lr.languageCode = :languageCode and lr.referenceType = :referenceType  Where lt.userId =:userId  and lt.status = 1 ")
+    @Query("SELECT  COALESCE(lr.name, lt.name) AS name,lt.name as originalName,lt.status,lt.validations ,lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME lt left join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId And lr.userId= :userId And lr.languageCode = :languageCode and lr.referenceType = :referenceType  Where lt.userId =:userId  and lt.status = 1 ")
     fun getLivelihoodList(
         userId: String,
         languageCode: String,
         referenceType: String = LivelihoodLanguageReferenceType.Livelihood.name
     ): List<LivelihoodModel>
 
-    @Query("SELECT  COALESCE(lr.name, lt.name) AS name,lt.name as originalName,lt.status, lt.validations,lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId And lr.userId= :userId And lr.languageCode = :languageCode and lr.referenceType = :referenceType Where lt.userId =:userId  and lt.status = 1  and lt.programLivelihoodId!=-1 ")
+    @Query("SELECT  COALESCE(lr.name, lt.name) AS name,lt.name as originalName,lt.status, lt.validations,lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME lt left join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId And lr.userId= :userId And lr.languageCode = :languageCode and lr.referenceType = :referenceType Where lt.userId =:userId  and lt.status = 1  and lt.programLivelihoodId!=-1 ")
     fun getLivelihoodListWithoutNotDecided(
         userId: String,
         languageCode: String,
