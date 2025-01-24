@@ -225,6 +225,11 @@ class MissionScreenViewModel @Inject constructor(
         val filterList = ArrayList<FilterUiModel>()
         missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
+            .filter { livelihood -> // filtering livelihood that user's have mapped mission
+                missionList.value.any() {
+                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
+                }
+            }
 
         filterList.add(
             FilterUiModel.getAllFilter(
