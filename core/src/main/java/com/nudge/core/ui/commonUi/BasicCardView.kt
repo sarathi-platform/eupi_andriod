@@ -4,6 +4,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
@@ -14,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Text
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -27,15 +29,19 @@ import androidx.compose.ui.graphics.DefaultAlpha
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.getFirstAndLastInitials
+import com.nudge.core.getImagePathFromString
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
+import java.io.File
 
 @Composable
 fun BasicCardView(
@@ -112,15 +118,33 @@ fun ContentWithImage(
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CommonCircularImageViewComponent(
-                modifier = Modifier
-                    .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
-                    .clip(CircleShape)
-                    .width(dimen_56_dp)
-                    .height(dimen_56_dp)
-                    .background(color = yellowBg),
-                imageProperties = imageProperties
-            )
+            val imageFile = File(imageProperties.path.getImagePathFromString())
+            if (imageProperties.path != BLANK_STRING && imageFile.isFile && imageFile.exists()) {
+                CommonCircularImageViewComponent(
+                    modifier = Modifier
+                        .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                        .clip(CircleShape)
+                        .width(dimen_56_dp)
+                        .height(dimen_56_dp)
+                        .background(color = yellowBg),
+                    imageProperties = imageProperties
+                )
+            } else {
+                Box(
+                    modifier = Modifier
+                        .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                        .clip(CircleShape)
+                        .width(dimen_56_dp)
+                        .height(dimen_56_dp)
+                        .background(color = yellowBg)
+                ) {
+                    Text(
+                        getFirstAndLastInitials(imageProperties.altText),
+                        modifier = Modifier.align(Alignment.Center),
+                        style = mediumTextStyle.copy(color = brownDark)
+                    )
+                }
+            }
             mainContent()
         }
     }
@@ -162,15 +186,33 @@ fun ImageCardWithBottomContent(
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                CommonCircularImageViewComponent(
-                    modifier = Modifier
-                        .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
-                        .clip(CircleShape)
-                        .width(dimen_56_dp)
-                        .height(dimen_56_dp)
-                        .background(color = yellowBg),
-                    imageProperties = imageProperties
-                )
+                val imageFile = File(imageProperties.path.getImagePathFromString())
+                if (imageProperties.path != BLANK_STRING && imageFile.isFile && imageFile.exists()) {
+                    CommonCircularImageViewComponent(
+                        modifier = Modifier
+                            .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                            .clip(CircleShape)
+                            .width(dimen_56_dp)
+                            .height(dimen_56_dp)
+                            .background(color = yellowBg),
+                        imageProperties = imageProperties
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier
+                            .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                            .clip(CircleShape)
+                            .width(dimen_56_dp)
+                            .height(dimen_56_dp)
+                            .background(color = yellowBg)
+                    ) {
+                        Text(
+                            getFirstAndLastInitials(imageProperties.altText),
+                            modifier = Modifier.align(Alignment.Center),
+                            style = mediumTextStyle.copy(color = brownDark)
+                        )
+                    }
+                }
                 mainContent()
             }
 
@@ -183,6 +225,7 @@ fun ImageCardWithBottomContent(
 
 data class ImageProperties(
     val path: String = BLANK_STRING,
+    val altText: String = BLANK_STRING,
     val contentDescription: String?,
     val modifier: Modifier = Modifier,
     val alignment: Alignment = Alignment.Center,
