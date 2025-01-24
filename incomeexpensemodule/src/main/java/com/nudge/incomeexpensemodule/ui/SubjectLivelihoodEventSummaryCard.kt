@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.incomeexpensemodule.R
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
 import com.nudge.core.ui.theme.blueDark
@@ -101,7 +102,7 @@ fun SubjectLivelihoodEventSummaryCard(
                         if (TextUtils.isEmpty(imageFileName)) Uri.EMPTY else imageFileName?.let {
                             FileUtils.getImageUri(
                                 context = context,
-                                fileName = it
+                                fileName = getFileNameFromURL(imageFileName)
                             )
                         }
                     CircularImageViewComponent(
