@@ -88,7 +88,6 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
-            expandedIds.clear()
             taskUiList.value.forEach { task ->
                 val list = intiQuestions(
                     taskId = task.taskId,
