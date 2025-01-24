@@ -66,7 +66,7 @@ data class AssetsCountWithValueUiModel(
                             getAssetsCountWithValueUiModel(
                                 it,
                                 assetCountUiModel,
-                                assetsList.find { asset -> asset.livelihoodId == it }?.value
+                                assetsList.find { asset -> asset.livelihoodId == it && asset.assetId == assetCountUiModel.assetId }?.value
                             )
                         )
                     }
