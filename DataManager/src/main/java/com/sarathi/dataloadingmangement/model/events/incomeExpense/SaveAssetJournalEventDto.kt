@@ -33,7 +33,7 @@ SaveAssetJournalEventDto(
     val assetId: Int,
     @SerializedName("modifiedDate")
     val modifiedDate: Long,
-    @SerializedName("assetId")
+    @SerializedName("eventId")
     val eventId: Int?,
     @SerializedName("eventType")
     val eventType: String?,
