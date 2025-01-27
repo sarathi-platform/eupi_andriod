@@ -60,6 +60,7 @@ fun <T> DropDownComponent(
     mTextFieldSize: Size,
     diableItem: Int = -1,
     isEditAllowed: Boolean = true,
+    isError: Boolean = false,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
@@ -110,6 +111,7 @@ fun <T> DropDownComponent(
             textStyle = newMediumTextStyle.copy(if (isEditAllowed) blueDark else grayColor),
             singleLine = true,
             maxLines = 1,
+            isError = isError,
             placeholder = {
                 Text(text = hint, style = newMediumTextStyle, color = placeholderGrey)
             },

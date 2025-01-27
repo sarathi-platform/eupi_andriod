@@ -278,6 +278,7 @@ fun AddEventScreen(
                         isMandatory = true,
                         selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
                         sources = viewModel.livelihoodEventDropdownValue,
+                        isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.first == false,
                         onAnswerSelection = { selectedValue ->
                             viewModel.onEventSelected(selectedValue, subjectId)
                             viewModel.validateForm(
@@ -346,6 +347,7 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.first == false,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
                                 resetAmountAssetType(viewModel)
@@ -385,6 +387,7 @@ fun AddEventScreen(
                             isMandatory = true,
                             sources = viewModel.livelihoodProductDropdownValue,
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.first == false,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
                                 resetAmountAssetType(viewModel)
@@ -431,6 +434,7 @@ fun AddEventScreen(
                             isEditAllowed = true,
                             currentValue = viewModel.assetCount.value,
                             maxValue = viewModel.maxAssetValue.value,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.first == false,
                             onAnswerSelection = { inputValue ->
                                 viewModel.assetCount.value = inputValue
                                 viewModel.validateForm(
@@ -494,7 +498,7 @@ fun AddEventScreen(
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
                                 color = if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == true) eventTextColor else redIconColor,
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(color = if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == true) eventTextColor else redIconColor)
                             )
                         }
                     }
