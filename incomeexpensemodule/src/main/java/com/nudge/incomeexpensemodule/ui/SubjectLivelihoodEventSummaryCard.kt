@@ -21,7 +21,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +33,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
@@ -108,12 +108,12 @@ fun SubjectLivelihoodEventSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
-                    val imageFile = File(imageFileName ?: BLANK_STRING)
+                    val imageFile = File(getFileNameFromURL(imageFileName  ?: BLANK_STRING))
                     val imageUri =
                         imageFileName?.let {
                             FileUtils.getImageUri(
                                 context = context,
-                                fileName = it
+                                fileName = getFileNameFromURL(imageFileName)
                             )
                         } ?: Uri.EMPTY
 
@@ -172,26 +172,26 @@ fun SubjectLivelihoodEventSummaryCard(
             Divider()
 
             Column(modifier = Modifier.padding(dimen_8_dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Calendar Icon",
-                        modifier = Modifier.size(dimen_16_dp),
-                        tint = blueDark
-                    )
-                    Spacer(modifier = Modifier.width(dimen_4_dp))
-                    Text(
-                        text = stringResource(R.string.last_1_month),
-                        style = getTextColor(smallTextStyleMediumWeight2)
-                    )
-                }
-                Spacer(modifier = Modifier.height(dimen_8_dp))
-                //TODO show correct value from db and display dialog also.
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Default.DateRange,
+//                        contentDescription = "Calendar Icon",
+//                        modifier = Modifier.size(dimen_16_dp),
+//                        tint = blueDark
+//                    )
+//                    Spacer(modifier = Modifier.width(dimen_4_dp))
+//                    Text(
+//                        text = stringResource(R.string.last_1_month),
+//                        style = getTextColor(smallTextStyleMediumWeight2)
+//                    )
+//                }
+//                Spacer(modifier = Modifier.height(dimen_8_dp))
                 IncomeExpenseAssetAmountView(
                     incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel,
                     onAssetCountClicked = {
                         onAssetCountClicked(it)
-                    })
+                    }
+                )
             }
         }
     }

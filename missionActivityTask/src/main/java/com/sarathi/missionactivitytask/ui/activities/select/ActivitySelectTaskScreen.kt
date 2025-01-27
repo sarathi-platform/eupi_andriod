@@ -594,6 +594,8 @@ fun DisplaySelectedOption(
                         tint = blueDark,
                     )
                 }
+            } else {
+                CustomVerticalSpacer()
             }
         }
     }

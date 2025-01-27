@@ -581,7 +581,7 @@ private fun EventView(
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimen_5_dp), modifier = Modifier
+        modifier = Modifier
             .fillMaxWidth()
     ) {
 
@@ -604,7 +604,8 @@ private fun EventView(
                         color = highlightedBorderColor,
                         shape = RoundedCornerShape(dimen_6_dp)
                     )
-                    .padding(horizontal = dimen_8_dp, vertical = dimen_5_dp)
+                    .padding(horizontal = dimen_8_dp)
+                    .padding(bottom = dimen_8_dp)
             ) {
                 Column {
                     EventHeader(
@@ -622,11 +623,10 @@ private fun EventView(
                         onClick = {
                             onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                         })
-                    CustomVerticalSpacer(size = dimen_5_dp)
+                    CustomVerticalSpacer(size = dimen_10_dp)
                     if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
                         Divider(thickness = dimen_1_dp, color = borderGreyLight)
                     }
-                    CustomVerticalSpacer(size = dimen_8_dp)
                 }
             }
         }
@@ -645,7 +645,8 @@ private fun EventView(
                             Modifier
                                 .background(color = white)
                                 .border(width = dimen_1_dp, color = white)
-                                .padding(horizontal = dimen_8_dp, vertical = dimen_10_dp)
+                                .padding(horizontal = dimen_8_dp)
+                                .padding(bottom = dimen_8_dp)
                         ) {
                         Column {
                             EventHeader(
@@ -664,7 +665,7 @@ private fun EventView(
                                 onClick = {
                                     onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                                 })
-                            CustomVerticalSpacer(size = dimen_5_dp)
+                            CustomVerticalSpacer(size = dimen_10_dp)
                             Divider(thickness = dimen_1_dp, color = borderGreyLight)
 
                         }
@@ -719,11 +720,10 @@ private fun EventHeader(
     item: SubjectLivelihoodEventSummaryUiModel,
     livelihoodEventUiModels: List<LivelihoodEventUiModel>?
 ) {
-    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(bottom = dimen_8_dp),
+            .padding(bottom = dimen_5_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row {
@@ -751,15 +751,12 @@ private fun EventDetails(
     item: SubjectLivelihoodEventSummaryUiModel,
     onClick: () -> Unit
 ) {
-    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(bottom = dimen_8_dp),
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         item.transactionAmount?.let {
-            Row {
+            Row(modifier = Modifier.weight(1f)) {
                 TextWithPaddingEnd(
                     text = viewModel.stringResource(
                         resId = R.string.amount
@@ -775,7 +772,7 @@ private fun EventDetails(
         }
 
         item.assetCount?.let {
-            Row {
+            Row(modifier = Modifier.weight(1f)) {
                 TextWithPaddingEnd(
                     text = viewModel.stringResource(resId = R.string.asset),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
