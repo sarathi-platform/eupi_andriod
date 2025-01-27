@@ -46,6 +46,7 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
+import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
@@ -187,32 +188,7 @@ fun AddEventScreen(
             ) {
 
 
-                item {
-                    CustomDatePickerTextFieldComponent(
-                        isMandatory = true,
-                        defaultValue = viewModel.selectedDate.value,
-                        title = viewModel.stringResource(R.string.date),
-                        isEditable = true,
-                        hintText = viewModel.stringResource(
-                            R.string.select
-                        )
-                            ?: BLANK_STRING,
-                        datePickerState = datePickerState,
-                        datePickerProperties = datePickerProperties,
-                        datePickerDialogProperties = datePickerDialogProperties,
-                        onDateSelected = { date ->
-                            viewModel.selectedDate.value = date.value().getDate()
-                            viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm(
-                                subjectId = subjectId,
-                                fieldName = AddEventFieldEnum.DATE.name,
-                                transactionId = transactionId,
-                            ) { isValid, message ->
 
-                            }
-                        }
-                    )
-                }
 
                 item {
                     TypeDropDownComponent(
@@ -332,7 +308,32 @@ fun AddEventScreen(
                 }
 
 
+                item {
+                    CustomDatePickerTextFieldComponent(
+                        isMandatory = true,
+                        defaultValue = viewModel.selectedDate.value,
+                        title = viewModel.stringResource(R.string.date),
+                        isEditable = true,
+                        hintText = viewModel.stringResource(
+                            R.string.select
+                        )
+                            ?: BLANK_STRING,
+                        datePickerState = datePickerState,
+                        datePickerProperties = datePickerProperties,
+                        datePickerDialogProperties = datePickerDialogProperties,
+                        onDateSelected = { date ->
+                            viewModel.selectedDate.value = date.value().getDate()
+                            viewModel.selectedDateInLong = date.value()
+                            viewModel.validateForm(
+                                subjectId = subjectId,
+                                fieldName = AddEventFieldEnum.DATE.name,
+                                transactionId = transactionId,
+                            ) { isValid, message ->
 
+                            }
+                        }
+                    )
+                }
 
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET].value()) {
                     item {
@@ -468,7 +469,10 @@ fun AddEventScreen(
                                 R.string.amount
                             ),
                             isOnlyNumber = true,
-                            hintText = BLANK_STRING
+                            hintText = BLANK_STRING,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first
+                                ?: false,
+
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
 
@@ -489,6 +493,7 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                color = if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == true) eventTextColor else redIconColor,
                                 style = quesOptionTextStyle.copy(color = eventTextColor)
                             )
                         }

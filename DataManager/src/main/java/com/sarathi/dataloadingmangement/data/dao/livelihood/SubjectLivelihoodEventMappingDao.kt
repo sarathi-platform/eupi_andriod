@@ -57,10 +57,12 @@ interface SubjectLivelihoodEventMappingDao {
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status, " +
-                "subject_livelihood_event_mapping_table.createdDate " +
+                "subject_livelihood_event_mapping_table.createdDate, " +
+                "livelihood_table.image as livelihoodImage " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=1 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=1 \n" +
+                "left join livelihood_table on subject_livelihood_event_mapping_table.livelihoodId = livelihood_table.programLivelihoodId \n" +
                 "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId and subject_livelihood_event_mapping_table.status=1   group by subject_livelihood_event_mapping_table.id "
     )
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(
@@ -73,10 +75,12 @@ interface SubjectLivelihoodEventMappingDao {
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status ,\n" + "Max(subject_livelihood_event_mapping_table.modifiedDate) ,\n" + "Max(asset_journal_table.modifiedDate) ,\n" + "Max(money_journal_table.modifiedDate), " +
-                "subject_livelihood_event_mapping_table.createdDate " +
+                "subject_livelihood_event_mapping_table.createdDate, " +
+                "livelihood_table.image as livelihoodImage " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=2 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=2 \n" +
+                "left join livelihood_table on subject_livelihood_event_mapping_table.livelihoodId = livelihood_table.programLivelihoodId \n" +
                 "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId  GROUP BY subject_livelihood_event_mapping_table.transactionId\n" +
                 "HAVING COUNT(*) = SUM(CASE WHEN subject_livelihood_event_mapping_table.status = 2 THEN 1 ELSE 0 END) order by subject_livelihood_event_mapping_table.modifiedDate desc\n"
     )
