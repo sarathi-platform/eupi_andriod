@@ -30,6 +30,10 @@ data class SaveMoneyJournalEventDto(
     val transactionType: String,
     @SerializedName("modifiedDate")
     val modifiedDate: Long,
+    @SerializedName("eventId")
+    val eventId: Int?,
+    @SerializedName("eventType")
+    val eventType: String?,
 ) {
     companion object {
         fun getMoneyJournalEventDto(moneyJournalEntity: MoneyJournalEntity): SaveMoneyJournalEventDto {
@@ -46,7 +50,9 @@ data class SaveMoneyJournalEventDto(
                 status = moneyJournalEntity.status,
                 transactionDate = moneyJournalEntity.transactionDate,
                 createdDate = moneyJournalEntity.createdDate,
-                modifiedDate = moneyJournalEntity.modifiedDate
+                modifiedDate = moneyJournalEntity.modifiedDate,
+                eventId = moneyJournalEntity.eventId,
+                eventType = moneyJournalEntity.eventType
             )
         }
     }

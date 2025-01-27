@@ -32,5 +32,9 @@ data class AssetJournalApiResponse(
     @SerializedName("transactionFlow")
     val transactionFlow: String,
     @SerializedName("transactionType")
-    val transactionType: String
+    val transactionType: String,
+    @SerializedName("eventId")
+    val eventId: Int?,
+    @SerializedName("eventType")
+    val eventType: String?,
 )
