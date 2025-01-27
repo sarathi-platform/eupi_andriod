@@ -20,6 +20,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
 import android.webkit.MimeTypeMap
@@ -914,6 +915,9 @@ fun String?.value(defaultValue: String, ignoreCase: Boolean): String {
 }
 
 fun String?.toSafeInt(defaultValue: String = "0"): Int {
+    if (TextUtils.isEmpty(this))
+        return defaultValue.toInt()
+
     return try {
         this.value(defaultValue).toInt()
     } catch (ex: Exception) {
@@ -1462,4 +1466,23 @@ fun String.toCamelCase(): String {
             word.lowercase().replaceFirstChar { it.uppercase() }
         }
         .joinToString(" ")
+}
+
+fun getFirstAndLastInitials(name: String?): String {
+    return name?.let {
+        val parts = name.trim().split("\\s+".toRegex())
+        when {
+            parts.size == 1 -> parts.first().firstOrNull()?.uppercaseChar()?.toString()
+                ?: BLANK_STRING
+
+            parts.size > 1 -> {
+                val firstInitial = parts.first().firstOrNull()?.uppercaseChar()
+                val lastInitial = parts.last().firstOrNull()?.uppercaseChar()
+                listOfNotNull(firstInitial, lastInitial).joinToString(BLANK_STRING)
+            }
+
+            else -> BLANK_STRING
+        }
+    } ?: BLANK_STRING
+
 }

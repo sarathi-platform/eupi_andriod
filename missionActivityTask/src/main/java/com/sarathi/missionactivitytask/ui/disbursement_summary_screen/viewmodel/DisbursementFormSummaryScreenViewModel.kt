@@ -223,7 +223,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     }
 
     fun getFilePathUri(filePath: String): Uri? {
-        return formUseCase.getFilePathUri(filePath)
+        val imageFile = File(filePath)
+        return if (filePath != BLANK_STRING && imageFile.isFile && imageFile.exists())
+            formUseCase.getFilePathUri(filePath)
+        else
+            Uri.EMPTY
     }
 
     fun generateFormE(
