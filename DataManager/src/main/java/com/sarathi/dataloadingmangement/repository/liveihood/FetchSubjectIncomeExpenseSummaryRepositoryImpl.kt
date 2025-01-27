@@ -47,8 +47,9 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         livelihoodAssetMap.forEach { mapEntry ->
             setLivelihoodImageMapping(mapEntry, imageUriForLivelihood)
             var totalAssetCount = 0
-            mapEntry.value.forEach {
-                totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
+            mapEntry.value.forEach { asset ->
+                totalAssetCount += (assetsCountWithValue.find { it.assetId == asset.assetId && it.livelihoodId == asset.livelihoodId }?.assetCount
+                    ?: 0)
             }
 
             totalAssetCountForLivelihood.put(mapEntry.key, totalAssetCount)
