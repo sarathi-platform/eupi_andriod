@@ -44,22 +44,20 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
-import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.incomeCardTopViewColor
 import com.nudge.core.ui.theme.mediumTextStyle
-import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.utils.FileUtils
+import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
-import java.io.File
 
 @Composable
 fun SubjectLivelihoodEventSummaryCard(
@@ -108,7 +106,8 @@ fun SubjectLivelihoodEventSummaryCard(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Row {
-                    val imageFile = File(getFileNameFromURL(imageFileName  ?: BLANK_STRING))
+                    val imageFile =
+                        findImageFile(context, getFileNameFromURL(imageFileName ?: BLANK_STRING))
                     val imageUri =
                         imageFileName?.let {
                             FileUtils.getImageUri(
