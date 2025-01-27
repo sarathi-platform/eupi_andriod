@@ -158,6 +158,7 @@ fun AddEventScreen(
                         isActive = viewModel.isSubmitButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
+                            viewModel.isSubmitButtonEnable.value = false
                             viewModel.onSubmitButtonClick(subjectId, transactionId) {
                                 popBackToPreviousScreen(
                                     navController,
