@@ -129,7 +129,7 @@ fun ContentWithImage(
                         .background(color = yellowBg),
                     imageProperties = imageProperties
                 )
-            } else {
+            } else if (imageProperties.altText != BLANK_STRING) {
                 Box(
                     modifier = Modifier
                         .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
@@ -197,7 +197,7 @@ fun ImageCardWithBottomContent(
                             .background(color = yellowBg),
                         imageProperties = imageProperties
                     )
-                } else {
+                } else if (imageProperties.altText != BLANK_STRING) {
                     Box(
                         modifier = Modifier
                             .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)

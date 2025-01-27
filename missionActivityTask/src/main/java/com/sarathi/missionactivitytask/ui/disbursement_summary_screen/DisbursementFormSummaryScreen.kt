@@ -362,7 +362,7 @@ private fun MakeDisburesementRow(
         ) {
             if (imageUri != null && imageUri != Uri.EMPTY) {
                 CircularImageViewComponent(modifier = Modifier, imageUri) {}
-            } else {
+            } else if (disbursementFormSummaryUiModel.subjectName != BLANK_STRING) {
                 Box(
                     modifier = Modifier
                         .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)

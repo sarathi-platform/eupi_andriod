@@ -122,7 +122,7 @@ fun SubjectLivelihoodEventSummaryCard(
                             modifier = Modifier,
                             imagePath = imageUri
                         )
-                    } else {
+                    } else if (name != BLANK_STRING) {
                         Box(
                             modifier = Modifier
                                 .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)

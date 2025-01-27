@@ -134,7 +134,7 @@ fun TaskCard(
             ) {
                 if (imagePath != null) {
                     CircularImageViewComponent(modifier = Modifier, imagePath = imagePath) {}
-                } else {
+                } else if (title?.value != BLANK_STRING) {
                     Box(
                         modifier = Modifier
                             .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
