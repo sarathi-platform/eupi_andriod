@@ -56,9 +56,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.SurveyConfigAttribute
 import com.sarathi.dataloadingmangement.model.mat.response.TaskData
 import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
-import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
-import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import javax.inject.Inject
@@ -635,40 +633,6 @@ class MissionRepositoryImpl @Inject constructor(
             activityId = activityId,
             order = order
         )
-    }
-
-    override suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
-        val missionUIInfoModel = missionLanguageAttributeDao.fetchMissionInfo(
-            missionId = missionId,
-            userId = sharedPrefs.getUniqueUserIdentifier(),
-            languageCode = sharedPrefs.getSelectedLanguageCode()
-        )
-        val livelihoodName =
-            findLivelihoodSubtitle(missionUIInfoModel?.livelihoodType)
-        return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
-    }
-
-    private fun findLivelihoodSubtitle(livelihoodType: String?): String? {
-        val livelihood = livelihoodDao.getLivelihoodList(
-            userId = sharedPrefs.getUniqueUserIdentifier(),
-            languageCode = sharedPrefs.getSelectedLanguageCode()
-        )
-        val livelihoodName =
-            livelihood.find { it.type.equals(livelihoodType, true) }?.name
-                ?: livelihoodType
-        return livelihoodName
-    }
-
-    override suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
-        val activityUIInfoModel = activityLanguageDao.fetchActivityInfo(
-            missionId = missionId,
-            activityId = activityId,
-            userId = sharedPrefs.getUniqueUserIdentifier(),
-            languageCode = sharedPrefs.getSelectedLanguageCode()
-        )
-        val livelihoodName =
-            findLivelihoodSubtitle(activityUIInfoModel?.livelihoodType)
-        return activityUIInfoModel?.copy(livelihoodName = livelihoodName)
     }
 
     private fun saveSurveyConfig(

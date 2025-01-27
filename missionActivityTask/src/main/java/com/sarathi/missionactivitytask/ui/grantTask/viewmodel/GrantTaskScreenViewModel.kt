@@ -20,6 +20,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
+import com.sarathi.missionactivitytask.utils.MissionFilterUtils
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -41,6 +42,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     private val formUiConfigUseCase: GetFormUiConfigUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
+    missionFilterUtils: MissionFilterUtils
 ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
@@ -50,7 +52,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    missionFilterUtils
 ) {
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     var isGenerateFormButtonEnable = mutableStateOf(false)

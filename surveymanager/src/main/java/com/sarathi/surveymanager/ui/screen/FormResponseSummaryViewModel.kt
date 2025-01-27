@@ -16,6 +16,7 @@ import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -28,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriter
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
@@ -61,7 +63,8 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
     private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
-    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -85,6 +88,7 @@ class FormResponseSummaryViewModel @Inject constructor(
     var surveyConfig =
         mutableMapOf<String, List<SurveyCardModel>>()
 
+    var activityInfoUIModel = ActivityInfoUIModel.getDefaultValue()
 
     fun init(
         taskId: Int,
@@ -132,6 +136,11 @@ class FormResponseSummaryViewModel @Inject constructor(
             }
 
             initSurveyConfigAndGetSavedResponses()
+
+            activityInfoUIModel = fetchInfoUiModelUseCase.fetchActivityInfo(
+                activityConfig?.missionId.value(),
+                activityConfig?.activityId.value()
+            )
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))

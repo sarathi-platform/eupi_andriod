@@ -265,6 +265,7 @@ fun TaskScreen(
                                 scope.launch {
                                     scaffoldState.hide()
                                 }
+                                viewModel.updateMissionFilter()
                                 viewModel.markActivityCompleteStatus()
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
@@ -586,8 +587,10 @@ fun TaskScreen(
                                 viewModel.showDialog.value = false
                             },
                             onPositiveButtonClick = {
+                                viewModel.missionFilterUtils.updateMissionFilterOnUserAction(
+                                    viewModel.activityInfoUIModel
+                                )
                                 viewModel.markActivityCompleteStatus()
-
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
                                     navController = navController,

@@ -16,6 +16,7 @@ import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUs
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetConditionQuestionMappingsUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
@@ -30,6 +31,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
@@ -66,7 +68,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val getSectionListUseCase: GetSectionListUseCase,
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
     private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
-    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -105,6 +108,9 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     val showLoader = mutableStateOf(false)
     val isSubmitButtonClicked = mutableStateOf(false)
+
+    var activityInfoUIModel = ActivityInfoUIModel.getDefaultValue()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitFormQuestionScreenState -> {
@@ -175,6 +181,8 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
                 }
             }
+
+            activityInfoUIModel = fetchInfoUiModelUseCase.fetchActivityInfo(missionId, activityId)
         }
     }
 

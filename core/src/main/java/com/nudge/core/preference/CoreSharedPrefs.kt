@@ -2,6 +2,8 @@ package com.nudge.core.preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_HARD_EVENT_LIMIT_THRESHOLD
@@ -17,6 +19,9 @@ import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.model.FilterType
+import com.nudge.core.model.FilterTypeAdapter
+import com.nudge.core.model.FilterUiModel
 import com.nudge.core.value
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -62,6 +67,7 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
         const val PREF_KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
 
+        const val PREF_MISSION_LIVELIHOOD_FILTER_VALUE = "pref_mission_livelihood_filter_value"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -74,6 +80,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
             }
         }
     }
+
+    val gson: Gson = GsonBuilder()
+        .registerTypeAdapter(FilterType::class.java, FilterTypeAdapter())
+        .create()
 
     val prefs: SharedPreferences by lazy {
 
@@ -361,5 +371,16 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun isUserBPC(): Boolean {
         return prefs.getBoolean(PREF_KEY_USER_BPC, false)
+    }
+
+    override fun saveMissionFilter(missionFilterUiModel: FilterUiModel) {
+        prefs.edit()
+            .putString(PREF_MISSION_LIVELIHOOD_FILTER_VALUE, gson.toJson(missionFilterUiModel))
+            .apply()
+    }
+
+    override fun getMissionFilter(): FilterUiModel? {
+        val prefValue = prefs.getString(PREF_MISSION_LIVELIHOOD_FILTER_VALUE, null) ?: return null
+        return gson.fromJson(prefValue, FilterUiModel::class.java)
     }
 }

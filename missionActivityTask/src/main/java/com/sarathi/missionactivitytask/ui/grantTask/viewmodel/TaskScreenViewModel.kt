@@ -26,6 +26,7 @@ import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUs
 import com.sarathi.dataloadingmangement.ALL
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -46,6 +47,7 @@ import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.screen.getFilterLabel
+import com.sarathi.missionactivitytask.utils.MissionFilterUtils
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -72,6 +74,8 @@ open class TaskScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
@@ -244,7 +248,7 @@ open class TaskScreenViewModel @Inject constructor(
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val activityUIInfo = fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)
+            val activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(missionId, activityId)
             withContext(mainDispatcher) {
                 activityInfoUIModel = activityUIInfo
             }
@@ -653,6 +657,10 @@ open class TaskScreenViewModel @Inject constructor(
     open suspend fun initChildScreen() {}
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.TaskScreen
+    }
+
+    override fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel)
     }
 
 }

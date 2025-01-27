@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
+import com.sarathi.missionactivitytask.utils.MissionFilterUtils
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
@@ -27,6 +28,7 @@ class SurveyTaskScreenViewModel @Inject constructor(
     eventWriterUseCase: MATStatusEventWriterUseCase,
     getActivityUseCase: GetActivityUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
+    missionFilterUtils: MissionFilterUtils
 ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
@@ -36,7 +38,8 @@ class SurveyTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    missionFilterUtils
 ) {
 
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())

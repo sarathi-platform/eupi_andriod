@@ -161,6 +161,7 @@ fun ActivityScreen(
                             viewModel.showDialog.value = false
                         },
                         onPositiveButtonClick = {
+                            viewModel.updateMissionFilterAndTab()
                             viewModel.markMissionCompleteStatus()
                             navController.popBackStack()
                             viewModel.showDialog.value = false

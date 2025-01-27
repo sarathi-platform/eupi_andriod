@@ -71,6 +71,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
@@ -127,6 +128,8 @@ import com.sarathi.dataloadingmangement.repository.DeleteAllDataRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FetchInfoUiModelRepository
+import com.sarathi.dataloadingmangement.repository.FetchInfoUiModelRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepository
@@ -1733,6 +1736,31 @@ class DataLoadingModule {
             moneyJournalForPopEventWriterRepository,
             eventWriterRepository
         )
+
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchInfoUiModelRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        missionLanguageAttributeDao: MissionLanguageAttributeDao,
+        activityLanguageDao: ActivityLanguageDao,
+        livelihoodDao: LivelihoodDao
+    ): FetchInfoUiModelRepository {
+        return FetchInfoUiModelRepositoryImpl(
+            sharedPrefs = coreSharedPrefs,
+            missionLanguageAttributeDao = missionLanguageAttributeDao,
+            activityLanguageDao = activityLanguageDao,
+            livelihoodDao = livelihoodDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchInfoUiModelUseCase(
+        fetchInfoUiModelRepository: FetchInfoUiModelRepository
+    ): FetchInfoUiModelUseCase {
+        return FetchInfoUiModelUseCase(fetchInfoUiModelRepository)
 
     }
 }

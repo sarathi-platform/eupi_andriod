@@ -192,10 +192,10 @@ fun MissionScreen(
                     modifier = Modifier
                         .padding(horizontal = dimen_12_dp)
                 ) {
-                    itemsIndexed(viewModel.missionFilterList) { index: Int, item: FilterUiModel ->
+                    itemsIndexed(viewModel.missionFilterUtils.getMissionFiltersList()) { index: Int, item: FilterUiModel ->
                         FilterRowItem(
                             item = item,
-                            isSelected = viewModel.selectedMissionFilter.value == item
+                            isSelected = viewModel.missionFilterUtils.getSelectedMissionFilterValue() == item
                         ) {
                             viewModel.onEvent(CommonEvents.OnFilterUiModelSelected(item))
                         }

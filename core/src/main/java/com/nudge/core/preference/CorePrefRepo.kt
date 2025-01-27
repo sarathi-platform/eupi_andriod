@@ -1,5 +1,7 @@
 package com.nudge.core.preference
 
+import com.nudge.core.model.FilterUiModel
+
 interface CorePrefRepo {
 
     fun getBackupFileName(mobileNo: String): String
@@ -87,5 +89,8 @@ interface CorePrefRepo {
     fun setSyncDBMigrate(isSyncDbMigrate: Boolean)
     fun isSyncDBMigrate(): Boolean
     fun isUserBPC(): Boolean
+
+    fun saveMissionFilter(missionFilterUiModel: FilterUiModel)
+    fun getMissionFilter(): FilterUiModel?
 
 }

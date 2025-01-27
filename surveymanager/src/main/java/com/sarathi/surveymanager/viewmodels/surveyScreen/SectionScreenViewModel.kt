@@ -6,11 +6,13 @@ import androidx.compose.runtime.mutableStateOf
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -30,8 +32,8 @@ class SectionScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-
-    ) : BaseViewModel() {
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+) : BaseViewModel() {
 
     private var missionId: Int = 0
     private var activityId: Int = 0
@@ -56,6 +58,8 @@ class SectionScreenViewModel @Inject constructor(
     val buttonVisibilityKey: MutableState<Boolean> =
         mutableStateOf(sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name })
 
+    var activityUIInfo: ActivityInfoUIModel = ActivityInfoUIModel.getDefaultValue()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataStateWithCallBack -> {
@@ -76,6 +80,8 @@ class SectionScreenViewModel @Inject constructor(
             _sectionStatusMap.value =
                 getSectionListUseCase.getSectionStatusMap(missionId, surveyId, taskId)
                     .toMutableMap()
+
+            activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(missionId, activityId)
             withContext(mainDispatcher) {
                 callBack()
             }

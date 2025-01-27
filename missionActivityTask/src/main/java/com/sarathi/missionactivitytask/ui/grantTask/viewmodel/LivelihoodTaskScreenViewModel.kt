@@ -22,6 +22,7 @@ import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
+import com.sarathi.missionactivitytask.utils.MissionFilterUtils
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -43,8 +44,8 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     fetchAllDataUseCase: FetchAllDataUseCase,
     var getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
     var getLivelihoodMappingUseCase: GetSubjectLivelihoodMappingFromUseCase,
-
-    ) : TaskScreenViewModel(
+    missionFilterUtils: MissionFilterUtils
+) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
     getActivityUiConfigUseCase,
@@ -53,7 +54,8 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    missionFilterUtils
 ) {
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList

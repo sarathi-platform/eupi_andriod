@@ -7,6 +7,7 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.OUTFLOW
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -53,7 +54,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val saveTransactionMoneyJournalForPopUseCase: SaveTransactionMoneyJournalForPopUseCase,
-    private val moneyJournalForPopEventWriterUseCase: MoneyJournalForPopEventWriterUseCase
+    private val moneyJournalForPopEventWriterUseCase: MoneyJournalForPopEventWriterUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -72,7 +74,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     getSurveyValidationsFromDbUseCase,
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
-    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
+    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
