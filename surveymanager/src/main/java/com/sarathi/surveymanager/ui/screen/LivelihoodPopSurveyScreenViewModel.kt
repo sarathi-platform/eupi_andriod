@@ -73,7 +73,6 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
     fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
-    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
