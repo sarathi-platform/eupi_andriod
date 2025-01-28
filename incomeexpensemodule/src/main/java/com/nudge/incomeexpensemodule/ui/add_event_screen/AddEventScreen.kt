@@ -491,8 +491,9 @@ fun AddEventScreen(
                             ),
                             isOnlyNumber = true,
                             hintText = BLANK_STRING,
-                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first
-                                ?: false,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == false || TextUtils.isEmpty(
+                                viewModel.amount.value
+                            ),
 
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
