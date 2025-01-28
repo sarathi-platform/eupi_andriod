@@ -1,12 +1,8 @@
 package com.sarathi.missionactivitytask.di
 
-import com.nudge.core.helper.TranslationHelper
-import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
 import com.sarathi.missionactivitytask.network.MatApiService
-import com.sarathi.missionactivitytask.utils.MissionFilterUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,16 +23,5 @@ class MatModule {
     @Provides
     fun provideActivityUseCase(activityRepositoryImpl: GetActivityRepositoryImpl): GetActivityUseCase {
         return GetActivityUseCase(activityRepositoryImpl)
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideMissionFilterUtils(
-        coreSharedPrefs: CoreSharedPrefs,
-        livelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
-        translationHelper: TranslationHelper
-    ): MissionFilterUtils {
-        return MissionFilterUtils(coreSharedPrefs, livelihoodListFromDbUseCase, translationHelper)
     }
 }

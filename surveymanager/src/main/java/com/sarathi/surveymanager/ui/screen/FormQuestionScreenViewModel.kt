@@ -38,6 +38,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -70,6 +71,7 @@ open class FormQuestionScreenViewModel @Inject constructor(
     private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
     private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     private val LOGGING_TAG = FormQuestionScreenViewModel::class.java.simpleName
@@ -465,6 +467,10 @@ open class FormQuestionScreenViewModel @Inject constructor(
 
     fun runNoneOptionCheck(sourceQuestion: QuestionUiModel): Boolean {
         return conditionsUtils.runNoneOptionCheck(sourceQuestion)
+    }
+
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel)
     }
 
 }

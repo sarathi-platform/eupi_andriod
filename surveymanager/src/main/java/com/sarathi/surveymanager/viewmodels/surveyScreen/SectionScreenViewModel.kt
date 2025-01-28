@@ -14,6 +14,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTas
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.SectionUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -33,6 +34,7 @@ class SectionScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     private var missionId: Int = 0
@@ -168,5 +170,8 @@ class SectionScreenViewModel @Inject constructor(
         return fetchContentUseCase.isFilePathExists(filePath)
     }
 
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityUIInfo)
+    }
 
 }

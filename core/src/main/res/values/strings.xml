@@ -66,4 +66,5 @@
     <string name="search_by_mission">Search by Mission</string>
     <string name="all_missions_filter_label">All Missions</string>
     <string name="general_missions_filter_label">General Missions</string>
+    <string name="complete_survey">Complete Survey</string>
 </resources>

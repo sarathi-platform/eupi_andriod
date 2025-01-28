@@ -25,6 +25,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -57,6 +58,7 @@ class SurveyScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -76,7 +78,8 @@ class SurveyScreenViewModel @Inject constructor(
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
     fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
-    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase,
+    missionFilterUtils = missionFilterUtils
 ) {
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {

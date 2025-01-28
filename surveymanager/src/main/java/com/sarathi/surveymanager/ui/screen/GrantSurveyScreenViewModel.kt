@@ -24,6 +24,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveTransactionMoneyJour
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -53,6 +54,7 @@ class GrantSurveyScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -72,13 +74,14 @@ class GrantSurveyScreenViewModel @Inject constructor(
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
     fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
-    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase,
+    missionFilterUtils = missionFilterUtils
 ) {
 
 
     fun saveButtonClicked() {
+        updateMissionFilter()
         saveAllAnswerIntoDB()
-
     }
 
     fun saveAllAnswerIntoDB() {

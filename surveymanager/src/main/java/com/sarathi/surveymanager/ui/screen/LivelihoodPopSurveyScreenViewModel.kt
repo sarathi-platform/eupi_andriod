@@ -26,6 +26,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,6 +57,7 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val saveTransactionMoneyJournalForPopUseCase: SaveTransactionMoneyJournalForPopUseCase,
     private val moneyJournalForPopEventWriterUseCase: MoneyJournalForPopEventWriterUseCase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -75,7 +77,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
     fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
-    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase,
+    missionFilterUtils = missionFilterUtils
 ) {
 
     override fun saveSingleAnswerIntoDb(question: QuestionUiModel) {

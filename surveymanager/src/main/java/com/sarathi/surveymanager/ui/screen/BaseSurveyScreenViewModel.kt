@@ -44,6 +44,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -78,6 +79,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
@@ -644,6 +646,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun getOptionStateMapForMutliSelectDropDownQuestion(questionId: Int): Map<Int, Boolean?> {
         return conditionsUtils.getOptionStateMapForMutliSelectDropDownQuestion(questionId)
+    }
+
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityUIInfo)
     }
 
 }

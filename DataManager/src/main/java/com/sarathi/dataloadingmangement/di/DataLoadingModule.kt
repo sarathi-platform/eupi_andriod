@@ -15,6 +15,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -210,6 +211,7 @@ import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAtt
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -1762,5 +1764,15 @@ class DataLoadingModule {
     ): FetchInfoUiModelUseCase {
         return FetchInfoUiModelUseCase(fetchInfoUiModelRepository)
 
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionFilterUtils(
+        coreSharedPrefs: CoreSharedPrefs,
+        livelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+        translationHelper: TranslationHelper
+    ): MissionFilterUtils {
+        return MissionFilterUtils(coreSharedPrefs, livelihoodListFromDbUseCase, translationHelper)
     }
 }

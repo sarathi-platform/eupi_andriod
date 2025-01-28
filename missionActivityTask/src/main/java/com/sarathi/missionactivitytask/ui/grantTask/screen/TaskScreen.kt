@@ -587,9 +587,7 @@ fun TaskScreen(
                                 viewModel.showDialog.value = false
                             },
                             onPositiveButtonClick = {
-                                viewModel.missionFilterUtils.updateMissionFilterOnUserAction(
-                                    viewModel.activityInfoUIModel
-                                )
+                                viewModel.updateMissionFilter()
                                 viewModel.markActivityCompleteStatus()
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
@@ -780,6 +778,7 @@ fun TaskRowView(
                     label = BLANK_STRING,
                     icon = null
                 )
+                viewModel.updateMissionFilter()
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name

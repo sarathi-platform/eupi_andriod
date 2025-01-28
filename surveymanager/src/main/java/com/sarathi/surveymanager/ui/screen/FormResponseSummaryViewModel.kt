@@ -36,6 +36,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiM
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -65,6 +66,7 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -275,7 +277,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                     isFromRegenerate = false
                 )
             }
-
+            updateMissionFilter()
             updateTaskStatus(taskId = taskId)
             checkAndUpdateSectionStatus(
                 missionId = activityConfig?.missionId.value(),
@@ -349,5 +351,8 @@ class FormResponseSummaryViewModel @Inject constructor(
         return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel)
+    }
 
 }

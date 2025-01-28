@@ -1,4 +1,4 @@
-package com.sarathi.missionactivitytask.utils
+package com.sarathi.dataloadingmangement.util
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -8,6 +8,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.ALL_MISSION_FILTER_VALUE
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.GENERAL_MISSION_FILTER_VALUE
+import com.nudge.core.R
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.FilterType
@@ -17,7 +18,6 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.InfoUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
-import com.sarathi.missionactivitytask.R
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -91,8 +91,26 @@ class MissionFilterUtils @Inject constructor(
 
     }
 
+    private fun resetSelectedMissionFilterValueToDefault(persistValue: Boolean) {
+        setSelectedMissionFilterValue(DEFAULT_MISSION_FILTER, persistValue)
+    }
+
     fun getSelectedMissionFilterValue(): FilterUiModel {
-        val selectedMissionFilterValueFromPref = getSelectedMissionFilterValueFromPref()
+        var selectedMissionFilterValueFromPref = getSelectedMissionFilterValueFromPref()
+
+        if (selectedMissionFilterValueFromPref?.type is FilterType.OTHER) {
+            val selectedFilterValue = (selectedMissionFilterValueFromPref.type as FilterType.OTHER)
+                .filterValue.toString().lowercase()
+
+            val filterValues = getMissionFilterListForLivelihood()
+                .mapNotNull { (it.type as? FilterType.OTHER)?.filterValue?.toString()?.lowercase() }
+
+            if (selectedFilterValue !in filterValues) {
+                selectedMissionFilterValueFromPref = null
+                resetSelectedMissionFilterValueToDefault(persistValue = true)
+            }
+        }
+
         return selectedMissionFilter.value ?: selectedMissionFilterValueFromPref
         ?: DEFAULT_MISSION_FILTER
     }
@@ -105,8 +123,7 @@ class MissionFilterUtils @Inject constructor(
         val filterValue = if (infoUIModel.livelihoodType == BLANK_STRING)
             DEFAULT_MISSION_FILTER
         else {
-            missionFilterList
-                .filter { it.type is FilterType.OTHER }
+            getMissionFilterListForLivelihood()
                 .find {
                     (it.type as FilterType.OTHER).filterValue.toString()
                         .equals(infoUIModel.livelihoodType, true)
@@ -115,5 +132,8 @@ class MissionFilterUtils @Inject constructor(
 
         setSelectedMissionFilterValue(filterValue ?: DEFAULT_MISSION_FILTER, true)
     }
+
+    fun getMissionFilterListForLivelihood(): List<FilterUiModel> =
+        missionFilterList.filter { it.type is FilterType.OTHER }
 
 }
