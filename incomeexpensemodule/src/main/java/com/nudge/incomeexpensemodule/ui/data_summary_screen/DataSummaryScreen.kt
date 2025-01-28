@@ -1,7 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.data_summary_screen
 
 import android.text.TextUtils
-import android.util.Log
 import androidx.compose.animation.Animatable
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateIntOffsetAsState
@@ -74,7 +73,6 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.getFileNameFromURL
-import com.nudge.core.json
 import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
 import com.nudge.core.ui.commonUi.CustomDateRangePickerDisplay
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
@@ -600,7 +598,6 @@ private fun EventView(
                 if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) backgroundcolor.value else white
             val highlightedBorderColor =
                 if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) bordercolor.value else white
-            Log.d("TAG", "EventViewDetails Row: ${subjectLivelihoodEventSummaryUiModel.json()}")
 
             Box(
                 Modifier
@@ -656,20 +653,17 @@ private fun EventView(
                     filteredSubjectLivelihoodEventSummaryUiModelList.toList().drop(
                         DEFAULT_EVENT_LIST_VIEW_SIZE
                     ).forEachIndexed { index, subjectLivelihoodEventSummaryUiModel ->
-                        Log.d(
-                            "TAG",
-                            "EventViewDetails: ${subjectLivelihoodEventSummaryUiModel.json()}"
-                        )
-                        Box(
-                            Modifier
-                                .background(color = white)
-                                .border(width = dimen_1_dp, color = white)
-                                .padding(
-                                    top = dimen_5_dp,
-                                    start = dimen_8_dp,
-                                    end = dimen_8_dp,
-                                    bottom = dimen_3_dp
-                                )
+
+                    Box(
+                        Modifier
+                            .background(color = white)
+                            .border(width = dimen_1_dp, color = white)
+                            .padding(
+                                top = dimen_5_dp,
+                                start = dimen_8_dp,
+                                end = dimen_8_dp,
+                                bottom = dimen_3_dp
+                            )
                         ) {
                         Column {
                             EventHeader(
