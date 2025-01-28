@@ -1440,9 +1440,7 @@ fun getTimeAgoDetailed(timeInMillis: Long, context: Context): String {
     }
 
     return when {
-        days > 0 -> "${context.getString(R.string.sync_days, days)}, " +
-                "${context.getString(R.string.sync_hours, hours)}, " +
-                "${context.getString(R.string.sync_minutes, minutes)} " +
+        days > 0 -> "${context.getString(R.string.sync_days, days)} " +
                 context.getString(R.string.sync_ago)
 
         hours > 0 -> "${context.getString(R.string.sync_hours, hours)}, " +

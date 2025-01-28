@@ -47,6 +47,7 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
 import com.nudge.core.ui.theme.redIconColor
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
@@ -200,7 +201,6 @@ fun AddEventScreen(
                         isMandatory = true,
                         sources = viewModel.livelihoodDropdownValue,
                         selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
-
                         onAnswerSelection = { selectedValue ->
                             viewModel.onLivelihoodSelect(selectedValue.id, subjectId, transactionId)
                             viewModel.validateForm(
@@ -303,7 +303,11 @@ fun AddEventScreen(
                             text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.second
                                 ?: BLANK_STRING,
                             modifier = Modifier.padding(horizontal = dimen_5_dp),
-                            style = quesOptionTextStyle.copy(color = eventTextColor)
+                            style = quesOptionTextStyle.copy(
+                                color =
+                                if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.first == false)
+                                    redOffline else eventTextColor
+                            )
                         )
 
                     }
@@ -371,7 +375,11 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
                             )
                         }
                     }
@@ -411,7 +419,11 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
                             )
                         }
 
@@ -457,7 +469,11 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
                             )
                         }
                     }
