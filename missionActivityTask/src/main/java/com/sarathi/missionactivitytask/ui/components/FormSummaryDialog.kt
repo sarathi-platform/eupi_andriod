@@ -25,10 +25,12 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.contentmodule.ui.component.ButtonPositive
@@ -93,15 +95,17 @@ fun FormSummaryDialog(
                             text1 = stringResource(R.string.mode),
                             text2 = disbursementFormSummaryUiModel.mode
                         )
+                        CustomVerticalSpacer(size = dimen_4_dp)
                         TextRow(
                             text1 = stringResource(R.string.nature),
                             text2 = disbursementFormSummaryUiModel.nature,
                         )
+                        CustomVerticalSpacer(size = dimen_4_dp)
                         TextRow(
                             text1 = stringResource(R.string.amount),
                             text2 = formatToIndianRupee(disbursementFormSummaryUiModel.amount)
                         )
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(dimen_4_dp))
 
                         Row(modifier = Modifier.fillMaxWidth()) {
 

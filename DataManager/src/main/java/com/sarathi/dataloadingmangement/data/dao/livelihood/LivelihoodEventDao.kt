@@ -14,12 +14,13 @@ interface LivelihoodEventDao {
     fun insertLivelihoodEvent(livelihoodEventEntity: LivelihoodEventEntity)
 
     @Query(
-        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType, livelihood_language_reference_table.name, livelihood_event_table.livelihoodId as livelihoodId, livelihood_event_table.name as originalName\n" +
-                " from livelihood_event_table inner join livelihood_language_reference_table \n" +
-                " on livelihood_event_table.eventId= livelihood_language_reference_table.referenceId \n" +
-                " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +
+        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType, COALESCE(livelihood_language_reference_table.name, livelihood_event_table.name) AS name, livelihood_event_table.livelihoodId as livelihoodId, livelihood_event_table.name as originalName\n" +
+                " from livelihood_event_table left join livelihood_language_reference_table \n" +
+                " on livelihood_event_table.eventId= livelihood_language_reference_table.referenceId and \n" +
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
                 " livelihood_language_reference_table.userId=:userId and" +
+                " livelihood_language_reference_table.languageCode=:languageCode " +
+                " where \n" +
                 " livelihood_event_table.userId=:userId  and" +
                 " livelihood_event_table.livelihoodId=:livelihoodId group by livelihood_event_table.eventId "
     )
@@ -31,12 +32,13 @@ interface LivelihoodEventDao {
     ): List<LivelihoodEventUiModel>
 
     @Query(
-        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType,livelihood_language_reference_table.name, livelihood_event_table.livelihoodId as livelihoodId,livelihood_event_table.name as originalName \n" +
-                " from livelihood_event_table inner join livelihood_language_reference_table \n" +
-                " on livelihood_event_table.eventId= livelihood_language_reference_table.referenceId \n" +
-                " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +
+        "select livelihood_event_table.eventId as id,livelihood_event_table.type as eventType,COALESCE(livelihood_language_reference_table.name, livelihood_event_table.name) AS name, livelihood_event_table.livelihoodId as livelihoodId,livelihood_event_table.name as originalName \n" +
+                " from livelihood_event_table left join livelihood_language_reference_table \n" +
+                " on livelihood_event_table.eventId= livelihood_language_reference_table.referenceId and \n" +
+                " livelihood_language_reference_table.languageCode=:languageCode and\n" +
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
-                " livelihood_language_reference_table.userId=:userId and" +
+                " livelihood_language_reference_table.userId=:userId " +
+                " where " +
                 " livelihood_event_table.userId=:userId  and" +
                 " livelihood_event_table.livelihoodId in (:livelihoodIds) "
     )

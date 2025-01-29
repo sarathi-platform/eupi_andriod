@@ -1,21 +1,26 @@
 package com.sarathi.surveymanager.ui.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.theme.bgGreyLight
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_8_dp
-import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
+import com.nudge.core.ui.theme.uncheckedTrackColor
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.constants.QuestionType
 
 @Composable
 fun LivelihoodPopSurveyScreen(
@@ -55,6 +60,7 @@ fun LivelihoodPopSurveyScreen(
              * */
         },
         onSubmitButtonClick = {
+            viewModel.checkAndWriteMoneyJournalEvent()
             viewModel.updateTaskStatus(taskId, true)
             navController.popBackStack()
             navController.popBackStack()
@@ -66,14 +72,21 @@ fun LivelihoodPopSurveyScreen(
                 sanctionedAmount = sanctionedAmount,
                 totalSubmittedAmount = totalSubmittedAmount,
                 onAnswerSelect = { questionUiModel ->
-                    viewModel.isButtonEnable.value = viewModel.checkButtonValidation()
 
                     viewModel.updateQuestionResponseMap(questionUiModel)
                     viewModel.runConditionCheck(questionUiModel)
 
                     viewModel.runValidationCheck(questionUiModel.questionId) { isValid, message ->
                         viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                            Pair(isValid, message)
+                            Triple(
+                                isValid,
+                                message,
+                                if (QuestionType.userInputQuestionTypeList.contains(
+                                        questionUiModel.type.toLowerCase()
+                                    )
+                                ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                                    ?: BLANK_STRING) else null
+                            )
                     }
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
@@ -97,31 +110,41 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
     maxHeight: Dp
 ) {
 
-    itemsIndexed(viewModel.questionUiModel.value) { index, question ->
-
+    item {
         Box(
             modifier = Modifier
+                .background(
+                    bgGreyLight, RoundedCornerShape(
+                        roundedCornerRadiusDefault
+                    )
+                )
                 .border(
                     width = dimen_1_dp,
-                    color = greyBorderColor,
+                    color = uncheckedTrackColor,
                     shape = RoundedCornerShape(
                         roundedCornerRadiusDefault
                     )
                 )
                 .padding(bottom = dimen_8_dp)
+                .padding(horizontal = dimen_8_dp)
         ) {
-            QuestionUiContent(
-                question,
-                sanctionedAmount,
-                totalSubmittedAmount,
-                viewModel,
-                onAnswerSelect,
-                maxHeight,
-                activityType,
-                index
-            )
+            Column {
+                viewModel.questionUiModel.value.forEachIndexed { index, question ->
+                    if (viewModel.visibilityMap[question.questionId].value()) {
+                        QuestionUiContent(
+                            question,
+                            sanctionedAmount,
+                            totalSubmittedAmount,
+                            viewModel,
+                            onAnswerSelect,
+                            maxHeight,
+                            activityType,
+                            index
+                        )
+                    }
+                }
+            }
         }
-
     }
 
 }

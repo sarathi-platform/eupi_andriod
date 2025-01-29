@@ -37,7 +37,7 @@ fun BaseContentScreen(
                     contentTitle = item.contentName,
                     contentValue = item.contentValue,
                     isLimitContentData = index == CONTENT_THRESHOLD_VALUE,
-                    totalContent = viewModel.contentCount.value - CONTENT_THRESHOLD_VALUE,
+                    totalContent = viewModel.contentList.value.size - CONTENT_THRESHOLD_VALUE,
                     onClick = {
                         onClick(
                             item.contentValue,

@@ -31,6 +31,7 @@ fun RadioButtonOptionComponent(
     selectedIndex: Int,
     optionsItem: OptionsUiModel,
     isIconRequired: Boolean = true,
+    isQuestionTypeToggle: Boolean = false,
     onOptionSelected: (OptionsUiModel) -> Unit
 ) {
     Column(
@@ -47,11 +48,12 @@ fun RadioButtonOptionComponent(
             OutlineButtonWithIconComponent(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = if (isIconRequired) 110.dp else 50.dp, max = 110.dp),
+                    .heightIn(min = if (!isQuestionTypeToggle) 110.dp else 50.dp, max = 110.dp),
                 buttonTitle = optionsItem.description ?: "",
                 textColor = if (optionsItem.isSelected == true) Color.White else blueDark,
                 buttonBackgroundColor = if (optionsItem.isSelected != true) Color.White else blueDark,
                 buttonBorderColor = blueDark,
+                isQuestionTypeToggle = isQuestionTypeToggle,
                 iconTintColor = if (optionsItem.isSelected == true) {
                     white
                 } else {

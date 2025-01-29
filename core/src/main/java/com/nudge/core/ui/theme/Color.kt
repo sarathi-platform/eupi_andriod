@@ -22,7 +22,10 @@ val GreyDark = Color(0xFF60626C)
 val greyButtonColor = Color(0xFFF2F4F8)
 val otpBorderColor = Color(0xFFBFBFBF)
 val greenOnline = Color(0xFF439A86)
+val lightGreen = Color(0xFFF3FFF5)
+val borderGreen = Color(0xFF58bda6)
 val redOffline = Color(0xFFD32505)
+val taskCompletionBannerBgColor = Color(0xFF179b96)
 
 val greenActiveIcon = Color(0xFF02B5C6)
 
@@ -149,3 +152,10 @@ val assetValueIconColor = Color(0xFF1041CC)
 val tabBgColor = Color(0xFFDCE2FF)
 val eventTextColor = Color(0xFF9096A7)
 val darkBlueColor = Color(0xFF007AFF)
+
+val filterItemSelectedDark = Color(0xFF1C44CA)
+val filterItemSelectedLight = Color(0xFFDCE2FF)
+val iconBgColor = Color(0xFFF3F4F7)
+val textColorBrown = Color(0xFF361911)
+
+val textColorGreyLight = Color(0xFF8B909E)

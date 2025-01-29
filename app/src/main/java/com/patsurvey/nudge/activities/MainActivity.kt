@@ -33,6 +33,9 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.enums.SyncAlertType
+import com.nudge.core.helper.ProvideTranslationHelper
+import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.notifications.NotificationHandler
 import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
@@ -69,6 +72,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     @Inject
     lateinit var sharedPrefs: PrefRepo
 
+    @Inject
+    lateinit var translationHelper: TranslationHelper
 
     private val mViewModel: MainActivityViewModel by viewModels()
 
@@ -103,129 +108,140 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         )
         CoreObserverManager.addObserver(this)
         setContent {
-            Nudge_Theme {
-                val snackState = rememberSnackBarState()
-                val onlineStatus = remember { mutableStateOf(false) }
-
-                val notificationHandler: NotificationHandler = NotificationHandler(context = this)
-
-                val localContext = LocalContext.current
-
-                // A surface container using the 'background' color from the theme
-                Surface(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(0.dp)
-                        .background(blueDark),
-                ) {
-                    ConstraintLayout() {
-                        val (networkBanner, mainContent) = createRefs()
-                        if (mViewModel.isLoggedIn.value) {
-                            NetworkBanner(
-                                modifier = Modifier
-                                    .constrainAs(networkBanner) {
-                                        top.linkTo(parent.top)
-                                        start.linkTo(parent.start)
-                                        end.linkTo(parent.end)
-                                        width = Dimension.fillToConstraints
-                                    },
-                                isOnline = isOnline.value
-                            )
-                        }
-                        Box(modifier = Modifier.constrainAs(mainContent){
-                            top.linkTo(if (mViewModel.isLoggedIn.value) networkBanner.bottom else parent.top)
-                            start.linkTo(parent.start)
-                            bottom.linkTo(parent.bottom)
-                            height = Dimension.fillToConstraints
-                        }) {
-                           RootNavigationGraph(navController = rememberNavController(),sharedPrefs)
-                        }
-                    }
+            ProvideTranslationHelper(translationHelper) {
+                LaunchedEffect(Unit) {
+                    translationHelper.initTranslationHelper(TranslationEnum.CommonStrings)
                 }
+                Nudge_Theme {
+                    val snackState = rememberSnackBarState()
+                    val onlineStatus = remember { mutableStateOf(false) }
 
-                isLoggedInLive.observe(this) { isLoggedIn ->
-                    mViewModel.isLoggedIn.value = isLoggedIn
-                }
-                LaunchedEffect(key1 = RetryHelper.tokenExpired.value) {
-                    if (RetryHelper.tokenExpired.value) {
-                        mViewModel.tokenExpired.value = true
-                        RetryHelper.generateOtp { success, message, mobileNumber ->
-                            if (success) {
-                                mViewModel.tokenExpired.value = true
-                                snackState.addMessage(
-                                    message = getString(R.string.otp_send_to_mobile_number_message_for_relogin)
-                                        .replace("{MOBILE_NUMBER}", mobileNumber, true),
-                                    isSuccess = true, isCustomIcon = false
+                    val notificationHandler: NotificationHandler =
+                        NotificationHandler(context = this)
+
+                    val localContext = LocalContext.current
+
+                    // A surface container using the 'background' color from the theme
+                    Surface(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(0.dp)
+                            .background(blueDark),
+                    ) {
+                        ConstraintLayout() {
+                            val (networkBanner, mainContent) = createRefs()
+                            if (mViewModel.isLoggedIn.value) {
+                                NetworkBanner(
+                                    modifier = Modifier
+                                        .constrainAs(networkBanner) {
+                                            top.linkTo(parent.top)
+                                            start.linkTo(parent.start)
+                                            end.linkTo(parent.end)
+                                            width = Dimension.fillToConstraints
+                                        },
+                                    isOnline = isOnline.value
+                                )
+                            }
+                            Box(modifier = Modifier.constrainAs(mainContent) {
+                                top.linkTo(if (mViewModel.isLoggedIn.value) networkBanner.bottom else parent.top)
+                                start.linkTo(parent.start)
+                                bottom.linkTo(parent.bottom)
+                                height = Dimension.fillToConstraints
+                            }) {
+                                RootNavigationGraph(
+                                    navController = rememberNavController(),
+                                    sharedPrefs
                                 )
                             }
                         }
                     }
-                }
 
-                LaunchedEffect(Unit) {
-                    // TODO move this code to Mission and Village screens.
+                    isLoggedInLive.observe(this) { isLoggedIn ->
+                        mViewModel.isLoggedIn.value = isLoggedIn
+                    }
+                    LaunchedEffect(key1 = RetryHelper.tokenExpired.value) {
+                        if (RetryHelper.tokenExpired.value) {
+                            mViewModel.tokenExpired.value = true
+                            RetryHelper.generateOtp { success, message, mobileNumber ->
+                                if (success) {
+                                    mViewModel.tokenExpired.value = true
+                                    snackState.addMessage(
+                                        message = getString(R.string.otp_send_to_mobile_number_message_for_relogin)
+                                            .replace("{MOBILE_NUMBER}", mobileNumber, true),
+                                        isSuccess = true, isCustomIcon = false
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                    LaunchedEffect(Unit) {
+                        // TODO move this code to Mission and Village screens.
 //                    delay(TimeUnit.MILLISECONDS.convert(1, TimeUnit.MINUTES))
 
-                    mViewModel.onEvent(CommonEvents.CheckEventLimitThreshold { result ->
-                        if (result == SyncAlertType.SOFT_ALERT) {
-                            notificationHandler?.createSoftAlertNotification(
-                                mViewModel.showSoftLimitAlert(
-                                    title = localContext.getString(R.string.warning_text),
-                                    message = localContext.getString(R.string.notification_alert_message)
+                        mViewModel.onEvent(CommonEvents.CheckEventLimitThreshold { result ->
+                            if (result == SyncAlertType.SOFT_ALERT) {
+                                notificationHandler?.createSoftAlertNotification(
+                                    mViewModel.showSoftLimitAlert(
+                                        title = localContext.getString(R.string.warning_text),
+                                        message = localContext.getString(R.string.notification_alert_message)
+                                    )
                                 )
-                            )
-                        }
+                            }
 
-                        if (result == SyncAlertType.HARD_ALERT) {
-                            mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = true))
-                        }
-                    })
-                }
+                            if (result == SyncAlertType.HARD_ALERT) {
+                                mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = true))
+                            }
+                        })
+                    }
 
-                if (mViewModel.tokenExpired.value) {
-                    ShowOptDialogForVillageScreen(
-                        modifier = Modifier,
-                        context = LocalContext.current,
-                        viewModel = mViewModel,
-                        snackState = snackState,
-                        setShowDialog = {
-                            mViewModel.tokenExpired.value = false
-                        },
-                        positiveButtonClicked = {
-                            RetryHelper.updateOtp(mViewModel.baseOtpNumber) { success, message ->
-                                if (success){
-                                    RetryHelper.tokenExpired.value = false
-                                    RetryHelper.autoReadOtp.value = ""
-                                    mViewModel.tokenExpired.value = false
-                                    showCustomToast(this, getString(R.string.session_restored_message))
-                                }
-                                else {
-                                    showCustomToast(this, message)
+                    if (mViewModel.tokenExpired.value) {
+                        ShowOptDialogForVillageScreen(
+                            modifier = Modifier,
+                            context = LocalContext.current,
+                            viewModel = mViewModel,
+                            snackState = snackState,
+                            setShowDialog = {
+                                mViewModel.tokenExpired.value = false
+                            },
+                            positiveButtonClicked = {
+                                RetryHelper.updateOtp(mViewModel.baseOtpNumber) { success, message ->
+                                    if (success) {
+                                        RetryHelper.tokenExpired.value = false
+                                        RetryHelper.autoReadOtp.value = ""
+                                        mViewModel.tokenExpired.value = false
+                                        showCustomToast(
+                                            this,
+                                            getString(R.string.session_restored_message)
+                                        )
+                                    } else {
+                                        showCustomToast(this, message)
+                                    }
                                 }
                             }
-                        }
-                    )
-                }
+                        )
+                    }
 
-                if (mViewModel.showHardEventLimitAlert.value.showDialog) {
-                    val alertModel = mViewModel.showHardLimitAlert(
-                        title = localContext.getString(R.string.alert_dialog_title_text),
-                        message = localContext.getString(R.string.hard_threshold_alert_message)
-                    )
-                    ShowCustomDialog(
-                        title = alertModel.alertTitle,
-                        message = alertModel.alertMessage,
-                        icon = alertModel.alertIcon,
-                        positiveButtonTitle = stringResource(R.string.ok),
-                        negativeButtonTitle = stringResource(R.string.cancel),
-                        onPositiveButtonClick = {
-                            // TODO navigation to sync screen.
-                            mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = false))
-                        },
-                        onNegativeButtonClick = {
-                            mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = false))
-                        }
-                    )
+                    if (mViewModel.showHardEventLimitAlert.value.showDialog) {
+                        val alertModel = mViewModel.showHardLimitAlert(
+                            title = localContext.getString(R.string.alert_dialog_title_text),
+                            message = localContext.getString(R.string.hard_threshold_alert_message)
+                        )
+                        ShowCustomDialog(
+                            title = alertModel.alertTitle,
+                            message = alertModel.alertMessage,
+                            icon = alertModel.alertIcon,
+                            positiveButtonTitle = stringResource(R.string.ok),
+                            negativeButtonTitle = stringResource(R.string.cancel),
+                            onPositiveButtonClick = {
+                                // TODO navigation to sync screen.
+                                mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = false))
+                            },
+                            onNegativeButtonClick = {
+                                mViewModel.onEvent(DialogEvents.ShowAlertDialogEvent(showDialog = false))
+                            }
+                        )
+                    }
                 }
             }
         }
@@ -248,7 +264,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             castListDao = mViewModel.casteListDao,
             bpcSummaryDao = mViewModel.bpcSummaryDao,
             poorDidiListDao = mViewModel.poorDidiListDao,
-            languageListDao = mViewModel.languageListDao
         )
 
         AnalyticsHelper.init(context = applicationContext, mViewModel.prefRepo, mViewModel.apiService)

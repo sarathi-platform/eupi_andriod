@@ -85,7 +85,7 @@
     <string name="primary_and_secondary_value_not_same">Puila Tangchamung bai nwirem Tangchamung Sol wi manya</string>
     <string name="select_first_livelihood_for_didi">Aibi ni Puila Tangchamung no chongdi</string>
     <string name="select_second_livelihood_for_didi">Aibi ni nwirem Tangchamung no chongdi</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="proceed_txt">Proceed</string>
     <string name="cancel_txt">Cancel</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
@@ -109,6 +109,14 @@
     <string name="save_text">Save</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
+    <string name="edit_event">Edit Event</string>
+    <string name="showing">showing</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"Rwbai "</string>
+    <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
+    <string name="last_1_month">Last 1 Month</string>
+    <string name="income">"Ajemung "</string>
+    <string name="expense">"Swbaimung "</string>
     <string name="created_date">Created Date : Ascending</string>
     <string name="created_date_descending">Created Date : Descending</string>
     <string name="modified_date">Modified Date : Ascending</string>
@@ -123,12 +131,6 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
-    <string name="edit_event">Edit Event</string>
-    <string name="showing">showing</string>
-    <string name="results_for">" results for "</string>
-    <string name="assets">"Rwbai "</string>
-    <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
-    <string name="last_1_month">Last 1 Month</string>
     <string name="auto_sync">Saknisak Sync -  %s</string>
     <string name="sync_on">Saknisak sync: On</string>
     <string name="sync_off">Saknisak sync: Off</string>
@@ -140,5 +142,7 @@
     <string name="sync_view_progress">Ung tongjak naidi</string>
     <string name="sync_worker_cancelled">Sync worker cancelled</string>
     <string name="sync_already_cancelled">Sync cancelled ungjak se.</string>
+    <string name="sort_by">Sort By</string>
+    <string name="income_expanse">Ajemung/swbaimung</string>
 
 </resources>

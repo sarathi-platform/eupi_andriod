@@ -44,6 +44,7 @@ import com.nrlm.baselinesurvey.utils.DEFAULT_CALCULATION_RESULT
 import com.nrlm.baselinesurvey.utils.checkCondition
 import com.nrlm.baselinesurvey.utils.convertFormQuestionResponseEntityToSaveAnswerEventOptionItemDto
 import com.nrlm.baselinesurvey.utils.convertToOptionItemEntity
+import com.nrlm.baselinesurvey.utils.findIdFromTag
 import com.nrlm.baselinesurvey.utils.findIndexOfListById
 import com.nrlm.baselinesurvey.utils.findQuestionEntityStateById
 import com.nrlm.baselinesurvey.utils.findQuestionForQuestionId
@@ -52,11 +53,13 @@ import com.nrlm.baselinesurvey.utils.getOptionItemEntityFromInputTypeQuestionAns
 import com.nrlm.baselinesurvey.utils.sortedBySectionOrder
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nrlm.baselinesurvey.utils.tagList
 import com.nrlm.baselinesurvey.utils.toOptionItemStateList
 import com.nrlm.baselinesurvey.utils.updateOptionItemEntityListStateForQuestionByCondition
 import com.nrlm.baselinesurvey.utils.updateOptionsForNoneCondition
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.enums.EventType
+import com.nudge.core.value
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -1885,6 +1888,46 @@ class QuestionScreenViewModel @Inject constructor(
         }
 
         inputNumberQuestionMap[questionId] = responseList
+
+    }
+
+    suspend fun updateResponsesForNonMarkedFormResponses(
+        questionId: Int,
+        selectedOption: OptionItemEntity?
+    ) {
+        questionEntityStateList.find { it.questionId == questionId }?.let {
+            val option =
+                it.optionItemEntityState.find { it.optionId == selectedOption?.optionId }?.optionItemEntity
+            val formResponsesForQuestion = formResponseEntityToQuestionMap.value[questionId]
+            formResponsesForQuestion?.forEach { formResponses ->
+                questionScreenUseCase.deleteFormQuestionOptionResponseUseCase.invoke(
+                    optionId = formResponses.optionId,
+                    questionId = formResponses.questionId,
+                    sectionId = formResponses.sectionId,
+                    surveyId = formResponses.surveyId,
+                    surveyeeId = formResponses.didiId,
+                    referenceId = formResponses.referenceId
+                )
+            }
+            _formResponseEntityToQuestionMap.value.remove(questionId)
+            val firstItem = formResponsesForQuestion?.firstOrNull()
+            firstItem?.let { item ->
+                onEvent(
+                    EventWriterEvents.SaveAnswerEvent(
+                        surveyId = item.surveyId,
+                        sectionId = item.sectionId,
+                        didiId = item.didiId,
+                        questionId = item.questionId,
+                        questionType = QuestionType.Form.name,
+                        questionTag = tagList.findIdFromTag(
+                            (it.questionEntity?.tag ?: BLANK_STRING).toString()
+                        ),
+                        questionDesc = option?.display.value(),
+                        saveAnswerEventOptionItemDtoList = emptyList()
+                    )
+                )
+            }
+        }
 
     }
 

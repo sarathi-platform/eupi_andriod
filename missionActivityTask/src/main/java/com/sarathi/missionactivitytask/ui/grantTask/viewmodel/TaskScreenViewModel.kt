@@ -16,6 +16,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_FILTER_VALUE
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
@@ -32,6 +33,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseC
 import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityConfigUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
@@ -139,6 +141,9 @@ open class TaskScreenViewModel @Inject constructor(
 
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
+    var activityInfoUIModel by mutableStateOf(ActivityInfoUIModel.getDefaultValue())
+
+
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
         withContext(Dispatchers.Main) {
             mutableState.value = newValue
@@ -148,6 +153,7 @@ open class TaskScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitTaskScreenState -> {
+                setTranslationConfig()
                 initTaskScreen(event.taskList)
             }
 
@@ -204,13 +210,13 @@ open class TaskScreenViewModel @Inject constructor(
 
         val tempFilterTaskMap = sortedList
             .filter {
-                getFilterByPredicate(it, context)
+                getFilterByPredicate(it, context!!)
             }.toHashMap()
         filterTaskMap =
             tempFilterTaskMap.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
                 .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
-        val tempFilterList = sortedList.filter { getFilterByPredicate(it, context) }
+        val tempFilterList = sortedList.filter { getFilterByPredicate(it, context!!) }
         _filterList.value =
             tempFilterList.toList()
                 .sortedBy { it.second[TaskCardSlots.TASK_TITLE.name]?.value }
@@ -219,7 +225,7 @@ open class TaskScreenViewModel @Inject constructor(
 
     private fun getFilterByPredicate(
         mapEntry: Map.Entry<Int, HashMap<String, TaskCardModel>>,
-        context: Context?
+        context: Context
     ): Boolean {
         return mapEntry.value[TaskCardSlots.FILTER_BY.name]?.value.equals(
             getFilterByValueKeyWithoutLabel(
@@ -229,15 +235,19 @@ open class TaskScreenViewModel @Inject constructor(
         ).value()
     }
 
-    fun getFilterByValueKeyWithoutLabel(context: Context?, filterLabel: String?): String {
+    fun getFilterByValueKeyWithoutLabel(context: Context, filterLabel: String?): String {
         return filterByValueKey.value.replace(
-            getFilterLabel(context, filterLabel), BLANK_STRING
+            getFilterLabel(translationHelper, context, filterLabel), BLANK_STRING
         ).trim()
     }
 
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val activityUIInfo = fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)
+            withContext(mainDispatcher) {
+                activityInfoUIModel = activityUIInfo
+            }
 
             val context = CoreAppDetails.getContext()
 
@@ -251,7 +261,7 @@ open class TaskScreenViewModel @Inject constructor(
             ) else taskList
             isContentScreenEmpty()
             getSurveyDetail()
-            isActivityCompleted()
+
             val activityConfig = getActivityUiConfigUseCase.getActivityUiConfig(
                 missionId = missionId, activityId = activityId
             )
@@ -325,8 +335,6 @@ open class TaskScreenViewModel @Inject constructor(
                 _taskList.value.entries.sortedBy { it.value[TaskCardSlots.TASK_TITLE.name]?.value }
                     .groupBy { it.value[TaskCardSlots.GROUP_BY.name]?.value }
 
-            if (filterTaskMap.isNotEmpty())
-                expandFirstNotStartedItem()
 
             updateListForAllFilter()
 
@@ -336,8 +344,11 @@ open class TaskScreenViewModel @Inject constructor(
                 updateFilterForActivity(activityId)
             }
 
+            isActivityCompleted()
             updateProgress()
-
+            if (filterTaskMap.isNotEmpty())
+                expandFirstNotStartedItem()
+            initChildScreen()
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -518,11 +529,11 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     suspend fun checkButtonValidation() {
-        var isButtonEnablee = getTaskUseCase.isAllActivityCompleted(
+        var isButtonEnabled = getTaskUseCase.isAllTaskCompleted(
             missionId = missionId,
             activityId = activityId
         ) && !isActivityCompleted.value && filterList.value.isNotEmpty()
-        updateValueInMainThread(isButtonEnable, isButtonEnablee)
+        updateValueInMainThread(isButtonEnable, isButtonEnabled)
     }
 
     fun markActivityCompleteStatus() {
@@ -566,14 +577,17 @@ open class TaskScreenViewModel @Inject constructor(
             updateProgress()
         }
     }
+    suspend fun isActivityCompleted() {
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
+            missionId = missionId,
+            activityId = activityId
+        )
+        checkButtonValidation()
+    }
 
-    fun isActivityCompleted() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
-                missionId = missionId,
-                activityId = activityId
-            )
-            checkButtonValidation()
+    fun checkIsActivityCompleted() {
+        ioViewModelScope {
+            isActivityCompleted()
         }
     }
 
@@ -635,6 +649,10 @@ open class TaskScreenViewModel @Inject constructor(
         CoreObserverManager.notifyCoreObserversUpdateMissionActivityStatusOnGrantInit() {
             onSuccess(it)
         }
+    }
+    open suspend fun initChildScreen() {}
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.TaskScreen
     }
 
 }

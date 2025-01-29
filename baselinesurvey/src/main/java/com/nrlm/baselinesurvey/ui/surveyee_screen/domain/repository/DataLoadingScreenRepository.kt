@@ -2,7 +2,6 @@ package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository
 
 import com.nrlm.baselinesurvey.database.entity.ActivityTaskEntity
 import com.nrlm.baselinesurvey.database.entity.ContentEntity
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.model.datamodel.CasteModel
 import com.nrlm.baselinesurvey.model.datamodel.MissionActivityModel
@@ -15,6 +14,7 @@ import com.nrlm.baselinesurvey.model.response.ContentResponse
 import com.nrlm.baselinesurvey.model.response.MissionResponseModel
 import com.nrlm.baselinesurvey.model.response.SurveyResponseModel
 import com.nrlm.baselinesurvey.model.response.UserDetailsResponse
+import com.nudge.core.database.entities.language.LanguageEntity
 
 interface DataLoadingScreenRepository {
 
@@ -56,7 +56,6 @@ interface DataLoadingScreenRepository {
     suspend fun deleteMissionActivitiesFromDB()
     suspend fun deleteActivityTasksFromDB()
 
-    suspend fun getCasteListFromNetwork(languageId: Int): ApiResponseModel<List<CasteModel>>
     fun saveCasteList(castes: String)
     fun getCasteList(): List<CasteModel>
 

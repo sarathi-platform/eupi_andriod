@@ -20,6 +20,9 @@ const val ApiStatusTable = "api_status_table"
 const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
 const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
+const val TRANSLATION_CONFIG_TABLE_NAME = "translation_config_table"
+const val LANGUAGE_TABLE_NAME = "language_table"
+const val CASTE_TABLE = "caste_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -31,7 +34,7 @@ const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
-const val NUDGE_DATABASE_VERSION = 3
+const val NUDGE_DATABASE_VERSION = 5
 const val NUDGE_GRANT_DATABASE = "NudgeGrantDatabase"
 
 const val SELECTION_MISSION = "Selection"
@@ -192,7 +195,7 @@ const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
 const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
-const val CORE_DB_VERSION = 1
+const val CORE_DB_VERSION = 3
 
 const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
@@ -210,6 +213,10 @@ const val MIGRATION_BACKUP = "MIGRATION_BACKUP"
 const val DEFAULT_NUMERIC_INPUT_MAX_LENGTH = 7
 const val DEFAULT_TEXT_INPUT_MAX_LENGTH = 150
 const val STATE_ID = "stateId"
+const val MISSION_TYPE = "missionType"
+const val MISSION_ID = "missionId"
+const val LIVELIHOOD_ORDER = "livelihoodOrder"
+const val LIVELIHOOD_TYPE = "livelihoodType"
 const val USER_TYPE = "userType"
 const val CRP = "CRP"
 const val BPC = "BPC"
@@ -232,6 +239,8 @@ const val SUBJECT_DADA_NAME = "dadaName"
 const val SUBJECT_ADDRESS = "address"
 const val SUBJECT_COHORT_NAME = "cohortName"
 const val VILLAGE_NAME = "villageName"
+const val SUBPATH_GET_CASTE_LIST = "/read-api/config/caste/get"
+
 
 const val DEFAULT_BASELINE_V1_IDS = "[4,31]"
 
@@ -246,3 +255,11 @@ const val ACTIVITY_COMPLETED_ERROR = "ACTIVITY_COMPLETED_ERROR"
 const val FORM_RESPONSE_LIMIT_ERROR = "FORM_RESPONSE_LIMIT_ERROR"
 const val AES_SALT = "T&CNu7Zs"
 const val MASKED_CHAR = "*"
+
+const val BASELINE_ACTIVITY_NAME_PREFIX = "Conduct "
+const val ARG_IS_FROM_BACKSTACK = "isFromBackstack"
+
+const val ALL_MISSION_FILTER_VALUE = "All Missions"
+const val GENERAL_MISSION_FILTER_VALUE = "General Missions"
+const val DOUBLE_SLASH_N = "\\n"
+const val SLASH_N = "\n"

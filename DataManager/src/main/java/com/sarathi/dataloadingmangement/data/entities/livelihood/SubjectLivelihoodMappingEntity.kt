@@ -12,6 +12,7 @@ data class SubjectLivelihoodMappingEntity(
     val id: Int = 0,
     val userId: String,
     val subjectId: Int,
+    //prrogramLivelihood
     val livelihoodId: Int,
     val type: Int,
     val status:Int,

@@ -13,8 +13,8 @@ class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl:
     suspend fun getActivities(missionId: Int): List<ActivityUiModel> =
         activityRepositoryImpl.getActivity(missionId)
 
-    suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
-        return activityRepositoryImpl.isAllActivityCompleted(
+    suspend fun isActivityCompleted(missionId: Int, activityId: Int): Boolean {
+        return activityRepositoryImpl.isActivityCompleted(
             missionId = missionId,
             activityId = activityId
         )

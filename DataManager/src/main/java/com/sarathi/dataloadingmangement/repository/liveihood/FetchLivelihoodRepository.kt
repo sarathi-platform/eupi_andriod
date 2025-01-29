@@ -9,6 +9,7 @@ interface FetchLivelihoodOptionRepository {
         activityId: Int,
     ): ApiResponseModel<List<LivelihoodOptionResponse>>
     suspend fun saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntity: List<SubjectLivelihoodMappingEntity>)
-suspend fun getActivityIdForLivelihood():Int
+    suspend fun getActivityIdForLivelihood(): Int
+    suspend fun isLivelihoodAlreadyFetched(): Boolean
 
 }

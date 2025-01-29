@@ -19,5 +19,9 @@ data class Validation(
     val message: String,
     @SerializedName("languageCode")
     @Expose
-    val languageCode: String
+    val languageCode: String,
+    @SerializedName("regex")
+    @Expose
+    val regex: String?,
+
 )

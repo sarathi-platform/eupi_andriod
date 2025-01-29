@@ -59,6 +59,7 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
@@ -106,7 +107,7 @@ fun GridTypeComponent(
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
-    val manualMaxHeight = 100.dp
+    val manualMinHeight = dimen_50_dp
 
     BoxWithConstraints(
         modifier = modifier
@@ -114,7 +115,7 @@ fun GridTypeComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight)
+            .heightIn(min = manualMinHeight, maxCustomHeight + manualMinHeight)
     ) {
 
         Card(
@@ -142,7 +143,10 @@ fun GridTypeComponent(
                     LazyColumn(
                         state = outerState,
                         modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
+                            .heightIn(
+                                min = manualMinHeight,
+                                max = maxCustomHeight + manualMinHeight
+                            )
                     ) {
                         if (isQuestionDisplay) {
                             item {
@@ -175,8 +179,8 @@ fun GridTypeComponent(
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
                                         .heightIn(
-                                            min = 110.dp,
-                                            max = maxCustomHeight + manualMaxHeight
+                                            min = manualMinHeight,
+                                            max = maxCustomHeight + manualMinHeight
                                         ),
                                     horizontalArrangement = Arrangement.Center
                                 ) {

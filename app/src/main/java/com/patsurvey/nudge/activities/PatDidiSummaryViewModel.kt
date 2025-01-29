@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import androidx.core.net.toUri
 import androidx.lifecycle.viewModelScope
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.database.entities.getDependentEventsId
 import com.nudge.core.enums.EventName
 import com.nudge.core.json
@@ -15,7 +16,6 @@ import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.survey.PatDidiSummaryRepository
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -199,13 +199,9 @@ class PatDidiSummaryViewModel @Inject constructor(
         )
     }
 
-    fun getCastName(castId : Int) : String{
-        var castName = ""
-        for(cast in castList){
-            if(castId == cast.id)
-                castName = cast.casteName
-        }
-        return castName
+    fun getCastName(castId: Int): String {
+        val matchingCast = castList.firstOrNull { it.casteId == castId }
+        return matchingCast?.casteName ?: BLANK_STRING
     }
 
     fun updateDidiShgFlag(didiId: Int, flagStatus: SHGFlag) {

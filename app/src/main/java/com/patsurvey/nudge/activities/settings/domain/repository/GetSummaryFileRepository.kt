@@ -2,7 +2,7 @@ package com.patsurvey.nudge.activities.settings.domain.repository
 
 import android.net.Uri
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
-import com.nrlm.baselinesurvey.model.datamodel.SummaryFileDto
+import com.nudge.core.model.SummaryFileDto
 
 interface GetSummaryFileRepository {
 

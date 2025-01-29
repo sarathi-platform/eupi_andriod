@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,6 +23,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
@@ -28,6 +31,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.black100Percent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_300_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
@@ -44,6 +49,8 @@ fun ShowCustomDialog(
     onPositiveButtonClick: () -> Unit,
     onNegativeButtonClick: () -> Unit
 ) {
+    val scrollState = rememberScrollState()
+
     Dialog(
         onDismissRequest = { }, properties = DialogProperties(
             dismissOnClickOutside = dismissOnClickOutside ?: true,
@@ -79,14 +86,22 @@ fun ShowCustomDialog(
                             }
                             //Divider(thickness = 1.dp, color = greyBorder)
                         }
-                        Text(
-                            text = message,
-                            style = defaultTextStyle.copy(color = blueDark),
-                            textAlign = TextAlign.Start,
+                        Box(
                             modifier = Modifier
+                                .heightIn(max = dimen_300_dp, min = dimen_20_dp)
                                 .padding(horizontal = dimen_5_dp)
-                                .wrapContentWidth()
-                        )
+                                .verticalScroll(scrollState)
+                        ) {
+                            Text(
+                                text = message,
+                                style = defaultTextStyle.copy(color = blueDark),
+                                modifier = Modifier.fillMaxWidth(),
+                                maxLines = Int.MAX_VALUE, // Allow unlimited lines for scrolling
+                                textAlign = TextAlign.Start,
+                                overflow = TextOverflow.Clip // Disable ellipsis when scrolling
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(4.dp))
 
                         Row(modifier = Modifier.fillMaxWidth()) {
@@ -129,6 +144,19 @@ fun ShowCustomDialog(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ShowCustomDialogPreview() {
+    ShowCustomDialog(
+        title = "Exit",
+        message = "Are you sure you want to exit?",
+        dismissOnClickOutside = true,
+        onNegativeButtonClick = {},
+        onPositiveButtonClick = {},
+        positiveButtonTitle = "yes",
+        negativeButtonTitle = "no"
+    )
+}
 
 @Composable
 fun MainTitle(title: String, modifier: Modifier, align: TextAlign = TextAlign.Start) {

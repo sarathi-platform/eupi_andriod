@@ -104,10 +104,18 @@ fun DataTabScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message = stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
+            title = dataTabScreenViewModel.stringResource(
+                resId = R.string.are_you_sure
+            ),
+            message = dataTabScreenViewModel.stringResource(
+                resId = R.string.do_you_want_to_exit_the_app
+            ),
+            positiveButtonTitle = dataTabScreenViewModel.stringResource(
+                resId = R.string.exit
+            ),
+            negativeButtonTitle = dataTabScreenViewModel.stringResource(
+                resId = R.string.cancel
+            ),
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
             },
@@ -122,7 +130,7 @@ fun DataTabScreen(
             dataTabScreenViewModel.incomeExpenseSummaryUiModel[dataTabScreenViewModel.showAssetDialog.value.second],
             dataTabScreenViewModel.livelihoodModelList.filter {
                 dataTabScreenViewModel.showAssetDialog.value.third.contains(
-                    it.livelihoodId
+                    it.programLivelihoodId
                 )
             },
             onDismissRequest = {
@@ -170,13 +178,15 @@ fun DataTabScreen(
             onBottomSheetItemSelected = {
                 dataTabScreenViewModel.onEvent(
                     DataTabEvents.LivelihoodFilterApplied(
-                        dataTabScreenViewModel.filters[it].livelihoodId
+                        dataTabScreenViewModel.filters[it].programLivelihoodId
                     )
                 )
             }
         ) {
             ToolBarWithMenuComponent(
-                title = stringResource(id = com.sarathi.dataloadingmangement.R.string.app_name),
+                title = dataTabScreenViewModel.stringResource(
+                    resId = com.sarathi.dataloadingmangement.R.string.app_name
+                ),
                 modifier = modifier,
                 isSearch = true,
                 iconResId = R.drawable.ic_sarathi_logo,
@@ -210,23 +220,7 @@ fun DataTabScreen(
                                 .zIndex(1f),
                             contentColor = blueDark,
                         )
-                        if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp),
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    text = "LHP not done. Hence no didi list available.",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    style = mediumTextStyle,
-                                    color = textColorDark
-                                )
-                            }
-                        } else {
                             Column(
                                 modifier = Modifier
                                     .padding(horizontal = dimen_16_dp)
@@ -237,7 +231,7 @@ fun DataTabScreen(
                                 CustomSubTabLayoutWithCallBack(
                                     parentTabIndex = TabsEnum.DataTab.tabIndex,
                                     tabs = dataTabScreenViewModel.tabs,
-                                    dataTabScreenViewModel.countMap
+                                    countMap = dataTabScreenViewModel.countMap
                                 ) {
                                     dataTabScreenViewModel.onEvent(DataTabEvents.OnSubTabChanged)
                                 }
@@ -250,7 +244,9 @@ fun DataTabScreen(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .weight(1f),
-                                        placeholderString = stringResource(DataRes.string.search_by_didis),
+                                        placeholderString = dataTabScreenViewModel.stringResource(
+                                            DataRes.string.search_by_didis
+                                        ),
                                         searchFieldHeight = dimen_50_dp,
                                         onSearchValueChange = {
                                             dataTabScreenViewModel.onEvent(
@@ -318,57 +314,74 @@ fun DataTabScreen(
                                                 ) {
                                                     append(
                                                         dataTabScreenViewModel.filters.toList()
-                                                            .find { it.livelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                            .find { it.programLivelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
                                                     )
                                                 }
                                             }
                                         )
                                     )
                                 }
+                                if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
-                                LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(horizontal = 16.dp),
+                                        verticalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            text = "LHP not done. Hence no didi list available.",
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textAlign = TextAlign.Center,
+                                            style = mediumTextStyle,
+                                            color = textColorDark
+                                        )
+                                    }
+                                } else {
+                                    LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
-                                    itemsIndexed(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value) { index, subject ->
-                                        val summaryForSubject =
-                                            dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
+                                        itemsIndexed(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value) { index, subject ->
+                                            val summaryForSubject =
+                                                dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
 
-                                        SubjectLivelihoodEventSummaryCard(
-                                            subjectId = subject.subjectId!!,
-                                            name = subject.subjectName,
-                                            imageFileName = subject.imageFileName,
-                                            dadaName = subject.dadaName,
-                                            location = subject.villageName,
-                                            lastUpdated = getDurationDifferenceInDays(
-                                                subject.lastUpdated
-                                            ),
-                                            incomeExpenseSummaryUiModel = summaryForSubject,
-                                            onAssetCountClicked = {
-                                                dataTabScreenViewModel.onEvent(
-                                                    DataTabEvents.ShowAssetDialogForSubject(
-                                                        showDialog = true,
-                                                        subjectId = it,
-                                                        subject.livelihoodIds
+                                            SubjectLivelihoodEventSummaryCard(
+                                                subjectId = subject.subjectId!!,
+                                                name = subject.subjectName,
+                                                imageFileName = subject.imageFileName,
+                                                dadaName = subject.dadaName,
+                                                location = subject.villageName,
+                                                lastUpdated = getDurationDifferenceInDays(
+                                                    subject.lastUpdated
+                                                ),
+                                                incomeExpenseSummaryUiModel = summaryForSubject,
+                                                onAssetCountClicked = {
+                                                    dataTabScreenViewModel.onEvent(
+                                                        DataTabEvents.ShowAssetDialogForSubject(
+                                                            showDialog = true,
+                                                            subjectId = it,
+                                                            subject.livelihoodIds
+                                                        )
                                                     )
+                                                }
+                                            ) {
+                                                navigateToDataSummaryScreen(
+                                                    navController = navHostController,
+                                                    subjectId = subject.subjectId,
+                                                    subjectName = subject.subjectName
                                                 )
+
                                             }
-                                        ) {
-                                            navigateToDataSummaryScreen(
-                                                navController = navHostController,
-                                                subjectId = subject.subjectId,
-                                                subjectName = subject.subjectName
-                                            )
 
                                         }
 
-                                    }
+                                        item {
+                                            CustomVerticalSpacer()
+                                        }
 
-                                    item {
-                                        CustomVerticalSpacer()
                                     }
-
                                 }
                             }
-                        }
+
 
 
 

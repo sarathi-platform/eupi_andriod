@@ -41,6 +41,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_STATE_ID = "type_state_id"
+        const val PREF_STATE_CODE = "type_state_code"
+        const val PREF_STATE_NAME = "state_name"
+        const val PREF_DISTRICT_NAME = "district_name"
+        const val PREF_BLOCK_NAME = "block_name"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_USER_NAME = "key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
@@ -55,6 +59,8 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
         const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
 
+        const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+        const val PREF_KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
 
 
         @Volatile
@@ -211,6 +217,13 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     fun getStateId(): Int {
         return getPref(PREF_STATE_ID, -1)
+    }
+    fun setStateCode(stateCode: String) {
+        savePref(PREF_STATE_CODE, stateCode)
+    }
+
+    fun getStateCode(): String {
+        return getPref(PREF_STATE_CODE, BLANK_STRING)
     }
 
     fun setUserRole(role: String) {

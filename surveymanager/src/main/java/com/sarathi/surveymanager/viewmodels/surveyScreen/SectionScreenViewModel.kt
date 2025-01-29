@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.Content
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetSectionListUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -16,6 +17,9 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -24,8 +28,10 @@ class SectionScreenViewModel @Inject constructor(
     private val getSectionListUseCase: GetSectionListUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val fetchContentUseCase: FetchContentUseCase
-) : BaseViewModel() {
+    private val fetchContentUseCase: FetchContentUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
+
+    ) : BaseViewModel() {
 
     private var missionId: Int = 0
     private var activityId: Int = 0
@@ -45,6 +51,7 @@ class SectionScreenViewModel @Inject constructor(
     val sectionStatusMap: State<Map<Int, String>> get() = _sectionStatusMap
 
     val isButtonEnable = mutableStateOf<Boolean>(false)
+    var isActivityCompleted = mutableStateOf(false)
 
     val buttonVisibilityKey: MutableState<Boolean> =
         mutableStateOf(sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name })
@@ -72,9 +79,19 @@ class SectionScreenViewModel @Inject constructor(
             withContext(mainDispatcher) {
                 callBack()
             }
+            isActivityCompleted()
         }
     }
 
+    fun isActivityCompleted() {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
+                missionId = missionId,
+                activityId = activityId
+            )
+            checkButtonValidation()
+        }
+    }
     override fun refreshData() {
         super.refreshData()
 
@@ -121,11 +138,10 @@ class SectionScreenViewModel @Inject constructor(
     }
 
     fun checkButtonValidation() {
-
         buttonVisibilityKey.value =
             sectionStatusMap.value.all { it.value == SurveyStatusEnum.COMPLETED.name }
         isButtonEnable.value =
-            sectionList.value.size == sectionStatusMap.value.size && sectionStatusMap.value.values.toList()
+            sectionList.value.size == sectionStatusMap.value.size  && !isActivityCompleted.value && sectionStatusMap.value.values.toList()
                 .all { it == SurveyStatusEnum.COMPLETED.name }
 
     }

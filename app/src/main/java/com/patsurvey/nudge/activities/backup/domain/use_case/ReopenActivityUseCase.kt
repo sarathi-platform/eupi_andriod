@@ -74,6 +74,7 @@ class ReopenActivityUseCase @Inject constructor(
         missionId: Int,
         activityIds: List<Int>
     ): Boolean {
+
         try {
             updateActivityStatusUseCase.markActivitiesInProgress(
                 missionId = missionId,

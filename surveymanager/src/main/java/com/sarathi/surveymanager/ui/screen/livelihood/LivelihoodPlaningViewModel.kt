@@ -7,6 +7,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
@@ -14,6 +15,7 @@ import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -42,6 +44,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private val livelihoodEventWriterUseCase: LivelihoodEventWriterUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val getActivityUseCase: GetActivityUseCase,
     val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
@@ -61,6 +64,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var checkDialogueValidation = mutableStateOf(false)
     var primaryLivelihoodId = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
+    var isActivityCompleted = mutableStateOf(false)
 
 
     override fun <T> onEvent(event: T) {
@@ -71,6 +75,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
             }
 
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 initLivelihoodPlanningScreen()
             }
 
@@ -126,7 +131,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         _livelihoodList.value = mLivelihoodUiEntityList
                     }
                     checkButtonValidation()
-
+                    isActivityCompleted()
                 }
 
             } catch (ex: Exception) {
@@ -169,46 +174,69 @@ class LivelihoodPlaningViewModel @Inject constructor(
             isButtonEnable.value = primaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID && secondaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID }
     }
 
-    fun saveButtonClicked() {
+    fun saveButtonClicked(callBack: suspend () -> Unit) {
         ioViewModelScope {
-            saveLivelihoodMappingToDb()
+            saveLivelihoodMappingToDb(callBack = callBack)
         }
     }
 
-     fun saveLivelihoodMappingToDb() {
-        ioViewModelScope {
-            subjectId?.let {
-                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
-                    primaryLivelihoodId.value, LivelihoodTypeEnum.PRIMARY.typeId,it
-                )
-                saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
-                 secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId,it
-                )
-            }
-            val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
-            livelihoodTypeEventDto.add(LivelihoodTypeEventDto(primaryLivelihoodId.value,LivelihoodTypeEnum.PRIMARY.typeId))
-                    livelihoodTypeEventDto.add(LivelihoodTypeEventDto(secondaryLivelihoodId.value,LivelihoodTypeEnum.SECONDARY.typeId))
-            val livelihoodPlanActivityDto =
-                LivelihoodPlanActivityEventDto(coreSharedPrefs.getUserName(),
-                    livelihoodTypeEventDto,
-                    activityId!!,missionId!!,subjectId!!,DIDI)
-                livelihoodEventWriterUseCase.writeLivelihoodEvent(
-                    livelihoodPlanActivityDto)
-
-            taskStatusUseCase.markTaskCompleted(
-                    taskId = taskId!!
-                )
-            taskEntity = getTaskUseCase.getTask(taskId!!)
-                taskEntity?.let {
-                    matStatusEventWriterUseCase.markMATStatus(
-                        surveyName = LIVELIHOOD,
-                        subjectType = coreSharedPrefs.getUserType(),
-                        missionId = missionId?: DEFAULT_ID,
-                        activityId = activityId?: DEFAULT_ID,
-                        taskId = taskId?: DEFAULT_ID
-
-                    )
-                }
+    private suspend fun saveLivelihoodMappingToDb(callBack: suspend () -> Unit) {
+        subjectId?.let {
+            saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                primaryLivelihoodId.value, LivelihoodTypeEnum.PRIMARY.typeId, it
+            )
+            saveLivelihoodMappingUseCase.saveAndUpdateLivelihoodMappingForSubject(
+                secondaryLivelihoodId.value, LivelihoodTypeEnum.SECONDARY.typeId, it
+            )
         }
+        val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
+        livelihoodTypeEventDto.add(
+            LivelihoodTypeEventDto(
+                programLivelihoodId = primaryLivelihoodId.value,
+                order = LivelihoodTypeEnum.PRIMARY.typeId,
+            )
+        )
+        livelihoodTypeEventDto.add(
+            LivelihoodTypeEventDto(
+                programLivelihoodId = secondaryLivelihoodId.value,
+                order = LivelihoodTypeEnum.SECONDARY.typeId
+            )
+        )
+        val livelihoodPlanActivityDto =
+            LivelihoodPlanActivityEventDto(
+                coreSharedPrefs.getUserName(),
+                livelihoodTypeEventDto,
+                activityId!!, missionId!!, subjectId!!, DIDI
+            )
+        livelihoodEventWriterUseCase.writeLivelihoodEvent(
+            livelihoodPlanActivityDto
+        )
+
+        taskStatusUseCase.markTaskCompleted(
+            taskId = taskId!!
+        )
+        taskEntity = getTaskUseCase.getTask(taskId!!)
+        taskEntity?.let {
+            matStatusEventWriterUseCase.markMATStatus(
+                surveyName = LIVELIHOOD,
+                subjectType = coreSharedPrefs.getUserType(),
+                missionId = missionId ?: DEFAULT_ID,
+                activityId = activityId ?: DEFAULT_ID,
+                taskId = taskId ?: DEFAULT_ID
+
+            )
+        }
+        callBack()
     }
+    suspend fun isActivityCompleted() {
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
+            missionId = missionId ?: DEFAULT_ID,
+            activityId = activityId ?: DEFAULT_ID
+        )
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.LivelihoodDropDownScreen
+    }
+
 }

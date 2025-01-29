@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -18,7 +17,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.incomeexpensemodule.R
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CircularImageViewComponent
 import com.nudge.core.ui.theme.blueDark
@@ -37,11 +36,9 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
-import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.incomeCardTopViewColor
-import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
@@ -101,7 +98,7 @@ fun SubjectLivelihoodEventSummaryCard(
                         if (TextUtils.isEmpty(imageFileName)) Uri.EMPTY else imageFileName?.let {
                             FileUtils.getImageUri(
                                 context = context,
-                                fileName = it
+                                fileName = getFileNameFromURL(imageFileName)
                             )
                         }
                     CircularImageViewComponent(
@@ -141,21 +138,20 @@ fun SubjectLivelihoodEventSummaryCard(
             Divider()
 
             Column(modifier = Modifier.padding(dimen_8_dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.DateRange,
-                        contentDescription = "Calendar Icon",
-                        modifier = Modifier.size(dimen_16_dp),
-                        tint = blueDark
-                    )
-                    Spacer(modifier = Modifier.width(dimen_4_dp))
-                    Text(
-                        text = stringResource(R.string.last_1_month),
-                        style = getTextColor(smallTextStyleMediumWeight2)
-                    )
-                }
-                Spacer(modifier = Modifier.height(dimen_8_dp))
-                //TODO show correct value from db and display dialog also.
+//                Row(verticalAlignment = Alignment.CenterVertically) {
+//                    Icon(
+//                        imageVector = Icons.Default.DateRange,
+//                        contentDescription = "Calendar Icon",
+//                        modifier = Modifier.size(dimen_16_dp),
+//                        tint = blueDark
+//                    )
+//                    Spacer(modifier = Modifier.width(dimen_4_dp))
+//                    Text(
+//                        text = stringResource(R.string.last_1_month),
+//                        style = getTextColor(smallTextStyleMediumWeight2)
+//                    )
+//                }
+//                Spacer(modifier = Modifier.height(dimen_8_dp))
                 IncomeExpenseAssetAmountView(
                     incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel,
                     onAssetCountClicked = {

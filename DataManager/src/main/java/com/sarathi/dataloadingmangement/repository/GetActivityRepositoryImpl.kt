@@ -24,7 +24,7 @@ class GetActivityRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun isAllActivityCompleted(missionId: Int, activityId: Int): Boolean {
+    override suspend fun isActivityCompleted(missionId: Int, activityId: Int): Boolean {
         Log.d(
             "TAG",
             "isAllActivityCompleted: ${coreSharedPrefs.getUniqueUserIdentifier()} :: $missionId :: $activityId"

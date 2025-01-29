@@ -163,9 +163,8 @@ class GrantSurveyScreenViewModel @Inject constructor(
             if (questionUiModel.tagId.contains(DISBURSED_AMOUNT_TAG)) {
                 val disbursedAmount =
                     if (TextUtils.isEmpty(questionUiModel.options?.firstOrNull()?.selectedValue)) 0 else questionUiModel.options?.firstOrNull()?.selectedValue?.toInt()
-                if (sanctionAmount != 0 && (disbursedAmount
-                        ?: 0) + totalRemainingAmount > sanctionAmount
-                ) {
+                val disbursedAmt = disbursedAmount ?: 0
+                if (sanctionAmount != 0 && disbursedAmt + totalRemainingAmount > sanctionAmount) {
                     return false
                 }
             }

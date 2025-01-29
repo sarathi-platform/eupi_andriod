@@ -115,10 +115,10 @@ class ActivityReopeningScreenViewModel @Inject constructor(
                     missionId = selectedMissionId.value,
                     missionName = it.description,
                     activityIds = selectedActivityIdList.toList(),
-                    isBaselineMission = it.description.equals(
+                    isBaselineMission = it.description.contains(
                         BASELINE_MISSION_NAME,
                         true
-                    )
+                    ) && baselineV1CheckUseCase.invoke(it.description)
                 )
 
                 withContext(mainDispatcher) {

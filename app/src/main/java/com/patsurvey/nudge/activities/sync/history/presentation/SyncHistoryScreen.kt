@@ -30,9 +30,9 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.dimen_65_dp
 import com.nrlm.baselinesurvey.ui.theme.text_size_16_sp
 import com.nudge.core.SYNC_DATA
+import com.nudge.core.ui.commonUi.LastSyncTimeView
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.history.viewmodel.SyncHistoryViewModel
-import com.patsurvey.nudge.activities.sync.home.presentation.LastSyncTime
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 
@@ -63,7 +63,7 @@ fun SyncHistoryScreen(
                 .fillMaxWidth()
 
         ) {
-            LastSyncTime(
+            LastSyncTimeView(
                 lastSyncTime = viewModel.lastSyncTime.longValue,
                 mobileNumber = viewModel.getUserMobileNumber()
             ) {}

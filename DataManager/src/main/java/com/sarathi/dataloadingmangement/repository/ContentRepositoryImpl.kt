@@ -76,13 +76,13 @@ class ContentRepositoryImpl @Inject constructor(
 
         // Handle content from activityConfigDao
         activityConfigDao.getAllActivityIconsKey(userIdentifier)?.forEach {
-            addContentRequest(coreSharedPrefs.getAppLanguage(), it)
+            addContentRequest(DEFAULT_LANGUAGE_CODE, it)
         }
 
         // Handle survey answers
         val surveyAnswers = surveyAnswersDao.getSurveyAnswerImageKeys(
             uniqueUserIdentifier = userIdentifier,
-            questionType = QuestionType.MultiImage.name
+            questionType = listOf(QuestionType.MultiImage.name, QuestionType.SingleImage.name)
         )
         surveyAnswers?.forEach { survey ->
             survey.optionItems.forEach { optionsUiModel ->

@@ -15,6 +15,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
@@ -73,6 +74,7 @@ class DataTabScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAddDataForDataTab(isRefresh = false)
             }
 
@@ -175,11 +177,13 @@ class DataTabScreenViewModel @Inject constructor(
             _incomeExpenseSummaryUiModel.clear()
             val currentTime = getCurrentTimeInMillis()
             _incomeExpenseSummaryUiModel.putAll(
-                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjectForDuration(
-                    subjectLivelihoodMappingEntityList = subjectList.value,
-                    durationStart = getDayPriorCurrentTimeMillis(currentTime),
-                    durationEnd = currentTime
-                )
+//                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjectForDuration(
+//                    subjectLivelihoodMappingEntityList = subjectList.value,
+//                    durationStart = getDayPriorCurrentTimeMillis(IncomeExpenseConstants.MONTH_DURATION),
+//                    durationEnd = currentTime
+//                )
+                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase
+                    .getSummaryForSubjects(subjectLivelihoodMappingEntityList = subjectList.value)
             )
 
             lastEventDateMapForSubject =
@@ -189,7 +193,7 @@ class DataTabScreenViewModel @Inject constructor(
 
             livelihoodModelList =
                 getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
-                    .distinctBy { it.livelihoodId }
+                    .distinctBy { it.programLivelihoodId }
 
             createFilterBottomSheetList(livelihoodModelList)
 
@@ -301,6 +305,10 @@ class DataTabScreenViewModel @Inject constructor(
         loadAddDataForDataTab(isRefresh = true)
 
 
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DataTabScreen
     }
 }
 

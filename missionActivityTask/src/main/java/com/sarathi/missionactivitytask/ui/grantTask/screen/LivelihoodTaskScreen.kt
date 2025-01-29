@@ -4,20 +4,17 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.ActivityTypeEnum
-import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
-import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.LivelihoodTaskCard
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.LivelihoodTaskScreenViewModel
@@ -108,13 +105,12 @@ fun LivelihoodTaskRowView(
 
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
 ) {
-    val context = LocalContext.current
     LivelihoodTaskCard(
+        translationHelper = viewModel.translationHelper,
         onPrimaryButtonClick = { subjectName ->
             viewModel.activityConfigUiModelWithoutSurvey?.let {
                 when (ActivityTypeEnum.getActivityTypeFromId(it.activityTypeId)) {
                     ActivityTypeEnum.LIVELIHOOD -> {
-                        if (!viewModel.isActivityCompleted.value) {
                             navigateToLivelihoodDropDownScreen(
                                 navController,
                                 taskId = task.key,
@@ -122,12 +118,6 @@ fun LivelihoodTaskRowView(
                                 missionId = viewModel.missionId,
                                 subjectName = subjectName
                             )
-                        } else {
-                            showCustomToast(
-                                context,
-                                context.getString(R.string.activity_completed_unable_to_edit)
-                            )
-                        }
                     }
 
                     else -> {}
@@ -149,7 +139,7 @@ fun LivelihoodTaskRowView(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
                 )
-                viewModel.isActivityCompleted()
+                viewModel.checkIsActivityCompleted()
 
             }
             viewModel.getActivityList(viewModel.missionId)

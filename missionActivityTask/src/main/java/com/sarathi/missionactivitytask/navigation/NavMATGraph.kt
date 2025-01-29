@@ -123,7 +123,9 @@ fun NavGraphBuilder.MatNavigation(
                             description = mission.description,
                             missionStatus = mission.missionStatus,
                             activityCount = mission.activityCount,
-                            pendingActivityCount = mission.pendingActivityCount
+                            pendingActivityCount = mission.pendingActivityCount,
+                            missionSubtitle = mission.getSubTitle(),
+                            missionSubTitleDetail = mission.getSubTitleDetail()
                         )
                     )
                 } else {
@@ -167,7 +169,7 @@ fun NavGraphBuilder.MatNavigation(
                 programId = it.arguments?.getInt(
                     ARG_PROGRAM_ID
                 ) ?: 0,
-                onSettingClick = onSettingIconClick
+                onSettingClick = onSettingIconClick,
             )
         }
         composable(
@@ -217,7 +219,7 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
-                }
+                },
             )
         ) {
           LivelihoodTaskScreen(
@@ -675,8 +677,8 @@ fun NavGraphBuilder.MatNavigation(
                         totalSubmittedAmount = totalSubmittedAmount
                     )
                 },
-                onNavigateSuccessScreen = { msg ->
-                    navigateToActivityCompletionScreen(navController, msg)
+                onNavigateSuccessScreen = { msg ,activityRoutePath->
+                    navigateToActivityCompletionScreen(navController, msg,activityRoutePath=activityRoutePath)
                 },
                 sanctionedAmount = it.arguments?.getInt(
                     ARG_SANCTIONED_AMOUNT
@@ -703,7 +705,7 @@ fun NavGraphBuilder.MatNavigation(
             }
         )) {
             ActivitySuccessScreen(
-                onNavigateBack = { isFromActivity ,activityRoutePath->
+                onNavigateBack = { isFromActivity, activityRoutePath ->
                     if (activityRoutePath.contains(LIVELIHOOD)) {
                         navController.popBackStack(
                             MATHomeScreens.LivelihoodTaskScreen.route,
@@ -717,7 +719,10 @@ fun NavGraphBuilder.MatNavigation(
                             inclusive = isFromActivity
                         )
                     } else {
-                        navController.popBackStack()
+                        navController.popBackStack(
+                            MATHomeScreens.ActivityScreen.route,
+                            inclusive = false
+                        )
                     }
                 },
                 navController = navController, message = it.arguments?.getString(
@@ -933,7 +938,7 @@ fun NavGraphBuilder.MatNavigation(
                 },
                 navArgument(name = ARG_PROGRAM_ID) {
                     type = NavType.IntType
-                },
+                }
                 )
         ) {
             ActivitySelectTaskScreen(
@@ -1110,11 +1115,7 @@ fun NavGraphBuilder.MatNavigation(
             referenceId = it.arguments?.getString(ARG_REFERENCE_ID).value(),
             subjectType = it.arguments?.getString(ARG_SUBJECT_TYPE).value(),
             onNavigateBack = {
-                navController.popBackStack(
-                    route = MATHomeScreens.SurveyScreen.route,
-                    inclusive = false,
-                    saveState = false
-                )
+                navController.navigateUp()
             },
             onSettingClick = {
                 onSettingIconClick()
@@ -1394,7 +1395,7 @@ fun navigateToGrantTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
 ) {
     navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }
@@ -1423,7 +1424,7 @@ fun navigateToActivitySelectTaskScreen(
     missionId: Int,
     activityId: Int,
     activityName: String,
-    programId: Int
+    programId: Int,
 ) {
     navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
 }

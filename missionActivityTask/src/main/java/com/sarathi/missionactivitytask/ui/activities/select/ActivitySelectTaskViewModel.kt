@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -74,6 +75,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitActivitySelectTaskScreenState -> {
+                setTranslationConfig()
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 initActivitySelectTaskScreen(event.missionId, event.activityId)
             }
@@ -86,7 +88,6 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
-            expandedIds.clear()
             taskUiList.value.forEach { task ->
                 val list = intiQuestions(
                     taskId = task.taskId,
@@ -170,17 +171,30 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     }
 
     override fun expandFirstNotStartedItem() {
-        if (!isActivityCompleted.value) {
+        expandedIds.clear()
 
-            val firstGroupWithNotStatedTask = if (isGroupingApplied.value) {
-                getFirstGroupWithNotStatedTask()
-            } else
-                null
+        if (isGroupingApplied.value) {
 
-            val firstNotStartedTaskIndex = filterList.value.entries.toList()
-                .indexOfFirst { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
-            expandNextItem(firstNotStartedTaskIndex - 1, firstGroupWithNotStatedTask)
+            val groupKeySet = filterTaskMap.keys
+            groupKeySet.forEach { key ->
+                val notStartedTasks = filterTaskMap[key]?.value()?.filter { task ->
+                    task.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name
+                }
+                notStartedTasks?.forEach {
+                    if (!expandedIds.contains(it.key)) {
+                        expandedIds.add(it.key)
+                    }
+                }
+            }
+        } else {
+            val filterIdsList = filterList.value.entries.toList()
+                .filter { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
 
+            filterIdsList.forEach {
+                if (!expandedIds.contains(it.key)) {
+                    expandedIds.add(it.key)
+                }
+            }
         }
     }
 
@@ -254,6 +268,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
 
             taskStatusUseCase.markActivityInProgress(missionId, activityId)
             taskStatusUseCase.markMissionInProgress(missionId)
+            getTaskUseCase.updateTaskStatus(
+                taskId = taskId,
+                status = status
+            )
             eventWriterUseCase.markMATStatus(
                 missionId = missionId,
                 activityId = activityId,
@@ -261,14 +279,14 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
                 surveyName = ActivityTypeEnum.SELECT.name
             )
-            getTaskUseCase.updateTaskStatus(
-                taskId = taskId,
-                status = status
-            )
+
             checkButtonValidation()
             updateProgress()
         }
     }
 
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.ActivitySelectTaskScreen
+    }
 
 }

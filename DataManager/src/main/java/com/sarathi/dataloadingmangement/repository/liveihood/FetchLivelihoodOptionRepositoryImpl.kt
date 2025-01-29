@@ -32,5 +32,9 @@ class FetchLivelihoodOptionRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun isLivelihoodAlreadyFetched(): Boolean {
+        return subjectLivelihoodMappingDao.fetchSavedLivelihoodOptionsForUser(userId = coreSharedPrefs.getUniqueUserIdentifier()) > 0
+    }
+
 
 }
