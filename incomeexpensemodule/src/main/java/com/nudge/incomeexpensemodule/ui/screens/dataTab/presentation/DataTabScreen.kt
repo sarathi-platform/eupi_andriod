@@ -303,7 +303,7 @@ fun DataTabScreen(
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
+                                                    append(" ${dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString()}")
                                                 }
                                                 append(stringResource(R.string.results_for))
                                                 withStyle(
