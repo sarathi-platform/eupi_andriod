@@ -53,6 +53,7 @@ import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -107,14 +108,24 @@ fun MissionScreen(
         }
     }
     LaunchedEffect(viewModel.filterMissionList.value) {
-        if (completedMissionId?.value != 0 && completedMissionId?.value != null && viewModel.filterMissionList.value.isNotEmpty()) {
-            val index = viewModel.filterMissionList.value.map { it.missionId }
-                .indexOf(completedMissionId.value)
-            if (index > 0) {
-                delay(1000)
-                lazyListState.animateScrollToItem(index)
+        try {
+            if (completedMissionId?.value != 0 && completedMissionId?.value != null && viewModel.filterMissionList.value.isNotEmpty()) {
+                val index = viewModel.filterMissionList.value.map { it.missionId }
+                    .indexOf(completedMissionId.value)
+                if (index > 0) {
+                    delay(1000)
+                    lazyListState.animateScrollToItem(index)
+                }
             }
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = "MissionScreen",
+                msg = "LaunchedEffect: ex -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
         }
+
     }
 
     DisposableEffect(key1 = LocalContext.current) {
