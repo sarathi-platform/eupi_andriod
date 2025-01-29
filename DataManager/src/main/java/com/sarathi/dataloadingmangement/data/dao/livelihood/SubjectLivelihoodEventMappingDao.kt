@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 
 @Dao
@@ -120,6 +121,16 @@ interface SubjectLivelihoodEventMappingDao {
         transactionId: String,
         userId: String
     ): List<SubjectLivelihoodEventMappingEntity>?
+
+    @Query(
+        "SELECT subject_livelihood_event_mapping_table.* ,livelihood_table.image as livelihoodImage from subject_livelihood_event_mapping_table join livelihood_table on livelihood_table.programLivelihoodId=subject_livelihood_event_mapping_table.livelihoodId\n" +
+                "where subject_livelihood_event_mapping_table.transactionId = :transactionId\n " +
+                "and subject_livelihood_event_mapping_table.userId = :userId order by subject_livelihood_event_mapping_table.modifiedDate DESC"
+    )
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDbWithImage(
+        transactionId: String,
+        userId: String
+    ): List<SubjectLivelihoodEventHistoryUiModel>?
 
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME where  userId = :userId")
     suspend fun getSubjectLivelihoodEventMappingForUser(

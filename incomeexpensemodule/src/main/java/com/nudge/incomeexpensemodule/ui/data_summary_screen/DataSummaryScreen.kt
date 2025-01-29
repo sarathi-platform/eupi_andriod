@@ -93,7 +93,6 @@ import com.nudge.core.ui.theme.borderGreen
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.didiDetailItemStyle
-import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_15_dp
@@ -727,9 +726,17 @@ private fun ViewEditHistoryView(
         )
 
         Spacer(modifier = Modifier.weight(1.0f))
-        Column(
-            horizontalAlignment = Alignment.End
+        Row(
+            horizontalArrangement = Arrangement.End
         ) {
+
+            if (isEventDeleted) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_delete_stamp),
+                    contentDescription = null,
+                )
+
+            }
             livelihoodImage?.let { fileName ->
                 val fileNameFromUrl = getFileNameFromURL(fileName)
                 FileUtils.getImageUri(context = context, fileName = fileNameFromUrl)
@@ -739,16 +746,9 @@ private fun ViewEditHistoryView(
                             contentDescription = "Loaded Image",
                             modifier = Modifier
                                 .size(dimen_20_dp)
-                                .padding(vertical = dimen_0_dp)
+                                .padding(start = dimen_5_dp)
                         )
                     }
-            }
-            if (isEventDeleted) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_delete_stamp),
-                    contentDescription = null,
-                )
-
             }
         }
 

@@ -108,7 +108,7 @@
     <string name="total_didis">Total Didis - %1$s</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
     <string name="edit_event">"पिछला संपादन (एडिट ) "</string>
-    <string name="showing">showing</string>
+    <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"संपत्ति "</string>
     <string name="last_updated_days_ago">"अंतिम अपडेट  %1$s दिन पहले किया गया  "</string>
@@ -142,4 +142,6 @@
     <string name="sync_already_cancelled">"सिंक पहले से ही रद्ध कर दिया गया है "</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">"आय/खर्च "</string>
+    <string name="date_of_event">Date of Event</string>
+
 </resources>
