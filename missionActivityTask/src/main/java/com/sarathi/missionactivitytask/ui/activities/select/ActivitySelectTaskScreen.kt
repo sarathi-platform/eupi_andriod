@@ -412,7 +412,8 @@ fun SelectActivityCard(
                     modifier = Modifier,
                     imagePath = imagePath,
                     onImageClick = {
-                        viewModel.isDidiImageDialogVisible.value = true
+                        viewModel.isDidiImageDialogVisible.value =
+                            Triple(true, title?.value.value(), imagePath)
                     })
             } else if (title?.value != BLANK_STRING) {
                 Box(
@@ -490,9 +491,15 @@ fun SelectActivityCard(
             SubContainerView(subtitle4, isNumberFormattingRequired = true)
         }
     }
-    if (viewModel.isDidiImageDialogVisible.value && imagePath != null) {
-        ShowDidiImageDialog(didiName = title?.value ?: BLANK_STRING, imagePath = imagePath) {
-            viewModel.isDidiImageDialogVisible.value = false
+    if (viewModel.isDidiImageDialogVisible.value.first
+        && viewModel.isDidiImageDialogVisible.value.third != null
+        && viewModel.isDidiImageDialogVisible.value.third != Uri.EMPTY
+    ) {
+        ShowDidiImageDialog(
+            didiName = viewModel.isDidiImageDialogVisible.value.second ?: BLANK_STRING,
+            imagePath = viewModel.isDidiImageDialogVisible.value.third
+        ) {
+            viewModel.isDidiImageDialogVisible.value = Triple(false, BLANK_STRING, Uri.EMPTY)
         }
     }
 
