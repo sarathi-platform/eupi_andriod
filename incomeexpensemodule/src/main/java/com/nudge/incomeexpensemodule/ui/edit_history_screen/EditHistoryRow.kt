@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -20,6 +21,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
@@ -28,6 +30,7 @@ import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.DD_mmm_hh_mm_a_FORMAT
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getDate
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -36,6 +39,7 @@ import com.nudge.core.ui.theme.darkBlueColor
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
@@ -45,20 +49,20 @@ import com.nudge.core.ui.theme.incomeCardTopViewColor
 import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
-import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.nudge.core.utils.FileUtils
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 
 
 @Composable
 fun EditHistoryRow(
     translationHelper: TranslationHelper,
-    currentHistoryData: SubjectLivelihoodEventMappingEntity,
-    nextHistoryData: SubjectLivelihoodEventMappingEntity?,
+    currentHistoryData: SubjectLivelihoodEventHistoryUiModel,
+    nextHistoryData: SubjectLivelihoodEventHistoryUiModel?,
     isDeleted: Boolean = false,
     isRecentData: Boolean = false
 ) {
-    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         translationHelper.initTranslationHelper(TranslationEnum.EditHistoryRow)
     }
@@ -133,13 +137,14 @@ fun EditHistoryRow(
                         data2 = " ${currentSavedEvent?.assetCount}"
                     )
                     Spacer(modifier = Modifier.height(4.dp))
-                    TextDataRowView(
+                    TextDataRowViewWithIcon(
                         data1 = translationHelper.stringResource(R.string.event_date),
                         data2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
                         data2textColor = dataChangeTextColor(
                             data1 = getEventDate(currentHistoryData),
                             data2 = getEventDate(nextHistoryData),
                         ),
+                        imagePath = currentHistoryData.livelihoodImage
                     )
                 }
             }
@@ -208,6 +213,45 @@ private fun TextDataRowView(
     }
 }
 
+@Composable
+private fun TextDataRowViewWithIcon(
+    data1: String? = null,
+    data1TextColor: Color = blueDark,
+    data2: String? = null,
+    data2textColor: Color = blueDark,
+    imagePath: String? = null
+) {
+    val context = LocalContext.current
+    Row(verticalAlignment = Alignment.CenterVertically) {
+
+        data1?.let {
+            Text(
+                text = it,
+                style = defaultTextStyle.copy(data1TextColor)
+            )
+        }
+        data2?.let {
+            Text(
+                text = it,
+                style = defaultTextStyle.copy(data2textColor)
+            )
+        }
+        Spacer(modifier = Modifier.weight(1.0f))
+        imagePath?.let { fileName ->
+            val fileNameFromUrl = getFileNameFromURL(fileName)
+            FileUtils.getImageUri(context = context, fileName = fileNameFromUrl)
+                ?.let { it1 ->
+                    AsyncImage(
+                        model = it1,
+                        contentDescription = "Loaded Image",
+                        modifier = Modifier
+                            .size(dimen_24_dp)
+                    )
+                }
+        }
+    }
+}
+
 private fun getSavedEventData(savedEvent: String?): LivelihoodEventScreenData? {
     savedEvent?.let {
         val type = object : TypeToken<LivelihoodEventScreenData?>() {}.type
@@ -239,6 +283,6 @@ private fun getEventAmount(savedEvent: LivelihoodEventScreenData?): String =
 private fun getAssetCount(savedEvent: LivelihoodEventScreenData?): String =
     savedEvent?.assetCount?.toString()?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: "0"
 
-private fun getEventDate(eventData: SubjectLivelihoodEventMappingEntity?): String =
+private fun getEventDate(eventData: SubjectLivelihoodEventHistoryUiModel?): String =
     eventData?.date?.toString()?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: "0"
 

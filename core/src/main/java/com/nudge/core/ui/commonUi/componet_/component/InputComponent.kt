@@ -50,6 +50,7 @@ fun InputComponent(
     isEditable: Boolean = true,
     sanctionedAmount: Int = 0,
     remainingAmount: Int = 0,
+    isError: Boolean = false,
     onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
 ) {
     val txt = remember(defaultValue) {
@@ -72,6 +73,7 @@ fun InputComponent(
                 .height(dimen_60_dp),
             value = txt.value,
             textStyle = newMediumTextStyle.copy(blueDark),
+            isError = isError,
             enabled = isEditable,
             onValueChange = {
                 if (it.length <= maxLength) {
