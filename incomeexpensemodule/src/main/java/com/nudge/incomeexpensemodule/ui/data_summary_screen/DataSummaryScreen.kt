@@ -98,6 +98,7 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_3_dp
+import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
@@ -496,7 +497,8 @@ fun EventsListHeaderWithDropDownFilter(
             SingleSelectDropDown(
                 sources = sources,
                 selectOptionText = selectedOptionValue.id,
-                modifier = Modifier.width(it + dimen_60_dp + dimen_16_dp)
+                modifier = Modifier.width(it + dimen_60_dp + dimen_16_dp),
+                height = dimen_40_dp
             ) { selectValue ->
 
                 selectedOptionValue = sources.findById(selectValue) ?: sources[0]
