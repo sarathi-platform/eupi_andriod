@@ -10,9 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.toSize
 import com.example.incomeexpensemodule.R
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 
@@ -20,6 +22,7 @@ import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 fun SingleSelectDropDown(
     modifier: Modifier = Modifier
         .fillMaxWidth(),
+    height: Dp = dimen_60_dp,
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>?,
     isEditAllowed: Boolean = true,
@@ -47,6 +50,7 @@ fun SingleSelectDropDown(
         items = defaultSourceList,
         modifier = Modifier
             .then(modifier),
+        height = height,
         mTextFieldSize = textFieldSize,
         expanded = expanded,
         selectedItem = selectedOptionText,
