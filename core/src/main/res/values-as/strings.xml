@@ -69,5 +69,6 @@
     <string name="ongoing_tab_title">Ongoing</string>
     <string name="completed_tab_title">Completed</string>
     <string name="search_by_mission">Search by Mission</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
 
 </resources>
