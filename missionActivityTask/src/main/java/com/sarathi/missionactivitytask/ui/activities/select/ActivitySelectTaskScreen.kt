@@ -660,8 +660,14 @@ private fun OptionsUI(
                                     isSelected
                                 taskMarkedNotAvailable.value = false
                                 onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    translationHelper.getString(
+                                        com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
+                                    )
+                                )
                             }
-
                         }, questionDetailExpanded = {}
                     )
                 }
