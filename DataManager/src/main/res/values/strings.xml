@@ -123,7 +123,7 @@
     <string name="save_text">Save</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
-    <string name="decrease_in_number">decrease in Number</string>
+    <string name="decrease_in_number">Decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
     <string name="data_send_to_server">Data sent to Server</string>
     <string name="sync_on">Auto Sync - On</string>
