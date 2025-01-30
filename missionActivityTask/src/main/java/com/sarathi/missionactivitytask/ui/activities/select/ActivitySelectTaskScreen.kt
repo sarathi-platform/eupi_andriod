@@ -402,7 +402,7 @@ fun SelectActivityCard(
                 modifier = Modifier,
                 imagePath = imagePath,
                 onImageClick = {
-                    viewModel.isDidiImageDialogVisible.value = true
+                    viewModel.isDidiImageDialogVisible.value = Triple(true, title?.value.value(),imagePath)
                 })
             Column(
                 modifier = Modifier
@@ -464,9 +464,10 @@ fun SelectActivityCard(
             SubContainerView(subtitle4, isNumberFormattingRequired = true)
         }
     }
-    if (viewModel.isDidiImageDialogVisible.value) {
-        ShowDidiImageDialog(didiName = title?.value ?: BLANK_STRING, imagePath = imagePath) {
-            viewModel.isDidiImageDialogVisible.value = false
+    if (viewModel.isDidiImageDialogVisible.value.first) {
+        ShowDidiImageDialog(didiName = viewModel.isDidiImageDialogVisible.value.second, imagePath = viewModel.isDidiImageDialogVisible.value.third) {
+            viewModel.isDidiImageDialogVisible.value = Triple(false,
+                com.sarathi.dataloadingmangement.BLANK_STRING, Uri.EMPTY)
         }
     }
 
