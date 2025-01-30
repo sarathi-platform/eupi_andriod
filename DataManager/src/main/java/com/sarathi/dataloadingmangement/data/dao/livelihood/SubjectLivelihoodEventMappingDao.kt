@@ -31,6 +31,9 @@ interface SubjectLivelihoodEventMappingDao {
     @Query("Select count(*) from subject_livelihood_event_mapping_table where userId=:userId and transactionId=:transactionId and status=1 ")
     suspend fun isLivelihoodEventMappingExist(userId: String, transactionId: String): Int
 
+    @Query("Select count(*) from subject_livelihood_event_mapping_table where userId=:userId and status=1")
+    suspend fun isDataPresentForUser(userId: String): Int
+
     @Query("Update subject_livelihood_event_mapping_table set livelihoodId=:livelihoodId, livelihoodEventId=:livelihoodEventId,livelihoodEventType=:livelihoodEventType where transactionId=:transactionId and subjectId=:subjectId and userId=:userId")
     suspend fun updateLivelihoodEventMapping(
         userId: String, transactionId: String, livelihoodId: Int, livelihoodEventId: Int,
