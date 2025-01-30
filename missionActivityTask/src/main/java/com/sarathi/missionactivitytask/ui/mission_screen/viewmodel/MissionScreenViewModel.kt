@@ -360,9 +360,8 @@ class MissionScreenViewModel @Inject constructor(
         }
 
         if (selectedMissionFilter.value?.type != FilterType.ALL && selectedMissionFilter.value?.type != FilterType.GENERAL) {
-            val livelihoodType =
-                (selectedMissionFilter.value?.type as FilterType.OTHER).filterValue.toString()
-                    .toCamelCase()
+            val livelihoodType = selectedMissionFilter.value?.filterLabel.value().toCamelCase()
+
             filterLabel = "$livelihoodType Missions"
         }
 
