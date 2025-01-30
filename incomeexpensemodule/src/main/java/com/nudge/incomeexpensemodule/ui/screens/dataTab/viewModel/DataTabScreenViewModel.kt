@@ -71,6 +71,7 @@ class DataTabScreenViewModel @Inject constructor(
     val showAssetDialog: MutableState<Triple<Boolean, Int, List<Int>>> =
         mutableStateOf(Triple(false, -1, listOf()))
 
+    var isSearchEnable = mutableStateOf<Boolean>(false)
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -115,6 +116,7 @@ class DataTabScreenViewModel @Inject constructor(
     }
 
     private fun onSearchQueryChanged(searchQuery: String) {
+        isSearchEnable.value = !TextUtils.isEmpty(searchQuery)
         var filteredList = if (isFilterApplied.value) {
             getFilteredList(LIVELIHOOD_FILTER, selectedFilterValue.value)
         } else {
