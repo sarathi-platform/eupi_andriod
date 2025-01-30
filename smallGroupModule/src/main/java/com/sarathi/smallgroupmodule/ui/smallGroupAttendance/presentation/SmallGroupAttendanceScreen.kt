@@ -428,6 +428,7 @@ fun AttendanceItem(
             ContentWithImage(
                 imageProperties = ImageProperties(
                     path = smallGroupAttendanceEntityState.subjectEntity.crpImageName,
+                    altText = smallGroupAttendanceEntityState.subjectEntity.subjectName,
                     contentDescription = "Didi Image"
                 )
             ) {
