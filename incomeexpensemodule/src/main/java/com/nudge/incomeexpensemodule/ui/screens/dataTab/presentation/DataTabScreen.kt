@@ -330,7 +330,7 @@ fun DataTabScreen(
                                         verticalArrangement = Arrangement.Center,
                                     ) {
                                         Text(
-                                            text = "LHP not done. Hence no didi list available.",
+                                            text = stringResource(R.string.no_result_found),
                                             modifier = Modifier.fillMaxWidth(),
                                             textAlign = TextAlign.Center,
                                             style = mediumTextStyle,
