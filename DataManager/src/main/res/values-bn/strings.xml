@@ -109,7 +109,7 @@
     <string name="proceed">এগিয়ে যান</string>
     <string name="cancel_text">বাতিল করুন</string>
     <string name="edit_event">"ইভেন্ট এডিট করুন "</string>
-    <string name="showing">showing</string>
+    <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"সম্পদ "</string>
     <string name="last_updated_days_ago">"সর্বশেষ আপডেট করা হয়েছে: %1$s দিন আগে "</string>
@@ -142,4 +142,6 @@
     <string name="sync_already_cancelled">"সিঙ্ক আগে থেকে বাতিল করা রয়েছে "</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">আয় / ব্যয়</string>
+    <string name="date_of_event">Date of Event</string>
+
 </resources>

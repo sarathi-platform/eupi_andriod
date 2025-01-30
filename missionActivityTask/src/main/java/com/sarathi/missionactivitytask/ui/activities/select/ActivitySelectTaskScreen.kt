@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -39,6 +40,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -50,31 +52,37 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.TRANSITION
 import com.nudge.core.customGridHeight
+import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CardArrow
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_27_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
 import com.nudge.core.ui.theme.lightGrayColor
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.questionTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
@@ -214,7 +222,7 @@ fun ExpandableTaskCardRow(
         subtitle4 = task.value[TaskCardSlots.TASK_SUBTITLE_4.name],
         imagePath = viewModel.getFilePathUri(
             task.value[TaskCardSlots.TASK_IMAGE.name]?.value ?: BLANK_STRING
-        ) ?: Uri.EMPTY,
+        ),
         modifier = Modifier,
         questionUiModel = questionUIModel,
         expanded = viewModel.expandedIds.contains(task.key),
@@ -289,7 +297,7 @@ fun ExpandableTaskCard(
     subtitle2: TaskCardModel?,
     subtitle3: TaskCardModel?,
     subtitle4: TaskCardModel?,
-    imagePath: Uri,
+    imagePath: Uri?,
     modifier: Modifier,
     viewModel: ActivitySelectTaskViewModel,
     questionUiModel: QuestionUiModel?,
@@ -367,7 +375,7 @@ fun SelectActivityCard(
     subtitle2: TaskCardModel?,
     subtitle3: TaskCardModel?,
     subtitle4: TaskCardModel?,
-    imagePath: Uri,
+    imagePath: Uri?,
     expanded: Boolean,
     onExpendClick: (Boolean, TaskCardModel) -> Unit,
     animateColor: Color,
@@ -394,16 +402,34 @@ fun SelectActivityCard(
                 .clickable {
                     title?.let { onExpendClick(expanded, it) }
                 }
-                .padding(horizontal = dimen_12_dp, vertical = dimen_5_dp),
+                .padding(horizontal = dimen_16_dp)
+                .padding(top = dimen_8_dp, bottom = dimen_5_dp),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageViewComponent(
-                modifier = Modifier,
-                imagePath = imagePath,
-                onImageClick = {
-                    viewModel.isDidiImageDialogVisible.value = true
-                })
+            if (imagePath != null) {
+                CircularImageViewComponent(
+                    modifier = Modifier,
+                    imagePath = imagePath,
+                    onImageClick = {
+                        viewModel.isDidiImageDialogVisible.value = true
+                    })
+            } else if (title?.value != BLANK_STRING) {
+                Box(
+                    modifier = Modifier
+                        .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                        .clip(CircleShape)
+                        .width(dimen_56_dp)
+                        .height(dimen_56_dp)
+                        .background(color = yellowBg)
+                ) {
+                    Text(
+                        getFirstAndLastInitials(title?.value),
+                        modifier = Modifier.align(Alignment.Center),
+                        style = mediumTextStyle.copy(color = brownDark)
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -464,7 +490,7 @@ fun SelectActivityCard(
             SubContainerView(subtitle4, isNumberFormattingRequired = true)
         }
     }
-    if (viewModel.isDidiImageDialogVisible.value) {
+    if (viewModel.isDidiImageDialogVisible.value && imagePath != null) {
         ShowDidiImageDialog(didiName = title?.value ?: BLANK_STRING, imagePath = imagePath) {
             viewModel.isDidiImageDialogVisible.value = false
         }
@@ -634,8 +660,14 @@ private fun OptionsUI(
                                     isSelected
                                 taskMarkedNotAvailable.value = false
                                 onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    translationHelper.getString(
+                                        com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
+                                    )
+                                )
                             }
-
                         }, questionDetailExpanded = {}
                     )
                 }

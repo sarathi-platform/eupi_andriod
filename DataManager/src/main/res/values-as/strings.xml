@@ -108,7 +108,7 @@
     <string name="proceed">আগবাঢ়ক</string>
     <string name="cancel_text">বাতিল কৰক</string>
     <string name="edit_event">Edit Event</string>
-    <string name="showing">showing</string>
+    <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"সম্পদ "</string>
     <string name="last_1_month">Last 1 Month</string>
@@ -143,5 +143,6 @@
     <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">উপাৰ্জন/ব্যয়</string>
+    <string name="date_of_event">Date of Event</string>
 
 </resources>

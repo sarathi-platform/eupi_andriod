@@ -79,7 +79,6 @@ import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.deleteButtonBg
 import com.nudge.core.ui.theme.dimen_56_dp
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.missionactivitytask.ui.components.ButtonPositiveComponent
@@ -780,7 +779,8 @@ fun HistorySummaryCardItem(
     ContentWithImage(
         modifier = modifier.padding(horizontal = dimen_10_dp),
         imageProperties = ImageProperties(
-            path = BLANK_STRING,
+            path = subjectAttendanceHistoryState.subjectEntity.crpImageName,
+            altText = subjectAttendanceHistoryState.subjectEntity.subjectName,
             contentDescription = "Didi Image"
         )
     ) {

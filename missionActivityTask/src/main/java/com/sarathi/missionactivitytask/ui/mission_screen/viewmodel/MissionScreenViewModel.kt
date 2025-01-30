@@ -225,6 +225,11 @@ class MissionScreenViewModel @Inject constructor(
         val filterList = ArrayList<FilterUiModel>()
         missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
+            .filter { livelihood -> // filtering livelihood that user's have mapped mission
+                missionList.value.any() {
+                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
+                }
+            }
 
         filterList.add(
             FilterUiModel.getAllFilter(
@@ -352,9 +357,8 @@ class MissionScreenViewModel @Inject constructor(
         }
 
         if (selectedMissionFilter.value?.type != FilterType.ALL && selectedMissionFilter.value?.type != FilterType.GENERAL) {
-            val livelihoodType =
-                (selectedMissionFilter.value?.type as FilterType.OTHER).filterValue.toString()
-                    .toCamelCase()
+            val livelihoodType = selectedMissionFilter.value?.filterLabel.value().toCamelCase()
+
             filterLabel = "$livelihoodType Missions"
         }
 

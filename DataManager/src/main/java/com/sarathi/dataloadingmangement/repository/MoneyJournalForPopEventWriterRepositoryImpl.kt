@@ -26,7 +26,9 @@ class MoneyJournalForPopEventWriterRepositoryImpl(
                 subjectType = subjectType,
                 transactionDate = transactionDate,
                 status = status,
-                modifiedDate = modifiedDate
+                modifiedDate = modifiedDate,
+                eventId = eventId,
+                eventType = eventType
             )
         }
 

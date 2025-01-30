@@ -48,6 +48,7 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
@@ -60,6 +61,7 @@ fun IncrementDecrementNumberComponent(
     isEditAllowed: Boolean = true,
     onAnswerSelection: (selectValue: String) -> Unit,
     maxValue: Int = MAXIMUM_RANGE,
+    isError: Boolean = false,
     editNotAllowedMsg: String = BLANK_STRING,
     isMandatory: Boolean = false,
 ) {
@@ -79,6 +81,7 @@ fun IncrementDecrementNumberComponent(
             isEditAllowed = isEditAllowed,
             currentCount = currentValue.value("0"),
             maxValue = maxValue,
+            isError = isError,
             onAnswerSelection = onAnswerSelection,
             editNotAllowedMsg = editNotAllowedMsg,
         )
@@ -91,6 +94,7 @@ fun IncrementDecrementCounter(
     label: String? = BLANK_STRING,
     isEditAllowed: Boolean,
     currentCount: String,
+    isError: Boolean = false,
     maxValue: Int,
     onAnswerSelection: (selectValue: String) -> Unit,
     editNotAllowedMsg: String,
@@ -110,7 +114,11 @@ fun IncrementDecrementCounter(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(Color.White)
-                .border(width = 1.dp, shape = RoundedCornerShape(6.dp), color = lightGray2)
+                .border(
+                    width = 1.dp,
+                    shape = RoundedCornerShape(6.dp),
+                    color = if (isError) redIconColor else lightGray2
+                )
         ) {
 
             Row(
