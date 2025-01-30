@@ -286,18 +286,18 @@ object MigrationQueries {
                 "            ADD COLUMN moneyJournalConfig TEXT"
     val ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID =
         "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
-                "            ADD COLUMN eventId TEXT"
+                "            ADD COLUMN eventId INTEGER"
 
     val ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE =
         "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
-                "            ADD COLUMN eventType INTEGER"
+                "            ADD COLUMN eventType TEXT"
 
     val ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_ID =
-        "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
-                "            ADD COLUMN eventId TEXT"
+        "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventId INTEGER"
 
     val ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_TYPE =
         "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
-                "            ADD COLUMN eventType INTEGER"
+                "            ADD COLUMN eventType TEXT"
 
 }
