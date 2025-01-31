@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.viewmodels
 
 import android.content.Context
+import android.net.Uri
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -31,7 +32,7 @@ abstract class BaseViewModel : ViewModel() {
 
     @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
-    val isDidiImageDialogVisible = mutableStateOf(false)
+    val isDidiImageDialogVisible = mutableStateOf(Triple(false, BLANK_STRING, Uri.EMPTY))
 
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main

@@ -45,6 +45,7 @@ fun DidiTabCard(
                 },
             imageProperties = ImageProperties(
                 path = subjectEntity.crpImageLocalPath,
+                altText = subjectEntity.subjectName,
                 contentDescription = "Didi Image",
                 modifier = Modifier
                     .aspectRatio(1f, matchHeightConstraintsFirst = true)

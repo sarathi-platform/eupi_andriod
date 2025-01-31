@@ -23,6 +23,6 @@ interface CoreApiService {
     suspend fun fetchTranslationConfigData(@Query("stateId") stateId: Int): ApiResponseModel<List<TranslationModel>>
 
     @GET("/read-api/config/language/get/v3")
-    suspend fun languageConfigV3(@Query("stateId") stateId: Int?): ApiResponseModel<LanguageConfigModel>
+    suspend fun languageConfigV3(@Query("userId") userId: Int?): ApiResponseModel<LanguageConfigModel>
 
 }

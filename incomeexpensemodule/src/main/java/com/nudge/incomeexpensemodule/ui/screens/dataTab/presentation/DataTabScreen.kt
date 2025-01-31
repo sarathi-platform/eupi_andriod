@@ -273,7 +273,7 @@ fun DataTabScreen(
                                         )
                                     )
 
-                                    CustomIconButton(
+                                    /*CustomIconButton(
                                         onClick = {
                                             dataTabScreenViewModel.isSortApplied.value =
                                                 !dataTabScreenViewModel.isSortApplied.value
@@ -287,7 +287,7 @@ fun DataTabScreen(
                                             contentColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark
                                         ),
                                         contentDescription = "Sort List"
-                                    )
+                                    )*/
 
                                 }
 
@@ -303,7 +303,7 @@ fun DataTabScreen(
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
+                                                    append(" ${dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString()}")
                                                 }
                                                 append(stringResource(R.string.results_for))
                                                 withStyle(

@@ -98,14 +98,16 @@ class DataTabScreenViewModel @Inject constructor(
             }
 
             is DataTabEvents.LivelihoodSortApplied -> {
-                if (isSortApplied.value) {
-                    _filteredDataTabScreenUiEntityList.value =
-                        _filteredDataTabScreenUiEntityList.value.sortedByDescending { it.lastUpdated }
-                } else {
-                    _filteredDataTabScreenUiEntityList.value =
-                        _filteredDataTabScreenUiEntityList.value.sortedBy { it.lastUpdated }
-
-                }
+                _filteredDataTabScreenUiEntityList.value =
+                    _filteredDataTabScreenUiEntityList.value.sortedBy { it.subjectName.toLowerCase() }
+//                if (isSortApplied.value) {
+//                    _filteredDataTabScreenUiEntityList.value =
+//                        _filteredDataTabScreenUiEntityList.value.sortedByDescending { it.lastUpdated }
+//                } else {
+//                    _filteredDataTabScreenUiEntityList.value =
+//                        _filteredDataTabScreenUiEntityList.value.sortedBy { it.lastUpdated }
+//
+//                }
             }
 
             is DataTabEvents.OnSubTabChanged -> {

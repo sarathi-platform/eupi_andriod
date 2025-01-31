@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.repository.liveihood
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveLivelihoodEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 
 interface ISubjectLivelihoodEventMapping {
@@ -46,6 +47,10 @@ interface ISubjectLivelihoodEventMapping {
     suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
         transactionId: String
     ): List<SubjectLivelihoodEventMappingEntity>?
+
+    suspend fun getSubjectLivelihoodEventMappingListForHistory(
+        transactionId: String
+    ): List<SubjectLivelihoodEventHistoryUiModel>?
 
     suspend fun getLivelihoodEventForUser(): List<SubjectLivelihoodEventMappingEntity>
 }

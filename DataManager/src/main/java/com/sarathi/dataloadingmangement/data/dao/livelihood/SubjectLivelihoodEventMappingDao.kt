@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.Query
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 
 @Dao
@@ -30,6 +31,9 @@ interface SubjectLivelihoodEventMappingDao {
 
     @Query("Select count(*) from subject_livelihood_event_mapping_table where userId=:userId and transactionId=:transactionId and status=1 ")
     suspend fun isLivelihoodEventMappingExist(userId: String, transactionId: String): Int
+
+    @Query("Select count(*) from subject_livelihood_event_mapping_table where userId=:userId and status=1")
+    suspend fun isDataPresentForUser(userId: String): Int
 
     @Query("Update subject_livelihood_event_mapping_table set livelihoodId=:livelihoodId, livelihoodEventId=:livelihoodEventId,livelihoodEventType=:livelihoodEventType where transactionId=:transactionId and subjectId=:subjectId and userId=:userId")
     suspend fun updateLivelihoodEventMapping(
@@ -57,10 +61,12 @@ interface SubjectLivelihoodEventMappingDao {
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status, " +
-                "subject_livelihood_event_mapping_table.createdDate " +
+                "subject_livelihood_event_mapping_table.createdDate, " +
+                "livelihood_table.image as livelihoodImage " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=1 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=1 \n" +
+                "left join livelihood_table on subject_livelihood_event_mapping_table.livelihoodId = livelihood_table.programLivelihoodId \n" +
                 "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId and subject_livelihood_event_mapping_table.status=1   group by subject_livelihood_event_mapping_table.id "
     )
     suspend fun getLivelihoodEventsWithAssetAndMoneyEntryForSubject(
@@ -73,10 +79,12 @@ interface SubjectLivelihoodEventMappingDao {
                 "money_journal_table.transactionAmount, money_journal_table.transactionFlow as moneyJournalFlow, \n" +
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status ,\n" + "Max(subject_livelihood_event_mapping_table.modifiedDate) ,\n" + "Max(asset_journal_table.modifiedDate) ,\n" + "Max(money_journal_table.modifiedDate), " +
-                "subject_livelihood_event_mapping_table.createdDate " +
+                "subject_livelihood_event_mapping_table.createdDate, " +
+                "livelihood_table.image as livelihoodImage " +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=2 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=2 \n" +
+                "left join livelihood_table on subject_livelihood_event_mapping_table.livelihoodId = livelihood_table.programLivelihoodId \n" +
                 "where subject_livelihood_event_mapping_table.userId = :userId and subject_livelihood_event_mapping_table.subjectId = :subjectId  GROUP BY subject_livelihood_event_mapping_table.transactionId\n" +
                 "HAVING COUNT(*) = SUM(CASE WHEN subject_livelihood_event_mapping_table.status = 2 THEN 1 ELSE 0 END) order by subject_livelihood_event_mapping_table.modifiedDate desc\n"
     )
@@ -116,6 +124,16 @@ interface SubjectLivelihoodEventMappingDao {
         transactionId: String,
         userId: String
     ): List<SubjectLivelihoodEventMappingEntity>?
+
+    @Query(
+        "SELECT subject_livelihood_event_mapping_table.* ,livelihood_table.image as livelihoodImage from subject_livelihood_event_mapping_table join livelihood_table on livelihood_table.programLivelihoodId=subject_livelihood_event_mapping_table.livelihoodId\n" +
+                "where subject_livelihood_event_mapping_table.transactionId = :transactionId\n " +
+                "and subject_livelihood_event_mapping_table.userId = :userId order by subject_livelihood_event_mapping_table.modifiedDate DESC"
+    )
+    suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDbWithImage(
+        transactionId: String,
+        userId: String
+    ): List<SubjectLivelihoodEventHistoryUiModel>?
 
     @Query("SELECT * from $SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME where  userId = :userId")
     suspend fun getSubjectLivelihoodEventMappingForUser(
