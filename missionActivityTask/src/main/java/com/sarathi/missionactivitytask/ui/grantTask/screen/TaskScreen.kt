@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import android.content.Context
-import android.text.TextUtils
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -159,8 +158,12 @@ fun TaskScreen(
 
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(taskList?.size) {
+    LaunchedEffect(Unit) {
         viewModel.setMissionActivityId(missionId, activityId, programId)
+        viewModel.getScreenTitle(activityName)
+    }
+
+    LaunchedEffect(taskList?.size) {
         viewModel.onEvent(InitDataEvent.InitTaskScreenState(taskList))
     }
 
@@ -287,8 +290,8 @@ fun TaskScreen(
             sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
         ) {
             ToolBarWithMenuComponent(
-                title = if (TextUtils.isEmpty(viewModel.activityInfoUIModel.activityName)) activityName else viewModel.activityInfoUIModel.activityName,
-                subTitle = viewModel.activityInfoUIModel.getTaskScreenSubTitle(),
+                title = viewModel.activityInfoUIModel.value?.activityName ?: activityName,
+                subTitle = viewModel.activityInfoUIModel.value?.getTaskScreenSubTitle().value(),
                 subTitleColorId = brownDark,
                 modifier = Modifier.fillMaxSize(),
                 navController = navController,

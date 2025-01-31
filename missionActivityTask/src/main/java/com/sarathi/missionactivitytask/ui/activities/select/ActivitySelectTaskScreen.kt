@@ -539,7 +539,7 @@ fun DisplaySelectedOption(
     options = if (options.isNullOrEmpty() && taskStatus == StatusEnum.NOT_AVAILABLE.name) {
         translationHelper.stringResource(R.string.not_available)
     } else {
-        questionUiModel?.options?.filter { it.isSelected == true }?.map { it.selectedValue }
+        questionUiModel?.options?.filter { it.isSelected == true }?.map { it.description }
             ?.joinToString(",").toString()
     }
     if (!options.isNullOrEmpty()) {
@@ -632,7 +632,7 @@ private fun OptionsUI(
                 QuestionType.RadioButton.name.toLowerCase(),
                 QuestionType.Toggle.name.toLowerCase() -> {
                     val selectedValue =
-                        it.find { it.isSelected == true }?.selectedValue ?: BLANK_STRING
+                        it.find { it.isSelected == true }?.description ?: BLANK_STRING
                     RadioOptionTypeComponent(
                         optionItemEntityState = it,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,

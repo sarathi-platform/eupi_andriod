@@ -141,7 +141,8 @@ open class TaskScreenViewModel @Inject constructor(
 
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
-    var activityInfoUIModel by mutableStateOf(ActivityInfoUIModel.getDefaultValue())
+    var activityInfoUIModel: MutableState<ActivityInfoUIModel?> =
+        mutableStateOf(ActivityInfoUIModel.getDefaultValue())
 
 
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
@@ -244,10 +245,6 @@ open class TaskScreenViewModel @Inject constructor(
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val activityUIInfo = fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)
-            withContext(mainDispatcher) {
-                activityInfoUIModel = activityUIInfo
-            }
 
             val context = CoreAppDetails.getContext()
 
@@ -653,6 +650,15 @@ open class TaskScreenViewModel @Inject constructor(
     open suspend fun initChildScreen() {}
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.TaskScreen
+    }
+
+    suspend fun getScreenTitle(activityName: String) {
+        ioViewModelScope {
+            activityInfoUIModel.value =
+                fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)?.let {
+                    it
+                } ?: ActivityInfoUIModel.getDefaultValue().copy(activityName = activityName)
+        }
     }
 
 }
