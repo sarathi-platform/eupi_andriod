@@ -30,7 +30,7 @@ data class TrainingVideoEntity(
     @ColumnInfo(name = "url")
     val url: String,
 
-    @SerializedName("thumbUrl")
+    @SerializedName("thumbnailUrl")
     @Expose
     @ColumnInfo(name = "thumbUrl")
     val thumbUrl: String,
