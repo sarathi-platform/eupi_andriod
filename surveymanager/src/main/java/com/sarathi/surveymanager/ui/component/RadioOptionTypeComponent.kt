@@ -24,11 +24,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -56,6 +58,7 @@ fun RadioOptionTypeComponent(
     isActivityCompleted: Boolean,
     onOptionSelected: (index: Int, optionValue: String, optionId: Int) -> Unit
 ) {
+    val context = LocalContext.current
     val yesNoButtonViewHeight = remember {
         mutableStateOf(dimen_0_dp)
     }
@@ -127,6 +130,11 @@ fun RadioOptionTypeComponent(
                                 index,
                                 optionValueText.description.toString(),
                                 optionValueText.optionId ?: -1
+                            )
+                        } else {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
                             )
                         }
                     }
