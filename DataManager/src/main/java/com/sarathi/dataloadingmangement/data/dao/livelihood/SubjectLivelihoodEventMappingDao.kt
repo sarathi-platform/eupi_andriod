@@ -126,8 +126,11 @@ interface SubjectLivelihoodEventMappingDao {
     ): List<SubjectLivelihoodEventMappingEntity>?
 
     @Query(
-        "SELECT subject_livelihood_event_mapping_table.* ,livelihood_table.image as livelihoodImage from subject_livelihood_event_mapping_table join livelihood_table on livelihood_table.programLivelihoodId=subject_livelihood_event_mapping_table.livelihoodId\n" +
+        "SELECT subject_livelihood_event_mapping_table.* ,livelihood_table.image as livelihoodImage " +
+                "from subject_livelihood_event_mapping_table " +
+                "left join livelihood_table on livelihood_table.programLivelihoodId=subject_livelihood_event_mapping_table.livelihoodId\n" +
                 "where subject_livelihood_event_mapping_table.transactionId = :transactionId\n " +
+                "and livelihood_table.userId = :userId \n" +
                 "and subject_livelihood_event_mapping_table.userId = :userId order by subject_livelihood_event_mapping_table.modifiedDate DESC"
     )
     suspend fun getSubjectLivelihoodEventMappingListForTransactionIdFromDbWithImage(
