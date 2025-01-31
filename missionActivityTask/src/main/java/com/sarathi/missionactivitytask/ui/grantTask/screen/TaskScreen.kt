@@ -42,7 +42,6 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
@@ -162,6 +161,7 @@ fun TaskScreen(
     LaunchedEffect(Unit) {
         viewModel.setMissionActivityId(missionId, activityId, programId)
         viewModel.getScreenTitle(activityName)
+        viewModel.setTranslationConfig()
     }
 
     LaunchedEffect(taskList?.size) {
@@ -239,7 +239,8 @@ fun TaskScreen(
                                 }
                                 Spacer(modifier = Modifier.height(dimen_10_dp))
                                 Text(
-                                    text = stringResource(
+                                    text = viewModel.getString(
+                                        context,
                                         R.string.on_completing_the_activity_you_will_not_be_able_to_edit_the_details
                                     ),
                                     style = newMediumTextStyle.copy(color = unmatchedOrangeColor)
