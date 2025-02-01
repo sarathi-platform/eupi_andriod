@@ -100,7 +100,7 @@ fun FilterRowItem(
 
 
         Text(
-            text = item.filterValue,
+            text = item.filterLabel,
             style = smallerTextStyleNormalWeight.copy(color = colors.third),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,

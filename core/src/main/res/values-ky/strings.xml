@@ -26,7 +26,7 @@
     <string name="warning_text">Warning</string>
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
-    <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="small_group_filter_label">"Naitukdi Chikon Group bai: "</string>
     <string name="all">"Bebak "</string>
     <string name="no_entry_this_month">"O tal o mwngsa phano tisa jakya "</string>
     <string name="no_entry_this_week">No entry this week</string>
@@ -60,5 +60,7 @@
     <string name="completed_tab_title">Completed</string>
     <string name="search_by_mission">Search by Mission</string>
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
 
 </resources>

@@ -65,5 +65,7 @@
     <string name="completed_tab_title">Completed</string>
     <string name="search_by_mission">Search by Mission</string>
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
 
 </resources>

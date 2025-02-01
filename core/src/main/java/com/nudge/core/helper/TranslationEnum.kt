@@ -23,8 +23,9 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "didis_item_text_plural",
             "progress_item_text",
             "didis_item_text_plural",
-
-            )
+            "general_missions_filter_label",
+            "all_missions_filter_label"
+        )
     ),
     AddEventScreen(
         "AddEventScreen",

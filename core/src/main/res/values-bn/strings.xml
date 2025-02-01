@@ -44,7 +44,7 @@
     <string name="last_month">"গত মাসে "</string>
     <string name="last_3_months">"গত 3 মাস "</string>
     <string name="custom_date">"কাস্টম তারিখ "</string>
-    <string name="small_group_filter_label">"ছোট গ্রুপ দ্বারা ফিল্টার: "</string>
+    <string name="small_group_filter_label">"ছোট দল গুলির মধ্যে থেকে ফিল্টার করুন: "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
@@ -72,5 +72,7 @@
     <string name="completed_tab_title">Completed</string>
     <string name="search_by_mission">Search by Mission</string>
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
 
 </resources>
