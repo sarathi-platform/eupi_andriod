@@ -68,6 +68,10 @@
     <string name="update_didi">আপডেট দিদি</string>
     <string name="house_number">বাড়ির নম্বর</string>
     <string name="didi_name">দিদির নাম</string>
+    <string name="dada_name_txt">দাদা নাম</string>
+    <string name="adhar_card_txt">আধার কার্ড</string>
+    <string name="voterId_card_txt">ভোটার আইডি কার্ড</string>
+    <string name="phone_number_txt">ফোন নম্বর</string>
     <string name="dada_name">স্বামীর / বাবার নাম</string>
     <string name="dada">স্বামী / বাবা</string>
     <string name="enter">লেখো</string>
@@ -478,7 +482,7 @@
     <string name="start_baseline">বেসলাইন শুরু করুন</string>
     <string name="start_activity">%s শুরু করুন</string>
 
-    <string name="read_more">Read More</string>
+    <string name="read_more">আরও পড়ুন</string>
     <string name="content">Content</string>
     <string name="average_cost">গড় ভ্রমণ খরচ: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">শুধুমাত্র একটি এন্ট্রি যোগ করা যাবে</string>

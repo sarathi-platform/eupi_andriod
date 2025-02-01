@@ -308,6 +308,11 @@ class BaseLineStartViewModel @Inject constructor(
             if (!_didiEntity.value.crpImageLocalPath.isNullOrEmpty()) {
                 CoreAppDetails.getContext()?.applicationContext?.let {
 
+                    updatedLocalPath.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
+                        didiEntity.value.crpImageLocalPath.split("|")[0]
+                    else
+                        didiEntity.value.crpImageLocalPath
+
                     photoUri.value = if (didiEntity.value.crpImageLocalPath.contains("|"))
                         FileUtils.findImageFileUsingFilePath(
                             it,
