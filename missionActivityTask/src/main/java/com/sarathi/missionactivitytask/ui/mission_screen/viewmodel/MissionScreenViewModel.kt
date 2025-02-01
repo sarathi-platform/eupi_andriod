@@ -30,6 +30,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTas
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -200,7 +201,7 @@ class MissionScreenViewModel @Inject constructor(
                 CommonEvents.OnFilterUiModelSelected(
                     selectedMissionFilter.value ?: FilterUiModel.getAllFilter(
                         ALL_MISSION_FILTER_VALUE,
-                        filterLabel = "All Missions",
+                        filterLabel = translationHelper.getString(R.string.all_missions_filter_label),
                         null
                     )
                 )
@@ -234,14 +235,14 @@ class MissionScreenViewModel @Inject constructor(
         filterList.add(
             FilterUiModel.getAllFilter(
                 filterValue = ALL_MISSION_FILTER_VALUE,
-                filterLabel = "All Missions",
+                filterLabel = translationHelper.getString(R.string.all_missions_filter_label),
                 imageFileName = null
             )
         )
         filterList.add(
             FilterUiModel.getGeneralFilter(
                 filterValue = GENERAL_MISSION_FILTER_VALUE,
-                filterLabel = "General Missions",
+                filterLabel = translationHelper.getString(R.string.general_missions_filter_label),
                 imageFileName = null
             )
         )

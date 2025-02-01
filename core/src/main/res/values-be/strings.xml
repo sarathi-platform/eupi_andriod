@@ -19,8 +19,8 @@
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
 
-    <string name="didi_sub_tab_title">Didi</string>
-    <string name="small_group_sub_tab_title">Small Group</string>
+    <string name="didis_item_text_plural">आब’मोन</string>
+    <string name="small_group_sub_tab_title">फिसा हान्जानि</string>
     <string name="search_label">Search</string>
 
     <string name="are_you_sure">Are you sure?</string>
@@ -37,7 +37,7 @@
     <string name="warning_text">Warning</string>
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
-    <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="small_group_filter_label">"फिसा हानजाजों फिलटार खालाम: "</string>
     <string name="all">"गासैबो "</string>
     <string name="no_entry_this_month">"बे दानाव हाबनो मोना "</string>
     <string name="no_entry_this_week">No entry this week</string>
@@ -71,5 +71,7 @@
     <string name="completed_tab_title">Completed</string>
     <string name="search_by_mission">Search by Mission</string>
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
 
 </resources>

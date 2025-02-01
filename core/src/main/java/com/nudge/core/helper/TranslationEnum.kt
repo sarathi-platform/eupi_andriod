@@ -23,8 +23,9 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "didis_item_text_plural",
             "progress_item_text",
             "didis_item_text_plural",
-
-            )
+            "general_missions_filter_label",
+            "all_missions_filter_label"
+        )
     ),
     AddEventScreen(
         "AddEventScreen",
@@ -192,7 +193,8 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "refresh_failed_please_try_again",
             "no_small_group_assgned_label",
             "small_group_filter_label",
-            "not_available", "activity_completed_unable_to_edit"
+            "not_available",
+            "activity_completed_unable_to_edit"
         )
     ),
     LivelihoodDropDownScreen(

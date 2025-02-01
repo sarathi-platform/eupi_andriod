@@ -143,6 +143,6 @@
     <string name="sync_already_cancelled">চিংক ইতিমধ্যে বাতিল কৰা হৈছে</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">উপাৰ্জন/ব্যয়</string>
-    <string name="date_of_event">Date of Event</string>
+    <string name="date_of_event">ঘটনাৰ তাৰিখ</string>
 
 </resources>
