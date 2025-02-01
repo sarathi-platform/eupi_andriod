@@ -154,7 +154,6 @@ open class TaskScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitTaskScreenState -> {
-                setTranslationConfig()
                 initTaskScreen(event.taskList)
             }
 

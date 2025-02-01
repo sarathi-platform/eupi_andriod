@@ -3,7 +3,6 @@ package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.CoreDispatchers
-import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.value
 import com.nudge.core.valueAsMinusTwo
@@ -65,14 +64,12 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitLivelihoodPlanningScreenState -> {
-                setTranslationConfig()
                 onEvent(LoaderEvent.UpdateLoaderState(true))
             }
         }
     }
 
     override suspend fun initChildScreen() {
-        setTranslationConfig()
         initLivelihoodPlanningScreen()
     }
     fun getPrimaryLivelihoodValue(key: Int):String {
@@ -115,8 +112,5 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
             }
         }
 
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.LivelihoodTaskScreen
-    }
 }
 
