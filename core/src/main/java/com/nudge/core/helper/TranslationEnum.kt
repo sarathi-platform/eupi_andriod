@@ -205,7 +205,7 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "activity_completed_unable_to_edit",
             "refresh_failed_please_try_again",
             "no_small_group_assgned_label",
-            "small_group_filter_label"
+            "small_group_filter_label",
         )
     ),
     LivelihoodDropDownScreen(
