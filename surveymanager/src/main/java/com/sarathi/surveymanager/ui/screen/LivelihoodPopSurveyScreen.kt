@@ -139,7 +139,8 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
                             onAnswerSelect,
                             maxHeight,
                             activityType,
-                            index
+                            index,
+                            activityReferenceId = viewModel.activityConfig?.referenceId,
                         )
                     }
                 }

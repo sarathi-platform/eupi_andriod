@@ -264,6 +264,7 @@ fun QuestionUiContent(
     maxHeight: Dp,
     grantType: String,
     index: Int,
+    activityReferenceId: Int? = 0,
     navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -550,6 +551,7 @@ fun QuestionUiContent(
 
             QuestionType.Toggle.name -> {
                 ToggleQuestionBoxComponent(
+                    activityReferenceId = activityReferenceId,
                     content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,

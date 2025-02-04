@@ -86,6 +86,7 @@ fun GridTypeComponent(
     showCardView: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
+    activityReferenceId: Int? = 0,
     isQuestionDisplay: Boolean = true,
     optionStateMap: SnapshotStateMap<Pair<Int, Int>, Boolean> = mutableStateMapOf(),
     onAnswerSelection: (optionIndex: Int, isSelected: Boolean) -> Unit,
@@ -240,6 +241,7 @@ fun GridOptionCard(
     isEnabled: Map.Entry<Pair<Int, Int>, Boolean>?,
     isOptionSelected: Boolean = false,
     isEditAllowed: Boolean,
+    activityReferenceId: Int? = 0,
     onOptionSelected: (Int, isSelected: Boolean) -> Unit,
 ) {
     val context = LocalContext.current
@@ -265,7 +267,12 @@ fun GridOptionCard(
             )
             .clickable {
                 if (isOptionEnabled.value) {
-                    if (isEditAllowed) {
+                    if (activityReferenceId != null) {
+                        showCustomToast(
+                            context,
+                            context.getString(R.string.search)
+                        )
+                    } else if (isEditAllowed) {
                         isSelected.value = !isSelected.value
                         onOptionSelected(optionItem.optionId ?: -1, isSelected.value)
                     } else {

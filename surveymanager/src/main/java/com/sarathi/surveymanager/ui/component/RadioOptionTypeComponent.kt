@@ -53,6 +53,7 @@ import com.sarathi.surveymanager.R
 
 @Composable
 fun RadioOptionTypeComponent(
+    activityReferenceId: Int? = 0,
     optionItemEntityState: List<OptionsUiModel>,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     selectedValue: String = BLANK_STRING,
@@ -126,7 +127,14 @@ fun RadioOptionTypeComponent(
                             optionValueText.description.toString(), ignoreCase = true
                         )
                     ) {
-                        if (!isActivityCompleted) {
+                        if (activityReferenceId != null) {
+                            showCustomToast(
+                                context,
+                                translationHelper.getString(
+                                    R.string.submit_form_e
+                                )
+                            )
+                        } else if (!isActivityCompleted) {
                             selectedValueState.value = optionValueText.description.toString()
                             isTaskMarkedNotAvailable.value = false
                             onOptionSelected(
