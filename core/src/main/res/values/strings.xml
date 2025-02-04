@@ -67,6 +67,6 @@
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
     <string name="all_missions_filter_label">All Missions</string>
     <string name="general_missions_filter_label">General Missions</string>
-    <string name="contact_to_admin_training_id_missing" translatable="false">Please contact admin training id is missing.</string>
-    <string name="contact_to_admin_event_id_missing" translatable="false">Please contact admin event id is missing.</string>
+    SARATHI-4308
+    <string name="contact_to_admin_id_missing" translatable="false">Access issue detected. Please contact the admin for assistance</string>
 </resources>

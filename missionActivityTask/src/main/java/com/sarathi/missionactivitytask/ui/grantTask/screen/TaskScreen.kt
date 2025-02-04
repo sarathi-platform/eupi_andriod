@@ -450,29 +450,14 @@ fun TaskScreen(
                                 contentColor = blueDark,
                             )
                             Spacer(modifier = Modifier.height(dimen_10_dp))
-                            val stringResId = when {
-                                viewModel.activityType.equals(
-                                    ActivityTypeEnum.TRAINING.name,
-                                    true
-                                ) -> {
-                                    R.string.contact_to_admin_training_id_missing
-                                }
 
-                                viewModel.activityType.equals(
-                                    ActivityTypeEnum.LIVELIHOOD_PoP.name,
-                                    true
-                                ) -> {
-                                    R.string.contact_to_admin_event_id_missing
-                                }
-
-                                else -> null
-                            }
 
                             val message = when {
                                 isActivityReferenceId -> {
-                                    stringResId?.let { resId ->
-                                        viewModel.stringResource(context, resId)
-                                    }
+                                    viewModel.stringResource(
+                                        context,
+                                        R.string.contact_to_admin_id_missing
+                                    )
                                 }
                                 // When search is disabled and the filter list is empty
                                 !viewModel.isSearchEnable.value && viewModel.filterList.value.isEmpty() ->
