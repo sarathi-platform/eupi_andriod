@@ -13,6 +13,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.ui.theme.bgGreyLight
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_8_dp
@@ -40,6 +41,9 @@ fun LivelihoodPopSurveyScreen(
     onSettingClick: () -> Unit
 ) {
     BaseSurveyScreen(
+        isActivityReferenceId = viewModel.activityConfig?.activityType.equals(
+            ActivityTypeEnum.LIVELIHOOD_PoP.name, true
+        ) && viewModel.activityConfig?.referenceId == null && viewModel.activityConfig?.referenceId == 0,
         viewModel = viewModel,
         navController = navController,
         surveyId = surveyId,
@@ -140,7 +144,6 @@ fun LazyListScope.LivelihoodPopSurveyQuestionContent(
                             maxHeight,
                             activityType,
                             index,
-                            activityReferenceId = viewModel.activityConfig?.referenceId,
                         )
                     }
                 }

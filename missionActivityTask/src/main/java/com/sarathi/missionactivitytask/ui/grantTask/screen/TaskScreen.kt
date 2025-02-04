@@ -78,6 +78,7 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.redNoAnswer
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
@@ -119,6 +120,7 @@ const val TAG = "TaskScreen"
 @Composable
 fun TaskScreen(
     navController: NavController,
+    isActivityReferenceId: Boolean = false,
     viewModel: TaskScreenViewModel,
     programId: Int,
     missionId: Int,
@@ -303,63 +305,67 @@ fun TaskScreen(
                 },
                 onRetry = {},
                 onBottomUI = {
-                    BottomAppBar(
-                        modifier = Modifier.height(dimen_72_dp),
-                        backgroundColor = white
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = dimen_10_dp),
+                    if (!isActivityReferenceId) {
+                        BottomAppBar(
+                            modifier = Modifier.height(dimen_72_dp),
+                            backgroundColor = white
                         ) {
-                            ButtonPositive(
-                                modifier = Modifier.weight(0.5f),
-                                buttonTitle = viewModel.stringResource(
-                                    context,
-                                    R.string.complete_activity
-                                ),
-                                isActive = viewModel.isButtonEnable.value,
-                                isArrowRequired = false,
-                                onClick = {
-                                    viewModel.showDialog.value = true
-                                })
-
-                            if (isSecondaryButtonVisible) {
-                                Spacer(modifier = Modifier.width(10.dp))
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = dimen_10_dp),
+                            ) {
                                 ButtonPositive(
                                     modifier = Modifier.weight(0.5f),
-                                    buttonTitle = secondaryButtonText,
-                                    isActive = isSecondaryButtonEnable,
+                                    buttonTitle = viewModel.stringResource(
+                                        context,
+                                        R.string.complete_activity
+                                    ),
+                                    isActive = viewModel.isButtonEnable.value,
                                     isArrowRequired = false,
-                                    onClick = onSecondaryButtonClick
-                                )
+                                    onClick = {
+                                        viewModel.showDialog.value = true
+                                    })
+
+                                if (isSecondaryButtonVisible) {
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    ButtonPositive(
+                                        modifier = Modifier.weight(0.5f),
+                                        buttonTitle = secondaryButtonText,
+                                        isActive = isSecondaryButtonEnable,
+                                        isArrowRequired = false,
+                                        onClick = onSecondaryButtonClick
+                                    )
+                                }
                             }
                         }
                     }
+
                 },
                 onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
                     Column {
-                        BaseContentScreen(
-                            matId = viewModel.matId.value,
-                            contentScreenCategory = viewModel.contentCategory.value
-                        ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
-                            if (!isLimitContentData) {
-                                navigateToMediaPlayerScreen(
-                                    navController = navController,
-                                    contentKey = contentKey,
-                                    contentType = contentType,
-                                    contentTitle = contentTitle,
-                                )
-                            } else {
-                                navigateToContentDetailScreen(
-                                    navController,
-                                    matId = viewModel.matId.value,
-                                    contentScreenCategory = viewModel.contentCategory.value
-                                )
+                        if (!isActivityReferenceId) {
+                            BaseContentScreen(
+                                matId = viewModel.matId.value,
+                                contentScreenCategory = viewModel.contentCategory.value
+                            ) { contentValue, contentKey, contentType, isLimitContentData, contentTitle ->
+                                if (!isLimitContentData) {
+                                    navigateToMediaPlayerScreen(
+                                        navController = navController,
+                                        contentKey = contentKey,
+                                        contentType = contentType,
+                                        contentTitle = contentTitle,
+                                    )
+                                } else {
+                                    navigateToContentDetailScreen(
+                                        navController,
+                                        matId = viewModel.matId.value,
+                                        contentScreenCategory = viewModel.contentCategory.value
+                                    )
+                                }
                             }
                         }
-                        if (isSearch) {
-
+                        if (!isActivityReferenceId && isSearch) {
                             Column(
                                 Modifier
                                     .fillMaxWidth()
@@ -445,6 +451,12 @@ fun TaskScreen(
                             )
                             Spacer(modifier = Modifier.height(dimen_10_dp))
                             val message = when {
+                                isActivityReferenceId -> {
+                                    viewModel.stringResource(
+                                        context,
+                                        R.string.contact_to_admin_training_id_missing
+                                    )
+                                }
                                 // When search is disabled and the filter list is empty
                                 !viewModel.isSearchEnable.value && viewModel.filterList.value.isEmpty() ->
                                     viewModel.stringResource(
@@ -468,7 +480,7 @@ fun TaskScreen(
                                     Text(
                                         text = it,
                                         style = defaultTextStyle,
-                                        color = textColorDark,
+                                        color = if (isActivityReferenceId) redNoAnswer else textColorDark,
                                         modifier = Modifier.align(Alignment.Center)
                                     )
                                 }

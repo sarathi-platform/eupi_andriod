@@ -57,8 +57,10 @@ import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.redNoAnswer
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.summaryCardViewBlue
+import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -98,6 +100,7 @@ import com.nudge.core.R as CoreRes
 
 @Composable
 fun BaseSurveyScreen(
+    isActivityReferenceId: Boolean = false,
     navController: NavController,
     viewModel: BaseSurveyScreenViewModel,
     surveyId: Int,
@@ -175,11 +178,13 @@ fun BaseSurveyScreen(
 
         },
         onBottomUI = {
-            SubmitButtonBottomUi(
-                isButtonActive = viewModel.isButtonEnable.value && !viewModel.isActivityCompleted.value,
-                buttonTitle = stringResource(R.string.submit),
-                onSubmitButtonClick = onSubmitButtonClick
-            )
+            if (!isActivityReferenceId) {
+                SubmitButtonBottomUi(
+                    isButtonActive = viewModel.isButtonEnable.value && !viewModel.isActivityCompleted.value,
+                    buttonTitle = stringResource(R.string.submit),
+                    onSubmitButtonClick = onSubmitButtonClick
+                )
+            }
         },
         onContentUI = {
             BoxWithConstraints(
@@ -202,7 +207,32 @@ fun BaseSurveyScreen(
                     )
                     .fillMaxHeight()
             ) {
-                LazyColumn(
+                val message = when {
+                    isActivityReferenceId -> {
+                        viewModel.stringResource(
+                            com.sarathi.dataloadingmangement.R.string.contact_to_admin_event_id_missing
+                        )
+                    }
+
+                    else -> null
+                }
+
+                message?.let {
+                    // Display message when applicable
+                    if (!viewModel.loaderState.value.isLoaderVisible) {
+                        Box(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            androidx.compose.material.Text(
+                                text = it,
+                                style = defaultTextStyle,
+                                color = if (isActivityReferenceId) redNoAnswer else textColorDark,
+                                modifier = Modifier.align(Alignment.Center)
+                            )
+                        }
+
+                    }
+                } ?: LazyColumn(
                     state = outerState,
                     modifier = Modifier
                         .heightIn(maxHeight)
@@ -216,7 +246,7 @@ fun BaseSurveyScreen(
 
                     item { CustomVerticalSpacer() }
                 }
-            }
+                }
         },
         onSettingClick = onSettingClick
     )
@@ -264,7 +294,6 @@ fun QuestionUiContent(
     maxHeight: Dp,
     grantType: String,
     index: Int,
-    activityReferenceId: Int? = 0,
     navigateToMediaPlayerScreen: (content: ContentList) -> Unit = {}
 ) {
     val context = LocalContext.current
@@ -551,7 +580,6 @@ fun QuestionUiContent(
 
             QuestionType.Toggle.name -> {
                 ToggleQuestionBoxComponent(
-                    activityReferenceId = activityReferenceId,
                     content = question.contentEntities,
                     questionIndex = index,
                     questionDisplay = question.questionDisplay,

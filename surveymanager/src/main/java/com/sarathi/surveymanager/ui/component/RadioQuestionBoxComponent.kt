@@ -59,7 +59,6 @@ import kotlinx.coroutines.launch
 @SuppressLint("UnrememberedMutableState")
 @Composable
 fun RadioQuestionBoxComponent(
-    activityReferenceId: Int? = 0,
     content: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
     questionIndex: Int,
@@ -170,12 +169,7 @@ fun RadioQuestionBoxComponent(
                                             isQuestionTypeToggle = isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
-                                            if (activityReferenceId != null) {
-                                                showCustomToast(
-                                                    context,
-                                                    context.getString(R.string.search)
-                                                )
-                                            } else if (isEditAllowed) {
+                                            if (isEditAllowed) {
                                                 selectedIndex = _index
                                                 onAnswerSelection(
                                                     questionIndex,
@@ -230,7 +224,6 @@ fun RadioQuestionBoxComponent(
 
 @Composable
 fun ToggleQuestionBoxComponent(
-    activityReferenceId: Int? = 0,
     isFromTypeQuestion: Boolean = true,
     content: List<ContentList?>? = listOf(),
     modifier: Modifier = Modifier,
@@ -247,7 +240,6 @@ fun ToggleQuestionBoxComponent(
     onAnswerSelection: (questionIndex: Int, optionItemIndex: Int) -> Unit,
 ) {
     RadioQuestionBoxComponent(
-        activityReferenceId = activityReferenceId,
         isFromTypeQuestion = isFromTypeQuestion,
         content = content,
         onDetailIconClicked = onDetailIconClicked,
