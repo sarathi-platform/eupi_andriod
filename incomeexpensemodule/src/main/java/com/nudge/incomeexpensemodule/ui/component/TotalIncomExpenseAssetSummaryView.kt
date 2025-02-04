@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.ui.component
 
 import android.net.Uri
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -31,13 +32,26 @@ import com.nudge.core.utils.FileUtils
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
+import sortTotalAssetCountForLivelihood
 
 @Composable
 fun TotalIncomeExpenseAssetSummaryView(
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     onAssetCountClicked: () -> Unit
 ) {
     val context = LocalContext.current
+    Log.d(
+        "TAG",
+        "TotalIncomeExpenseAssetSummaryView: subjectId: ${incomeExpenseSummaryUiModel?.subjectId} " +
+                "sortTotalAssetCountForLivelihood -> ${
+                    sortTotalAssetCountForLivelihood(
+                        incomeExpenseSummaryUiModel,
+                        subjectLivelihoodMapping
+                    )
+                }"
+    )
     Column {
         Text(text = stringResource(R.string.income), style = getTextColor(newMediumTextStyle))
         Text(
@@ -64,7 +78,10 @@ fun TotalIncomeExpenseAssetSummaryView(
         Text(text = stringResource(R.string.total_asset), style = getTextColor(newMediumTextStyle))
         if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.isNotEmpty() == true) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
+                sortTotalAssetCountForLivelihood(
+                    incomeExpenseSummaryUiModel,
+                    subjectLivelihoodMapping
+                )?.forEach {
                     incomeExpenseSummaryUiModel.imageUriForLivelihood.get(it.key)
                         ?.let { fileName ->
                             val fileNameFromUrl = getFileNameFromURL(fileName)

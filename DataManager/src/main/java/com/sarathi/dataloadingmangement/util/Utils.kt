@@ -11,6 +11,7 @@ import com.sarathi.dataloadingmangement.MONEY_JOURNAL_AMOUNT_TAG
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_DATE_TAG
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
@@ -102,6 +103,26 @@ fun getMoneyJournalEntryData(
     }
     particulars += subjectType
     return Triple(amountInString, date, particulars)
+}
+
+fun sortTotalAssetCountForLivelihood(
+    incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>
+): Map<Int, Int>? {
+    if (incomeExpenseSummaryUiModel == null || subjectLivelihoodMapping.isEmpty()) {
+        return null
+    }
+
+    val orderedLivelihoodIds = subjectLivelihoodMapping
+        .sortedBy { it.livelihoodOrder }
+        .map { it.livelihoodId }
+
+    return incomeExpenseSummaryUiModel.totalAssetCountForLivelihood
+        .toList()
+        .sortedBy { (livelihoodId, _) ->
+            orderedLivelihoodIds.indexOf(livelihoodId)
+        }
+        .toMap()
 }
 
 enum class ComponentName() {
