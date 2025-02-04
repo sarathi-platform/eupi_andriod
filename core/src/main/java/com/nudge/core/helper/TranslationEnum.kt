@@ -2,6 +2,31 @@ package com.nudge.core.helper
 
 
 enum class TranslationEnum(val screenName: String, val keys: List<String> = emptyList()) {
+    CommonStrings(
+        "CommonStrings",
+        listOf(
+            "didi_sub_tab_title",
+            "small_group_sub_tab_title",
+            "all",
+            "no_entry_this_month",
+            "no_entry_this_week",
+            "last_week",
+            "last_month",
+            "last_3_months",
+            "custom_date",
+            "reopen_activity_step_1",
+            "reopen_activity_step_2",
+            "ongoing_tab_title",
+            "completed_tab_title",
+            "mission",
+            "data",
+            "didis_item_text_plural",
+            "progress_item_text",
+            "didis_item_text_plural",
+            "general_missions_filter_label",
+            "all_missions_filter_label"
+        )
+    ),
     AddEventScreen(
         "AddEventScreen",
         listOf(
@@ -105,23 +130,10 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
         )
     ),
     NoScreen("NoScreen", emptyList()),
-    ActivitySelectTaskScreen(
-        "ActivitySelectTaskScreen",
-        listOf("not_available", "activity_completed_unable_to_edit")
-    ),
+
     SubmitPhysicalFormScreen("SubmitPhysicalFormScreen", listOf("go_back")),
     BasicMissionCard("BasicMissionCard", listOf("livelihood")),
-    LivelihoodTaskScreen(
-        "LivelihoodTaskScreen",
-        listOf(
-            "not_available",
-            "in_progress",
-            "task_view",
-            "edit",
-            "continue_text",
-            "activity_completed_unable_to_edit"
-        )
-    ),
+
     ActivityScreen(
         "ActivityScreen",
         listOf(
@@ -180,7 +192,9 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "activity_completed_unable_to_edit",
             "refresh_failed_please_try_again",
             "no_small_group_assgned_label",
-            "small_group_filter_label"
+            "small_group_filter_label",
+            "not_available",
+            "activity_completed_unable_to_edit"
         )
     ),
     LivelihoodDropDownScreen(

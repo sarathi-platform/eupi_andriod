@@ -82,6 +82,9 @@ object NudgeNavigationGraph {
 
 }
 
+const val CLEAN_ROUTE_DELIMITER = "~@"
+const val FORWARD_SLASH_DELIMITER = "/"
+
 /**
  * Description: NavController methods to open specific screen
  */
@@ -105,7 +108,9 @@ fun NavController.navigateToFormTypeQuestionScreen(
     sectionId: Int,
     surveyeeId: Int
 ) {
-    this.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${questionDisplay}/${surveyId}/${sectionId}/${questionId}/${surveyeeId}")
+    val cleanQuestionDisplay =
+        questionDisplay.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
+    this.navigate("$FORM_TYPE_QUESTION_SCREEN_ROUTE_NAME/${cleanQuestionDisplay}/${surveyId}/${sectionId}/${questionId}/${surveyeeId}")
 
 }
 

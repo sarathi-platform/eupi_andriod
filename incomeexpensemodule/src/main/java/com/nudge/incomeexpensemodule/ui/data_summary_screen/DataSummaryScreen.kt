@@ -62,6 +62,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DD_mmm_YY_FORMAT
@@ -71,6 +72,7 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
 import com.nudge.core.ui.commonUi.CustomDateRangePickerDisplay
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
@@ -96,7 +98,10 @@ import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_15_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_3_dp
+import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_60_dp
@@ -117,6 +122,7 @@ import com.nudge.core.ui.theme.stepIconDisableColor
 import com.nudge.core.ui.theme.taskCompletionBannerBgColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
+import com.nudge.core.utils.FileUtils
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
 import com.nudge.incomeexpensemodule.navigation.navigateToAddEventScreen
@@ -495,7 +501,8 @@ fun EventsListHeaderWithDropDownFilter(
             SingleSelectDropDown(
                 sources = sources,
                 selectOptionText = selectedOptionValue.id,
-                modifier = Modifier.width(it + dimen_60_dp + dimen_16_dp)
+                modifier = Modifier.width(it + dimen_60_dp + dimen_16_dp),
+                height = dimen_40_dp
             ) { selectValue ->
 
                 selectedOptionValue = sources.findById(selectValue) ?: sources[0]
@@ -513,7 +520,6 @@ fun ShowMoreButton(
     showMoreItems: Boolean,
     onShowModeClicked: () -> Unit
 ) {
-    val context = LocalContext.current
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -581,7 +587,7 @@ private fun EventView(
     }
 
     LazyColumn(
-        verticalArrangement = Arrangement.spacedBy(dimen_5_dp), modifier = Modifier
+        modifier = Modifier
             .fillMaxWidth()
     ) {
 
@@ -593,6 +599,7 @@ private fun EventView(
                 if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) backgroundcolor.value else white
             val highlightedBorderColor =
                 if (newlyAddedEvent == subjectLivelihoodEventSummaryUiModel.transactionId) bordercolor.value else white
+
             Box(
                 Modifier
                     .background(
@@ -604,7 +611,12 @@ private fun EventView(
                         color = highlightedBorderColor,
                         shape = RoundedCornerShape(dimen_6_dp)
                     )
-                    .padding(horizontal = dimen_8_dp, vertical = dimen_5_dp)
+                    .padding(
+                        top = dimen_5_dp,
+                        start = dimen_8_dp,
+                        end = dimen_8_dp,
+                        bottom = dimen_3_dp
+                    )
             ) {
                 Column {
                     EventHeader(
@@ -618,15 +630,16 @@ private fun EventView(
                         }
                     }
                     ViewEditHistoryView(
+                        livelihoodImage = subjectLivelihoodEventSummaryUiModel.livelihoodImage
+                            ?: BLANK_STRING,
                         isEventDeleted = subjectLivelihoodEventSummaryUiModel.isEventNotActive(),
                         onClick = {
                             onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                         })
-                    CustomVerticalSpacer(size = dimen_5_dp)
+                    CustomVerticalSpacer(size = dimen_8_dp)
                     if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
                         Divider(thickness = dimen_1_dp, color = borderGreyLight)
                     }
-                    CustomVerticalSpacer(size = dimen_8_dp)
                 }
             }
         }
@@ -641,11 +654,17 @@ private fun EventView(
                     filteredSubjectLivelihoodEventSummaryUiModelList.toList().drop(
                         DEFAULT_EVENT_LIST_VIEW_SIZE
                     ).forEachIndexed { index, subjectLivelihoodEventSummaryUiModel ->
-                        Box(
-                            Modifier
-                                .background(color = white)
-                                .border(width = dimen_1_dp, color = white)
-                                .padding(horizontal = dimen_8_dp, vertical = dimen_10_dp)
+
+                    Box(
+                        Modifier
+                            .background(color = white)
+                            .border(width = dimen_1_dp, color = white)
+                            .padding(
+                                top = dimen_5_dp,
+                                start = dimen_8_dp,
+                                end = dimen_8_dp,
+                                bottom = dimen_3_dp
+                            )
                         ) {
                         Column {
                             EventHeader(
@@ -661,10 +680,11 @@ private fun EventView(
                             }
                             ViewEditHistoryView(
                                 isEventDeleted = subjectLivelihoodEventSummaryUiModel.isEventNotActive(),
+                                livelihoodImage = subjectLivelihoodEventSummaryUiModel.livelihoodImage,
                                 onClick = {
                                     onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                                 })
-                            CustomVerticalSpacer(size = dimen_5_dp)
+                            CustomVerticalSpacer(size = dimen_8_dp)
                             Divider(thickness = dimen_1_dp, color = borderGreyLight)
 
                         }
@@ -678,6 +698,7 @@ private fun EventView(
 
         if (filteredSubjectLivelihoodEventSummaryUiModelList.size > DEFAULT_EVENT_LIST_VIEW_SIZE) {
             item {
+                CustomVerticalSpacer(size = dimen_5_dp)
                 ShowMoreButton(viewModel = viewModel, showMoreItems) {
 
                     onShowModeClicked()
@@ -692,7 +713,12 @@ private fun EventView(
 }
 
 @Composable
-private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
+private fun ViewEditHistoryView(
+    onClick: () -> Unit,
+    isEventDeleted: Boolean,
+    livelihoodImage: String?
+) {
+    val context = LocalContext.current
     Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
 
         Text(
@@ -700,14 +726,34 @@ private fun ViewEditHistoryView(onClick: () -> Unit, isEventDeleted: Boolean) {
             text = stringResource(R.string.view_edit_history),
             style = newMediumTextStyle.copy(assetValueIconColor)
         )
-        if (isEventDeleted) {
-            Spacer(modifier = Modifier.weight(1.0f))
-            Image(
-                painter = painterResource(id = R.drawable.ic_delete_stamp),
-                contentDescription = null,
-            )
 
+        Spacer(modifier = Modifier.weight(1.0f))
+        Row(
+            horizontalArrangement = Arrangement.End
+        ) {
+
+            if (isEventDeleted) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_delete_stamp),
+                    contentDescription = null,
+                )
+
+            }
+            livelihoodImage?.let { fileName ->
+                val fileNameFromUrl = getFileNameFromURL(fileName)
+                FileUtils.getImageUri(context = context, fileName = fileNameFromUrl)
+                    ?.let { it1 ->
+                        AsyncImage(
+                            model = it1,
+                            contentDescription = "Loaded Image",
+                            modifier = Modifier
+                                .size(dimen_20_dp)
+                                .padding(start = dimen_5_dp)
+                        )
+                    }
+            }
         }
+
     }
 }
 
@@ -719,11 +765,10 @@ private fun EventHeader(
     item: SubjectLivelihoodEventSummaryUiModel,
     livelihoodEventUiModels: List<LivelihoodEventUiModel>?
 ) {
-    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(bottom = dimen_8_dp),
+            .padding(bottom = dimen_5_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Row {
@@ -751,15 +796,12 @@ private fun EventDetails(
     item: SubjectLivelihoodEventSummaryUiModel,
     onClick: () -> Unit
 ) {
-    val context = LocalContext.current
     Row(
         Modifier
             .fillMaxWidth()
-            .padding(bottom = dimen_8_dp),
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
         item.transactionAmount?.let {
-            Row {
+            Row(modifier = Modifier.weight(1f)) {
                 TextWithPaddingEnd(
                     text = viewModel.stringResource(
                         resId = R.string.amount
@@ -775,7 +817,7 @@ private fun EventDetails(
         }
 
         item.assetCount?.let {
-            Row {
+            Row(modifier = Modifier.weight(1f)) {
                 TextWithPaddingEnd(
                     text = viewModel.stringResource(resId = R.string.asset),
                     style = getTextColor(smallTextStyle, color = eventTextColor)
@@ -796,6 +838,8 @@ private fun EventDetails(
                     .clickable { onClick() },
                 tint = blueDark
             )
+        } else {
+            Spacer(modifier = Modifier.size(dimen_24_dp))
         }
 
     }

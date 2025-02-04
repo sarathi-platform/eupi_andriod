@@ -8,6 +8,7 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateOf
 import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.PREF_STATE_ID
+import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.database.dao.CasteListDao
@@ -999,11 +1000,11 @@ class VillageSelectionViewModel @Inject constructor(
         }
     }
 
-    fun saveVideosToDb(context: Context) {
+    fun saveVideosToDb(context: Context, videosListTemp: List<TrainingVideoEntity>) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val trainingVideos = trainingVideoDao.getVideoList()
             if (trainingVideos.isEmpty()) {
-                videoList.forEach {
+                videosListTemp.forEach {
                     val trainingVideoEntity = TrainingVideoEntity(
                         id = it.id,
                         title = it.title,
@@ -1110,6 +1111,10 @@ class VillageSelectionViewModel @Inject constructor(
                                         prefRepo.savePref(
                                             PREF_PROGRAM_NAME, it.programName
                                         )
+
+                                        if(it.videosList.isNotEmpty()){
+                                            saveVideosToDb(context = BaselineCore.getAppContext(), it.videosList)
+                                        }
 
                                     }
                                 } else {

@@ -25,6 +25,8 @@ data class AssetJournalEntity(
     val subjectId: Int,
     val subjectType: String,
     val status: Int,
+    val eventId: Int?,
+    val eventType: String?,
     val modifiedDate: Long,
     val createdDate: Long
 ) {
@@ -43,7 +45,9 @@ data class AssetJournalEntity(
             subjectId: Int,
             assetId: Int,
             transactionFlow: String,
-            createdDate: Long
+            createdDate: Long,
+            eventId: Int,
+            eventType: String
         ): AssetJournalEntity {
             return AssetJournalEntity(
                 id = 0,
@@ -61,7 +65,9 @@ data class AssetJournalEntity(
                 transactionType = referenceType,
                 assetId = assetId,
                 modifiedDate = System.currentTimeMillis(),
-                createdDate = createdDate
+                createdDate = createdDate,
+                eventId = eventId,
+                eventType = eventType
             )
 
         }
@@ -86,7 +92,9 @@ data class AssetJournalEntity(
                 status = assetJournalApiResponse.status,
                 transactionType = assetJournalApiResponse.transactionType,
                 modifiedDate = assetJournalApiResponse.modifiedDate,
-                createdDate = assetJournalApiResponse.createdDate
+                createdDate = assetJournalApiResponse.createdDate,
+                eventId = assetJournalApiResponse.eventId,
+                eventType = assetJournalApiResponse.eventType
             )
         }
     }

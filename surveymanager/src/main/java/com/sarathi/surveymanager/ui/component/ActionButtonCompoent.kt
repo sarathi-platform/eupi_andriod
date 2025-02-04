@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,8 +44,11 @@ import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGreyLight
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_16_sp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
@@ -180,6 +184,7 @@ fun ButtonPositiveComponent(
                     contentDescription = "Positive Button",
                     tint = if (isActive) iconTintColor else greyColor,
                     modifier = Modifier
+                        .size(10.dp)
                         .absolutePadding(top = 2.dp, left = 2.dp, right = 10.dp)
                 )
             }
@@ -217,6 +222,8 @@ fun ButtonPositive(
     iconTintColor: Color = Color.White,
     onClick: () -> Unit
 ) {
+    val mButtonTitle = remember(buttonTitle) { mutableStateOf(buttonTitle) }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
@@ -252,12 +259,12 @@ fun ButtonPositive(
                 )
             }
             androidx.compose.material.Text(
-                text = buttonTitle,
+                text = mButtonTitle.value,
                 color = if (isActive) white else greyBorder,
                 style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
-                    fontSize = 14.sp
+                    fontSize = dimen_16_sp
                 ),
                 textAlign = TextAlign.Center
             )
@@ -282,9 +289,12 @@ fun ButtonNegative(
     isArrowRequired: Boolean = true,
     onClick: () -> Unit
 ) {
+
+    val mButtonTitle = remember(buttonTitle) { mutableStateOf(buttonTitle) }
+
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(6.dp))
+            .clip(RoundedCornerShape(dimen_6_dp))
             .background(languageItemActiveBg)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
@@ -309,12 +319,13 @@ fun ButtonNegative(
                     painter = painterResource(id = R.drawable.baseline_arrow_back),
                     contentDescription = "Negative Button",
                     modifier = Modifier
+                        .size(dimen_20_dp)
                         .absolutePadding(top = 2.dp),
                     colorFilter = ColorFilter.tint(blueDark)
                 )
             }
             androidx.compose.material.Text(
-                text = buttonTitle,
+                text = mButtonTitle.value,
                 color = blueDark,
                 style = buttonTextStyle
             )

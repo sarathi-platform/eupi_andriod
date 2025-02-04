@@ -28,6 +28,8 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
+import com.sarathi.surveymanager.ui.component.OptionCard
+import com.sarathi.surveymanager.ui.component.getBorderColor
 
 @Composable
 fun MultiSelectToggleComponent(

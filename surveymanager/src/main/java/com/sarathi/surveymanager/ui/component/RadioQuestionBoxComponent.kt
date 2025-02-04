@@ -166,7 +166,7 @@ fun RadioQuestionBoxComponent(
                                             modifier = Modifier.weight(1f),
                                             index = _index,
                                             optionsItem = option,
-                                            isIconRequired = !isQuestionTypeToggle,
+                                            isQuestionTypeToggle = isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
                                             if (isEditAllowed) {

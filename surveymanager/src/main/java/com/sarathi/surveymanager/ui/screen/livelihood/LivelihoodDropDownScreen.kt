@@ -132,7 +132,7 @@ fun LivelihoodDropDownScreen(
 
                     ButtonPositive(
                         buttonTitle = viewModel.stringResource(R.string.submit),
-                        isActive = viewModel.isButtonEnable.value,
+                        isActive = viewModel.isButtonEnable.value && !viewModel.isActivityCompleted.value,
                         isLeftArrow = false,
                         onClick = {
                             viewModel.saveButtonClicked() {
@@ -153,6 +153,7 @@ fun LivelihoodDropDownScreen(
                 }
             } else {
                 DropdownView(
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
                     translationHelper = viewModel.translationHelper,
                     livelihoodList = viewModel.livelihoodList.value,
                     primaryLivelihoodId = viewModel.primaryLivelihoodId.value,
@@ -196,6 +197,7 @@ fun DropdownView(
     livelihoodList: List<LivelihoodUiEntity>,
     primaryLivelihoodId: Int,
     secondaryLivelihoodId: Int,
+    isEditAllowed: Boolean,
     onPrimaryLivelihoodSelected: (primaryLivelihoodId: Int) -> Unit,
     onSecondaryLivelihoodSelected: (secondaryLivelihoodId: Int) -> Unit,
 ) {
@@ -207,7 +209,7 @@ fun DropdownView(
         val firstDropDownItems = livelihoodList
 
         LivelihoodPlanningDropDownComponent(
-            isEditAllowed = true,
+            isEditAllowed = isEditAllowed,
             title = translationHelper.stringResource(
                 R.string.select_first_livelihood_for_didi
             ),
@@ -226,6 +228,7 @@ fun DropdownView(
             title = translationHelper.stringResource(
                 R.string.select_second_livelihood_for_didi
             ),
+            isEditAllowed = isEditAllowed,
             isMandatory = true,
             diableItem = selectedItem1 ?: 0,
             enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,

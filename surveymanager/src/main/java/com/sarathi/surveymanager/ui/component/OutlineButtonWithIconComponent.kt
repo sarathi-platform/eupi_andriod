@@ -3,7 +3,11 @@ package com.sarathi.surveymanager.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
@@ -22,6 +26,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_24_dp
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.white
 import com.sarathi.surveymanager.R
@@ -34,6 +41,7 @@ fun OutlineButtonWithIconComponent(
     iconTintColor: Color,
     buttonBackgroundColor: Color = white,
     buttonBorderColor: Color = lightGray2,
+    isQuestionTypeToggle: Boolean = false,
     icon: Painter? = painterResource(id = R.drawable.icon_check),
     onClick: () -> Unit
 ) {
@@ -46,31 +54,66 @@ fun OutlineButtonWithIconComponent(
         modifier = modifier,
         colors = ButtonDefaults.buttonColors(backgroundColor = buttonBackgroundColor)
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (icon != null) {
-                Icon(
-                    icon,
-                    contentDescription = "Button Icon",
-                    tint = iconTintColor,
-                    modifier = Modifier.padding(bottom = 18.dp)
-                )
-            }
-            Text(
-                text = buttonTitle,
-                color = textColor,
-                style = TextStyle(
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    fontSize = 16.sp
-                ),
-                textAlign = TextAlign.Center
-            )
-        }
+
+        IconButtonWithText(
+            isQuestionTypeToggle = isQuestionTypeToggle,
+            icon = icon,
+            buttonTitle = buttonTitle,
+            textColor = textColor,
+            iconTintColor = iconTintColor
+        )
     }
 }
+
+@Composable
+fun IconButtonWithText(
+    isQuestionTypeToggle: Boolean,
+    icon: Painter?,
+    buttonTitle: String,
+    textColor: Color,
+    iconTintColor: Color,
+) {
+    val layout: @Composable (content: @Composable () -> Unit) -> Unit = if (isQuestionTypeToggle) {
+        { content ->
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) { content() }
+        }
+    } else {
+        { content ->
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) { content() }
+        }
+    }
+
+    layout {
+        if (icon != null) {
+            Icon(
+                icon,
+                contentDescription = "Button Icon",
+                tint = iconTintColor,
+                modifier = Modifier
+                    .padding(bottom = if (isQuestionTypeToggle) 0.dp else 18.dp)
+                    .size(if (isQuestionTypeToggle) dimen_16_dp else dimen_24_dp)
+            )
+        }
+        Spacer(modifier = Modifier.width(dimen_5_dp))
+        Text(
+            text = buttonTitle,
+            color = textColor,
+            style = TextStyle(
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp
+            ),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 @Preview(showBackground = true)
 @Composable
 fun OutlineButtonWithIconComponentPreview() {

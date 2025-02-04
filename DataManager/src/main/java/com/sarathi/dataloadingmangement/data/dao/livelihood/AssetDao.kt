@@ -16,12 +16,13 @@ interface AssetDao {
 
 
     @Query(
-        "select assets_table.assetId as id, livelihood_language_reference_table.name, assets_table.name as originalName, assets_table.type \n" +
-                " from assets_table inner join livelihood_language_reference_table \n" +
-                " on assets_table.assetId= livelihood_language_reference_table.referenceId \n" +
-                " where  livelihood_language_reference_table.languageCode=:languageCode and\n" +
+        "select assets_table.assetId as id, COALESCE(livelihood_language_reference_table.name,assets_table.name) as name, assets_table.name as originalName, assets_table.type \n" +
+                " from assets_table left join livelihood_language_reference_table \n" +
+                " on assets_table.assetId= livelihood_language_reference_table.referenceId and \n" +
                 " livelihood_language_reference_table.referenceType=:referenceType and" +
-                " livelihood_language_reference_table.userId=:userId and" +
+                " livelihood_language_reference_table.userId=:userId and " +
+                " livelihood_language_reference_table.languageCode=:languageCode \n" +
+                " where " +
                 " assets_table.userId=:userId  and" +
                 " assets_table.livelihoodId=:livelihoodId group by assets_table.assetId "
     )

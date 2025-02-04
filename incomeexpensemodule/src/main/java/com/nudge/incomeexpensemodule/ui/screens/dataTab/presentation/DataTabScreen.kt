@@ -220,23 +220,7 @@ fun DataTabScreen(
                                 .zIndex(1f),
                             contentColor = blueDark,
                         )
-                        if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp),
-                                verticalArrangement = Arrangement.Center,
-                            ) {
-                                Text(
-                                    text = "LHP not done. Hence no didi list available.",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    style = mediumTextStyle,
-                                    color = textColorDark
-                                )
-                            }
-                        } else {
                             Column(
                                 modifier = Modifier
                                     .padding(horizontal = dimen_16_dp)
@@ -289,7 +273,7 @@ fun DataTabScreen(
                                         )
                                     )
 
-                                    CustomIconButton(
+                                    /*CustomIconButton(
                                         onClick = {
                                             dataTabScreenViewModel.isSortApplied.value =
                                                 !dataTabScreenViewModel.isSortApplied.value
@@ -303,7 +287,7 @@ fun DataTabScreen(
                                             contentColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark
                                         ),
                                         contentDescription = "Sort List"
-                                    )
+                                    )*/
 
                                 }
 
@@ -319,7 +303,7 @@ fun DataTabScreen(
                                                         fontWeight = FontWeight.Bold
                                                     )
                                                 ) {
-                                                    append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
+                                                    append(" ${dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString()}")
                                                 }
                                                 append(stringResource(R.string.results_for))
                                                 withStyle(
@@ -337,50 +321,70 @@ fun DataTabScreen(
                                         )
                                     )
                                 }
+                                if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
-                                LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
+                                    Column(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(horizontal = 16.dp),
+                                        verticalArrangement = Arrangement.Center,
+                                    ) {
+                                        Text(
+                                            text = if (dataTabScreenViewModel.isSearchEnable.value)
+                                                stringResource(R.string.no_result_found)
+                                            else
+                                                stringResource(R.string.lhp_empty),
+                                            modifier = Modifier.fillMaxWidth(),
+                                            textAlign = TextAlign.Center,
+                                            style = mediumTextStyle,
+                                            color = textColorDark
+                                        )
+                                    }
+                                } else {
+                                    LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
-                                    itemsIndexed(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value) { index, subject ->
-                                        val summaryForSubject =
-                                            dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
+                                        itemsIndexed(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value) { index, subject ->
+                                            val summaryForSubject =
+                                                dataTabScreenViewModel.incomeExpenseSummaryUiModel[subject.subjectId]
 
-                                        SubjectLivelihoodEventSummaryCard(
-                                            subjectId = subject.subjectId!!,
-                                            name = subject.subjectName,
-                                            imageFileName = subject.imageFileName,
-                                            dadaName = subject.dadaName,
-                                            location = subject.villageName,
-                                            lastUpdated = getDurationDifferenceInDays(
-                                                subject.lastUpdated
-                                            ),
-                                            incomeExpenseSummaryUiModel = summaryForSubject,
-                                            onAssetCountClicked = {
-                                                dataTabScreenViewModel.onEvent(
-                                                    DataTabEvents.ShowAssetDialogForSubject(
-                                                        showDialog = true,
-                                                        subjectId = it,
-                                                        subject.livelihoodIds
+                                            SubjectLivelihoodEventSummaryCard(
+                                                subjectId = subject.subjectId!!,
+                                                name = subject.subjectName,
+                                                imageFileName = subject.imageFileName,
+                                                dadaName = subject.dadaName,
+                                                location = subject.villageName,
+                                                lastUpdated = getDurationDifferenceInDays(
+                                                    subject.lastUpdated
+                                                ),
+                                                incomeExpenseSummaryUiModel = summaryForSubject,
+                                                onAssetCountClicked = {
+                                                    dataTabScreenViewModel.onEvent(
+                                                        DataTabEvents.ShowAssetDialogForSubject(
+                                                            showDialog = true,
+                                                            subjectId = it,
+                                                            subject.livelihoodIds
+                                                        )
                                                     )
+                                                }
+                                            ) {
+                                                navigateToDataSummaryScreen(
+                                                    navController = navHostController,
+                                                    subjectId = subject.subjectId,
+                                                    subjectName = subject.subjectName
                                                 )
+
                                             }
-                                        ) {
-                                            navigateToDataSummaryScreen(
-                                                navController = navHostController,
-                                                subjectId = subject.subjectId,
-                                                subjectName = subject.subjectName
-                                            )
 
                                         }
 
-                                    }
+                                        item {
+                                            CustomVerticalSpacer()
+                                        }
 
-                                    item {
-                                        CustomVerticalSpacer()
                                     }
-
                                 }
                             }
-                        }
+
 
 
 

@@ -26,7 +26,7 @@
     <string name="warning_text">Warning</string>
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
-    <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="small_group_filter_label">"Naitukdi Chikon Group bai: "</string>
     <string name="all">"Bebak "</string>
     <string name="no_entry_this_month">"O tal o mwngsa phano tisa jakya "</string>
     <string name="no_entry_this_week">No entry this week</string>
@@ -48,7 +48,7 @@
     <string name="details_have_already_been_added">Details have already been added!</string>
     <string name="no_result_found">No result found</string>
     <string name="proceed">Proceed</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="last_sync_date_time">Swkang ni Sync khaima Jora:</string>
     <string name="profile_phone">Phone Number</string>
     <string name="sync_days">%1$s days</string>
@@ -58,5 +58,12 @@
     <string name="just_now">Just Now</string>
     <string name="ongoing_tab_title">Ongoing</string>
     <string name="completed_tab_title">Completed</string>
+    <string name="search_by_mission">Search by Mission</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
+    <string name="didis_item_text_plural">Didis</string>
+    <string name="small_group_sub_tab_title">Chikon Bodol</string>
+    <string name="search_label">Search</string>
 
 </resources>

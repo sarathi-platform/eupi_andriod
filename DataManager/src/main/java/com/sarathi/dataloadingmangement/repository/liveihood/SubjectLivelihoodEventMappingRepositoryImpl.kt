@@ -5,6 +5,7 @@ import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEve
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveLivelihoodEventDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 import javax.inject.Inject
 
@@ -133,6 +134,14 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = transactionId
         )
     }
+
+    override suspend fun getSubjectLivelihoodEventMappingListForHistory(transactionId: String): List<SubjectLivelihoodEventHistoryUiModel>? {
+        return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingListForTransactionIdFromDbWithImage(
+            transactionId = transactionId,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
+        )
+    }
+
 
     override suspend fun getLivelihoodEventForUser(): List<SubjectLivelihoodEventMappingEntity> {
         return subjectLivelihoodEventMappingDao.getSubjectLivelihoodEventMappingForUser(

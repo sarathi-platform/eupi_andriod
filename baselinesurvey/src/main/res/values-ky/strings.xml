@@ -64,6 +64,10 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
     <string name="dada_name">Husband / Father\'s Name</string>
     <string name="dada">Husband / Father</string>
     <string name="enter">Enter</string>
@@ -508,7 +512,7 @@
     <string name="view_summary_label">Summary Khulok di</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
     <string name="export_baseline_qna">Baseline QnA tunhordi</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Baseline chengdi</string>
     <string name="start_activity">%s chengdi</string>

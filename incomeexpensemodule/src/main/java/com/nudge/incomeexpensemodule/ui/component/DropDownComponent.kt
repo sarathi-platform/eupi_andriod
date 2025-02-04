@@ -31,6 +31,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
@@ -53,6 +54,7 @@ fun <T> DropDownComponent(
     title: String = BLANK_STRING,
     isMandatory: Boolean = false,
     modifier: Modifier,
+    height: Dp = dimen_60_dp,
     dropDownBorder: Color = borderGrey,
     dropDownBackground: Color = white,
     selectedItem: String = BLANK_STRING,
@@ -60,6 +62,7 @@ fun <T> DropDownComponent(
     mTextFieldSize: Size,
     diableItem: Int = -1,
     isEditAllowed: Boolean = true,
+    isError: Boolean = false,
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
     onGlobalPositioned: (LayoutCoordinates) -> Unit,
@@ -99,7 +102,7 @@ fun <T> DropDownComponent(
             readOnly = true,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(dimen_60_dp)
+                .height(height)
                 .clickable { onExpandedChange(expanded) }
                 .onGloballyPositioned { coordinates ->
                     // This value is used to assign to
@@ -110,6 +113,7 @@ fun <T> DropDownComponent(
             textStyle = newMediumTextStyle.copy(if (isEditAllowed) blueDark else grayColor),
             singleLine = true,
             maxLines = 1,
+            isError = isError,
             placeholder = {
                 Text(text = hint, style = newMediumTextStyle, color = placeholderGrey)
             },

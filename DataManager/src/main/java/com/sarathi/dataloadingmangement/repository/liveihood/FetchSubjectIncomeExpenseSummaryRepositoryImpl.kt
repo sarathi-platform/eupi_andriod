@@ -33,7 +33,8 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
         val totalIncome = getTotalIncomeForSubject(subjectId = subjectId)
         val totalExpense = getTotalExpenseForSubject(subjectId = subjectId)
-        val assetCounts = getAssetCountForAssets(subjectId, assets.map { it.assetId })
+        val assetCounts =
+            getAssetCountForAssets(subjectId, assets.map { Pair(it.livelihoodId, it.assetId) })
 
         val livelihoodAssetMap = assets.groupBy { it.livelihoodId }
 
@@ -46,8 +47,9 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         livelihoodAssetMap.forEach { mapEntry ->
             setLivelihoodImageMapping(mapEntry, imageUriForLivelihood)
             var totalAssetCount = 0
-            mapEntry.value.forEach {
-                totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
+            mapEntry.value.forEach { asset ->
+                totalAssetCount += (assetsCountWithValue.find { it.assetId == asset.assetId && it.livelihoodId == asset.livelihoodId }?.assetCount
+                    ?: 0)
             }
 
             totalAssetCountForLivelihood.put(mapEntry.key, totalAssetCount)
@@ -86,7 +88,8 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     ): IncomeExpenseSummaryUiModel {
         val totalIncome = getTotalIncomeForSubjectLivelihood(subjectId = subjectId, livelihoodId)
         val totalExpense = getTotalExpenseForSubjectLivelihood(subjectId = subjectId, livelihoodId)
-        val assetCounts = getAssetCountForAssets(subjectId, assets.map { it.assetId })
+        val assetCounts =
+            getAssetCountForAssets(subjectId, assets.map { Pair(it.livelihoodId, it.assetId) })
 
         val livelihoodAssetMap = assets.groupBy { it.livelihoodId }
 
@@ -165,19 +168,21 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
     override suspend fun getAssetCountForAssets(
         subjectId: Int,
-        assetIds: List<Int>
+        assetIds: List<Pair<Int, Int>>,
     ): List<AssetCountUiModel> {
         val assetCountUiModelList = ArrayList<AssetCountUiModel>()
         assetIds.forEach { assetId ->
             val INFLOWAssetCount = assetJournalDao.getAssetCountForAsset(
-                assetId = assetId,
+                livelihoodId = assetId.first,
+                assetId = assetId.second,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 transactionFlow = EntryFlowTypeEnum.INFLOW.name,
                 referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
             )
             val outFlowAssetCount = assetJournalDao.getAssetCountForAsset(
-                assetId = assetId,
+                livelihoodId = assetId.first,
+                assetId = assetId.second,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
@@ -209,7 +214,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
             getTotalExpenseForSubjectForDuration(subjectId = subjectId, durationStart, durationEnd)
         val assetCounts = getAssetCountForAssetsForDuration(
             subjectId,
-            assets.map { it.assetId },
+            assets.map { Pair(it.livelihoodId, it.assetId) },
             durationStart,
             durationEnd
         )
@@ -225,8 +230,9 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         livelihoodAssetMap.forEach { mapEntry ->
             setLivelihoodImageMapping(mapEntry, imageUriForLivelihood)
             var totalAssetCount = 0
-            mapEntry.value.forEach {
-                totalAssetCount += (assetsCountWithValue.find(it.assetId)?.assetCount ?: 0)
+            mapEntry.value.forEach { asset ->
+                totalAssetCount += (assetsCountWithValue.find { it.livelihoodId == mapEntry.key && asset.assetId == it.assetId }?.assetCount
+                    ?: 0)
             }
 
             totalAssetCountForLivelihood.put(mapEntry.key, totalAssetCount)
@@ -276,14 +282,15 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
 
     override suspend fun getAssetCountForAssetsForDuration(
         subjectId: Int,
-        assetIds: List<Int>,
+        assetIds: List<Pair<Int, Int>>,
         durationStart: Long,
         durationEnd: Long
     ): List<AssetCountUiModel> {
         val assetCountUiModelList = ArrayList<AssetCountUiModel>()
         assetIds.forEach { assetId ->
             val INFLOWAssetCount = assetJournalDao.getAssetCountForAssetForDuration(
-                assetId = assetId,
+                livelihoodId = assetId.first,
+                assetId = assetId.second,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 transactionFlow = EntryFlowTypeEnum.INFLOW.name,
@@ -292,7 +299,8 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
                 durationEnd = durationEnd
             )
             val outFlowAssetCount = assetJournalDao.getAssetCountForAssetForDuration(
-                assetId = assetId,
+                livelihoodId = assetId.first,
+                assetId = assetId.second,
                 subjectId = subjectId,
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
                 transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,

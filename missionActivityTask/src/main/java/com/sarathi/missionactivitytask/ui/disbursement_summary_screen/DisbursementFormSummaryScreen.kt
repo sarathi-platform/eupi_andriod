@@ -26,10 +26,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -44,23 +46,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.helper.TranslationHelper
+import com.nudge.core.toSafeInt
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -75,9 +79,11 @@ import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.lightBg
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
 import com.sarathi.contentmodule.utils.event.SearchEvent
 import com.sarathi.dataloadingmangement.model.uiModel.DisbursementFormSummaryUiModel
@@ -354,7 +360,24 @@ private fun MakeDisburesementRow(
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            CircularImageViewComponent(modifier = Modifier, imageUri ?: Uri.EMPTY) {}
+            if (imageUri != null && imageUri != Uri.EMPTY) {
+                CircularImageViewComponent(modifier = Modifier, imageUri) {}
+            } else if (disbursementFormSummaryUiModel.subjectName != BLANK_STRING) {
+                Box(
+                    modifier = Modifier
+                        .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                        .clip(CircleShape)
+                        .width(dimen_56_dp)
+                        .height(dimen_56_dp)
+                        .background(color = yellowBg)
+                ) {
+                    androidx.compose.material.Text(
+                        getFirstAndLastInitials(disbursementFormSummaryUiModel.subjectName),
+                        modifier = Modifier.align(Alignment.Center),
+                        style = mediumTextStyle.copy(color = brownDark)
+                    )
+                }
+            }
             Column(
                 modifier = Modifier
                     .weight(1f)
@@ -398,23 +421,11 @@ fun TextRow(
     text2: String,
     isReadMode: Boolean = false
 ) {
-    ConstraintLayout(
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        val (text1Ref, text2Ref) = createRefs()
 
+    Row(verticalAlignment = Alignment.Top, modifier = Modifier.fillMaxWidth()) {
         if (text1.isNotBlank()) {
             Text(
-                modifier = Modifier.constrainAs(text1Ref) {
-                    start.linkTo(parent.start)
-                    if (isReadMode) {
-                        top.linkTo(parent.top)
-                    } else {
-                        top.linkTo(parent.top)
-                        bottom.linkTo(parent.bottom)
-                    }
-                    width = Dimension.fillToConstraints
-                },
+                modifier = Modifier,
                 text = text1,
                 style = smallTextStyleWithNormalWeight.copy(color = greyColor)
             )
@@ -424,27 +435,14 @@ fun TextRow(
             if (isReadMode) {
                 TextWithReadMoreComponent(
                     modifier = Modifier
-                        .padding(start = dimen_5_dp)
-                        .constrainAs(text2Ref) {
-                            start.linkTo(text1Ref.end)
-                            top.linkTo(parent.top)
-                            end.linkTo(parent.end)
-                            width = Dimension.fillToConstraints
-                        },
+                        .padding(start = dimen_5_dp),
                     title = text1,
                     contentData = text2
                 )
             } else {
                 Text(
                     modifier = Modifier
-                        .padding(start = dimen_5_dp)
-                        .constrainAs(text2Ref) {
-                            start.linkTo(text1Ref.end)
-                            top.linkTo(parent.top)
-                            bottom.linkTo(parent.bottom)
-                            end.linkTo(parent.end)
-                            width = Dimension.fillToConstraints
-                        },
+                        .padding(start = dimen_5_dp),
                     text = text2,
                     style = newMediumTextStyle.copy(color = blueDark)
                 )
@@ -508,7 +506,11 @@ fun FormMainSummaryCard(
                     )
                 }
                 Text(
-                    text = formatToIndianRupee(formDisburesmentMap.value.sumOf { it.amount.toInt() }
+                    text = formatToIndianRupee(formDisburesmentMap.value.sumOf {
+                        it.amount.toSafeInt(
+                            "0"
+                        )
+                    }
                         .toString()),
                     style = defaultTextStyle.copy(color = blueDark)
                 )

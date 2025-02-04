@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -21,9 +22,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -58,11 +61,12 @@ fun SubmitPhysicalFormScreen(
             BottomAppBar(
                 backgroundColor = white, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_10_dp)
+                    .heightIn(dimen_72_dp, dimen_100_dp)
             ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(dimen_10_dp)
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),

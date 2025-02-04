@@ -18,6 +18,7 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -61,6 +62,14 @@ fun ToolBarWithMenuComponent(
 ) {
     val dataNotAvailableState = mutableStateOf(isDataNotAvailable)
 
+    val mTitle = remember(title) {
+        mutableStateOf(title)
+    }
+
+    val mSubTitle = remember(subTitle) {
+        mutableStateOf(subTitle)
+    }
+
     Scaffold(
         modifier = modifier,
         containerColor = white,
@@ -88,17 +97,17 @@ fun ToolBarWithMenuComponent(
                             horizontalAlignment = Alignment.Start
                         ) {
                             Text(
-                                text = title,
+                                text = mTitle.value,
                                 style = mediumTextStyle,
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = blueDark,
                                 textAlign = TextAlign.Start
                             )
-                            if (!TextUtils.isEmpty(subTitle)) {
+                            if (!TextUtils.isEmpty(mSubTitle.value)) {
                                 Spacer(modifier = Modifier.height(2.dp))
                                 Text(
-                                    text = subTitle,
+                                    text = mSubTitle.value,
                                     style = defaultTextStyle.copy(color = subTitleColorId),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis  // This will add an ellipsis if the text exceeds the width

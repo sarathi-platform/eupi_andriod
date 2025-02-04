@@ -49,8 +49,10 @@ fun getMaxInputLength(
                                 ValidationExpressionEnum.INPUT_LENGTH.originalValue, true
                             )
                         }
-                        length = lengthValidation?.field.toSafeInt(defaultLength.toString())
-                        break
+                        if (lengthValidation != null) {
+                            length = lengthValidation.field.toSafeInt(defaultLength.toString())
+                            break
+                        }
                     }
                 }
             }

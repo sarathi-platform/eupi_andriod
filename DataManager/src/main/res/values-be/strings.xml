@@ -66,7 +66,7 @@
     <string name="primary_and_secondary_value_not_same">सेथि आरो नैथि जिउ राहाया रोखोमसे जानो हाया।</string>
     <string name="select_first_livelihood_for_didi">"आब\'नि थाखाय गिबि जिउ राहा सायख\'"</string>
     <string name="select_second_livelihood_for_didi">"आब\'नि थाखाय नैथि जिउ राहा सायख\'"</string>
-    <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\nनोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
+    <string name="form_alert_dialog_message">जुदि नोंथाङा फर्मखौ जमा होआलासै आवगायलाङोब्ला बे सोलायनायफोरा गोमालांगोन। \n\n नोंथाङा सोलिबाय थानो लुबैयो नामा?</string>
     <string name="proceed_txt">"दावगा "</string>
     <string name="cancel_txt">"दान "</string>
     <string name="are_you_sure">"नों थार नामा? "</string>
@@ -108,7 +108,7 @@
     <string name="proceed">Proceed</string>
     <string name="cancel_text">दानगारनाय</string>
     <string name="edit_event">Edit Event</string>
-    <string name="showing">showing</string>
+    <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"सम्फथिफोर "</string>
     <string name="last_updated_days_ago">"जोबथा आपदेटेद:  %1$s सानसे सिगां "</string>
@@ -142,4 +142,6 @@
     <string name="sync_already_cancelled">Sync आ सिगांनिफ्रायनो केनसेल जाखाबाय।</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">आय/खरसा</string>
+    <string name="date_of_event">हाबाफारिनि खालार</string>
+
 </resources>

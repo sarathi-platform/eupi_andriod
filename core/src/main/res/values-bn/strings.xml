@@ -19,7 +19,7 @@
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
 
-    <string name="didi_sub_tab_title">Didi</string>
+    <string name="didis_item_text_plural">Didi</string>
     <string name="small_group_sub_tab_title">Small Group</string>
     <string name="search_label">Search</string>
 
@@ -44,7 +44,7 @@
     <string name="last_month">"গত মাসে "</string>
     <string name="last_3_months">"গত 3 মাস "</string>
     <string name="custom_date">"কাস্টম তারিখ "</string>
-    <string name="small_group_filter_label">"ছোট গ্রুপ দ্বারা ফিল্টার: "</string>
+    <string name="small_group_filter_label">"ছোট দল গুলির মধ্যে থেকে ফিল্টার করুন: "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
@@ -60,7 +60,7 @@
     <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
     <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
     <string name="proceed">এগিয়ে যান</string>
-    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
+    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\n আপনি কি অবিরত করতে চান?</string>
     <string name="last_sync_date_time">আগের সিঙ্ক সময়:</string>
     <string name="profile_phone">ফোন নম্বর</string>
     <string name="sync_days">%1$s দিন</string>
@@ -70,4 +70,9 @@
     <string name="just_now">মাত্ৰ এতিয়াই</string>
     <string name="ongoing_tab_title">Ongoing</string>
     <string name="completed_tab_title">Completed</string>
+    <string name="search_by_mission">Search by Mission</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
+
 </resources>

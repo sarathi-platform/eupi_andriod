@@ -66,10 +66,10 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
-    <string name="dada_name_txt" translatable="false">Dada Name</string>
-    <string name="adhar_card_txt" translatable="false">Aadhar Card</string>
-    <string name="voterId_card_txt" translatable="false">VoterId Card</string>
-    <string name="phone_number_txt" translatable="false">Phone Number</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
 
     <string name="dada_name">Husband / Father\'s Name</string>
     <string name="dada">Husband / Father</string>
@@ -519,7 +519,7 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">View Summary</string>
     <string name="export_baseline_qna">Export Baseline QnA</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Start Baseline</string>
     <string name="start_activity">%s Start </string>

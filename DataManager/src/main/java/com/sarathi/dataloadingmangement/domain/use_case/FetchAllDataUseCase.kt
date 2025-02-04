@@ -81,14 +81,15 @@ class FetchAllDataUseCase @Inject constructor(
             fetchSurveyDataFromNetworkUseCase.invoke(missionId)
             fetchSectionStatusFromNetworkUsecase.invoke(missionId)
             val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
-            fetchContentDataFromNetworkUseCase.invoke()
             if (!isRefresh) {
                 fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
                 if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
                     fetchLivelihoodOptionNetworkUseCase.invoke()
                 }
-                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))) {
+                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))
+                    || activityTypes.contains(ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH))
+                ) {
                     formUseCase.invoke(missionId)
                     moneyJournalUseCase.invoke()
                 }
@@ -98,7 +99,7 @@ class FetchAllDataUseCase @Inject constructor(
 
                 livelihoodUseCase.invoke()
             }
-
+            fetchContentDataFromNetworkUseCase.invoke()
             CoroutineScope(Dispatchers.IO).launch {
                 contentDownloaderUseCase.contentDownloader()
                 contentDownloaderUseCase.surveyRelateContentDownlaod()
@@ -122,9 +123,8 @@ class FetchAllDataUseCase @Inject constructor(
             ?: MissionInfoUIModel.getDefaultValue()
     }
 
-    suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel {
+    suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
         return fetchMissionDataUseCase.fetchActivityInfo(missionId, activityId)
-            ?: ActivityInfoUIModel.getDefaultValue()
     }
 }
 

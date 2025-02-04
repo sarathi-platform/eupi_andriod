@@ -136,7 +136,6 @@ object MigrationQueries {
         "ALTER TABLE $MISSION_TABLE_NAME ADD COLUMN 'isDataLoaded' INTEGER DEFAULT 1 NOT NULL"
 
 
-
     val ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_ID =
         "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME ADD COLUMN 'referenceId' INTEGER"
 
@@ -282,5 +281,23 @@ object MigrationQueries {
                 "    languageCode TEXT NOT NULL\n" +
                 ");"
 
-}
+    val ALTER_ACTIVITY_CONFIG_TABLE_ADD_MONEY_JOURNAL_CONFIG =
+        "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME \n" +
+                "            ADD COLUMN moneyJournalConfig TEXT"
+    val ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID =
+        "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventId INTEGER"
 
+    val ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE =
+        "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventType TEXT"
+
+    val ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_ID =
+        "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventId INTEGER"
+
+    val ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_TYPE =
+        "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventType TEXT"
+
+}

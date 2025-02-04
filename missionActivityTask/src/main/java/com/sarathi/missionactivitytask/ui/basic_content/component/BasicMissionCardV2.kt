@@ -27,30 +27,28 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.rememberImagePainter
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.calculateProgress
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_27_dp
 import com.nudge.core.ui.theme.dimen_35_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_4_dp
-import com.nudge.core.ui.theme.dimen_50_dp
-import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.iconBgColor
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.smallTextStyle
-import com.nudge.core.ui.theme.smallerTextStyleMediumWeight
-import com.nudge.core.ui.theme.textColorBrown
 import com.nudge.core.utils.FileUtils
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.LinearProgressBarComponent
@@ -87,7 +85,7 @@ fun BasicMissionCardV2(
                 shape = RoundedCornerShape(dimen_6_dp)
             )
     ) {
-        Row(
+        ConstraintLayout(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(
@@ -96,15 +94,19 @@ fun BasicMissionCardV2(
                     top = dimen_12_dp,
                     bottom = dimen_12_dp
                 ),
-            horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
         ) {
+            val (prefIcon, mainLayout, arrowColumn) = createRefs()
             Box(
                 modifier = Modifier
-                    .size(dimen_56_dp)
+                    .size(dimen_45_dp)
                     .background(
                         color = iconBgColor,
                         shape = RoundedCornerShape(roundedCornerRadiusDefault)
-                    ),
+                    )
+                    .constrainAs(prefIcon) {
+                        top.linkTo(parent.top)
+                        start.linkTo(parent.start)
+                    },
                 contentAlignment = Alignment.Center
 
             ) {
@@ -112,28 +114,35 @@ fun BasicMissionCardV2(
                     painter = painterResource(id = prefixIcon),
                     tint = blueDark,
                     contentDescription = null,  // Ideally, provide meaningful descriptions
-                    modifier = Modifier.size(dimen_27_dp)
+                    modifier = Modifier.size(dimen_35_dp)
                 )
             }
 
-            Column(
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f)
-                    .padding(horizontal = dimen_10_dp)
+                    .padding(horizontal = dimen_5_dp)
+                    .constrainAs(mainLayout) {
+                        top.linkTo(parent.top)
+                        start.linkTo(prefIcon.end)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(arrowColumn.start)
+                        width = Dimension.fillToConstraints
+                        height = Dimension.fillToConstraints
+                    }
             ) {
                 Text(
                     text = title,
                     style = mediumTextStyle
                         .copy(color = blueDark),
-                    modifier = Modifier
-                        .padding(start = dimen_5_dp),
+                    modifier = Modifier,
                     overflow = TextOverflow.Ellipsis,
                     maxLines = 2
                 )
+
                 Row(
                     modifier = Modifier
-                        .fillMaxWidth(),
+                        .fillMaxWidth()
+                        .align(Alignment.BottomEnd),
                     horizontalArrangement = Arrangement.spacedBy(dimen_4_dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -143,9 +152,11 @@ fun BasicMissionCardV2(
                             totalCount = totalCount
                         ),
                         modifier = Modifier
+                            .padding(top = dimen_5_dp)
                             .weight(1f)
                     )
                     Text(
+                        modifier = Modifier.padding(top = dimen_5_dp),
                         text = "$pendingCount / $totalCount",
                         style = smallTextStyle.copy(color = blueDark),
                     )
@@ -153,8 +164,10 @@ fun BasicMissionCardV2(
             }
 
             Column(
-                modifier = Modifier,
-                horizontalAlignment = Alignment.End,
+                modifier = Modifier.constrainAs(arrowColumn) {
+                    end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
+                },
                 verticalArrangement = Arrangement.spacedBy(dimen_4_dp)
             ) {
                 if (filterUiModel != null && livelihoodOrder != 0 && !livelihoodType.isNullOrEmpty()) {
@@ -182,24 +195,47 @@ fun BasicMissionCardV2(
                             )
                         }
 
-                        Text(
-                            filterUiModel.filterValue,
-                            style = smallerTextStyleMediumWeight.copy(color = textColorBrown),
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis
-                        )
+//                        Text(
+//                            text = filterUiModel.filterValue,
+//                            modifier = Modifier
+//                                .widthIn(min = dimen_40_dp, max = dimen_50_dp),
+//                            style = smallerTextStyleMediumWeight.copy(color = textColorBrown),
+//                            maxLines = 2,
+//                            textAlign = TextAlign.Center,
+//                            overflow = TextOverflow.Ellipsis
+//                        )
                     }
                 } else {
                     Spacer(
                         modifier = Modifier
-                            .size(dimen_50_dp)
+                            .size(dimen_40_dp)
                     )
                 }
                 PrimaryButtonChip(
                     onClick = { onPrimaryClick() },
                     modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = dimen_5_dp),
                 )
             }
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun BasicMissionCardV2Preview() {
+    BasicMissionCardV2(
+        title = "Didi Orientation on Piggery ",
+        primaryButtonText = "",
+        pendingCount = 5,
+        totalCount = 10,
+        status = StatusEnum.PENDING.name,
+        needToShowProgressBar = true,
+        livelihoodType = BLANK_STRING,
+        onPrimaryClick = {},
+        prefixIcon = R.drawable.baseline_household_information,
+        livelihoodOrder = 0,
+        filterUiModel = null
+    )
 }

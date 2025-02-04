@@ -85,7 +85,7 @@
     <string name="primary_and_secondary_value_not_same">Puila Tangchamung bai nwirem Tangchamung Sol wi manya</string>
     <string name="select_first_livelihood_for_didi">Aibi ni Puila Tangchamung no chongdi</string>
     <string name="select_second_livelihood_for_didi">Aibi ni nwirem Tangchamung no chongdi</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="proceed_txt">Proceed</string>
     <string name="cancel_txt">Cancel</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">Are you sure you want to continue? You will not be able to make changes to this activity after it\'s completed.</string>
@@ -110,7 +110,7 @@
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
     <string name="edit_event">Edit Event</string>
-    <string name="showing">showing</string>
+    <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
     <string name="assets">"Rwbai "</string>
     <string name="last_updated_days_ago">"Last update khlai jak mani thanai  %1$s sal o "</string>
@@ -144,5 +144,7 @@
     <string name="sync_already_cancelled">Sync cancelled ungjak se.</string>
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">Ajemung/swbaimung</string>
+    <string name="date_of_event">Samung ungmani Sal</string>
+
 
 </resources>
