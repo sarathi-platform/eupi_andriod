@@ -11,8 +11,10 @@ import com.example.incomeexpensemodule.R
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.TabsCore
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
+import com.nudge.core.fromJson
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.helper.TranslationEnum
@@ -20,6 +22,7 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
@@ -47,6 +50,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     private val fetchLivelihoodEventUseCase: FetchLivelihoodEventUseCase,
     private val fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
 
     private val tag = DataSummaryScreenViewModel::class.java.simpleName
@@ -105,6 +109,8 @@ class DataSummaryScreenViewModel @Inject constructor(
     )
 
     val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
+
+    val excludedEventIds: SnapshotStateList<Int> = mutableStateListOf()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -307,6 +313,7 @@ class DataSummaryScreenViewModel @Inject constructor(
                     getSubjectLivelihoodMappingFromUseCase.invoke(subjectId)
 
                 subjectLivelihoodMapping.let {
+                    setExcludedEventIds()
 
                     val livelihoodIds = listOf(
                         it.first()?.livelihoodId.value(),
@@ -366,6 +373,14 @@ class DataSummaryScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private suspend fun setExcludedEventIds() {
+        excludedEventIds.clear()
+        excludedEventIds.addAll(
+            fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name)
+                .fromJson<List<Int>?>().value()
+        )
     }
 
     private fun creteEventsSubFilterList() {
@@ -461,5 +476,9 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.DataSummaryScreen
+    }
+
+    fun getExcludedEventIds(): List<Int> {
+        return excludedEventIds.toList()
     }
 }
