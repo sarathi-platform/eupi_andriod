@@ -642,7 +642,7 @@ private fun EventView(
                             .contains(subjectLivelihoodEventSummaryUiModel.eventId)
                     ) {
                         Text(
-                            "*This expense is not included in the total calculation.",
+                            viewModel.getString(R.string.exclude_in_calculation_message),
                             style = smallTextStyleWithNormalWeight.copy(color = redOffline),
                             modifier = Modifier.padding(bottom = dimen_5_dp)
                         )
