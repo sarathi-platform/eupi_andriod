@@ -69,8 +69,9 @@ fun LivelihoodPlanningDropDownComponent(
             textFieldSize = coordinates.size.toSize()
         },
         onItemSelected = {
+            val livielihoodUiEntity = defaultSourceList[defaultSourceList.indexOf(it)]
             selectedOptionText =
-                defaultSourceList[defaultSourceList.indexOf(it)].livelihoodEntity.name.value()
+                if (livielihoodUiEntity.isLivelihoodTypeDropdown) livielihoodUiEntity.livelihoodEntity.livelihoodTypeDisplayName else livielihoodUiEntity.livelihoodEntity.name.value()
             onAnswerSelection(defaultSourceList[defaultSourceList.indexOf(it)])
             expanded = false
 

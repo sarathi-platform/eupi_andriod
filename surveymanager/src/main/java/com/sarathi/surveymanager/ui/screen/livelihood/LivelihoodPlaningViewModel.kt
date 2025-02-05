@@ -244,12 +244,14 @@ class LivelihoodPlaningViewModel @Inject constructor(
             LivelihoodTypeEventDto(
                 programLivelihoodId = primaryLivelihoodId.value,
                 order = LivelihoodTypeEnum.PRIMARY.typeId,
+                livelihoodType = BLANK_STRING //TOdo add livelihoodType
             )
         )
         livelihoodTypeEventDto.add(
             LivelihoodTypeEventDto(
                 programLivelihoodId = secondaryLivelihoodId.value,
-                order = LivelihoodTypeEnum.SECONDARY.typeId
+                order = LivelihoodTypeEnum.SECONDARY.typeId,
+                livelihoodType = BLANK_STRING //TOdo add livelihoodType
             )
         )
         val livelihoodPlanActivityDto =
