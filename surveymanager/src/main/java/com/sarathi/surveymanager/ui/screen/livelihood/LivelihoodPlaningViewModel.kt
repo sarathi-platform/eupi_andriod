@@ -72,7 +72,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
     var secondaryLivelihoodId: MutableState<Int> = mutableStateOf(DEFAULT_LIVELIHOOD_ID)
     var primaryLivelihoodType = mutableStateOf(BLANK_STRING)
     var secondaryLivelihoodType: MutableState<String> = mutableStateOf(BLANK_STRING)
-
+    var livelihoodUiList: List<LivelihoodUiEntity> = listOf()
     var isActivityCompleted = mutableStateOf(false)
 
     override fun <T> onEvent(event: T) {
@@ -97,7 +97,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 checkButtonValidation()
             }
             is LivelihoodPlanningEvent.PrimaryLivelihoodTypePlanningEvent -> {
-                _primaryLivelihoodList.value = primaryLivelihoodList.value.filter {
+                _primaryLivelihoodList.value = livelihoodUiList.filter {
                     it.livelihoodEntity.type.equals(
                         event.livelihoodType,
                         ignoreCase = true
@@ -107,7 +107,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
             }
 
             is LivelihoodPlanningEvent.SecondaryLivelihoodTypePlanningEvent -> {
-                _secondaryLivelihoodList.value = secondaryLivelihoodList.value.filter {
+                _secondaryLivelihoodList.value = livelihoodUiList.filter {
                     it.livelihoodEntity.type.equals(
                         event.livelihoodType,
                         ignoreCase = true
@@ -143,8 +143,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 subjectLivelihoodMapping.last()?.livelihoodId.value()
                             )
                         )
-                        _primaryLivelihoodList.value = mLivelihoodUiEntityList
-                        _secondaryLivelihoodList.value = mLivelihoodUiEntityList
+                        livelihoodUiList = mLivelihoodUiEntityList
                         _livelihoodTypeList.value =
                             LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
                                 livelihoodUiModelList = livelihoodList.distinctBy { it.type },
@@ -166,8 +165,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
                                 )
                             )
-                        _primaryLivelihoodList.value = mLivelihoodUiEntityList
-                        _secondaryLivelihoodList.value = mLivelihoodUiEntityList
+                        livelihoodUiList = mLivelihoodUiEntityList
                         _livelihoodTypeList.value =
                             LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
                                 livelihoodUiModelList = livelihoodList.distinctBy { it.type },
