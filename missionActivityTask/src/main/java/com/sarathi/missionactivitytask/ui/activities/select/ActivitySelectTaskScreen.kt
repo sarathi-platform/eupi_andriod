@@ -52,7 +52,6 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.TRANSITION
 import com.nudge.core.customGridHeight
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
@@ -118,9 +117,6 @@ fun ActivitySelectTaskScreen(
     }
 
     TaskScreen(
-        isActivityReferenceId = viewModel.activityConfigUiModelWithoutSurvey?.activityType.equals(
-            ActivityTypeEnum.TRAINING.name, true
-        ) && viewModel.activityConfigUiModelWithoutSurvey?.referenceId == null && viewModel.activityConfigUiModelWithoutSurvey?.referenceId == 0,
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,

@@ -5,7 +5,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.enums.ActivityTypeEnum
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreenContent
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreenContentForGroup
@@ -28,9 +27,6 @@ fun SurveyTaskScreen(
     }
 
     TaskScreen(
-        isActivityReferenceId = viewModel.activityConfigUiModelWithoutSurvey?.activityType.equals(
-            ActivityTypeEnum.LIVELIHOOD_PoP.name, true
-        ) && viewModel.activityConfigUiModelWithoutSurvey?.referenceId != null && viewModel.activityConfigUiModelWithoutSurvey?.referenceId != 0,
         missionId = missionId,
         activityId = activityId,
         activityName = activityName,

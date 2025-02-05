@@ -120,7 +120,6 @@ const val TAG = "TaskScreen"
 @Composable
 fun TaskScreen(
     navController: NavController,
-    isActivityReferenceId: Boolean = false,
     viewModel: TaskScreenViewModel,
     programId: Int,
     missionId: Int,
@@ -305,7 +304,7 @@ fun TaskScreen(
                 },
                 onRetry = {},
                 onBottomUI = {
-                    if (!isActivityReferenceId) {
+                    if (!isActivityWithoutReference(viewModel)) {
                         BottomAppBar(
                             modifier = Modifier.height(dimen_72_dp),
                             backgroundColor = white
@@ -344,7 +343,7 @@ fun TaskScreen(
                 },
                 onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
                     Column {
-                        if (!isActivityReferenceId) {
+                        if (!isActivityWithoutReference(viewModel)) {
                             BaseContentScreen(
                                 matId = viewModel.matId.value,
                                 contentScreenCategory = viewModel.contentCategory.value
@@ -365,7 +364,7 @@ fun TaskScreen(
                                 }
                             }
                         }
-                        if (!isActivityReferenceId && isSearch) {
+                        if (!isActivityWithoutReference(viewModel) && isSearch) {
                             Column(
                                 Modifier
                                     .fillMaxWidth()
@@ -453,7 +452,7 @@ fun TaskScreen(
 
 
                             val message = when {
-                                isActivityReferenceId -> {
+                                isActivityWithoutReference(viewModel) -> {
                                     viewModel.stringResource(
                                         context,
                                         R.string.contact_to_admin_id_missing
@@ -482,8 +481,10 @@ fun TaskScreen(
                                     Text(
                                         text = it,
                                         style = defaultTextStyle,
-                                        color = if (isActivityReferenceId) redNoAnswer else textColorDark,
-                                        modifier = Modifier.align(Alignment.Center)
+                                        color = if (isActivityWithoutReference(viewModel)) redNoAnswer else textColorDark,
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .padding(horizontal = dimen_10_dp)
                                     )
                                 }
                             } ?: LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
@@ -847,3 +848,15 @@ fun getFilterLabel(
     }
     return result
 }
+
+
+fun isActivityWithoutReference(viewModel: TaskScreenViewModel): Boolean {
+    val activityConfig = viewModel.activityConfigUiModelWithoutSurvey ?: return false
+    val isTrainingActivity =
+        activityConfig.activityType.equals(ActivityTypeEnum.TRAINING.name, ignoreCase = true)
+    val isLivelihoodActivity =
+        activityConfig.activityType.equals(ActivityTypeEnum.LIVELIHOOD_PoP.name, ignoreCase = true)
+    val hasNoReference = activityConfig.referenceId == null || activityConfig.referenceId == 0
+    return (isTrainingActivity || isLivelihoodActivity) && hasNoReference
+}
+
