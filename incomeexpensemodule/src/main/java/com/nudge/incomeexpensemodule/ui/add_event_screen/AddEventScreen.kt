@@ -336,6 +336,7 @@ fun AddEventScreen(
                                     fieldName = AddEventFieldEnum.ASSET_TYPE.name,
                                     transactionId = transactionId
                                 ) { isValid, message ->
+                                    viewModel.updateAssetVisibility(isValid)
                                     viewModel.updateFieldValidationMessageAndMap(
                                         key = AddEventFieldEnum.ASSET_TYPE.name,
                                         value = Pair(isValid, message)

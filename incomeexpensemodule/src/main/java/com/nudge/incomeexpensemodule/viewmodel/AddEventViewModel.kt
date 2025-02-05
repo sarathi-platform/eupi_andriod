@@ -288,6 +288,21 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
+    fun updateAssetVisibility(isValid: Boolean) {
+        val livelihoodDataCaptureTypes = getLivelihoodEventFromName(eventType)
+            .livelihoodEventDataCaptureTypes
+            .filterNot { it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET }
+
+        livelihoodDataCaptureTypes.forEach { captureType ->
+            questionVisibilityMap[captureType] = if (isValid) {
+                questionVisibilityMap.containsKey(captureType)
+            } else {
+                !questionVisibilityMap.containsKey(captureType)
+            }
+        }
+    }
+
+
     fun onSubmitButtonClick(subjectId: Int, transactionId: String, onComplete: () -> Unit) {
 
         ioViewModelScope {
