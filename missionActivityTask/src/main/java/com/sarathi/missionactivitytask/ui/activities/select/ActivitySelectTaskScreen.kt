@@ -651,6 +651,35 @@ private fun OptionsUI(
                     }
                 }
 
+                QuestionType.SingleSelectGrid.name.toLowerCase() -> {
+                    GridTypeComponent(
+                        questionDisplay = questionUiModel.questionDisplay,
+                        optionUiModelList = it,
+                        questionIndex = 0,
+                        areOptionsEnabled = !isActivityCompleted,
+                        maxCustomHeight = customGridHeight(it.size),
+                        isQuestionDisplay = false,
+                        showCardView = false,
+                        isTaskMarkedNotAvailable = taskMarkedNotAvailable,
+                        onAnswerSelection = { selectedOptionIndex, isSelected ->
+                            if (!isActivityCompleted) {
+                                questionUiModel.options?.forEachIndexed { index, option ->
+                                    option.isSelected = index == selectedOptionIndex && isSelected
+                                }
+                                taskMarkedNotAvailable.value = false
+                                onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    translationHelper.getString(
+                                        com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
+                                    )
+                                )
+                            }
+                        }, questionDetailExpanded = {}
+                    )
+                }
+
                 QuestionType.MultiSelect.name.toLowerCase() -> {
                     GridTypeComponent(
                         questionDisplay = questionUiModel.questionDisplay,
@@ -678,6 +707,7 @@ private fun OptionsUI(
                         }, questionDetailExpanded = {}
                     )
                 }
+
                 }
 
             }
