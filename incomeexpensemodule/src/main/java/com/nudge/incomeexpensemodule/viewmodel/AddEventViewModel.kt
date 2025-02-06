@@ -86,6 +86,7 @@ class AddEventViewModel @Inject constructor(
     var amount = mutableStateOf("")
     var selectedDate = mutableStateOf("")
     var isSubmitButtonEnable = mutableStateOf(false)
+    var isDateOfEventVisible = mutableStateOf(true)
     var selectedDateInLong: Long = 0
     val maxAssetValue = mutableIntStateOf(MAXIMUM_RANGE)
     private val _fieldValidationAndMessageMap =
@@ -292,7 +293,7 @@ class AddEventViewModel @Inject constructor(
         val livelihoodDataCaptureTypes = getLivelihoodEventFromName(eventType)
             .livelihoodEventDataCaptureTypes
             .filterNot { it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET }
-
+        isDateOfEventVisible.value = isValid
         livelihoodDataCaptureTypes.forEach { captureType ->
             questionVisibilityMap[captureType] = if (isValid) {
                 questionVisibilityMap.containsKey(captureType)
