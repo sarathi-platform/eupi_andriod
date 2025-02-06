@@ -21,8 +21,8 @@ data class LivelihoodTypeEventDto(
     val programLivelihoodId: Int,
     @SerializedName("order")
     val order: Int,
-    @SerializedName("livelihoodType")
-    val livelihoodType: String,
+    @SerializedName("type")
+    val type: String,
 
 )
 

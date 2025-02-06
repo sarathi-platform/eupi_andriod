@@ -103,6 +103,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         ignoreCase = true
                     )
                 }
+                primaryLivelihoodType.value = event.livelihoodType
                 checkButtonValidation()
             }
 
@@ -113,7 +114,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         ignoreCase = true
                     )
                 }
-
+                secondaryLivelihoodType.value = event.livelihoodType
                 checkButtonValidation()
             }
             is DialogEvents.ShowDialogEvent -> {
@@ -234,7 +235,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 secondaryLivelihoodId.value,
                 LivelihoodTypeEnum.SECONDARY.typeId,
                 it,
-                secondaryLivelihoodType.value
+                livelihoodType = secondaryLivelihoodType.value
             )
         }
         val livelihoodTypeEventDto = ArrayList<LivelihoodTypeEventDto>()
@@ -242,14 +243,14 @@ class LivelihoodPlaningViewModel @Inject constructor(
             LivelihoodTypeEventDto(
                 programLivelihoodId = primaryLivelihoodId.value,
                 order = LivelihoodTypeEnum.PRIMARY.typeId,
-                livelihoodType = BLANK_STRING //TOdo add livelihoodType
+                type = primaryLivelihoodType.value
             )
         )
         livelihoodTypeEventDto.add(
             LivelihoodTypeEventDto(
                 programLivelihoodId = secondaryLivelihoodId.value,
                 order = LivelihoodTypeEnum.SECONDARY.typeId,
-                livelihoodType = BLANK_STRING //TOdo add livelihoodType
+                type = secondaryLivelihoodType.value
             )
         )
         val livelihoodPlanActivityDto =

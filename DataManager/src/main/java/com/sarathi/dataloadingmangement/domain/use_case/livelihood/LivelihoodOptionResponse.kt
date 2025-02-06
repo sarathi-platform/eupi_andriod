@@ -16,6 +16,6 @@ data class LivelihoodDTO(
     val programLivelihoodId: Int,
     @SerializedName("order")
     val order: Int,
-    @SerializedName("livelihoodType")
-    val livelihoodType: String? = BLANK_STRING
+    @SerializedName("type")
+    val type: String? = BLANK_STRING
 )
