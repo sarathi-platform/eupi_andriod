@@ -65,6 +65,7 @@ import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
+import com.sarathi.surveymanager.utils.ellipsisVisualTransformation
 import kotlinx.coroutines.launch
 
 
@@ -178,6 +179,7 @@ fun MultiSelectSelectDropDown(
                         focusedIndicatorColor = borderGrey,
                         unfocusedIndicatorColor = borderGrey,
                     ),
+                    visualTransformation = ellipsisVisualTransformation(),
                     trailingIcon = {
                         Icon(icon, "contentDescription",
                             Modifier.clickable { onExpandedChange(expanded) })
