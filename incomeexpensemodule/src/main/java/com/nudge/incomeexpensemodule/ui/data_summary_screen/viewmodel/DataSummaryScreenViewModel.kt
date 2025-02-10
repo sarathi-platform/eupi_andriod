@@ -39,6 +39,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import getLivelihoodIdsWithOrderForSubject
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -322,13 +323,9 @@ class DataSummaryScreenViewModel @Inject constructor(
                     val livelihoodIds = listOf(
                         it.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
                         it.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
-                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter not Decided
-                    val livelihoodIdsWithOrder: List<Pair<Int, Int>?> = listOf(
-                        it.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId }
-                            ?.let { Pair(it.livelihoodId, it.type) },
-                        it.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId }
-                            ?.let { Pair(it.livelihoodId, it.type) }
-                    ).filter { it?.first != NOT_DECIDED_LIVELIHOOD_ID }
+                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }
+
+                    val livelihoodIdsWithOrder = getLivelihoodIdsWithOrderForSubject(it)
 
                     val livelihoodEventList = fetchLivelihoodEventUseCase.invoke(livelihoodIds)
 
