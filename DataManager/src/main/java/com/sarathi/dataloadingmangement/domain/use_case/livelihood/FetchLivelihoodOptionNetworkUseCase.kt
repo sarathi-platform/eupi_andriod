@@ -35,7 +35,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                                 livelihoodId = it.programLivelihoodId,
                                 status = 1,
                                 type = it.order,
-                                livelihoodType = it.livelihoodType ?: BLANK_STRING
+                                livelihoodType = it.type ?: BLANK_STRING
                             )
                         )
                     }

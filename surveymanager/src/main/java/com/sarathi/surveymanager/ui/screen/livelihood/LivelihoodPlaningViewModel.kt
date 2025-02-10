@@ -140,8 +140,8 @@ class LivelihoodPlaningViewModel @Inject constructor(
                             livelihoodUiModelList = livelihoodList,
 
                             selectedIds = listOf(
-                                subjectLivelihoodMapping.first()?.livelihoodId.value(),
-                                subjectLivelihoodMapping.last()?.livelihoodId.value()
+                                subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                                subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
                             )
                         )
                         livelihoodUiList = mLivelihoodUiEntityList
@@ -150,12 +150,16 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 livelihoodUiModelList = livelihoodList.distinctBy { it.type },
 //Please change the logic from id to type
                                 selectedType = listOf(
-                                    subjectLivelihoodMapping.first()?.livelihoodType.value(),
-                                    subjectLivelihoodMapping.last()?.livelihoodType.value()
+                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value(),
+                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
                                 )
                             )
                         primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
+                        primaryLivelihoodType.value =
+                            subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
+                        secondaryLivelihoodType.value =
+                            subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
                         checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                     }
                 else {
