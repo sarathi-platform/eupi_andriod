@@ -399,9 +399,6 @@ fun SelectActivityCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    title?.let { onExpendClick(expanded, it) }
-                }
                 .padding(horizontal = dimen_16_dp)
                 .padding(top = dimen_8_dp, bottom = dimen_5_dp),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
