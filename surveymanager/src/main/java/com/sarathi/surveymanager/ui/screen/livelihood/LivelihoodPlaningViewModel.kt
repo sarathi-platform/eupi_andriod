@@ -8,6 +8,7 @@ import com.nudge.core.DEFAULT_ID
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
 import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.DialogEvents
@@ -58,6 +59,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
     private val _livelihoodTypeList = mutableStateOf<List<LivelihoodUiEntity>>(emptyList())
     val livelihoodType: State<List<LivelihoodUiEntity>> get() = _livelihoodTypeList
+    private val _SecondarylivelihoodTypeList = mutableStateOf<List<LivelihoodUiEntity>>(emptyList())
+    val seondarylivelihoodTypeList: State<List<LivelihoodUiEntity>> get() = _SecondarylivelihoodTypeList
+
     private val _showCustomDialog = mutableStateOf<DialogState>(DialogState())
     val showCustomDialog: State<DialogState> get() = _showCustomDialog
 
@@ -97,23 +101,26 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 checkButtonValidation()
             }
             is LivelihoodPlanningEvent.PrimaryLivelihoodTypePlanningEvent -> {
+                primaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
                 _primaryLivelihoodList.value = livelihoodUiList.filter {
                     it.livelihoodEntity.type.equals(
                         event.livelihoodType,
                         ignoreCase = true
-                    )
-                }
+                    ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+                }.onEach { it.isSelected = false }
                 primaryLivelihoodType.value = event.livelihoodType
                 checkButtonValidation()
             }
 
             is LivelihoodPlanningEvent.SecondaryLivelihoodTypePlanningEvent -> {
+                secondaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
+
                 _secondaryLivelihoodList.value = livelihoodUiList.filter {
                     it.livelihoodEntity.type.equals(
                         event.livelihoodType,
                         ignoreCase = true
-                    )
-                }
+                    ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+                }.onEach { it.isSelected = false }
                 secondaryLivelihoodType.value = event.livelihoodType
                 checkButtonValidation()
             }
@@ -150,16 +157,42 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 livelihoodUiModelList = livelihoodList.distinctBy { it.type },
 //Please change the logic from id to type
                                 selectedType = listOf(
-                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value(),
+                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
+                                        .uppercase(),
                                     subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
+                                        .uppercase()
+                                )
+                            )
+                        _SecondarylivelihoodTypeList.value =
+                            LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
+                                livelihoodUiModelList = livelihoodList.distinctBy { it.type },
+//Please change the logic from id to type
+                                selectedType = listOf(
+                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
+                                        .uppercase()
                                 )
                             )
                         primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
                         primaryLivelihoodType.value =
                             subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
+                                .uppercase()
                         secondaryLivelihoodType.value =
                             subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
+                                .uppercase()
+                        _primaryLivelihoodList.value = livelihoodUiList.filter {
+                            it.livelihoodEntity.type.equals(
+                                primaryLivelihoodType.value,
+                                ignoreCase = true
+                            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+                        }
+                        _secondaryLivelihoodList.value = livelihoodUiList.filter {
+                            it.livelihoodEntity.type.equals(
+                                secondaryLivelihoodType.value,
+                                ignoreCase = true
+                            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+                        }
+                        checkButtonValidation()
                         checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                     }
                 else {
@@ -172,6 +205,11 @@ class LivelihoodPlaningViewModel @Inject constructor(
                             )
                         livelihoodUiList = mLivelihoodUiEntityList
                         _livelihoodTypeList.value =
+                            LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
+                                livelihoodUiModelList = livelihoodList.distinctBy { it.type },
+                                selectedType = listOf()
+                            )
+                        _SecondarylivelihoodTypeList.value =
                             LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
                                 livelihoodUiModelList = livelihoodList.distinctBy { it.type },
                                 selectedType = listOf()
