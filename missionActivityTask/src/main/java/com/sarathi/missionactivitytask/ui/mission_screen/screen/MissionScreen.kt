@@ -35,8 +35,8 @@ import androidx.navigation.compose.rememberNavController
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.ui.commonUi.CustomFixedCountSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
-import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.FilterRowItem
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -164,7 +164,7 @@ fun MissionScreen(
                         modifier = Modifier
                             .padding(horizontal = dimen_10_dp)
                     ) {
-                        CustomSubTabLayoutWithCallBack(
+                        CustomFixedCountSubTabLayoutWithCallBack(
                             parentTabIndex = TabsEnum.MissionTab.tabIndex,
                             tabs = viewModel.tabs,
                             countMap = viewModel.countMap
