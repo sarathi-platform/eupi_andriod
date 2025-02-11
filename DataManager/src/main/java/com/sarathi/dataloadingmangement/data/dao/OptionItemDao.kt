@@ -47,6 +47,7 @@ interface OptionItemDao {
                 "    option_table.`order`,\n" +
                 "    option_table.contentEntities,\n" +
                 "    option_table.conditions,\n" +
+                "    option_table.optionImage,\n" +
                 "    option_table.selectedValue,\n" +
                 "    option_table.originalValue,\n" +
                 "    option_table.selectedValueId,\n" +

@@ -73,6 +73,7 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.ui.commonUi.CustomDateRangePickerBottomSheetComponent
 import com.nudge.core.ui.commonUi.CustomDateRangePickerDisplay
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
@@ -118,6 +119,7 @@ import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.searchFieldBg
 import com.nudge.core.ui.theme.smallTextStyle
+import com.nudge.core.ui.theme.smallTextStyleWithNormalWeight
 import com.nudge.core.ui.theme.stepIconDisableColor
 import com.nudge.core.ui.theme.taskCompletionBannerBgColor
 import com.nudge.core.ui.theme.white
@@ -142,6 +144,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpens
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.find
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.delay
@@ -390,7 +393,10 @@ private fun DataSummaryView(
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
     }
     Spacer(modifier = Modifier.height(16.dp))
-    HeaderSection(viewModel.getLivelihood()) {
+    HeaderSection(
+        viewModel.mSubjectLivelihoodMapping,
+        viewModel.getLivelihood()
+    ) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     }
     Spacer(modifier = Modifier.height(16.dp))
@@ -446,6 +452,7 @@ fun DropDownContainer(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int
 
 @Composable
 fun HeaderSection(
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
     onAssetCountClicked: () -> Unit
 ) {
@@ -461,7 +468,11 @@ fun HeaderSection(
             .padding(vertical = dimen_10_dp, horizontal = dimen_14_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TotalIncomeExpenseAssetSummaryView(incomeExpenseSummaryUiModel, onAssetCountClicked)
+        TotalIncomeExpenseAssetSummaryView(
+            incomeExpenseSummaryUiModel,
+            subjectLivelihoodMapping,
+            onAssetCountClicked
+        )
     }
 
 }
@@ -624,7 +635,7 @@ private fun EventView(
                         subjectLivelihoodEventSummaryUiModel,
                         eventsList
                     )
-                    EventDetails(viewModel = viewModel,subjectLivelihoodEventSummaryUiModel) {
+                    EventDetails(subjectLivelihoodEventSummaryUiModel) {
                         if (subjectLivelihoodEventSummaryUiModel.status != 2) {
                             onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                         }
@@ -636,6 +647,15 @@ private fun EventView(
                         onClick = {
                             onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                         })
+                    if (viewModel.getExcludedEventIds()
+                            .contains(subjectLivelihoodEventSummaryUiModel.eventId)
+                    ) {
+                        Text(
+                            viewModel.getString(R.string.exclude_in_calculation_message),
+                            style = smallTextStyleWithNormalWeight.copy(color = redOffline),
+                            modifier = Modifier.padding(bottom = dimen_5_dp)
+                        )
+                    }
                     CustomVerticalSpacer(size = dimen_8_dp)
                     if (filteredSubjectLivelihoodEventSummaryUiModelList.size != 1) {
                         Divider(thickness = dimen_1_dp, color = borderGreyLight)
@@ -673,8 +693,7 @@ private fun EventView(
                                 eventsList
                             )
                             EventDetails(
-                                viewModel = viewModel,
-                                subjectLivelihoodEventSummaryUiModel,
+                                subjectLivelihoodEventSummaryUiModel
                             ) {
                                 onEventItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
                             }
@@ -683,7 +702,17 @@ private fun EventView(
                                 livelihoodImage = subjectLivelihoodEventSummaryUiModel.livelihoodImage,
                                 onClick = {
                                     onViewEditItemClicked(subjectLivelihoodEventSummaryUiModel.transactionId.value())
-                                })
+                                }
+                            )
+                            if (viewModel.getExcludedEventIds()
+                                    .contains(subjectLivelihoodEventSummaryUiModel.eventId)
+                            ) {
+                                Text(
+                                    viewModel.stringResource(R.string.exclude_in_calculation_message),
+                                    style = smallTextStyleWithNormalWeight.copy(color = redOffline),
+                                    modifier = Modifier.padding(top = dimen_8_dp)
+                                )
+                            }
                             CustomVerticalSpacer(size = dimen_8_dp)
                             Divider(thickness = dimen_1_dp, color = borderGreyLight)
 
@@ -719,7 +748,11 @@ private fun ViewEditHistoryView(
     livelihoodImage: String?
 ) {
     val context = LocalContext.current
-    Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = dimen_5_dp), verticalAlignment = Alignment.CenterVertically
+    ) {
 
         Text(
             modifier = Modifier.clickable { onClick() },
@@ -792,56 +825,60 @@ private fun EventHeader(
 
 @Composable
 private fun EventDetails(
-    viewModel: DataSummaryScreenViewModel,
     item: SubjectLivelihoodEventSummaryUiModel,
     onClick: () -> Unit
 ) {
-    Row(
-        Modifier
-            .fillMaxWidth()
-    ) {
-        item.transactionAmount?.let {
-            Row(modifier = Modifier.weight(1f)) {
-                TextWithPaddingEnd(
-                    text = viewModel.stringResource(
-                        resId = R.string.amount
-                    ),
-                    style = getTextColor(smallTextStyle, color = eventTextColor)
-                )
-                StrikethroughText(
-                    text = getAmountForEvent(item),
-                    textStyle = getAmountColorForEvent(item),
-                    isStrikethrough = item.isEventNotActive()
-                )
-            }
-        }
 
-        item.assetCount?.let {
-            Row(modifier = Modifier.weight(1f)) {
-                TextWithPaddingEnd(
-                    text = viewModel.stringResource(resId = R.string.asset),
-                    style = getTextColor(smallTextStyle, color = eventTextColor)
-                )
-                StrikethroughText(
-                    text = getAssetCountForEvent(item),
-                    textStyle = getTextColor(newMediumTextStyle),
-                    isStrikethrough = item.isEventNotActive()
-                )
-            }
-        }
-        if (item.status != 2) {
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = "ArrowForward Icon",
-                modifier = Modifier
-                    .size(dimen_24_dp)
-                    .clickable { onClick() },
-                tint = blueDark
-            )
-        } else {
-            Spacer(modifier = Modifier.size(dimen_24_dp))
-        }
+    val translationHelper = LocalTranslationHelper.current
 
+    Column {
+        Row(
+            Modifier
+                .fillMaxWidth()
+        ) {
+            item.transactionAmount?.let {
+                Row(modifier = Modifier.weight(1f)) {
+                    TextWithPaddingEnd(
+                        text = translationHelper.stringResource(
+                            resId = R.string.amount
+                        ),
+                        style = getTextColor(smallTextStyle, color = eventTextColor)
+                    )
+                    StrikethroughText(
+                        text = getAmountForEvent(item),
+                        textStyle = getAmountColorForEvent(item),
+                        isStrikethrough = item.isEventNotActive()
+                    )
+                }
+            }
+
+            item.assetCount?.let {
+                Row(modifier = Modifier.weight(1f)) {
+                    TextWithPaddingEnd(
+                        text = translationHelper.stringResource(resId = R.string.asset),
+                        style = getTextColor(smallTextStyle, color = eventTextColor)
+                    )
+                    StrikethroughText(
+                        text = getAssetCountForEvent(item),
+                        textStyle = getTextColor(newMediumTextStyle),
+                        isStrikethrough = item.isEventNotActive()
+                    )
+                }
+            }
+            if (item.status != 2) {
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "ArrowForward Icon",
+                    modifier = Modifier
+                        .size(dimen_24_dp)
+                        .clickable { onClick() },
+                    tint = blueDark
+                )
+            } else {
+                Spacer(modifier = Modifier.size(dimen_24_dp))
+            }
+
+        }
     }
 }
 

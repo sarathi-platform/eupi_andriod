@@ -40,6 +40,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.componet_.component.dottedBorder
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -121,28 +122,30 @@ fun SingleImageComponent(
             Box(
                 modifier =
                 boxModifier
-                    .clickable(
-                        enabled = isEditable
-                    ) {
+                    .clickable {
+                        if (isEditable) {
+                            requestCameraPermission(context as Activity) {
+                                shouldRequestPermission.value = it
 
-                        requestCameraPermission(context as Activity) {
-                            shouldRequestPermission.value = it
+                                if (!it) {
+                                    currentImageUri = getSingleImageUri(
+                                        context, "${fileNamePrefix}${
+                                            System.currentTimeMillis()
+                                        }.png",
+                                        true
+                                    )
 
-                            if (!it) {
-                                currentImageUri = getSingleImageUri(
-                                    context, "${fileNamePrefix}${
-                                        System.currentTimeMillis()
-                                    }.png",
-                                    true
-                                )
-
-                                cameraLauncher.launch(
-                                    currentImageUri
-                                )
+                                    cameraLauncher.launch(
+                                        currentImageUri
+                                    )
+                                }
                             }
+                        } else {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
+                            )
                         }
-
-
                     }
                     .background(white)
                     .dottedBorder(
@@ -182,12 +185,20 @@ fun SingleImageComponent(
                                     modifier = Modifier
                                         .padding(dimen_10_dp)
                                         .align(Alignment.BottomEnd)
-                                        .clickable(enabled = isEditable) {
-                                            image = null
-                                            onImageSelection(
-                                                currentImageUri?.path ?: BLANK_STRING,
-                                                true
-                                            )
+                                        .clickable() {
+                                            if (isEditable) {
+                                                image = null
+                                                onImageSelection(
+                                                    currentImageUri?.path ?: BLANK_STRING,
+                                                    true
+                                                )
+
+                                            } else {
+                                                showCustomToast(
+                                                    context,
+                                                    context.getString(R.string.edit_disable_message)
+                                                )
+                                            }
                                         }
                                         .size(dimen_24_dp),
                                     colorFilter = ColorFilter.tint(redDark)
