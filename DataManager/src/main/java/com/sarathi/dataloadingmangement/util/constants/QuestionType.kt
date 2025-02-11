@@ -19,7 +19,8 @@ enum class QuestionType {
     IncrementDecrementList,
     InputHrsMinutes,
     InputYrsMonths,
-    SingleImage;
+    SingleImage,
+    SingleSelectGrid;
 
     companion object {
         val singleResponseQuestionTypeQuestions = listOf(

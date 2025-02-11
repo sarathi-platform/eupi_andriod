@@ -31,10 +31,13 @@ import com.nudge.core.utils.FileUtils
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
+import sortTotalAssetCountForLivelihood
 
 @Composable
 fun TotalIncomeExpenseAssetSummaryView(
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     onAssetCountClicked: () -> Unit
 ) {
     val context = LocalContext.current
@@ -64,7 +67,10 @@ fun TotalIncomeExpenseAssetSummaryView(
         Text(text = stringResource(R.string.total_asset), style = getTextColor(newMediumTextStyle))
         if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.isNotEmpty() == true) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
+                sortTotalAssetCountForLivelihood(
+                    incomeExpenseSummaryUiModel,
+                    subjectLivelihoodMapping
+                )?.forEach {
                     incomeExpenseSummaryUiModel.imageUriForLivelihood.get(it.key)
                         ?.let { fileName ->
                             val fileNameFromUrl = getFileNameFromURL(fileName)

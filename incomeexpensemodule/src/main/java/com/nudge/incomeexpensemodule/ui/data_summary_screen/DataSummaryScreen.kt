@@ -144,6 +144,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpens
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.find
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import kotlinx.coroutines.delay
@@ -392,7 +393,10 @@ private fun DataSummaryView(
         viewModel.onEvent(DataSummaryScreenEvents.FilterDataForLivelihood(it))
     }
     Spacer(modifier = Modifier.height(16.dp))
-    HeaderSection(viewModel.getLivelihood()) {
+    HeaderSection(
+        viewModel.mSubjectLivelihoodMapping,
+        viewModel.getLivelihood()
+    ) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     }
     Spacer(modifier = Modifier.height(16.dp))
@@ -448,6 +452,7 @@ fun DropDownContainer(livelihoodList: List<ValuesDto>, onValueSelected: (id: Int
 
 @Composable
 fun HeaderSection(
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
     onAssetCountClicked: () -> Unit
 ) {
@@ -463,7 +468,11 @@ fun HeaderSection(
             .padding(vertical = dimen_10_dp, horizontal = dimen_14_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TotalIncomeExpenseAssetSummaryView(incomeExpenseSummaryUiModel, onAssetCountClicked)
+        TotalIncomeExpenseAssetSummaryView(
+            incomeExpenseSummaryUiModel,
+            subjectLivelihoodMapping,
+            onAssetCountClicked
+        )
     }
 
 }

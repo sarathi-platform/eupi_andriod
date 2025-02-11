@@ -1176,11 +1176,13 @@ class DataLoadingModule {
     @Singleton
     fun provideGetLivelihoodMappingForSubjectFromDbRepository(
         subjectLivelihoodMappingDao: SubjectLivelihoodMappingDao,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao
     ): GetLivelihoodMappingForSubjectFromDbRepository {
         return GetLivelihoodMappingForSubjectFromDbRepositoryImpl(
             subjectLivelihoodMappingDao = subjectLivelihoodMappingDao,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            subjectEntityDao = subjectEntityDao
         )
     }
 
