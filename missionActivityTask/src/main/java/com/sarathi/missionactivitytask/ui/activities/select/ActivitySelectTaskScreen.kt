@@ -506,6 +506,7 @@ fun SelectActivityCard(
     ) {
         if (expanded) {
             OptionsUI(
+                referenceId = viewModel.activityConfigUiModelWithoutSurvey?.referenceId,
                 translationHelper = translationHelper,
                 questionUiModel = questionUiModel,
                 taskMarkedNotAvailable = taskMarkedNotAvailable,
@@ -608,6 +609,7 @@ fun DisplaySelectedOption(
 
 @Composable
 private fun OptionsUI(
+    referenceId: Int?,
     translationHelper: TranslationHelper,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -634,7 +636,7 @@ private fun OptionsUI(
                         optionItemEntityState = it,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         selectedValue = selectedValue,
-                        isActivityCompleted = isActivityCompleted
+                        isActivityCompleted = isActivityCompleted,
                     ) { selectedIndex, optionValue, optionId ->
                         questionUiModel.options?.let { options ->
                             options.forEach {
