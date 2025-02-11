@@ -854,9 +854,9 @@ fun isActivityWithoutReference(viewModel: TaskScreenViewModel): Boolean {
     val activityConfig = viewModel.activityConfigUiModelWithoutSurvey ?: return false
     val isTrainingActivity =
         activityConfig.activityType.equals(ActivityTypeEnum.TRAINING.name, ignoreCase = true)
-    val isLivelihoodActivity =
+    val isLivelihoodPopActivity =
         activityConfig.activityType.equals(ActivityTypeEnum.LIVELIHOOD_PoP.name, ignoreCase = true)
     val hasNoReference = activityConfig.referenceId == null || activityConfig.referenceId == 0
-    return (isTrainingActivity || isLivelihoodActivity) && hasNoReference
+    return (isTrainingActivity || isLivelihoodPopActivity) && hasNoReference
 }
 
