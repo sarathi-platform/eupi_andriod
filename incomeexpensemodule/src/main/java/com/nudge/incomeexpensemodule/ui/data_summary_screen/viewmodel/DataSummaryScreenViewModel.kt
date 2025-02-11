@@ -29,14 +29,17 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubj
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import getLivelihoodIdsWithOrderForSubject
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -68,6 +71,9 @@ class DataSummaryScreenViewModel @Inject constructor(
     private val _subjectLivelihoodEventSummaryUiModelList =
         mutableListOf<SubjectLivelihoodEventSummaryUiModel>()
     private val subjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel> get() = _subjectLivelihoodEventSummaryUiModelList
+
+    var mSubjectLivelihoodMapping: SnapshotStateList<SubjectEntityWithLivelihoodMappingUiModel> =
+        mutableStateListOf()
 
     private val _filteredSubjectLivelihoodEventSummaryUiModelList =
         mutableStateListOf<SubjectLivelihoodEventSummaryUiModel>()
@@ -307,11 +313,19 @@ class DataSummaryScreenViewModel @Inject constructor(
                     getSubjectLivelihoodMappingFromUseCase.invoke(subjectId)
 
                 subjectLivelihoodMapping.let {
+                    mSubjectLivelihoodMapping.clear()
+                    mSubjectLivelihoodMapping.addAll(
+                        getSubjectLivelihoodMappingFromUseCase.getSubjectEntityWithLivelihoodMappingUiModelListForSubject(
+                            subjectId
+                        )
+                    )
 
                     val livelihoodIds = listOf(
-                        it.first()?.livelihoodId.value(),
-                        it.last()?.livelihoodId.value()
-                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter not Decided
+                        it.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                        it.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
+                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }
+
+                    val livelihoodIdsWithOrder = getLivelihoodIdsWithOrderForSubject(it)
 
                     val livelihoodEventList = fetchLivelihoodEventUseCase.invoke(livelihoodIds)
 
@@ -329,9 +343,21 @@ class DataSummaryScreenViewModel @Inject constructor(
                     )
 
                     _livelihoodModel.clear()
-                    _livelihoodModel.addAll(
-                        getLivelihoodListFromDbUseCase.invoke(livelihoodIds)
-                    )
+                    val livelihoodModels =
+                        getLivelihoodListFromDbUseCase.invoke(livelihoodIdsWithOrder.map {
+                            it?.first.value(
+                                0
+                            )
+                        })
+                    livelihoodIdsWithOrder.sortedBy { it?.second }.forEach { idsWithOrder ->
+                        livelihoodModels.find { it.programLivelihoodId == idsWithOrder?.first }
+                            ?.let { livelihoodModel ->
+                                _livelihoodModel.add(
+                                    livelihoodModel
+                                )
+                            }
+                    }
+
 
                     _incomeExpenseSummaryUiModel.clear()
                     _incomeExpenseSummaryUiModel.putAll(

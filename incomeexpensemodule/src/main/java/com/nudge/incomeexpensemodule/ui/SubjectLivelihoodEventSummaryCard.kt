@@ -58,6 +58,7 @@ import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TotalIncomeExpenseAssetSummaryView
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 
 @Composable
 fun SubjectLivelihoodEventSummaryCard(
@@ -68,7 +69,7 @@ fun SubjectLivelihoodEventSummaryCard(
     location: String,
     lastUpdated: String,
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
-//    imageRes: Int,
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     onAssetCountClicked: (subjectId: Int) -> Unit,
     onSummaryCardClicked: () -> Unit
 ) {
@@ -187,6 +188,7 @@ fun SubjectLivelihoodEventSummaryCard(
 //                Spacer(modifier = Modifier.height(dimen_8_dp))
                 IncomeExpenseAssetAmountView(
                     incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel,
+                    subjectLivelihoodMapping = subjectLivelihoodMapping,
                     onAssetCountClicked = {
                         onAssetCountClicked(it)
                     }
@@ -199,6 +201,7 @@ fun SubjectLivelihoodEventSummaryCard(
 @Composable
 fun IncomeExpenseAssetAmountView(
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     onAssetCountClicked: (subjectId: Int) -> Unit
 ) {
     Row(
@@ -208,7 +211,10 @@ fun IncomeExpenseAssetAmountView(
             .padding(horizontal = dimen_8_dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        TotalIncomeExpenseAssetSummaryView(incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel) {
+        TotalIncomeExpenseAssetSummaryView(
+            incomeExpenseSummaryUiModel = incomeExpenseSummaryUiModel,
+            subjectLivelihoodMapping
+        ) {
             onAssetCountClicked(incomeExpenseSummaryUiModel?.subjectId.value())
         }
     }
@@ -231,7 +237,7 @@ fun UserProfileCardList() {
             incomeExpenseSummaryUiModel = IncomeExpenseSummaryUiModel.getDefaultIncomeExpenseSummaryUiModel(
                 123
             ),
-//            imageRes = R.drawable.profile_img,
+            subjectLivelihoodMapping = listOf(),
             onAssetCountClicked = {
 
             }
