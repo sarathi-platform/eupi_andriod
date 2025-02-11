@@ -1,11 +1,10 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
-import com.nudge.core.value
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
-import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepository
 import javax.inject.Inject
 
@@ -27,28 +26,19 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
             val subjectLivelihoodMappingEntities = mutableListOf<SubjectLivelihoodMappingEntity>()
             apiResponse.data?.let { subjectLivelihoodMappingDetail ->
                 subjectLivelihoodMappingDetail.forEach { subjectLivelihoodMapping ->
-                    subjectLivelihoodMappingEntities.add(
-                        SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            subjectId = subjectLivelihoodMapping.didiId,
-                            livelihoodId = subjectLivelihoodMapping.livelihoodDTO.find { it?.order == LivelihoodTypeEnum.PRIMARY.typeId }?.programLivelihoodId.value(),
-                            status =1,
-                            type = subjectLivelihoodMapping.livelihoodDTO.first().order
 
-
+                    subjectLivelihoodMapping.livelihoodDTO.forEach {
+                        subjectLivelihoodMappingEntities.add(
+                            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                                subjectId = subjectLivelihoodMapping.didiId,
+                                livelihoodId = it.programLivelihoodId,
+                                status = 1,
+                                type = it.order,
+                                livelihoodType = it.type ?: BLANK_STRING
+                            )
                         )
-                    )
-                    subjectLivelihoodMappingEntities.add(
-                        SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                            subjectId = subjectLivelihoodMapping.didiId,
-                            livelihoodId = subjectLivelihoodMapping.livelihoodDTO.find { it?.order == LivelihoodTypeEnum.SECONDARY.typeId }?.programLivelihoodId.value(),
-                            status = 1,
-                            type = subjectLivelihoodMapping.livelihoodDTO.last().order
-
-
-                        )
-                    )
+                    }
                 }
                 repository.saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntities)
                 return true
@@ -58,6 +48,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
         }
         return false
     }
+
     suspend fun invoke(): Boolean {
         try {
 

@@ -170,14 +170,24 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
     }
 
     private fun getActivityConfigId(taskId: Int): Int {
-        val activityId = taskDao.getTaskById(
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            taskId = taskId
-        ).activityId
-        return activityConfigDao.getActivityConfigWithSection(
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            activityId = activityId ?: 0
-        ).activityConfigId
+        try {
+            val activityId = taskDao.getTaskById(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                taskId = taskId
+            ).activityId
+            return activityConfigDao.getActivityConfigWithSection(
+                userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                activityId = activityId ?: 0
+            ).activityConfigId
+        } catch (e: Exception) {
+            CoreLogger.e(
+                tag = "SurveySaveNetworkRepositoryImpl",
+                msg = "getActivityConfigId: taskId -> $taskId, exception -> ${e.message}",
+                ex = e,
+                stackTrace = true
+            )
+            return 0
+        }
     }
 
 }

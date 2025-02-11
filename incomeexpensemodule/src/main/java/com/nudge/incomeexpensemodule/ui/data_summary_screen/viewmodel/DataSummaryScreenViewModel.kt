@@ -373,9 +373,12 @@ class DataSummaryScreenViewModel @Inject constructor(
         val context = CoreAppDetails.getContext()
         _eventsSubFilterList.addAll(
             listOf(
-                ValuesDto(1, context?.getString(R.string.all) ?: "All"),
-                ValuesDto(2, context?.getString(R.string.assets) ?: "Assets"),
-                ValuesDto(3, context?.getString(R.string.income_expanse) ?: "Income/Expense")
+                ValuesDto(1, translationHelper.getString(R.string.all) ?: "All"),
+                ValuesDto(2, translationHelper.getString(R.string.assets) ?: "Assets"),
+                ValuesDto(
+                    3,
+                    translationHelper.getString(R.string.income_expanse) ?: "Income/Expense"
+                )
             )
         )
     }

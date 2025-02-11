@@ -23,6 +23,9 @@ class TranslationHelper @Inject constructor(
 
     suspend fun initTranslationHelper(translationEnum: TranslationEnum) {
         val translations = getScreenNameKeys(translationEnum)
+        translationEnum.keys.forEach {
+            _translationMap.remove(it)
+        }
         translations.forEach { (key, value) ->
             _translationMap[key] = value
         }

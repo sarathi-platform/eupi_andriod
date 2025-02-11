@@ -26,6 +26,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihood
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -218,18 +219,23 @@ class MissionScreenViewModel @Inject constructor(
         val filterList = ArrayList<FilterUiModel>()
         missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
+            .filter { livelihood -> // filtering livelihood that user's have mapped mission
+                missionList.value.any() {
+                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
+                }
+            }
 
         filterList.add(
             FilterUiModel.getAllFilter(
                 filterValue = ALL_MISSION_FILTER_VALUE,
-                filterLabel = "All Missions",
+                filterLabel = translationHelper.getString(R.string.all_missions_filter_label),
                 imageFileName = null
             )
         )
         filterList.add(
             FilterUiModel.getGeneralFilter(
                 filterValue = GENERAL_MISSION_FILTER_VALUE,
-                filterLabel = "General Missions",
+                filterLabel = translationHelper.getString(R.string.general_missions_filter_label),
                 imageFileName = null
             )
         )
@@ -270,9 +276,6 @@ class MissionScreenViewModel @Inject constructor(
             fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
                 initMissionScreen()
             })
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
         }
     }
 

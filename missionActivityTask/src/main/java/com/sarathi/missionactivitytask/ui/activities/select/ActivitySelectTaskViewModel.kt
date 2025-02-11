@@ -7,7 +7,6 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
-import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -81,7 +80,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitActivitySelectTaskScreenState -> {
-                setTranslationConfig()
+//                setTranslationConfig()
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 initActivitySelectTaskScreen(event.missionId, event.activityId)
             }
@@ -94,7 +93,6 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
-            expandedIds.clear()
             taskUiList.value.forEach { task ->
                 val list = intiQuestions(
                     taskId = task.taskId,
@@ -292,8 +290,8 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
-    override fun getScreenName(): TranslationEnum {
-        return TranslationEnum.ActivitySelectTaskScreen
-    }
+//    override fun getScreenName(): TranslationEnum {
+//        return TranslationEnum.ActivitySelectTaskScreen
+//    }
 
 }

@@ -31,11 +31,12 @@ data class LivelihoodLanguageReferenceEntity(
         fun getLivelihoodLanguageEntity(
             languageReference: LanguageReference,
             uniqueUserIdentifier: String,
-            referenceType: String
+            referenceType: String,
+            referenceId: Int?
         ): LivelihoodLanguageReferenceEntity {
             return LivelihoodLanguageReferenceEntity(
                 id = 0,
-                referenceId = languageReference.id ?: 0,
+                referenceId = referenceId ?: languageReference.id ?: 0,
                 userId = uniqueUserIdentifier,
                 languageCode = languageReference.languageCode ?: BLANK_STRING,
                 name = languageReference.name ?: BLANK_STRING,

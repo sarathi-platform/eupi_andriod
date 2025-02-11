@@ -40,7 +40,7 @@ data class LivelihoodEntity(
                 status = livelihood.status ?: 0,
                 image = livelihood.image ?: BLANK_STRING,
                 validations = livelihood.validations,
-                type = livelihood.type ?: BLANK_STRING,
+                type = livelihood.type?.originalName ?: BLANK_STRING,
                 programLivelihoodId = livelihood.programLivelihoodId
             )
         }

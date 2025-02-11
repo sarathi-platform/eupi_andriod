@@ -97,13 +97,19 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                     )
                 )
                 saveLivelihoodLanguageToDB(item.languages, referenceType)
+                saveLivelihoodLanguageToDB(
+                    item.type?.languages ?: listOf(),
+                    LivelihoodLanguageReferenceType.LivelihoodType.name,
+                    referenceId = item.programLivelihoodId
+                )
             }
         }
     }
 
     override suspend fun saveLivelihoodLanguageToDB(
         languageReferences: List<LanguageReference>,
-        referenceType: String
+        referenceType: String,
+        referenceId: Int?
     ) {
         val languageReferenceEntities = ArrayList<LivelihoodLanguageReferenceEntity>()
         languageReferences.forEach { languageReference ->
@@ -111,7 +117,8 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
                 LivelihoodLanguageReferenceEntity.getLivelihoodLanguageEntity(
                     uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
                     languageReference = languageReference,
-                    referenceType = referenceType
+                    referenceType = referenceType,
+                    referenceId = referenceId
                 )
             )
         }

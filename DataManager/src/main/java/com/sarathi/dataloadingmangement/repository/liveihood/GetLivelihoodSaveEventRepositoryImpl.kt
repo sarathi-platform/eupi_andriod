@@ -21,37 +21,44 @@ class GetLivelihoodSaveEventRepositoryImpl @Inject constructor(
     }
 
     override suspend fun saveLivelihoodSaveEventIntoDb(livelihoodSaveEventResponse: List<LivelihoodSaveEventResponse>) {
-        val subjectLivelihoodEventMappingEntity = ArrayList<SubjectLivelihoodEventMappingEntity>()
-        livelihoodSaveEventResponse.forEach {
-            subjectLivelihoodEventMappingEntity.add(
-                SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
-                    uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier(),
-                    eventData = LivelihoodEventScreenData(
-                        subjectId = it.subjectId,
-                        amount = it.amount,
-                        date = it.date,
-                        assetCount = it.assetCount,
-                        livelihoodId = it.programLivelihoodId,
-                        productValue = it.productValue ?: BLANK_STRING,
-                        assetTypeValue = it.assetTypeValue ?: BLANK_STRING,
-                        eventId = it.eventId,
-                        eventValue = it.eventValue ?: BLANK_STRING,
-                        productId = it.productId,
-                        assetType = it.assetType,
-                        transactionId = it.transactionId,
-                        selectedEvent = getLivelihoodEventFromName(it.eventType ?: BLANK_STRING),
-                        livelihoodValue = it.livelihoodValue ?: BLANK_STRING
-                    ),
-                    createdDate = it.createdDate,
-                    modifiedDate = it.modifiedDate,
-                    status = it.status
+        val isDataPresent =
+            subjectLivelihoodEventMappingDao.isDataPresentForUser(sharedPrefs.getUniqueUserIdentifier())
+        if (isDataPresent == 0) {
+            val subjectLivelihoodEventMappingEntity =
+                ArrayList<SubjectLivelihoodEventMappingEntity>()
+            livelihoodSaveEventResponse.forEach {
+                subjectLivelihoodEventMappingEntity.add(
+                    SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
+                        uniqueUserIdentifier = sharedPrefs.getUniqueUserIdentifier(),
+                        eventData = LivelihoodEventScreenData(
+                            subjectId = it.subjectId,
+                            amount = it.amount,
+                            date = it.date,
+                            assetCount = it.assetCount,
+                            livelihoodId = it.programLivelihoodId,
+                            productValue = it.productValue ?: BLANK_STRING,
+                            assetTypeValue = it.assetTypeValue ?: BLANK_STRING,
+                            eventId = it.eventId,
+                            eventValue = it.eventValue ?: BLANK_STRING,
+                            productId = it.productId,
+                            assetType = it.assetType,
+                            transactionId = it.transactionId,
+                            selectedEvent = getLivelihoodEventFromName(
+                                it.eventType ?: BLANK_STRING
+                            ),
+                            livelihoodValue = it.livelihoodValue ?: BLANK_STRING
+                        ),
+                        createdDate = it.createdDate,
+                        modifiedDate = it.createdDate,
+                        status = it.status
 
+                    )
                 )
+            }
+            subjectLivelihoodEventMappingDao.insertSubjectLivelihoodEventMapping(
+                subjectLivelihoodEventMappingEntity
             )
         }
-        subjectLivelihoodEventMappingDao.insertSubjectLivelihoodEventMapping(
-            subjectLivelihoodEventMappingEntity
-        )
     }
 
 }

@@ -162,7 +162,7 @@ fun MissionScreen(
                     
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = dimen_16_dp)
+                            .padding(horizontal = dimen_10_dp)
                     ) {
                         CustomSubTabLayoutWithCallBack(
                             parentTabIndex = TabsEnum.MissionTab.tabIndex,
