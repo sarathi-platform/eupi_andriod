@@ -72,7 +72,7 @@
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
     <string name="all_missions_filter_label">All Missions</string>
     <string name="general_missions_filter_label">General Missions</string>
-    <string name="exclude_in_calculation_message">*This expense is not included in the total calculation.</string>
+    <string name="exclude_in_calculation_message">*এই ব্যয়টো মুঠ গণনাত অন্তৰ্ভুক্ত কৰা হোৱা নাই।</string>
     <string name="contact_to_admin_id_missing">প্ৰৱেশাধিকাৰৰ সমস্যা চিনাক্ত কৰা হৈছে। অনুগ্ৰহ কৰি সহায়ৰ বাবে বিপিচিৰ সৈতে যোগাযোগ কৰক।</string>
 
 </resources>
