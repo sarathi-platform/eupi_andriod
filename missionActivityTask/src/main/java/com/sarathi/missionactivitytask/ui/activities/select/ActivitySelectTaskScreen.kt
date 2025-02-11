@@ -469,23 +469,26 @@ fun SelectActivityCard(
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = dimen_16_dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
             if (subtitle2?.value?.isNotBlank() == true) {
-                SubContainerView(subtitle2)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = dimen_16_dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SubContainerView(subtitle2)
+                }
             }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            SubContainerView(subtitle3)
-            SubContainerView(subtitle4, isNumberFormattingRequired = true)
+        if (subtitle3?.value?.isNotBlank() == true || subtitle4?.value?.isNotBlank() == true) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                SubContainerView(subtitle3)
+                SubContainerView(subtitle4, isNumberFormattingRequired = true)
+            }
         }
     }
     if (viewModel.isDidiImageDialogVisible.value.first
@@ -662,11 +665,15 @@ private fun OptionsUI(
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         onAnswerSelection = { selectedOptionIndex, isSelected ->
                             if (!isActivityCompleted) {
-                                questionUiModel.options?.forEachIndexed { index, option ->
-                                    option.isSelected = index == selectedOptionIndex && isSelected
+                                questionUiModel.options?.let { options ->
+                                    options.forEach {
+                                        it.isSelected = false
+                                        it.selectedValue = BLANK_STRING
+                                    }
+                                    options[selectedOptionIndex].isSelected = true
+                                    taskMarkedNotAvailable.value = false
+                                    onAnswerSelection(BLANK_STRING, selectedOptionIndex)
                                 }
-                                taskMarkedNotAvailable.value = false
-                                onAnswerSelection(BLANK_STRING, selectedOptionIndex)
                             } else {
                                 showCustomToast(
                                     context,
