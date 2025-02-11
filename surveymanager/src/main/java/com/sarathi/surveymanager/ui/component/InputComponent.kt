@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -81,6 +84,7 @@ fun InputComponent(
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     BasicCardView(
         cardElevation = CardDefaults.cardElevation(
             defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
@@ -112,7 +116,15 @@ fun InputComponent(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimen_56_dp),
+                    .height(dimen_56_dp)
+                    .clickable {
+                        if (!isEditable) {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
+                            )
+                        }
+                    },
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
