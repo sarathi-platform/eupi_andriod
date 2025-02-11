@@ -7,6 +7,7 @@ import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
+import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventDependencyDao
@@ -1375,7 +1376,8 @@ class DataLoadingModule {
         moneyJournalDao: MoneyJournalDao,
         assetJournalDao: AssetJournalDao,
         livelihoodDao: LivelihoodDao,
-        assetDao: AssetDao
+        assetDao: AssetDao,
+        appConfigDao: ApiConfigDao,
     ): FetchSubjectIncomeExpenseSummaryRepository {
         return FetchSubjectIncomeExpenseSummaryRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
@@ -1383,7 +1385,8 @@ class DataLoadingModule {
             moneyJournalDao = moneyJournalDao,
             assetJournalDao = assetJournalDao,
             livelihoodDao = livelihoodDao,
-            assetDao = assetDao
+            assetDao = assetDao,
+            appConfigDao = appConfigDao
         )
     }
 
