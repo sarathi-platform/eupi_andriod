@@ -678,7 +678,8 @@ class MissionRepositoryImpl @Inject constructor(
                     livelihoodType = livelihoodList?.livelihoodType ?: BLANK_STRING,
                     livelihoodOrder = livelihoodList?.livelihoodOrder ?: 0,
                     languages = livelihoodList.languages,
-                    userId = userId
+                    userId = userId,
+                    programLivelihoodReferenceId = livelihoodList.program_livelihood_reference_id
                 )
             )
         }

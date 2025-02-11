@@ -66,7 +66,7 @@ class MissionFilterUtils @Inject constructor(
             iterator().forEach {
                 filterList.add(
                     FilterUiModel(
-                        type = FilterType.OTHER(it.type),
+                        type = FilterType.OTHER(it.programLivelihoodId),
                         filterValue = it.name,
                         filterLabel = it.name,
                         imageFileName = getFileNameFromURL(it.image.value())
@@ -100,10 +100,10 @@ class MissionFilterUtils @Inject constructor(
 
         if (selectedMissionFilterValueFromPref?.type is FilterType.OTHER) {
             val selectedFilterValue = (selectedMissionFilterValueFromPref.type as FilterType.OTHER)
-                .filterValue.toString().lowercase()
+                .filterValue
 
             val filterValues = getMissionFilterListForLivelihood()
-                .mapNotNull { (it.type as? FilterType.OTHER)?.filterValue?.toString()?.lowercase() }
+                .mapNotNull { (it.type as? FilterType.OTHER)?.filterValue }
 
             if (selectedFilterValue !in filterValues) {
                 selectedMissionFilterValueFromPref = null
