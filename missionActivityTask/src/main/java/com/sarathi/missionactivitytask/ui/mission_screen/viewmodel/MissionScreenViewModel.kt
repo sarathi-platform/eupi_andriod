@@ -12,7 +12,6 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
-import com.nudge.core.toCamelCase
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -26,7 +25,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihood
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
-import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -149,10 +147,9 @@ class MissionScreenViewModel @Inject constructor(
 
                 is FilterType.OTHER -> {
                     missionUiModelListForTab.filter {
-                        it.livelihoodType.equals(
-                            (selectedFilter.type as FilterType.OTHER).filterValue.toString(),
-                            true
-                        )
+                        it.programLivelihoodReferenceId?.contains(
+                            (selectedFilter.type as FilterType.OTHER).filterValue
+                        ) == true
                     }
                 }
             }
@@ -353,8 +350,8 @@ class MissionScreenViewModel @Inject constructor(
 
         if (missionFilterUtils.getSelectedMissionFilterValue().type != FilterType.ALL && missionFilterUtils.getSelectedMissionFilterValue().type != FilterType.GENERAL) {
             val livelihoodType =
-                (missionFilterUtils.getSelectedMissionFilterValue().type as FilterType.OTHER).filterValue.toString()
-                    .toCamelCase()
+                missionFilterUtils.selectedMissionFilter.value?.filterLabel
+//                (missionFilterUtils.getSelectedMissionFilterValue().type as FilterType.OTHER).filterValue.toString()
             filterLabel = "$livelihoodType Missions"
         }
 

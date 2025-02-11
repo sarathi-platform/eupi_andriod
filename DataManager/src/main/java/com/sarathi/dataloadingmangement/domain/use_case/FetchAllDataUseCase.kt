@@ -9,6 +9,8 @@ import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
+import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -115,5 +117,14 @@ class FetchAllDataUseCase @Inject constructor(
 
 
     fun getStateId() = coreSharedPrefs.getStateId()
+
+    suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel {
+        return fetchMissionDataUseCase.fetchMissionInfo(missionId)
+            ?: MissionInfoUIModel.getDefaultValue()
+    }
+
+    suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
+        return fetchMissionDataUseCase.fetchActivityInfo(missionId, activityId)
+    }
 }
 

@@ -145,8 +145,7 @@ open class TaskScreenViewModel @Inject constructor(
 
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
-    var activityInfoUIModel: MutableState<ActivityInfoUIModel?> =
-        mutableStateOf(ActivityInfoUIModel.getDefaultValue())
+    var activityInfoUIModel = mutableStateOf(ActivityInfoUIModel.getDefaultValue())
 
 
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
@@ -250,7 +249,7 @@ open class TaskScreenViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(missionId, activityId)
             withContext(mainDispatcher) {
-                activityInfoUIModel = activityUIInfo
+                activityInfoUIModel.value = activityUIInfo
             }
 
             val context = CoreAppDetails.getContext()
@@ -669,7 +668,7 @@ open class TaskScreenViewModel @Inject constructor(
     }
 
     override fun updateMissionFilter() {
-        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel)
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel.value)
     }
 
 }
