@@ -50,6 +50,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -481,11 +483,16 @@ fun FormMainSummaryCard(
 
                 Text(
                     formDisburesmentMap.key.second,
+                    modifier = Modifier.weight(1f),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     style = defaultTextStyle.copy(fontSize = 16.sp, color = blueDark)
                 )
                 Text(
                     formDisburesmentMap.key.first,
-                    style = defaultTextStyle.copy(color = blueDark)
+                    modifier = Modifier.weight(1f),
+                    style = defaultTextStyle.copy(color = blueDark),
+                    textAlign = TextAlign.End
                 )
 
             }
