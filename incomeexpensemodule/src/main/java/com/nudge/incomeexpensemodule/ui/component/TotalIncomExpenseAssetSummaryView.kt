@@ -28,11 +28,11 @@ import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.utils.FileUtils
-import com.nudge.core.value
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import sortTotalAssetCountForLivelihood
+import java.util.Locale
 
 @Composable
 fun TotalIncomeExpenseAssetSummaryView(
@@ -44,14 +44,26 @@ fun TotalIncomeExpenseAssetSummaryView(
     Column {
         Text(text = stringResource(R.string.income), style = getTextColor(newMediumTextStyle))
         Text(
-            text = "₹ ${incomeExpenseSummaryUiModel?.totalIncome.value()}",
+            text = "₹ ${
+                String.format(
+                    Locale.US,
+                    "%.0f",
+                    incomeExpenseSummaryUiModel?.totalIncome
+                )
+            }",
             style = getTextColor(defaultTextStyle)
         )
     }
     Column {
         Text(text = stringResource(R.string.expense), style = getTextColor(newMediumTextStyle))
         Text(
-            text = "₹ ${incomeExpenseSummaryUiModel?.totalExpense.value()}",
+            text = "₹ ${
+                String.format(
+                    Locale.US,
+                    "%.0f",
+                    incomeExpenseSummaryUiModel?.totalExpense
+                )
+            }",
             style = getTextColor(defaultTextStyle)
         )
     }
