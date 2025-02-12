@@ -329,15 +329,14 @@ class MissionScreenViewModel @Inject constructor(
 
     }
 
-    fun getFilterUiModelForMission(livelihoodType: String?): FilterUiModel? {
+    fun getFilterUiModelForMission(programLivelihoodReferenceId: List<Int>?): FilterUiModel? {
         val livelihoodFilters =
             missionFilterUtils.getMissionFiltersList()
                 .filterNot { it.type == FilterType.ALL || it.type == FilterType.GENERAL }
         return livelihoodFilters.find {
-            livelihoodType.equals(
-                (it.type as FilterType.OTHER).filterValue.toString(),
-                true
-            )
+            programLivelihoodReferenceId?.contains(
+                (it.type as FilterType.OTHER).filterValue
+            ) == true
         }
     }
 

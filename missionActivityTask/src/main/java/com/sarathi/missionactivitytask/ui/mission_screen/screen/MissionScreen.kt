@@ -236,7 +236,7 @@ fun MissionScreen(
                     items(viewModel.filterMissionList.value) { mission ->
                         BasicMissionCardV2(
                             status = mission.missionStatus,
-                            filterUiModel = viewModel.getFilterUiModelForMission(mission.livelihoodType),
+                            filterUiModel = viewModel.getFilterUiModelForMission(mission.programLivelihoodReferenceId),
                             totalCount = mission.activityCount,
                             pendingCount = mission.pendingActivityCount,
                             title = mission.description,
