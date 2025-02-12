@@ -8,7 +8,7 @@ import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.language.LanguageConfigModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_ACCESS_TOKEN
-import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_TYPE_STATE_ID
+import com.nudge.core.toSafeInt
 import javax.inject.Inject
 
 class FetchLanguageRepositoryImpl @Inject constructor(
@@ -18,11 +18,11 @@ class FetchLanguageRepositoryImpl @Inject constructor(
 ) : IFetchLanguageRepository {
 
     override suspend fun getLanguageV3FromNetwork(): ApiResponseModel<LanguageConfigModel> {
-        val stateId = coreSharedPrefs.getPref(PREF_KEY_TYPE_STATE_ID, -1)
+        val userId = coreSharedPrefs.getUserId()
         return if (coreSharedPrefs.getPref(PREF_KEY_ACCESS_TOKEN, BLANK_STRING).isEmpty()) {
             apiInterface.languageConfigV3(null)
         } else {
-            apiInterface.languageConfigV3(stateId)
+            apiInterface.languageConfigV3(userId.toSafeInt("0"))
         }
     }
 

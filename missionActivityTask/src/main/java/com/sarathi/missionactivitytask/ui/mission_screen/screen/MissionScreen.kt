@@ -200,7 +200,7 @@ fun MissionScreen(
                     
                     Box(
                         modifier = Modifier
-                            .padding(horizontal = dimen_16_dp)
+                            .padding(horizontal = dimen_10_dp)
                     ) {
                         CustomSubTabLayoutWithCallBack(
                             parentTabIndex = TabsEnum.MissionTab.tabIndex,
@@ -278,7 +278,7 @@ fun MissionScreen(
                     items(viewModel.filterMissionList.value) { mission ->
                         BasicMissionCardV2(
                             status = mission.missionStatus,
-                            filterUiModel = viewModel.getFilterUiModelForMission(mission.livelihoodType),
+                            filterUiModel = viewModel.getFilterUiModelForMission(mission.programLivelihoodReferenceId),
                             totalCount = mission.activityCount,
                             pendingCount = mission.pendingActivityCount,
                             title = mission.description,

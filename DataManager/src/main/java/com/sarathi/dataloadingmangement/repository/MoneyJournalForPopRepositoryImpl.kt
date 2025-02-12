@@ -32,7 +32,9 @@ class MoneyJournalForPopRepositoryImpl @Inject constructor(
             subjectType,
             subjectId,
             transactionFlow,
-            createdDate = System.currentTimeMillis()
+            createdDate = System.currentTimeMillis(),
+            eventId = referenceId,
+            eventType = referenceType
         )
         val existingTransactionCount = moneyJournalDao.isTransactionAlreadyExist(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),

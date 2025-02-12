@@ -145,7 +145,7 @@ open class TaskScreenViewModel @Inject constructor(
 
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
-    var activityInfoUIModel by mutableStateOf(ActivityInfoUIModel.getDefaultValue())
+    var activityInfoUIModel = mutableStateOf(ActivityInfoUIModel.getDefaultValue())
 
 
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
@@ -157,7 +157,6 @@ open class TaskScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitTaskScreenState -> {
-                setTranslationConfig()
                 initTaskScreen(event.taskList)
             }
 
@@ -250,7 +249,7 @@ open class TaskScreenViewModel @Inject constructor(
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(missionId, activityId)
             withContext(mainDispatcher) {
-                activityInfoUIModel = activityUIInfo
+                activityInfoUIModel.value = activityUIInfo
             }
 
             val context = CoreAppDetails.getContext()
@@ -659,8 +658,17 @@ open class TaskScreenViewModel @Inject constructor(
         return TranslationEnum.TaskScreen
     }
 
+    suspend fun getScreenTitle(activityName: String) {
+        ioViewModelScope {
+            activityInfoUIModel.value =
+                fetchAllDataUseCase.fetchActivityInfo(missionId, activityId)?.let {
+                    it
+                } ?: ActivityInfoUIModel.getDefaultValue().copy(activityName = activityName)
+        }
+    }
+
     override fun updateMissionFilter() {
-        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel)
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel.value)
     }
 
 }

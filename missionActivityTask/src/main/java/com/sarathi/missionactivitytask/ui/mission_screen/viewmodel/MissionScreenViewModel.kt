@@ -12,7 +12,6 @@ import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
-import com.nudge.core.toCamelCase
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -151,10 +150,9 @@ class MissionScreenViewModel @Inject constructor(
 
                 is FilterType.OTHER -> {
                     missionUiModelListForTab.filter {
-                        it.livelihoodType.equals(
-                            (selectedFilter.type as FilterType.OTHER).filterValue.toString(),
-                            true
-                        )
+                        it.programLivelihoodReferenceId?.contains(
+                            (selectedFilter.type as FilterType.OTHER).filterValue
+                        ) == true
                     }
                 }
             }
@@ -221,18 +219,23 @@ class MissionScreenViewModel @Inject constructor(
         val filterList = ArrayList<FilterUiModel>()
         missionFilterList.clear()
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
+            .filter { livelihood -> // filtering livelihood that user's have mapped mission
+                missionList.value.any() {
+                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
+                }
+            }
 
         filterList.add(
             FilterUiModel.getAllFilter(
                 filterValue = ALL_MISSION_FILTER_VALUE,
-                filterLabel = "All Missions",
+                filterLabel = translationHelper.getString(R.string.all_missions_filter_label),
                 imageFileName = null
             )
         )
         filterList.add(
             FilterUiModel.getGeneralFilter(
                 filterValue = GENERAL_MISSION_FILTER_VALUE,
-                filterLabel = "General Missions",
+                filterLabel = translationHelper.getString(R.string.general_missions_filter_label),
                 imageFileName = null
             )
         )
@@ -273,9 +276,6 @@ class MissionScreenViewModel @Inject constructor(
             fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
                 initMissionScreen()
             })
-            withContext(Dispatchers.Main) {
-                onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
         }
     }
 
@@ -332,15 +332,14 @@ class MissionScreenViewModel @Inject constructor(
 
     }
 
-    fun getFilterUiModelForMission(livelihoodType: String?): FilterUiModel? {
+    fun getFilterUiModelForMission(programLivelihoodReferenceId: List<Int>?): FilterUiModel? {
         val livelihoodFilters =
             missionFilterUtils.getMissionFiltersList()
                 .filterNot { it.type == FilterType.ALL || it.type == FilterType.GENERAL }
         return livelihoodFilters.find {
-            livelihoodType.equals(
-                (it.type as FilterType.OTHER).filterValue.toString(),
-                true
-            )
+            programLivelihoodReferenceId?.contains(
+                (it.type as FilterType.OTHER).filterValue
+            ) == true
         }
     }
 
@@ -353,8 +352,8 @@ class MissionScreenViewModel @Inject constructor(
 
         if (missionFilterUtils.getSelectedMissionFilterValue().type != FilterType.ALL && missionFilterUtils.getSelectedMissionFilterValue().type != FilterType.GENERAL) {
             val livelihoodType =
-                (missionFilterUtils.getSelectedMissionFilterValue().type as FilterType.OTHER).filterValue.toString()
-                    .toCamelCase()
+                missionFilterUtils.selectedMissionFilter.value?.filterLabel
+//                (missionFilterUtils.getSelectedMissionFilterValue().type as FilterType.OTHER).filterValue.toString()
             filterLabel = "$livelihoodType Missions"
         }
 

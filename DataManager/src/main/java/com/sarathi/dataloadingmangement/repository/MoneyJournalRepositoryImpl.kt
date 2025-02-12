@@ -152,7 +152,9 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             transactionDate = eventData.date,
             referenceId = eventData.livelihoodId,
             status = 1,
-            modifiedDate = modifiedDateTime
+            modifiedDate = modifiedDateTime,
+            eventId = eventData.eventId,
+            eventType = eventData.selectedEvent.name
         )
     }
 

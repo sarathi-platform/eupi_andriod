@@ -120,7 +120,9 @@ class AddEventViewModel @Inject constructor(
                 transactionId = transactionId
             )
             LivelihoodEventDataCaptureTypeEnum.values().forEach {
-                questionVisibilityMap[it] = false
+                if (!questionVisibilityMap.containsKey(it)) {
+                    questionVisibilityMap[it] = false
+                }
             }
             if (savedEvent != null) {
 
@@ -197,6 +199,7 @@ class AddEventViewModel @Inject constructor(
             selectedLivelihoodId.value,
             selectedAssetTypeId.value
         )
+        _livelihoodAssetDropdownValue.clear()
         _livelihoodAssetDropdownValue.addAll(
             assetTypeList.map {
                 ValuesDto(

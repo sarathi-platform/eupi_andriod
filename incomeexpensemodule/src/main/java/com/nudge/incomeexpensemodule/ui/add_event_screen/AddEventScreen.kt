@@ -46,6 +46,8 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
+import com.nudge.core.ui.theme.redIconColor
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.ui.component.TypeDropDownComponent
@@ -158,6 +160,7 @@ fun AddEventScreen(
                         isActive = viewModel.isSubmitButtonEnable.value,
                         isArrowRequired = false,
                         onClick = {
+                            viewModel.isSubmitButtonEnable.value = false
                             viewModel.onSubmitButtonClick(subjectId, transactionId) {
                                 popBackToPreviousScreen(
                                     navController,
@@ -187,32 +190,7 @@ fun AddEventScreen(
             ) {
 
 
-                item {
-                    CustomDatePickerTextFieldComponent(
-                        isMandatory = true,
-                        defaultValue = viewModel.selectedDate.value,
-                        title = viewModel.stringResource(R.string.date),
-                        isEditable = true,
-                        hintText = viewModel.stringResource(
-                            R.string.select
-                        )
-                            ?: BLANK_STRING,
-                        datePickerState = datePickerState,
-                        datePickerProperties = datePickerProperties,
-                        datePickerDialogProperties = datePickerDialogProperties,
-                        onDateSelected = { date ->
-                            viewModel.selectedDate.value = date.value().getDate()
-                            viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm(
-                                subjectId = subjectId,
-                                fieldName = AddEventFieldEnum.DATE.name,
-                                transactionId = transactionId,
-                            ) { isValid, message ->
 
-                            }
-                        }
-                    )
-                }
 
                 item {
                     TypeDropDownComponent(
@@ -223,7 +201,6 @@ fun AddEventScreen(
                         isMandatory = true,
                         sources = viewModel.livelihoodDropdownValue,
                         selectedValue = viewModel.livelihoodDropdownValue.find { it.id == viewModel.selectedLivelihoodId.value }?.value,
-
                         onAnswerSelection = { selectedValue ->
                             viewModel.onLivelihoodSelect(selectedValue.id, subjectId, transactionId)
                             viewModel.validateForm(
@@ -302,6 +279,7 @@ fun AddEventScreen(
                         isMandatory = true,
                         selectedValue = viewModel.livelihoodEventDropdownValue.find { it.id == viewModel.selectedEventId.value }?.value,
                         sources = viewModel.livelihoodEventDropdownValue,
+                        isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.first == false,
                         onAnswerSelection = { selectedValue ->
                             viewModel.onEventSelected(selectedValue, subjectId)
                             viewModel.validateForm(
@@ -325,12 +303,15 @@ fun AddEventScreen(
                             text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.second
                                 ?: BLANK_STRING,
                             modifier = Modifier.padding(horizontal = dimen_5_dp),
-                            style = quesOptionTextStyle.copy(color = eventTextColor)
+                            style = quesOptionTextStyle.copy(
+                                color =
+                                if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.EVENT_TYPE.name]?.first == false)
+                                    redOffline else eventTextColor
+                            )
                         )
 
                     }
                 }
-
 
 
 
@@ -345,6 +326,7 @@ fun AddEventScreen(
                             selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
                             isMandatory = true,
                             sources = viewModel.livelihoodAssetDropdownValue,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.first == false,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedAssetTypeId.value = selectedValue.id
                                 resetAmountAssetType(viewModel)
@@ -367,7 +349,11 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_TYPE.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
                             )
                         }
                     }
@@ -384,6 +370,7 @@ fun AddEventScreen(
                             isMandatory = true,
                             sources = viewModel.livelihoodProductDropdownValue,
                             selectedValue = viewModel.livelihoodProductDropdownValue.find { it.id == viewModel.selectedProductId.value }?.value,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.first == false,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedProductId.value = selectedValue.id
                                 resetAmountAssetType(viewModel)
@@ -406,7 +393,11 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.PRODUCT_TYPE.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
                             )
                         }
 
@@ -430,6 +421,7 @@ fun AddEventScreen(
                             isEditAllowed = true,
                             currentValue = viewModel.assetCount.value,
                             maxValue = viewModel.maxAssetValue.value,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.first == false,
                             onAnswerSelection = { inputValue ->
                                 viewModel.assetCount.value = inputValue
                                 viewModel.validateForm(
@@ -451,7 +443,11 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ASSET_COUNT.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
                             )
                         }
                     }
@@ -468,7 +464,11 @@ fun AddEventScreen(
                                 R.string.amount
                             ),
                             isOnlyNumber = true,
-                            hintText = BLANK_STRING
+                            hintText = BLANK_STRING,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == false && !TextUtils.isEmpty(
+                                viewModel.amount.value
+                            ),
+
                         ) { selectedValue, remainingAmout ->
                             viewModel.amount.value = selectedValue
 
@@ -489,12 +489,40 @@ fun AddEventScreen(
                                 text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.second
                                     ?: BLANK_STRING,
                                 modifier = Modifier.padding(horizontal = dimen_5_dp),
-                                style = quesOptionTextStyle.copy(color = eventTextColor)
+                                color = if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == true) eventTextColor else redIconColor,
+                                style = quesOptionTextStyle.copy(color = if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.AMOUNT.name]?.first == true) eventTextColor else redIconColor)
                             )
                         }
                     }
 
                 }
+                item {
+                    CustomDatePickerTextFieldComponent(
+                        isMandatory = true,
+                        defaultValue = viewModel.selectedDate.value,
+                        title = viewModel.stringResource(R.string.date_of_event),
+                        isEditable = true,
+                        hintText = viewModel.stringResource(
+                            R.string.select
+                        )
+                            ?: BLANK_STRING,
+                        datePickerState = datePickerState,
+                        datePickerProperties = datePickerProperties,
+                        datePickerDialogProperties = datePickerDialogProperties,
+                        onDateSelected = { date ->
+                            viewModel.selectedDate.value = date.value().getDate()
+                            viewModel.selectedDateInLong = date.value()
+                            viewModel.validateForm(
+                                subjectId = subjectId,
+                                fieldName = AddEventFieldEnum.DATE.name,
+                                transactionId = transactionId,
+                            ) { isValid, message ->
+
+                            }
+                        }
+                    )
+                }
+
                 customVerticalSpacer(size = 100.dp)
 
             }

@@ -26,6 +26,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -221,6 +222,8 @@ fun ButtonPositive(
     iconTintColor: Color = Color.White,
     onClick: () -> Unit
 ) {
+    val mButtonTitle = remember(buttonTitle) { mutableStateOf(buttonTitle) }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(6.dp))
@@ -256,7 +259,7 @@ fun ButtonPositive(
                 )
             }
             androidx.compose.material.Text(
-                text = buttonTitle,
+                text = mButtonTitle.value,
                 color = if (isActive) white else greyBorder,
                 style = /*buttonTextStyle*/TextStyle(
                     fontFamily = NotoSans,
@@ -286,6 +289,9 @@ fun ButtonNegative(
     isArrowRequired: Boolean = true,
     onClick: () -> Unit
 ) {
+
+    val mButtonTitle = remember(buttonTitle) { mutableStateOf(buttonTitle) }
+
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(dimen_6_dp))
@@ -319,7 +325,7 @@ fun ButtonNegative(
                 )
             }
             androidx.compose.material.Text(
-                text = buttonTitle,
+                text = mButtonTitle.value,
                 color = blueDark,
                 style = buttonTextStyle
             )

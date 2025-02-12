@@ -232,7 +232,7 @@ fun getTabName(tab: SubTabs): String {
     val translationHelper = LocalTranslationHelper.current
 
     return when (tab) {
-        SubTabs.DidiTab -> translationHelper.stringResource(R.string.didi_sub_tab_title)
+        SubTabs.DidiTab -> translationHelper.stringResource(R.string.didis_item_text_plural)
         SubTabs.SmallGroupTab -> translationHelper.stringResource(R.string.small_group_sub_tab_title)
         SubTabs.All -> translationHelper.stringResource(R.string.all)
         SubTabs.NoEntryMonthTab -> translationHelper.stringResource(R.string.no_entry_this_month)

@@ -6,7 +6,7 @@
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="retry">Retry</string>
 
-    <string name="didi_sub_tab_title">Didi</string>
+    <string name="didis_item_text_plural">Didi</string>
     <string name="small_group_sub_tab_title">Small Group</string>
     <string name="search_label">Search</string>
 
@@ -64,7 +64,9 @@
     <string name="ongoing_tab_title">Ongoing</string>
     <string name="completed_tab_title">Completed</string>
     <string name="search_by_mission">Search by Mission</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
     <string name="all_missions_filter_label">All Missions</string>
     <string name="general_missions_filter_label">General Missions</string>
     <string name="complete_survey">Complete Survey</string>
+
 </resources>

@@ -1,5 +1,6 @@
 import android.text.TextUtils
 import androidx.compose.ui.graphics.Color
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.greenLight
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorder
@@ -24,7 +25,8 @@ fun List<SubjectEntityWithLivelihoodMappingUiModel>.getSubjectLivelihoodMappingE
                 subjectId = it.subjectId,
                 livelihoodId = it.livelihoodId,
                 status = 1,
-                type = 1
+                type = 1,
+                livelihoodType = BLANK_STRING
             )
         )
     }

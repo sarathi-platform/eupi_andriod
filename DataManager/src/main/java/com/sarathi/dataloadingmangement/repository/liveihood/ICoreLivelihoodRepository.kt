@@ -9,7 +9,8 @@ interface ICoreLivelihoodRepository {
     suspend fun <T> saveLivelihoodItemToDB(item: T, referenceType: String)
     suspend fun saveLivelihoodLanguageToDB(
         languageReferences: List<LanguageReference>,
-        referenceType: String
+        referenceType: String,
+        referenceId: Int? = null
     )
     suspend fun deleteLivelihoodCoreDataForUser()
 

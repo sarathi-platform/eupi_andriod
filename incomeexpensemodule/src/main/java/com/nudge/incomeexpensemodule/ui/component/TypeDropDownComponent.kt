@@ -25,6 +25,7 @@ fun TypeDropDownComponent(
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     diableItem: Int = -1,
+    isError: Boolean = false,
     selectedValue: String? = null,
     onAnswerSelection: (selectedValuesDto: ValuesDto) -> Unit
 ) {
@@ -47,6 +48,7 @@ fun TypeDropDownComponent(
         mTextFieldSize = textFieldSize,
         expanded = expanded,
         title = title,
+        isError = isError,
         diableItem = diableItem,
         isMandatory = isMandatory,
         selectedItem = selectedValue ?: hintText,
