@@ -37,7 +37,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             subjectType,
             subjectId,
             INFLOW,
-            createdDate = System.currentTimeMillis()
+            createdDate = System.currentTimeMillis(),
         )
         if (moneyJournalDao.isTransactionAlreadyExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = referenceId
@@ -100,9 +100,10 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             eventData.subjectId,
             eventData.selectedEvent.moneyJournalEntryFlowType?.name ?: BLANK_STRING,
             dateFormat = "dd/MM/yyyy",
-            createdDate = createdData
-
-            )
+            createdDate = createdData,
+            eventId = eventData.eventId,
+            eventType = eventData.eventValue
+        )
         moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
 
     }
