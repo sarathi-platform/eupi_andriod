@@ -2,7 +2,6 @@ package com.sarathi.dataloadingmangement.ui.component
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -11,14 +10,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.ui.commonUi.ShowSingleButtonCustomDialog
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.summaryCardViewBlue
@@ -44,15 +42,12 @@ fun TextWithReadMoreComponent(
             onClickReadMore = { showDialog = true })
 
         if (showDialog) {
-            ShowCustomDialog(title = title,
+            ShowSingleButtonCustomDialog(
+                title = title,
                 message = contentData,
-                negativeButtonTitle = stringResource(id = R.string.close),
-                dismissOnClickOutside = true,
-                onNegativeButtonClick = {
-                    showDialog = false
-                },
+                positiveButtonTitle = stringResource(id = R.string.close),
                 onPositiveButtonClick = {
-                    //Here click listener is not need as we are showing only one button i.e negative button
+                    showDialog = false
                 })
         }
     }
@@ -94,13 +89,5 @@ fun TextWithReadMore(
                 onClickReadMore()
             }
         }
-    }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DefaultPreview() {
-    Surface(color = Color.White) {
-        TextWithReadMoreComponent()
     }
 }

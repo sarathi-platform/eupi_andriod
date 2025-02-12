@@ -1,5 +1,8 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import com.nudge.core.database.dao.ApiConfigDao
+import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.fromJson
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
@@ -22,6 +25,7 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
     private val assetJournalDao: AssetJournalDao,
     private val livelihoodDao: LivelihoodDao,
     private val assetDao: AssetDao,
+    private val appConfigDao: ApiConfigDao,
 ) : FetchSubjectIncomeExpenseSummaryRepository {
 
     private val LIVELIHOOD_EVENT_REFERENCE_TYPE: String = "LivelihoodEvent"
@@ -30,9 +34,13 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         subjectId: Int,
         assets: List<AssetEntity>
     ): IncomeExpenseSummaryUiModel {
+        val exclusionEventIds = appConfigDao.getConfig(
+            AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
+            coreSharedPrefs.getUniqueUserIdentifier()
+        )?.value.fromJson<List<Int>?>().value()
 
-        val totalIncome = getTotalIncomeForSubject(subjectId = subjectId)
-        val totalExpense = getTotalExpenseForSubject(subjectId = subjectId)
+        val totalIncome = getTotalIncomeForSubject(subjectId = subjectId, exclusionEventIds)
+        val totalExpense = getTotalExpenseForSubject(subjectId = subjectId, exclusionEventIds)
         val assetCounts =
             getAssetCountForAssets(subjectId, assets.map { Pair(it.livelihoodId, it.assetId) })
 
@@ -86,8 +94,21 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
         assets: List<AssetEntity>,
         livelihoodId: Int
     ): IncomeExpenseSummaryUiModel {
-        val totalIncome = getTotalIncomeForSubjectLivelihood(subjectId = subjectId, livelihoodId)
-        val totalExpense = getTotalExpenseForSubjectLivelihood(subjectId = subjectId, livelihoodId)
+        val exclusionEventIds = appConfigDao.getConfig(
+            AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
+            coreSharedPrefs.getUniqueUserIdentifier()
+        )?.value.fromJson<List<Int>?>().value()
+
+        val totalIncome = getTotalIncomeForSubjectLivelihood(
+            subjectId = subjectId,
+            livelihoodId,
+            exclusionEventIds
+        )
+        val totalExpense = getTotalExpenseForSubjectLivelihood(
+            subjectId = subjectId,
+            livelihoodId,
+            exclusionEventIds
+        )
         val assetCounts =
             getAssetCountForAssets(subjectId, assets.map { Pair(it.livelihoodId, it.assetId) })
 
@@ -122,47 +143,59 @@ class FetchSubjectIncomeExpenseSummaryRepositoryImpl @Inject constructor(
             )
     }
 
-    override suspend fun getTotalIncomeForSubject(subjectId: Int): Double {
+    override suspend fun getTotalIncomeForSubject(
+        subjectId: Int,
+        exclusionEventIds: List<Int>
+    ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
             transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
-            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
+            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
+            exclusionEventIds = exclusionEventIds
         )?.totalIncome.value()
     }
 
     override suspend fun getTotalIncomeForSubjectLivelihood(
         subjectId: Int,
-        livelihoodId: Int
+        livelihoodId: Int,
+        exclusionEventIds: List<Int>
     ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
             transactionFlow = EntryFlowTypeEnum.INFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
-            referenceId = livelihoodId
+            referenceId = livelihoodId,
+            exclusionEventIds = exclusionEventIds
         )?.totalIncome.value()
     }
 
-    override suspend fun getTotalExpenseForSubject(subjectId: Int): Double {
-        return moneyJournalDao.getTotalIncomeExpenseForSubject(
-            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
-            subjectId = subjectId.value(),
-            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE
-        )?.totalIncome.value()
-    }
-
-    override suspend fun getTotalExpenseForSubjectLivelihood(
+    override suspend fun getTotalExpenseForSubject(
         subjectId: Int,
-        livelihoodId: Int
+        exclusionEventIds: List<Int>
     ): Double {
         return moneyJournalDao.getTotalIncomeExpenseForSubject(
             transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
             userId = coreSharedPrefs.getUniqueUserIdentifier(),
             subjectId = subjectId.value(),
             referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
-            referenceId = livelihoodId
+            exclusionEventIds = exclusionEventIds
+        )?.totalIncome.value()
+    }
+
+    override suspend fun getTotalExpenseForSubjectLivelihood(
+        subjectId: Int,
+        livelihoodId: Int,
+        exclusionEventIds: List<Int>
+    ): Double {
+        return moneyJournalDao.getTotalIncomeExpenseForSubject(
+            transactionFlow = EntryFlowTypeEnum.OUTFLOW.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            subjectId = subjectId.value(),
+            referenceType = LIVELIHOOD_EVENT_REFERENCE_TYPE,
+            referenceId = livelihoodId,
+            exclusionEventIds = exclusionEventIds
         )?.totalIncome.value()
     }
 

@@ -399,9 +399,6 @@ fun SelectActivityCard(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable {
-                    title?.let { onExpendClick(expanded, it) }
-                }
                 .padding(horizontal = dimen_16_dp)
                 .padding(top = dimen_8_dp, bottom = dimen_5_dp),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
@@ -472,23 +469,26 @@ fun SelectActivityCard(
             }
         }
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = dimen_16_dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+
             if (subtitle2?.value?.isNotBlank() == true) {
-                SubContainerView(subtitle2)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = dimen_16_dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    SubContainerView(subtitle2)
+                }
             }
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        ) {
-            SubContainerView(subtitle3)
-            SubContainerView(subtitle4, isNumberFormattingRequired = true)
+        if (subtitle3?.value?.isNotBlank() == true || subtitle4?.value?.isNotBlank() == true) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                SubContainerView(subtitle3)
+                SubContainerView(subtitle4, isNumberFormattingRequired = true)
+            }
         }
     }
     if (viewModel.isDidiImageDialogVisible.value.first
@@ -509,6 +509,7 @@ fun SelectActivityCard(
     ) {
         if (expanded) {
             OptionsUI(
+                referenceId = viewModel.activityConfigUiModelWithoutSurvey?.referenceId,
                 translationHelper = translationHelper,
                 questionUiModel = questionUiModel,
                 taskMarkedNotAvailable = taskMarkedNotAvailable,
@@ -611,6 +612,7 @@ fun DisplaySelectedOption(
 
 @Composable
 private fun OptionsUI(
+    referenceId: Int?,
     translationHelper: TranslationHelper,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -637,7 +639,7 @@ private fun OptionsUI(
                         optionItemEntityState = it,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         selectedValue = selectedValue,
-                        isActivityCompleted = isActivityCompleted
+                        isActivityCompleted = isActivityCompleted,
                     ) { selectedIndex, optionValue, optionId ->
                         questionUiModel.options?.let { options ->
                             options.forEach {
@@ -649,6 +651,39 @@ private fun OptionsUI(
                         }
                         onAnswerSelection(optionValue, optionId)
                     }
+                }
+
+                QuestionType.SingleSelectGrid.name.toLowerCase() -> {
+                    GridTypeComponent(
+                        questionDisplay = questionUiModel.questionDisplay,
+                        optionUiModelList = it,
+                        questionIndex = 0,
+                        areOptionsEnabled = !isActivityCompleted,
+                        maxCustomHeight = customGridHeight(it.size),
+                        isQuestionDisplay = false,
+                        showCardView = false,
+                        isTaskMarkedNotAvailable = taskMarkedNotAvailable,
+                        onAnswerSelection = { selectedOptionIndex, isSelected ->
+                            if (!isActivityCompleted) {
+                                questionUiModel.options?.let { options ->
+                                    options.forEach {
+                                        it.isSelected = false
+                                        it.selectedValue = BLANK_STRING
+                                    }
+                                    options[selectedOptionIndex].isSelected = true
+                                    taskMarkedNotAvailable.value = false
+                                    onAnswerSelection(BLANK_STRING, selectedOptionIndex)
+                                }
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    translationHelper.getString(
+                                        com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
+                                    )
+                                )
+                            }
+                        }, questionDetailExpanded = {}
+                    )
                 }
 
                 QuestionType.MultiSelect.name.toLowerCase() -> {
@@ -678,6 +713,7 @@ private fun OptionsUI(
                         }, questionDetailExpanded = {}
                     )
                 }
+
                 }
 
             }

@@ -23,15 +23,13 @@ data class OptionsUiModel(
 
 
     val order: Int = 0,
-
-
-
     var isSelected: Boolean? = false,
 
     var selectedValue: String? = BLANK_STRING,
     var originalValue: String? = BLANK_STRING,
 
     var selectedValueId: Int = 0,
+    var optionImage: String? = null,
 
     @TypeConverters(ConditionsDtoConvertor::class)
     val conditions: List<ConditionsDto?>? = emptyList(),
