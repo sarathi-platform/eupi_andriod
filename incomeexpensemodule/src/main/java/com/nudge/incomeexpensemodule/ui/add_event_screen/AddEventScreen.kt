@@ -41,6 +41,7 @@ import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
 import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_200_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.eventTextColor
@@ -336,6 +337,7 @@ fun AddEventScreen(
                                     fieldName = AddEventFieldEnum.ASSET_TYPE.name,
                                     transactionId = transactionId
                                 ) { isValid, message ->
+                                    viewModel.updateAssetVisibility(isValid)
                                     viewModel.updateFieldValidationMessageAndMap(
                                         key = AddEventFieldEnum.ASSET_TYPE.name,
                                         value = Pair(isValid, message)
@@ -496,33 +498,34 @@ fun AddEventScreen(
                     }
 
                 }
-                item {
-                    CustomDatePickerTextFieldComponent(
-                        isMandatory = true,
-                        defaultValue = viewModel.selectedDate.value,
-                        title = viewModel.stringResource(R.string.date_of_event),
-                        isEditable = true,
-                        hintText = viewModel.stringResource(
-                            R.string.select
-                        )
-                            ?: BLANK_STRING,
-                        datePickerState = datePickerState,
-                        datePickerProperties = datePickerProperties,
-                        datePickerDialogProperties = datePickerDialogProperties,
-                        onDateSelected = { date ->
-                            viewModel.selectedDate.value = date.value().getDate()
-                            viewModel.selectedDateInLong = date.value()
-                            viewModel.validateForm(
-                                subjectId = subjectId,
-                                fieldName = AddEventFieldEnum.DATE.name,
-                                transactionId = transactionId,
-                            ) { isValid, message ->
+                if (viewModel.isDateOfEventVisible.value) {
+                    item {
+                        CustomDatePickerTextFieldComponent(
+                            isMandatory = true,
+                            defaultValue = viewModel.selectedDate.value,
+                            title = viewModel.stringResource(R.string.date_of_event),
+                            isEditable = true,
+                            hintText = viewModel.stringResource(
+                                R.string.select
+                            )
+                                ?: BLANK_STRING,
+                            datePickerState = datePickerState,
+                            datePickerProperties = datePickerProperties,
+                            datePickerDialogProperties = datePickerDialogProperties,
+                            onDateSelected = { date ->
+                                viewModel.selectedDate.value = date.value().getDate()
+                                viewModel.selectedDateInLong = date.value()
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    fieldName = AddEventFieldEnum.DATE.name,
+                                    transactionId = transactionId,
+                                ) { isValid, message ->
 
+                                }
                             }
-                        }
-                    )
+                        )
+                    }
                 }
-
                 customVerticalSpacer(size = 100.dp)
 
             }

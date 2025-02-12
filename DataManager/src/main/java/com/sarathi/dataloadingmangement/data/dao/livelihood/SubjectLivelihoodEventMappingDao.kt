@@ -62,7 +62,8 @@ interface SubjectLivelihoodEventMappingDao {
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status, " +
                 "subject_livelihood_event_mapping_table.createdDate, " +
-                "livelihood_table.image as livelihoodImage " +
+                "livelihood_table.image as livelihoodImage, " +
+                "subject_livelihood_event_mapping_table.livelihoodEventId as eventId \n" +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=1 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=1 \n" +
@@ -80,7 +81,8 @@ interface SubjectLivelihoodEventMappingDao {
                 "asset_journal_table.assetId, asset_journal_table.assetCount, asset_journal_table.transactionFlow as assetJournalFlow ,\n" +
                 "subject_livelihood_event_mapping_table.status ,\n" + "Max(subject_livelihood_event_mapping_table.modifiedDate) ,\n" + "Max(asset_journal_table.modifiedDate) ,\n" + "Max(money_journal_table.modifiedDate), " +
                 "subject_livelihood_event_mapping_table.createdDate, " +
-                "livelihood_table.image as livelihoodImage " +
+                "livelihood_table.image as livelihoodImage, " +
+                "subject_livelihood_event_mapping_table.livelihoodEventId as eventId \n" +
                 "from subject_livelihood_event_mapping_table\n" +
                 "left join money_journal_table on money_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and money_journal_table.status=2 \n" +
                 "left join asset_journal_table on asset_journal_table.transactionId = subject_livelihood_event_mapping_table.transactionId and asset_journal_table.status=2 \n" +

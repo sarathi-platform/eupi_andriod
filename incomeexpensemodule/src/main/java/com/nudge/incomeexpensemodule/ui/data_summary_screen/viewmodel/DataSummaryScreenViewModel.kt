@@ -11,8 +11,10 @@ import com.example.incomeexpensemodule.R
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.TabsCore
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
+import com.nudge.core.fromJson
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.helper.TranslationEnum
@@ -20,6 +22,7 @@ import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataSummaryScreenEvents
@@ -29,14 +32,17 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubj
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import getLivelihoodIdsWithOrderForSubject
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -47,6 +53,7 @@ class DataSummaryScreenViewModel @Inject constructor(
     private val fetchLivelihoodEventUseCase: FetchLivelihoodEventUseCase,
     private val fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
 ) : BaseViewModel() {
 
     private val tag = DataSummaryScreenViewModel::class.java.simpleName
@@ -68,6 +75,9 @@ class DataSummaryScreenViewModel @Inject constructor(
     private val _subjectLivelihoodEventSummaryUiModelList =
         mutableListOf<SubjectLivelihoodEventSummaryUiModel>()
     private val subjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventSummaryUiModel> get() = _subjectLivelihoodEventSummaryUiModelList
+
+    var mSubjectLivelihoodMapping: SnapshotStateList<SubjectEntityWithLivelihoodMappingUiModel> =
+        mutableStateListOf()
 
     private val _filteredSubjectLivelihoodEventSummaryUiModelList =
         mutableStateListOf<SubjectLivelihoodEventSummaryUiModel>()
@@ -105,6 +115,8 @@ class DataSummaryScreenViewModel @Inject constructor(
     )
 
     val dateRangeFilter: State<Pair<Long, Long>> get() = _dateRangeFilter
+
+    val excludedEventIds: SnapshotStateList<Int> = mutableStateListOf()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -307,11 +319,20 @@ class DataSummaryScreenViewModel @Inject constructor(
                     getSubjectLivelihoodMappingFromUseCase.invoke(subjectId)
 
                 subjectLivelihoodMapping.let {
+                    setExcludedEventIds()
+                    mSubjectLivelihoodMapping.clear()
+                    mSubjectLivelihoodMapping.addAll(
+                        getSubjectLivelihoodMappingFromUseCase.getSubjectEntityWithLivelihoodMappingUiModelListForSubject(
+                            subjectId
+                        )
+                    )
 
                     val livelihoodIds = listOf(
-                        it.first()?.livelihoodId.value(),
-                        it.last()?.livelihoodId.value()
-                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter not Decided
+                        it.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                        it.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
+                    ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }
+
+                    val livelihoodIdsWithOrder = getLivelihoodIdsWithOrderForSubject(it)
 
                     val livelihoodEventList = fetchLivelihoodEventUseCase.invoke(livelihoodIds)
 
@@ -329,9 +350,21 @@ class DataSummaryScreenViewModel @Inject constructor(
                     )
 
                     _livelihoodModel.clear()
-                    _livelihoodModel.addAll(
-                        getLivelihoodListFromDbUseCase.invoke(livelihoodIds)
-                    )
+                    val livelihoodModels =
+                        getLivelihoodListFromDbUseCase.invoke(livelihoodIdsWithOrder.map {
+                            it?.first.value(
+                                0
+                            )
+                        })
+                    livelihoodIdsWithOrder.sortedBy { it?.second }.forEach { idsWithOrder ->
+                        livelihoodModels.find { it.programLivelihoodId == idsWithOrder?.first }
+                            ?.let { livelihoodModel ->
+                                _livelihoodModel.add(
+                                    livelihoodModel
+                                )
+                            }
+                    }
+
 
                     _incomeExpenseSummaryUiModel.clear()
                     _incomeExpenseSummaryUiModel.putAll(
@@ -366,6 +399,14 @@ class DataSummaryScreenViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    private suspend fun setExcludedEventIds() {
+        excludedEventIds.clear()
+        excludedEventIds.addAll(
+            fetchAppConfigFromCacheOrDbUsecase.invoke(AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name)
+                .fromJson<List<Int>?>().value()
+        )
     }
 
     private fun creteEventsSubFilterList() {
@@ -461,5 +502,9 @@ class DataSummaryScreenViewModel @Inject constructor(
 
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.DataSummaryScreen
+    }
+
+    fun getExcludedEventIds(): List<Int> {
+        return excludedEventIds.toList()
     }
 }
