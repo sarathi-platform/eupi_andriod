@@ -1484,3 +1484,9 @@ fun getFirstAndLastInitials(name: String?): String {
     } ?: BLANK_STRING
 
 }
+
+inline fun <reified T> String?.fromJson(): T? {
+    if (this == null) return null // Handle null safely
+    val type = object : TypeToken<T>() {}.type
+    return Gson().fromJson(this, type)
+}
