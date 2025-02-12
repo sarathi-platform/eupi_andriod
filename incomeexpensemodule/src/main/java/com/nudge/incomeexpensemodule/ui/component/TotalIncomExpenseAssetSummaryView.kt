@@ -19,6 +19,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
+import com.nudge.core.formatDataToZeroDecimal
 import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.theme.assetValueIconColor
@@ -32,7 +33,6 @@ import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
 import sortTotalAssetCountForLivelihood
-import java.util.Locale
 
 @Composable
 fun TotalIncomeExpenseAssetSummaryView(
@@ -45,24 +45,15 @@ fun TotalIncomeExpenseAssetSummaryView(
         Text(text = stringResource(R.string.income), style = getTextColor(newMediumTextStyle))
         Text(
             text = "₹ ${
-                String.format(
-                    Locale.US,
-                    "%.0f",
-                    incomeExpenseSummaryUiModel?.totalIncome
-                )
-            }",
-            style = getTextColor(defaultTextStyle)
+                formatDataToZeroDecimal(incomeExpenseSummaryUiModel?.totalIncome)
+            }", style = getTextColor(defaultTextStyle)
         )
     }
     Column {
         Text(text = stringResource(R.string.expense), style = getTextColor(newMediumTextStyle))
         Text(
             text = "₹ ${
-                String.format(
-                    Locale.US,
-                    "%.0f",
-                    incomeExpenseSummaryUiModel?.totalExpense
-                )
+                formatDataToZeroDecimal(incomeExpenseSummaryUiModel?.totalExpense)
             }",
             style = getTextColor(defaultTextStyle)
         )
