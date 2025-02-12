@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.toSafeInt
 import com.sarathi.dataloadingmangement.DELEGATE_COMM_WITH_SPACE
 import com.sarathi.dataloadingmangement.MANUAL_TASK_COMPLETION
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
@@ -305,7 +306,7 @@ class DisbursementSummaryScreenViewModel @Inject constructor(
         taskList.value.filter { it.key != selectedItemKey }.entries.forEach {
             totalSubmittedAmount +=
                 it.value.filter { it.tagId.contains(SurveyCardTag.SURVEY_TAG_DISBURSED_AMOUNT.tag) }
-                    .sumOf { getSelectedValue(it.optionItems).toInt() } ?: 0
+                    .sumOf { getSelectedValue(it.optionItems).toSafeInt() } ?: 0
 
         }
         return totalSubmittedAmount

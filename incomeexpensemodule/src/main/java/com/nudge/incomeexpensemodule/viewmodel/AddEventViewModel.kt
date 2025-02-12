@@ -29,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLiv
 import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
@@ -37,6 +38,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import getLivelihoodIdsWithOrderForSubject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.withContext
@@ -86,6 +88,7 @@ class AddEventViewModel @Inject constructor(
     var amount = mutableStateOf("")
     var selectedDate = mutableStateOf("")
     var isSubmitButtonEnable = mutableStateOf(false)
+    var isDateOfEventVisible = mutableStateOf(true)
     var selectedDateInLong: Long = 0
     val maxAssetValue = mutableIntStateOf(MAXIMUM_RANGE)
     private val _fieldValidationAndMessageMap =
@@ -146,18 +149,25 @@ class AddEventViewModel @Inject constructor(
             if (livelihoodForDidi != null) {
                 livelihoodList = getLivelihoodListFromDbUseCase.invoke(
                     listOf(
-                        livelihoodForDidi.first()?.livelihoodId.value(),
-                        livelihoodForDidi.last()?.livelihoodId.value()
+                        livelihoodForDidi.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                        livelihoodForDidi.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
                     ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter Not decided events
                 )
+
+                val livelihoodIdsWithOrder = getLivelihoodIdsWithOrderForSubject(livelihoodForDidi)
+
                 _livelihoodDropdownValue.clear()
-                _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodList))
+                livelihoodIdsWithOrder.sortedBy { it?.second }.forEach { idsWithOrder ->
+                    livelihoodList.find { it.programLivelihoodId == idsWithOrder?.first }
+                        ?.let { livelihoodModel ->
+                            _livelihoodDropdownValue.add(getLivelihooldDropValue(livelihoodModel))
+                        }
+                }
                 revalidateAllFieldsInEdit(subjectId, transactionId)
-
-
+            }
         }
     }
-    }
+
 
 
     private fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
@@ -261,6 +271,17 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
+    private fun getLivelihooldDropValue(livelihoodForDidi: LivelihoodModel): ValuesDto {
+        return livelihoodForDidi.let {
+            ValuesDto(
+                id = it.programLivelihoodId,
+                value = it.name,
+                originalName = it.originalName,
+                isSelected = selectedLivelihoodId.value == it.programLivelihoodId
+            )
+        }
+    }
+
     fun onEventSelected(selectedValue: ValuesDto, subjectId: Int) {
         resetForm()
         eventType = eventList.find { it.id == selectedValue.id }?.eventType ?: BLANK_STRING
@@ -287,6 +308,21 @@ class AddEventViewModel @Inject constructor(
             fetchAssestProductValues()
         }
     }
+
+    fun updateAssetVisibility(isValid: Boolean) {
+        val livelihoodDataCaptureTypes = getLivelihoodEventFromName(eventType)
+            .livelihoodEventDataCaptureTypes
+            .filterNot { it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET }
+        isDateOfEventVisible.value = isValid
+        livelihoodDataCaptureTypes.forEach { captureType ->
+            questionVisibilityMap[captureType] = if (isValid) {
+                questionVisibilityMap.containsKey(captureType)
+            } else {
+                !questionVisibilityMap.containsKey(captureType)
+            }
+        }
+    }
+
 
     fun onSubmitButtonClick(subjectId: Int, transactionId: String, onComplete: () -> Unit) {
 
