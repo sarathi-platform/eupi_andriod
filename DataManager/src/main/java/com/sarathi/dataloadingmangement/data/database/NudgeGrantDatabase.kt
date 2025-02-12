@@ -148,7 +148,7 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodCo
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 6
+const val NUDGE_GRANT_DATABASE_VERSION = 7
 
 @Database(
     entities = [
