@@ -101,28 +101,11 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 checkButtonValidation()
             }
             is LivelihoodPlanningEvent.PrimaryLivelihoodTypePlanningEvent -> {
-                primaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
-                _primaryLivelihoodList.value = livelihoodUiList.filter {
-                    it.livelihoodEntity.type.equals(
-                        event.livelihoodType,
-                        ignoreCase = true
-                    ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-                }.onEach { it.isSelected = false }
-                primaryLivelihoodType.value = event.livelihoodType
-                checkButtonValidation()
+                onPrimaryLivelihoodTypeSelect(event.livelihoodType)
             }
 
             is LivelihoodPlanningEvent.SecondaryLivelihoodTypePlanningEvent -> {
-                secondaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
-
-                _secondaryLivelihoodList.value = livelihoodUiList.filter {
-                    it.livelihoodEntity.type.equals(
-                        event.livelihoodType,
-                        ignoreCase = true
-                    ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-                }.onEach { it.isSelected = false }
-                secondaryLivelihoodType.value = event.livelihoodType
-                checkButtonValidation()
+                onSecondaryLivelihoodTypeSelect(event.livelihoodType)
             }
             is DialogEvents.ShowDialogEvent -> {
                 _showCustomDialog.value = _showCustomDialog.value.copy(
@@ -132,6 +115,30 @@ class LivelihoodPlaningViewModel @Inject constructor(
         }
     }
 
+    private fun onPrimaryLivelihoodTypeSelect(selectedLivelihoodType: String) {
+        primaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
+        _primaryLivelihoodList.value = livelihoodUiList.filter {
+            it.livelihoodEntity.type.equals(
+                selectedLivelihoodType,
+                ignoreCase = true
+            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+        }.onEach { it.isSelected = false }
+        primaryLivelihoodType.value = selectedLivelihoodType
+        checkButtonValidation()
+    }
+
+    private fun onSecondaryLivelihoodTypeSelect(selectedLivelihoodType: String) {
+        secondaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
+
+        _secondaryLivelihoodList.value = livelihoodUiList.filter {
+            it.livelihoodEntity.type.equals(
+                selectedLivelihoodType,
+                ignoreCase = true
+            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+        }.onEach { it.isSelected = false }
+        secondaryLivelihoodType.value = selectedLivelihoodType
+        checkButtonValidation()
+    }
     private fun initLivelihoodPlanningScreen() {
         ioViewModelScope {
             try {
