@@ -19,10 +19,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -161,6 +157,7 @@ fun LivelihoodDropDownScreen(
                     primaryLivelihoodId = viewModel.primaryLivelihoodId.value,
                     secondaryLivelihoodId = viewModel.secondaryLivelihoodId.value,
                     livelihoodTypeList = viewModel.livelihoodType.value,
+                    secondarylivelihoodTypeList = viewModel.seondarylivelihoodTypeList.value,
                     onPrimaryLivelihoodSelected = {
                         viewModel.checkDialogueValidation.value=false
                         viewModel.onEvent(
@@ -214,6 +211,7 @@ fun DropdownView(
     primaryLivelihoodList: List<LivelihoodUiEntity>,
     secondaryLivelihoodList: List<LivelihoodUiEntity>,
     livelihoodTypeList: List<LivelihoodUiEntity>,
+    secondarylivelihoodTypeList: List<LivelihoodUiEntity>,
     primaryLivelihoodId: Int,
     secondaryLivelihoodId: Int,
     isEditAllowed: Boolean,
@@ -223,8 +221,8 @@ fun DropdownView(
     onSecondaryLivelihoodTypeSelected: (livelihoodType: String) -> Unit,
 ) {
 
-    var selectedItem1 by remember { mutableStateOf<Int?>(primaryLivelihoodId) }
-    var selectedItem2 by remember { mutableStateOf<Int?>(secondaryLivelihoodId) }
+    var selectedItem1 = primaryLivelihoodId
+    var selectedItem2 = secondaryLivelihoodId
 
     val context = LocalContext.current
     Column(modifier = Modifier.padding(dimen_10_dp)) {
@@ -238,7 +236,7 @@ fun DropdownView(
             diableItem = selectedItem2 ?: 0,
             sources = livelihoodTypeList,
             onAnswerSelection = { selectedValue ->
-                onPrimaryLivelihoodTypeSelected(selectedValue.livelihoodEntity.livelihoodTypeDisplayName)
+                onPrimaryLivelihoodTypeSelected(selectedValue.livelihoodEntity.type)
             }
         )
         Spacer(modifier = Modifier.height(dimen_10_dp))
@@ -263,9 +261,9 @@ fun DropdownView(
             isMandatory = true,
             diableItem = selectedItem1 ?: 0,
             enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,
-            sources = livelihoodTypeList,
+            sources = secondarylivelihoodTypeList,
             onAnswerSelection = { selectedValue ->
-                onSecondaryLivelihoodTypeSelected(selectedValue.livelihoodEntity.livelihoodTypeDisplayName)
+                onSecondaryLivelihoodTypeSelected(selectedValue.livelihoodEntity.type)
             }
         )
         Spacer(modifier = Modifier.height(dimen_10_dp))

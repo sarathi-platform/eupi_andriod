@@ -17,7 +17,7 @@ data class SubjectLivelihoodMappingEntity(
     val type: Int,
     val status:Int,
     //Add migration 6-7
-    val livelihoodType: String
+    val livelihoodType: String?
 
 ) {
     companion object {

@@ -25,7 +25,9 @@ data class Livelihood(
     @Expose
     @SerializedName("validations") var validations: List<Validations>?,
     @Expose
-    @SerializedName("programLivelihoodId") var programLivelihoodId: Int
+    @SerializedName("programLivelihoodId") var programLivelihoodId: Int,
+    @Expose
+    @SerializedName("category") var livelihoodCategory: String?
 )
 
 data class LivelihoodType(
