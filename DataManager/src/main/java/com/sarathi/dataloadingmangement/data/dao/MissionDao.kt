@@ -26,9 +26,9 @@ interface MissionDao {
                 " SUM(CASE WHEN activity_table.status = :status THEN 1 ELSE 0 END) AS pendingActivityCount,\n" +
                 " COALESCE(NullIF(mission_config_table.missionType,''), 'NON LIVELIHOOD') as missionType, \n" +
                 " mission_livelihood_config_table.livelihoodType as livelihoodType, \n" +
-                " mission_livelihood_config_table.livelihoodOrder as livelihoodOrder \n" +
+                " mission_livelihood_config_table.livelihoodOrder as livelihoodOrder, \n" +
+                " mission_livelihood_config_table.programLivelihoodReferenceId \n" +
                 " from mission_table\n" +
-                "\n" +
                 "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
                 "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
                 "left join mission_livelihood_config_table on mission_table.missionId = mission_livelihood_config_table.missionId and mission_livelihood_config_table.userId=:userId and mission_livelihood_config_table.languageCode=:languageCode\n" +

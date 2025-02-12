@@ -135,6 +135,7 @@ fun LivelihoodTaskRowView(
                     label = BLANK_STRING,
                     icon = null
                 )
+                viewModel.updateMissionFilter()
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name

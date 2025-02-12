@@ -8,6 +8,7 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.OUTFLOW
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -26,6 +27,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -55,7 +57,9 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     private val fetchContentUseCase: FetchContentUseCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val saveTransactionMoneyJournalForPopUseCase: SaveTransactionMoneyJournalForPopUseCase,
-    private val moneyJournalForPopEventWriterUseCase: MoneyJournalForPopEventWriterUseCase
+    private val moneyJournalForPopEventWriterUseCase: MoneyJournalForPopEventWriterUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -75,6 +79,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
     fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase,
+    missionFilterUtils = missionFilterUtils
 ) {
 
     override suspend fun intiQuestions() {

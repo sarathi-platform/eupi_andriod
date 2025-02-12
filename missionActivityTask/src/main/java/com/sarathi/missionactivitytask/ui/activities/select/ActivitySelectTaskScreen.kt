@@ -241,7 +241,6 @@ fun ExpandableTaskCardRow(
                     label = BLANK_STRING,
                     icon = null
                 )
-
                 questionUIModel?.let { question ->
                     question.options?.forEach {
                         it.isSelected = false
@@ -253,7 +252,7 @@ fun ExpandableTaskCardRow(
                         taskId = task.key
                     )
                 }
-
+                viewModel.updateMissionFilter()
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
@@ -276,6 +275,7 @@ fun ExpandableTaskCardRow(
                     subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
                     taskId = task.key
                 )
+                viewModel.updateMissionFilter()
                 viewModel.updateTasStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.COMPLETED.name

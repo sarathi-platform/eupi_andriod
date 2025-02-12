@@ -11,11 +11,13 @@ import com.nudge.core.helper.TranslationEnum
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -35,7 +37,9 @@ class ActivityScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
-    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
@@ -77,7 +81,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val missionDetails = fetchAllDataUseCase.fetchMissionInfo(missionId)
+            val missionDetails = fetchInfoUiModelUseCase.fetchMissionInfo(missionId)
             withContext(mainDispatcher) {
                 missionInfoUIModel = missionDetails
             }
@@ -158,5 +162,10 @@ class ActivityScreenViewModel @Inject constructor(
 
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.ActivityScreen
+    }
+
+    fun updateMissionFilterAndTab() {
+        missionFilterUtils.updateMissionFilterOnUserAction(missionInfoUIModel)
+        //TODO handle moving to completed tab on mission completion
     }
 }

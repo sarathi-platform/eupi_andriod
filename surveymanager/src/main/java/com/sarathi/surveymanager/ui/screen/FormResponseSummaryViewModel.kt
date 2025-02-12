@@ -16,6 +16,7 @@ import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -28,12 +29,14 @@ import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusEventWriter
 import com.sarathi.dataloadingmangement.domain.use_case.SectionStatusUpdateUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyAnswerFormSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CASTE_ID
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -61,7 +64,9 @@ class FormResponseSummaryViewModel @Inject constructor(
     private val sectionStatusUpdateUseCase: SectionStatusUpdateUseCase,
     private val sectionStatusEventWriterUserCase: SectionStatusEventWriterUserCase,
     private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
-    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase
+    private val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     var surveyId: Int = 0
@@ -85,6 +90,7 @@ class FormResponseSummaryViewModel @Inject constructor(
     var surveyConfig =
         mutableMapOf<String, List<SurveyCardModel>>()
 
+    var activityInfoUIModel = ActivityInfoUIModel.getDefaultValue()
 
     fun init(
         taskId: Int,
@@ -132,6 +138,11 @@ class FormResponseSummaryViewModel @Inject constructor(
             }
 
             initSurveyConfigAndGetSavedResponses()
+
+            activityInfoUIModel = fetchInfoUiModelUseCase.fetchActivityInfo(
+                activityConfig?.missionId.value(),
+                activityConfig?.activityId.value()
+            )
 
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
@@ -266,7 +277,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                     isFromRegenerate = false
                 )
             }
-
+            updateMissionFilter()
             updateTaskStatus(taskId = taskId)
             checkAndUpdateSectionStatus(
                 missionId = activityConfig?.missionId.value(),
@@ -340,5 +351,8 @@ class FormResponseSummaryViewModel @Inject constructor(
         return fetchAppConfigFromCacheOrDbUsecase.getAESSecretKey()
     }
 
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel)
+    }
 
 }

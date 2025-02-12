@@ -16,6 +16,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -72,6 +73,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentEventWriterUseCa
 import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
@@ -128,6 +130,8 @@ import com.sarathi.dataloadingmangement.repository.DeleteAllDataRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.DocumentRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.EventWriterRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.FetchInfoUiModelRepository
+import com.sarathi.dataloadingmangement.repository.FetchInfoUiModelRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.GetConditionQuestionMappingsRepository
@@ -208,6 +212,7 @@ import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAtt
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -1740,5 +1745,40 @@ class DataLoadingModule {
             eventWriterRepository
         )
 
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchInfoUiModelRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        missionLanguageAttributeDao: MissionLanguageAttributeDao,
+        activityLanguageDao: ActivityLanguageDao,
+        livelihoodDao: LivelihoodDao
+    ): FetchInfoUiModelRepository {
+        return FetchInfoUiModelRepositoryImpl(
+            sharedPrefs = coreSharedPrefs,
+            missionLanguageAttributeDao = missionLanguageAttributeDao,
+            activityLanguageDao = activityLanguageDao,
+            livelihoodDao = livelihoodDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchInfoUiModelUseCase(
+        fetchInfoUiModelRepository: FetchInfoUiModelRepository
+    ): FetchInfoUiModelUseCase {
+        return FetchInfoUiModelUseCase(fetchInfoUiModelRepository)
+
+    }
+
+    @Provides
+    @Singleton
+    fun provideMissionFilterUtils(
+        coreSharedPrefs: CoreSharedPrefs,
+        livelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+        translationHelper: TranslationHelper
+    ): MissionFilterUtils {
+        return MissionFilterUtils(coreSharedPrefs, livelihoodListFromDbUseCase, translationHelper)
     }
 }
