@@ -133,7 +133,6 @@ fun GridTypeComponent(
             Column(modifier = Modifier.background(white)) {
                 Column(
                     Modifier.padding(
-                        top = dimen_16_dp,
                         bottom = if (showCardView) dimen_16_dp else dimen_2_dp
                     ),
                     verticalArrangement = Arrangement.spacedBy(

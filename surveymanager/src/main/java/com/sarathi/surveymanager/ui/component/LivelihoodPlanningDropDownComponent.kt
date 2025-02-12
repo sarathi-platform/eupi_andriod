@@ -27,20 +27,18 @@ fun LivelihoodPlanningDropDownComponent(
     isEditAllowed: Boolean = true,
     diableItem: Int = DEFAULT_LIVELIHOOD_ID,
     enableItem: Int = DEFAULT_LIVELIHOOD_ID,
+
     onAnswerSelection: (livelihoodUIEntity: LivelihoodUiEntity) -> Unit
 ) {
     val context = LocalContext.current
     val defaultSourceList =
         sources ?: listOf()
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember {
-        mutableStateOf(
-            defaultSourceList.find { it.isSelected && it.id == enableItem }?.livelihoodEntity?.name.value()
-        )
+    var selectedOptionText by remember(defaultSourceList) {
+        mutableStateOf<String>(getSelectedOptionText(defaultSourceList, enableItem))
     }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
-
 
     DropDownComponent(
         items = defaultSourceList,
@@ -77,5 +75,14 @@ fun LivelihoodPlanningDropDownComponent(
 
         }
     )
+
+}
+
+fun getSelectedOptionText(
+    sources: List<LivelihoodUiEntity>?, enableItem: Int
+): String {
+    val selectedItem = sources?.find { it.isSelected }
+    return if (selectedItem?.isLivelihoodTypeDropdown == true) selectedItem.livelihoodEntity.livelihoodTypeDisplayName else selectedItem?.livelihoodEntity?.name
+        ?: BLANK_STRING
 
 }

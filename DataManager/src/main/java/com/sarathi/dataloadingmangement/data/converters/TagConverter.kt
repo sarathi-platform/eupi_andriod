@@ -6,24 +6,24 @@ import com.google.gson.reflect.TypeToken
 
 class TagConverter {
     @TypeConverter
-    fun fromIntListToJson(programLivelihoodReferenceId: List<Int>?): String? {
-        if (programLivelihoodReferenceId == null) {
+    fun fromIntListToJson(intList: List<Int>?): String? {
+        if (intList == null) {
             return null
         }
         val gson = Gson()
         val type = object :
             TypeToken<List<Int?>?>() {}.type
-        return gson.toJson(programLivelihoodReferenceId, type)
+        return gson.toJson(intList, type)
     }
 
     @TypeConverter
-    fun fromJsonToIntList(programLivelihoodReferenceId: String?): List<Int>? {
-        if (programLivelihoodReferenceId == null) {
+    fun fromJsonToIntList(intList: String?): List<Int>? {
+        if (intList == null) {
             return null
         }
         val gson = Gson()
         val type = object :
             TypeToken<List<Int?>?>() {}.type
-        return gson.fromJson<List<Int>>(programLivelihoodReferenceId, type)
+        return gson.fromJson<List<Int>>(intList, type)
     }
 }

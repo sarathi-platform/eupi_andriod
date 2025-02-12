@@ -47,6 +47,8 @@ class DidiTabViewModel @Inject constructor(
     val isSubjectApiStatusFailed =
         mutableStateOf(false)
 
+    val isSearchListEmpty = mutableStateOf(false)
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {

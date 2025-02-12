@@ -69,12 +69,14 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACT
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_TABLE_ADD_MISSION_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
@@ -146,7 +148,7 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodCo
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 6
+const val NUDGE_GRANT_DATABASE_VERSION = 7
 
 @Database(
     entities = [
@@ -366,6 +368,18 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_TYPE,
                         ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID,
                         ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE
+                    )
+                )
+            }
+        }
+        val NUDGE_GRANT_DATABASE_MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_6_7")
+                migration(
+                    db,
+                    listOf(
+                        ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE,
+                        ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY,
                     )
                 )
             }

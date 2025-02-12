@@ -300,4 +300,11 @@ object MigrationQueries {
         "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
                 "            ADD COLUMN eventType TEXT"
 
+    val ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE =
+        "ALTER TABLE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME \n" +
+                "ADD COLUMN livelihoodType TEXT"
+    val ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY =
+        "ALTER TABLE $LIVELIHOOD_TABLE_NAME \n" +
+                "ADD COLUMN  category TEXT"
+
 }
