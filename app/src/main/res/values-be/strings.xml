@@ -520,5 +520,8 @@
     <string name="sync_started">Sync आ जागायबाय। अननानै नेथ\'....</string>
     <string name="sync_data_history">Sync Data History</string>
     <string name="data">खारि</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
 
 </resources>

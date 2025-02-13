@@ -8,6 +8,7 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,6 +31,8 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.enums.SyncAlertType
@@ -52,11 +55,15 @@ import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.RootNavigationGraph
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
+import com.patsurvey.nudge.utils.APP_UPDATE_REQUEST_CODE
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.QUESTION_IMAGE_LINK_KEY
 import com.patsurvey.nudge.utils.SENDER_NUMBER
+import com.patsurvey.nudge.utils.checkForAppUpdates
+import com.patsurvey.nudge.utils.setupAppUpdateListeners
 import com.patsurvey.nudge.utils.showCustomToast
+import com.patsurvey.nudge.utils.unregisterAppUpdateListeners
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
 import javax.inject.Inject
@@ -77,6 +84,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
     private val mViewModel: MainActivityViewModel by viewModels()
 
+    private lateinit var appUpdateManager: AppUpdateManager
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
     val isOnline = mutableStateOf(true)
@@ -106,6 +114,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 buildVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
             )
         )
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+        checkForAppUpdates(appUpdateManager)
+
         CoreObserverManager.addObserver(this)
         setContent {
             ProvideTranslationHelper(translationHelper) {
@@ -317,6 +328,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 val message = data.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
                 getOtpFromMessage(message)
             }
+        } else if (requestCode == APP_UPDATE_REQUEST_CODE && resultCode != RESULT_OK) {
+            Toast.makeText(this, getString(R.string.str_app_update_fail), Toast.LENGTH_SHORT).show()
+
         }
 
     }
@@ -361,6 +375,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         CoreObserverManager.removeObserver(this)
         RetryHelper.cleanUp()
         super.onDestroy()
+        unregisterAppUpdateListeners(appUpdateManager)
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -380,6 +395,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     override fun onResume() {
         localizationDelegate.onResume(applicationContext)
         super.onResume()
+        setupAppUpdateListeners(appUpdateManager)
     }
 
     override fun getApplicationContext(): Context {

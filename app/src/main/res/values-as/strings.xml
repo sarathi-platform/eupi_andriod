@@ -542,6 +542,9 @@
     <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।…</string>
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
     <string name="data">তথ্য</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
 
 
 </resources>

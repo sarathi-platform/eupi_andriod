@@ -542,4 +542,7 @@
     <string name="sync_started">सिंक सुरु हो गया, कृपया इंतज़ार करें…</string>
     <string name="sync_data_history">डाटा हिस्ट्री को सिंक करें </string>
     <string name="data">डाटा</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
 </resources>
