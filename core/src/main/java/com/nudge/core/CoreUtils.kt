@@ -1269,8 +1269,7 @@ fun onlyNumberField(value: String): Boolean {
 }
 
 fun getQuestionNumber(questionIndex: Int): String {
-//    return "${questionIndex + 1}. "
-    return BLANK_STRING // TODO remove this line and uncomment the above once correct question number logic is figured out
+    return "${questionIndex + 1}. "
 }
 
 fun String.stringToInt(): Int {

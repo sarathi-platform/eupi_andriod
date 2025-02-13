@@ -1,9 +1,7 @@
 package com.sarathi.dataloadingmangement.model.uiModel
 
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.enums.ActivityTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
-
 
 data class QuestionUiModel(
     var questionId: Int,
@@ -32,15 +30,7 @@ data class QuestionUiModel(
     val sortingKey: Int,
     val formContent: List<ContentList> = listOf()
 ) {
-    fun getQuestionDisplay(
-        grantType: String,
-    ): String {
-        return if (grantType.equals(ActivityTypeEnum.BASIC.name, true)) {
-            return "$order. $questionDisplay"
-        } else {
-            questionDisplay
-        }
-    }
+
 
 }
 
