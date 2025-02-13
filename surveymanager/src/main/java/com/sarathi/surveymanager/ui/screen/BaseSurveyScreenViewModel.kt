@@ -20,6 +20,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -35,6 +36,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
@@ -42,6 +44,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -74,7 +77,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
@@ -121,6 +126,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     private val _filteredSurveyModels = mutableStateMapOf<Int, List<SurveyCardModel>>()
     val filteredSurveyModels: SnapshotStateMap<Int, List<SurveyCardModel>> get() = _filteredSurveyModels
+
+    var activityUIInfo: ActivityInfoUIModel = ActivityInfoUIModel.getDefaultValue()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -230,6 +237,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 autoCalculateQuestionResultMap
             )
         }
+        activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(
+            activityConfig?.missionId.value(),
+            activityConfig?.activityId.value()
+        )
         fetchFilteredSurveyModels()
         isTaskStatusCompleted()
 
@@ -635,6 +646,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun getOptionStateMapForMutliSelectDropDownQuestion(questionId: Int): Map<Int, Boolean?> {
         return conditionsUtils.getOptionStateMapForMutliSelectDropDownQuestion(questionId)
+    }
+
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityUIInfo)
     }
 
 }

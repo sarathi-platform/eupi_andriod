@@ -10,11 +10,8 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Card
@@ -36,8 +33,8 @@ import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_80_dp
 import com.nudge.core.ui.theme.filterItemSelectedDark
@@ -90,9 +87,7 @@ fun FilterRowItem(
                         contentScale = ContentScale.Inside,
                         modifier = Modifier
                             .align(Alignment.Center)
-                            .aspectRatio(1f, matchHeightConstraintsFirst = true)
-                            .width(dimen_45_dp)
-                            .height(dimen_45_dp)
+                            .size(dimen_50_dp)
                     )
                 }
             }

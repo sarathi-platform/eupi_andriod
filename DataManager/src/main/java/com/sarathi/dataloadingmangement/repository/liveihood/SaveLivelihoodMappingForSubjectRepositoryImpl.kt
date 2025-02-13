@@ -4,7 +4,6 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
-import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import javax.inject.Inject
 
 class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
@@ -40,7 +39,12 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(livelihoodId: Int,type:Int,subjectId:Int) {
+    override suspend fun saveAndUpdateSubjectLivelihoodMappingForSubject(
+        livelihoodId: Int,
+        type: Int,
+        subjectId: Int,
+        livelihoodType: String
+    ) {
 
         val subjectLivelihoodMappingEntity =
             SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
@@ -48,7 +52,8 @@ class SaveLivelihoodMappingForSubjectRepositoryImpl @Inject constructor(
                 subjectId = subjectId,
                 livelihoodId = livelihoodId,
                 type = type,
-                status = 1
+                status = 1,
+                livelihoodType = livelihoodType
             )
         saveAndUpdateSubjectLivelihoodMappingForSubject(subjectLivelihoodMappingEntity)
     }

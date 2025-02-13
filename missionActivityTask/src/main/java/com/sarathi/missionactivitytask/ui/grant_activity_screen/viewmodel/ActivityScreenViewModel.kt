@@ -7,15 +7,22 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.TabsCore
+import com.nudge.core.enums.SubTabs
+import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -35,7 +42,9 @@ class ActivityScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
-    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase
+    private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
@@ -77,7 +86,7 @@ class ActivityScreenViewModel @Inject constructor(
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val missionDetails = fetchAllDataUseCase.fetchMissionInfo(missionId)
+            val missionDetails = fetchInfoUiModelUseCase.fetchMissionInfo(missionId)
             withContext(mainDispatcher) {
                 missionInfoUIModel = missionDetails
             }
@@ -158,5 +167,13 @@ class ActivityScreenViewModel @Inject constructor(
 
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.ActivityScreen
+    }
+
+    fun updateMissionFilterAndTab() {
+        missionFilterUtils.updateMissionFilterOnUserAction(missionInfoUIModel)
+        TabsCore.setSubTabIndex(TabsEnum.MissionTab.tabIndex,
+            TabsEnum.tabsList[TabsEnum.MissionTab]?.indexOf(SubTabs.CompletedMissions)
+                .value(NUMBER_ZERO)
+        )
     }
 }

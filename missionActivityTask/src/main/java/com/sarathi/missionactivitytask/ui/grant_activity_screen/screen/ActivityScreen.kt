@@ -161,7 +161,12 @@ fun ActivityScreen(
                             viewModel.showDialog.value = false
                         },
                         onPositiveButtonClick = {
+                            viewModel.updateMissionFilterAndTab()
                             viewModel.markMissionCompleteStatus()
+                            navController.previousBackStackEntry?.savedStateHandle?.set(
+                                "missionId",
+                                missionId
+                            )
                             navController.popBackStack()
                             viewModel.showDialog.value = false
                         }

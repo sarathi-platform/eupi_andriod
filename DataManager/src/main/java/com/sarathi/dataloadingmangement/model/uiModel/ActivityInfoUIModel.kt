@@ -7,10 +7,10 @@ import com.sarathi.dataloadingmangement.R
 data class ActivityInfoUIModel(
     var missionName: String,
     var activityName: String,
-    var livelihoodOrder: String? = BLANK_STRING,
-    var livelihoodType: String? = BLANK_STRING,
-    var livelihoodName: String? = BLANK_STRING
-) {
+    override var livelihoodOrder: String? = BLANK_STRING,
+    override var livelihoodType: String? = BLANK_STRING,
+    override var livelihoodName: String? = BLANK_STRING
+) : InfoUiModel {
 
     private fun getActivityScreenSubTitle(): String {
         val livelihoodString =

@@ -253,6 +253,7 @@ fun FormQuestionScreen(
                                 viewModel.isSubmitButtonClicked.value = true
                             viewModel.saveAllAnswers {
                                 viewModel.updateTaskStatus(taskId)
+                                viewModel.updateMissionFilter()
                                 viewModel.updateSectionStatus(
                                     missionId,
                                     surveyId,

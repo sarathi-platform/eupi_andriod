@@ -17,9 +17,16 @@ class SaveLivelihoodMappingUseCase @Inject constructor(
         livelihoodId: Int,
         type:Int,
         subjectId: Int,
+        livelihoodType: String
+
         )
     {
-        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForSubject(livelihoodId,type,subjectId,)
+        saveLivelihoodMappingForSubjectRepository.saveAndUpdateSubjectLivelihoodMappingForSubject(
+            livelihoodId = livelihoodId,
+            type = type,
+            subjectId = subjectId,
+            livelihoodType = livelihoodType
+        )
     }
 
     fun getUserId() = saveLivelihoodMappingForSubjectRepository.getUserId()

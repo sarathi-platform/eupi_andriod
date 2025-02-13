@@ -8,6 +8,8 @@ data class LivelihoodConfigLanguageResponse(
     val livelihoodType: String?,
     @SerializedName("livelihoodOrder")
     val livelihoodOrder: Int?,
+    @SerializedName("programLivelihoodReferenceId")
+    val programLivelihoodReferenceId: List<Int>? = emptyList(),
     @SerializedName("languages")
     val languages: List<MissionLivelihoodMission>?,
 )

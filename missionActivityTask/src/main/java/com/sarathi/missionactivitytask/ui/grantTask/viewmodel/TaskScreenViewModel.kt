@@ -26,6 +26,7 @@ import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUs
 import com.sarathi.dataloadingmangement.ALL
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -41,6 +42,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.ComponentEnum
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
@@ -72,6 +74,8 @@ open class TaskScreenViewModel @Inject constructor(
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchAllDataUseCase: FetchAllDataUseCase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
     var missionId = 0
     var activityId = 0
@@ -141,8 +145,7 @@ open class TaskScreenViewModel @Inject constructor(
 
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
-    var activityInfoUIModel: MutableState<ActivityInfoUIModel?> =
-        mutableStateOf(ActivityInfoUIModel.getDefaultValue())
+    var activityInfoUIModel = mutableStateOf(ActivityInfoUIModel.getDefaultValue())
 
 
     private suspend fun <T> updateValueInMainThread(mutableState: MutableState<T>, newValue: T) {
@@ -244,6 +247,10 @@ open class TaskScreenViewModel @Inject constructor(
     fun initTaskScreen(taskList: List<TaskUiModel>?) {
 
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            val activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(missionId, activityId)
+            withContext(mainDispatcher) {
+                activityInfoUIModel.value = activityUIInfo
+            }
 
             val context = CoreAppDetails.getContext()
 
@@ -658,6 +665,10 @@ open class TaskScreenViewModel @Inject constructor(
                     it
                 } ?: ActivityInfoUIModel.getDefaultValue().copy(activityName = activityName)
         }
+    }
+
+    override fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityInfoUIModel.value)
     }
 
 }

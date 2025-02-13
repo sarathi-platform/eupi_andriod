@@ -21,7 +21,7 @@ data class LivelihoodEntity(
     var status: Int,
     var type: String? = BLANK_STRING,
     var image: String?,
-
+    var category: String?,
     @TypeConverters(ValidationConverter::class)
     var validations: List<Validations>?
 
@@ -40,8 +40,9 @@ data class LivelihoodEntity(
                 status = livelihood.status ?: 0,
                 image = livelihood.image ?: BLANK_STRING,
                 validations = livelihood.validations,
-                type = livelihood.type ?: BLANK_STRING,
-                programLivelihoodId = livelihood.programLivelihoodId
+                type = livelihood.type?.originalName ?: BLANK_STRING,
+                programLivelihoodId = livelihood.programLivelihoodId,
+                category = livelihood.livelihoodCategory ?: BLANK_STRING
             )
         }
 

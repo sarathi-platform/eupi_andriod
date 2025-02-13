@@ -68,12 +68,13 @@
     <string name="sync_minutes">%1$s মিনিট</string>
     <string name="sync_ago">আগে</string>
     <string name="just_now">মাত্ৰ এতিয়াই</string>
-    <string name="ongoing_tab_title">Ongoing</string>
-    <string name="completed_tab_title">Completed</string>
-    <string name="search_by_mission">Search by Mission</string>
+    <string name="ongoing_tab_title">এখন চলছে</string>
+    <string name="completed_tab_title">সম্পন্ন</string>
+    <string name="search_by_mission">মিশন সার্চ করো</string>
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
-    <string name="all_missions_filter_label">All Missions</string>
-    <string name="general_missions_filter_label">General Missions</string>
+    <string name="all_missions_filter_label">সব মিশন দ্যাখো</string>
+    <string name="general_missions_filter_label">জেনারাল মিশন</string>
+    <string name="complete_survey">সার্ভে সম্পন্ন হলো</string>
     <string name="exclude_in_calculation_message">*এই খরচ টা মোট হিসাবের মধ্যে যোগ হয়নি</string>
     <string name="contact_to_admin_id_missing">অ্যাক্সেস সমস্যা ধরা পড়েছে। সহায়তার জন্য অনুগ্রহ করে বিপিসির সাথে যোগাযোগ করুন</string>
 

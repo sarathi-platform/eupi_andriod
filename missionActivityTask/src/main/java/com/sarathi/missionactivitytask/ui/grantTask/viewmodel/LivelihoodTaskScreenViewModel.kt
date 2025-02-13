@@ -9,6 +9,7 @@ import com.nudge.core.valueAsMinusTwo
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
@@ -19,6 +20,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihood
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -42,8 +44,9 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     fetchAllDataUseCase: FetchAllDataUseCase,
     var getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
     var getLivelihoodMappingUseCase: GetSubjectLivelihoodMappingFromUseCase,
-
-    ) : TaskScreenViewModel(
+    missionFilterUtils: MissionFilterUtils,
+    fetchInfoUiModelUseCase: FetchInfoUiModelUseCase
+) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
     getActivityUiConfigUseCase,
@@ -52,7 +55,9 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    missionFilterUtils = missionFilterUtils,
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {
     private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
     val activityList: State<List<ActivityUiModel>> get() = _activityList

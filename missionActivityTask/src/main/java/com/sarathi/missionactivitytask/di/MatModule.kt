@@ -24,6 +24,4 @@ class MatModule {
     fun provideActivityUseCase(activityRepositoryImpl: GetActivityRepositoryImpl): GetActivityUseCase {
         return GetActivityUseCase(activityRepositoryImpl)
     }
-
-
 }
