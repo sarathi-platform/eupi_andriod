@@ -12,6 +12,8 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMi
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.database.CoreDatabase
+import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -41,12 +43,15 @@ import com.nudge.syncmanager.imageupload.BlobImageUploader
 import com.nudge.syncmanager.network.SyncApiService
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ExportImportRepositoryImpl
+import com.patsurvey.nudge.activities.backup.domain.repository.RemoteQueryExecutionRepository
+import com.patsurvey.nudge.activities.backup.domain.repository.RemoteQueryExecutionRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.repository.ReopenActivityEventHelperRepository
 import com.patsurvey.nudge.activities.backup.domain.repository.ReopenActivityEventHelperRepositoryImpl
 import com.patsurvey.nudge.activities.backup.domain.use_case.ClearLocalDBExportUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.GetExportOptionListUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.GetUserDetailsExportUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.RemoteQueryExecutionUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityEventHelperUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
 import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
@@ -95,6 +100,7 @@ import com.patsurvey.nudge.network.interfaces.ApiService
 import com.sarathi.dataloadingmangement.data.dao.ActivityDao
 import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.data.dao.TaskDao
+import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -487,5 +493,38 @@ object UseCaseModule {
             getUserDetailsUseCase = GetUserDetailsUseCase(settingBSRepository),
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(settingBSRepository)
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesRemoteQueryExecutionUseCase(
+        remoteQueryExecutionRepository: RemoteQueryExecutionRepository
+    ): RemoteQueryExecutionUseCase {
+        return RemoteQueryExecutionUseCase(
+            remoteQueryExecutionRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesRemoteQueryExecutionRepository(
+        nudgeDatabase: NudgeDatabase,
+        nudgeBaselineDatabase: NudgeBaselineDatabase,
+        nudgeGrantDatabase: NudgeGrantDatabase,
+        syncManagerDatabase: SyncManagerDatabase,
+        coreDatabase: CoreDatabase,
+        appConfigDao: ApiConfigDao,
+        coreSharedPrefs: CoreSharedPrefs
+    ): RemoteQueryExecutionRepository {
+        return RemoteQueryExecutionRepositoryImpl(
+            nudgeDatabase = nudgeDatabase,
+            nudgeBaselineDatabase = nudgeBaselineDatabase,
+            nudgeGrantDatabase = nudgeGrantDatabase,
+            syncDatabase = syncManagerDatabase,
+            coreDatabase = coreDatabase,
+            appConfigDao = appConfigDao,
+            coreSharedPrefs = coreSharedPrefs
+        )
+
     }
 }

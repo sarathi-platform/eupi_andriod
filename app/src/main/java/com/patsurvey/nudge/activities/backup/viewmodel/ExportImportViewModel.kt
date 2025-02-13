@@ -32,13 +32,11 @@ import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
-import com.nudge.core.utils.AESHelper
-import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.RemoteQueryExecutionUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
@@ -58,7 +56,8 @@ class ExportImportViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
-    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    private val remoteQueryExecutionUseCase: RemoteQueryExecutionUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -266,5 +265,9 @@ class ExportImportViewModel @Inject constructor(
             fetchAppConfigFromNetworkUseCase.invoke()
             onEvent(LoaderEvent.UpdateLoaderState(false))
         }
+    }
+
+    fun checkAndRunRemoteQueryExecution() {
+
     }
 }
