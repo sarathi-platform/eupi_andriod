@@ -46,14 +46,14 @@ fun TotalIncomeExpenseAssetSummaryView(
     Column {
         Text(text = stringResource(R.string.income), style = getTextColor(newMediumTextStyle))
         Text(
-            text = "₹ ${formatToIndianRupee(BigDecimal(incomeExpenseSummaryUiModel?.totalIncome.value()).toPlainString())}",
+            text = formatToIndianRupee(BigDecimal(incomeExpenseSummaryUiModel?.totalIncome.value()).toPlainString()),
             style = getTextColor(defaultTextStyle)
         )
     }
     Column {
         Text(text = stringResource(R.string.expense), style = getTextColor(newMediumTextStyle))
         Text(
-            text = "₹ ${formatToIndianRupee(BigDecimal(incomeExpenseSummaryUiModel?.totalExpense.value()).toPlainString())}",
+            text = formatToIndianRupee(BigDecimal(incomeExpenseSummaryUiModel?.totalExpense.value()).toPlainString()),
             style = getTextColor(defaultTextStyle)
         )
     }
