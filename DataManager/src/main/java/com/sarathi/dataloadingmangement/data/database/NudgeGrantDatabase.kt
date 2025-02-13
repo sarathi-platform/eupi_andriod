@@ -71,6 +71,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ASS
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_TABLE_ADD_MISSION_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE
@@ -380,6 +381,7 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                     listOf(
                         ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE,
                         ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY,
+                        ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID
                     )
                 )
             }
