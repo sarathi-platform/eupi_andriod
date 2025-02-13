@@ -55,7 +55,10 @@ class MissionScreenViewModel @Inject constructor(
 
     val filterMissionList: State<List<MissionUiModel>> get() = _filterMissionList
 
-    val tabs = listOf<SubTabs>(SubTabs.OngoingMissions, SubTabs.CompletedMissions)
+    val tabs = TabsEnum.tabsList[TabsEnum.MissionTab] ?: listOf(
+        SubTabs.OngoingMissions,
+        SubTabs.CompletedMissions
+    )
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
 //    val missionFilterList: SnapshotStateList<FilterUiModel> = mutableStateListOf()

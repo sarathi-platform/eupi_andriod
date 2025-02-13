@@ -180,6 +180,7 @@ fun DataSummaryScreen(
         onDispose {
             eventMessage?.value = BLANK_STRING
             newlyAddedEvent?.value = BLANK_STRING
+            selectedLivelihoodId?.value = 0
         }
     }
 

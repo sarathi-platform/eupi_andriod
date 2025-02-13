@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -24,6 +25,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -51,6 +53,8 @@ import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.utils.CoreLogger
+import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.missionactivitytask.R
@@ -61,6 +65,7 @@ import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreen
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -69,10 +74,16 @@ fun MissionScreen(
     viewModel: MissionScreenViewModel = hiltViewModel(),
     onSettingClick: () -> Unit,
     onBackPressed: () -> Unit,
-    onNavigationToActivity: (isBaselineMission: Boolean, mission: MissionUiModel) -> Unit,
-
-    ) {
+    onNavigationToActivity: (isBaselineMission: Boolean, mission: MissionUiModel) -> Unit
+) {
     val context = LocalContext.current
+
+    val stateHandle = navController.currentBackStackEntry?.savedStateHandle
+    val completedMissionId = remember { stateHandle?.getLiveData<Int>("missionId") }
+
+    val lazyListState = rememberLazyListState()
+    val coroutineScope = rememberCoroutineScope()
+
     val pullRefreshState = rememberPullRefreshState(
         viewModel.loaderState.value.isLoaderVisible,
         {
@@ -94,6 +105,33 @@ fun MissionScreen(
     DisposableEffect(key1 = true) {
         onDispose {
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        }
+    }
+    LaunchedEffect(viewModel.filterMissionList.value) {
+        try {
+            if (completedMissionId?.value != 0 && completedMissionId?.value != null && viewModel.filterMissionList.value.isNotEmpty()) {
+                val index = viewModel.filterMissionList.value.map { it.missionId }
+                    .indexOf(completedMissionId.value)
+                if (index > 0) {
+                    delay(1000)
+                    lazyListState.animateScrollToItem(index)
+                }
+            }
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = "MissionScreen",
+                msg = "LaunchedEffect: ex -> ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
+        }
+
+    }
+
+    DisposableEffect(key1 = LocalContext.current) {
+
+        onDispose {
+            completedMissionId?.value = NUMBER_ZERO
         }
     }
 
@@ -169,6 +207,7 @@ fun MissionScreen(
                             tabs = viewModel.tabs,
                             countMap = viewModel.countMap
                         ) {
+                            completedMissionId?.value = 0
                             viewModel.onEvent(CommonEvents.OnSubTabChanged)
                         }
                     }
@@ -219,7 +258,10 @@ fun MissionScreen(
                     contentColor = blueDark,
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                LazyColumn(modifier = Modifier.padding(bottom = dimen_50_dp)) {
+                LazyColumn(
+                    state = lazyListState,
+                    modifier = Modifier.padding(bottom = dimen_50_dp)
+                ) {
 
                     customVerticalSpacer()
 
@@ -245,6 +287,7 @@ fun MissionScreen(
                             livelihoodOrder = mission.livelihoodOrder,
                             primaryButtonText = viewModel.getString(context, R.string.start),
                             onPrimaryClick = {
+                                completedMissionId?.value = 0
                                 viewModel.isMissionLoaded(
                                     missionId = mission.missionId,
                                     programId = mission.programId,

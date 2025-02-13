@@ -41,7 +41,6 @@ import com.nudge.core.ui.commonUi.rememberCustomDatePickerState
 import com.nudge.core.ui.commonUi.rememberDatePickerProperties
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_200_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.eventTextColor
@@ -458,7 +457,7 @@ fun AddEventScreen(
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.AMOUNT].value()) {
                     item {
                         InputComponent(
-                            maxLength = 7,
+                            maxLength = 5,
                             isMandatory = true,
                             isEditable = true,
                             defaultValue = viewModel.amount.value,
