@@ -663,6 +663,7 @@ private fun OptionsUI(
                         isQuestionDisplay = false,
                         showCardView = false,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
+                        isEditAllowed = !isActivityCompleted,
                         onAnswerSelection = { selectedOptionIndex, isSelected ->
                             if (!isActivityCompleted) {
                                 questionUiModel.options?.let { options ->
