@@ -307,4 +307,6 @@ object MigrationQueries {
         "ALTER TABLE $LIVELIHOOD_TABLE_NAME \n" +
                 "ADD COLUMN  category TEXT"
 
+    val ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID =
+        "ALTER TABLE MissionLivelihoodConfigEntity ADD COLUMN programLivelihoodReferenceId TEXT"
 }
