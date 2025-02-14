@@ -10,11 +10,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.IncrementDecrementCounter
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
-import com.nudge.core.ui.commonUi.QuestionComponent
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -29,6 +29,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 fun IncrementDecrementCounterList(
     content: List<ContentList?>? = listOf(),
     title: String = BLANK_STRING,
+    questionIndex: Int,
     optionList: List<OptionsUiModel>?,
     isEditAllowed: Boolean = true,
     maxValue: Int = MAXIMUM_RANGE,
@@ -56,7 +57,11 @@ fun IncrementDecrementCounterList(
                 .padding(horizontal = if (showCardView) dimen_16_dp else dimen_0_dp)
         ) {
             if (title?.isNotBlank() == true) {
-                QuestionComponent(title = title, isRequiredField = isMandatory)
+                QuestionComponent(
+                    title = title,
+                    questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    isRequiredField = isMandatory
+                )
             }
 
             optionList?.forEach { it ->
