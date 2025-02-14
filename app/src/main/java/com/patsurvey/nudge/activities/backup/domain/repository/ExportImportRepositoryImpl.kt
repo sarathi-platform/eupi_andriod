@@ -9,6 +9,7 @@ import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.patsurvey.nudge.database.NudgeDatabase
@@ -132,5 +133,7 @@ class ExportImportRepositoryImpl @Inject constructor(
         }
     }
 
-
+    override fun isRegenerateAllowed(): Boolean {
+        return coreSharedPrefs.getPref(AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name, false)
+    }
 }
