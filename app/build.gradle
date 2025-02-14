@@ -99,7 +99,7 @@ android {
                     appIcon: "@mipmap/ic_launcher",
                     appIconRound: "@mipmap/ic_launcher_round"
             ]
-            buildConfigField 'String', 'BASE_URL', '"https://uat.eupi-sarthi.in/"'
+            buildConfigField 'String', 'BASE_URL', '"https://sarathi.lokos.in/"'
         }
     }
     compileOptions {
