@@ -93,4 +93,6 @@ interface CorePrefRepo {
     fun saveMissionFilter(missionFilterUiModel: FilterUiModel)
     fun getMissionFilter(): FilterUiModel?
 
+    fun resetMissionFilter()
+
 }
