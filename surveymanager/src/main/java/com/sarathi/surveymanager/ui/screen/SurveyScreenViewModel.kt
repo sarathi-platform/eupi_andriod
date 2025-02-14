@@ -5,6 +5,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -24,6 +25,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -54,8 +56,9 @@ class SurveyScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
-
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseSurveyScreenViewModel(
     fetchDataUseCase,
     taskStatusUseCase,
@@ -74,7 +77,9 @@ class SurveyScreenViewModel @Inject constructor(
     getSurveyValidationsFromDbUseCase,
     validationUseCase,
     fetchContentUseCase = fetchContentUseCase,
-    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase
+    fetchAppConfigFromCacheOrDbUsecase = fetchAppConfigFromCacheOrDbUsecase,
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase,
+    missionFilterUtils = missionFilterUtils
 ) {
 
     override fun saveSingleAnswerIntoDb(currentQuestionUiModel: QuestionUiModel) {

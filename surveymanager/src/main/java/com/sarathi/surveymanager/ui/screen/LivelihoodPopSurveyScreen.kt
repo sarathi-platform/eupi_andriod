@@ -90,6 +90,7 @@ fun LivelihoodPopSurveyScreen(
                     }
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                    viewModel.updateMissionFilter()
                     viewModel.updateTaskStatus(taskId)
                 },
                 activityType = activityType,

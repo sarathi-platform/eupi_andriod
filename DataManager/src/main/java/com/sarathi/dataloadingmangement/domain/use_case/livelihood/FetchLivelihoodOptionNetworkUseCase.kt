@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
@@ -33,9 +34,8 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                                 subjectId = subjectLivelihoodMapping.didiId,
                                 livelihoodId = it.programLivelihoodId,
                                 status = 1,
-                                type = it.order
-
-
+                                type = it.order,
+                                livelihoodType = it.type ?: BLANK_STRING
                             )
                         )
                     }

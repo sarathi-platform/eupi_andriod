@@ -13,7 +13,8 @@ data class MissionUiModel(
     val programId: Int,
     val missionType: String? = "NON LIVELIHOOD",
     val livelihoodType: String?,
-    val livelihoodOrder: Int?
+    val livelihoodOrder: Int?,
+    val programLivelihoodReferenceId: List<Int>? = emptyList()
 ) {
     fun getSubTitle(): String {
         val livelihoodString =

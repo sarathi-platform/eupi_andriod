@@ -5,7 +5,8 @@ import com.nudge.core.model.uiModel.LivelihoodModel
 data class LivelihoodUiEntity(
     val id: Int,
     val livelihoodEntity: LivelihoodModel,
-    var isSelected: Boolean
+    var isSelected: Boolean,
+    var isLivelihoodTypeDropdown: Boolean = false
 ) {
 
     companion object {
@@ -38,6 +39,24 @@ data class LivelihoodUiEntity(
             return livelihoodUIEntityList.distinct()
         }
 
+        fun getLivelihoodUiTypeEntityList(
+            livelihoodUiModelList: List<LivelihoodModel>,
+            selectedType: List<String>
+        ): List<LivelihoodUiEntity> {
+            val livelihoodUIEntityList = ArrayList<LivelihoodUiEntity>()
+            livelihoodUiModelList.forEach { livelihoodDropDownUiModel ->
+                livelihoodUIEntityList.add(
+                    LivelihoodUiEntity(
+                        livelihoodDropDownUiModel.programLivelihoodId,
+                        livelihoodDropDownUiModel,
+                        isSelected = selectedType.contains(livelihoodDropDownUiModel.type.uppercase()),
+                        isLivelihoodTypeDropdown = true
+                    )
+                )
+            }
+
+            return livelihoodUIEntityList.distinct()
+        }
 
     }
 

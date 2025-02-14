@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
@@ -27,22 +26,24 @@ fun DidiSubTab(
     didiTabViewModel: DidiTabViewModel,
     didiList: List<SubjectEntity>
 ) {
-    val context = LocalContext.current
-    Row(Modifier.fillMaxWidth()) {
 
-        TextWithIconComponent(
-            iconProperties = IconProperties(
-                painterResource(id = R.drawable.didi_icon),
-                contentDescription = "",
-                blueDark,
-            ), textProperties = TextProperties(
-                text = didiTabViewModel.stringResource(
-                    R.string.total_didis, didiTabViewModel.totalCount.value
-                ),
-                color = blueDark,
-                style = defaultTextStyle
+    if (didiList.isNotEmpty()) {
+        Row(Modifier.fillMaxWidth()) {
+
+            TextWithIconComponent(
+                iconProperties = IconProperties(
+                    painterResource(id = R.drawable.didi_icon),
+                    contentDescription = "",
+                    blueDark,
+                ), textProperties = TextProperties(
+                    text = didiTabViewModel.stringResource(
+                        R.string.total_didis, didiTabViewModel.totalCount.value
+                    ),
+                    color = blueDark,
+                    style = defaultTextStyle
+                )
             )
-        )
+        }
     }
 
     LazyColumnWithVerticalPadding(modifier = Modifier.fillMaxSize()) {

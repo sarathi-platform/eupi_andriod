@@ -67,6 +67,7 @@
     <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
     <string name="all_missions_filter_label">All Missions</string>
     <string name="general_missions_filter_label">General Missions</string>
+    <string name="complete_survey">Complete Survey</string>
     <string name="exclude_in_calculation_message">*This expense is not included in the total calculation.</string>
     <string name="contact_to_admin_id_missing">Access issue detected. Please contact the admin for assistance.</string>
     <string name="str_download_complete">Application download complete.</string>

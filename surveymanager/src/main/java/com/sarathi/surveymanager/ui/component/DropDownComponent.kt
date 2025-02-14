@@ -170,7 +170,8 @@ fun <T> DropDownComponent(
                     }
 
                     is LivelihoodUiEntity -> {
-                        title = item.livelihoodEntity.name
+                        title =
+                            if (item.isLivelihoodTypeDropdown) item.livelihoodEntity.livelihoodTypeDisplayName else item.livelihoodEntity.name
                     }
 
                     else -> {

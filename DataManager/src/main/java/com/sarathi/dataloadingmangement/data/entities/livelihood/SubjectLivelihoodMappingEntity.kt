@@ -16,16 +16,18 @@ data class SubjectLivelihoodMappingEntity(
     val livelihoodId: Int,
     val type: Int,
     val status:Int,
+    //Add migration 6-7
+    val livelihoodType: String?
 
 ) {
     companion object {
         fun getSubjectLivelihoodMappingEntity(
             userId: String,
             subjectId: Int,
-
             livelihoodId: Int,
              type: Int,
-             status:Int
+            status: Int,
+            livelihoodType: String
         ): SubjectLivelihoodMappingEntity {
             return SubjectLivelihoodMappingEntity(
                 userId = userId,
@@ -33,6 +35,7 @@ data class SubjectLivelihoodMappingEntity(
                 livelihoodId = livelihoodId,
                 type = type,
                 status = status,
+                livelihoodType = livelihoodType
             )
         }
     }

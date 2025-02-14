@@ -135,6 +135,7 @@ fun SurveyScreen(
                     }
 
                     viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                    viewModel.updateMissionFilter()
                     viewModel.updateTaskStatus(taskId)
                     viewModel.updateSectionStatus(
                         missionId,

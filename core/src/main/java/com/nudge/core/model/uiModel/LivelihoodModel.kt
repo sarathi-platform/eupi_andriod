@@ -10,11 +10,12 @@ data class LivelihoodModel(
     var name: String,
     var status: Int,
     var originalName: String,
-    var type: String,
     @TypeConverters(ValidationConverter::class)
     val validations: List<Validations>?,
     var programLivelihoodId: Int,
-    var image: String?
+    var image: String?,
+    var type: String,
+    var livelihoodTypeDisplayName: String
 ) {
 
     companion object {
@@ -26,7 +27,8 @@ data class LivelihoodModel(
                 originalName = "",
                 validations = listOf(),
                 type = BLANK_STRING,
-                image = BLANK_STRING
+                image = BLANK_STRING,
+                livelihoodTypeDisplayName = BLANK_STRING
             )
         }
     }

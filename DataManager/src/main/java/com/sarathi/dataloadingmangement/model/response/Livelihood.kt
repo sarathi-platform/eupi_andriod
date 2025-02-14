@@ -19,11 +19,31 @@ data class Livelihood(
     @Expose
     @SerializedName("image") var image: String? = null,
     @Expose
-    @SerializedName("type") var type: String? = null,
+    @SerializedName("livelihoodType") var type: LivelihoodType? = null,
     @Expose
     @SerializedName("languages") var languages: ArrayList<LanguageReference> = arrayListOf(),
     @Expose
     @SerializedName("validations") var validations: List<Validations>?,
     @Expose
-    @SerializedName("programLivelihoodId") var programLivelihoodId: Int
+    @SerializedName("programLivelihoodId") var programLivelihoodId: Int,
+    @Expose
+    @SerializedName("category") var livelihoodCategory: String?
+)
+
+data class LivelihoodType(
+    @Expose
+    @SerializedName("originalName")
+    val originalName: String,
+    @Expose
+    @SerializedName("languages")
+    val languages: List<LanguageReference>
+)
+
+data class LivelihoodLanguageAttributes(
+    @Expose
+    @SerializedName("languageCode")
+    val languageCode: String,
+    @Expose
+    @SerializedName("value")
+    val value: String
 )

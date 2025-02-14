@@ -121,4 +121,6 @@ abstract class BaseViewModel : ViewModel() {
         ) ?: context.getString(resId, formatArgs)
     }
 
+    open fun updateMissionFilter() {}
+
 }

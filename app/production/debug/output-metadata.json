@@ -4,16 +4,16 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.nrlm.sarathi.uat",
-  "variantName": "uatDebug",
+  "applicationId": "com.nrlm.sarathi",
+  "variantName": "productionDebug",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 127,
-      "versionName": "2.0.124",
-      "outputFile": "app-uat-debug.apk"
+      "versionCode": 125,
+      "versionName": "2.0.122",
+      "outputFile": "app-production-debug.apk"
     }
   ],
   "elementType": "File"

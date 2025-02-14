@@ -270,6 +270,7 @@ fun TaskScreen(
                                 scope.launch {
                                     scaffoldState.hide()
                                 }
+                                viewModel.updateMissionFilter()
                                 viewModel.markActivityCompleteStatus()
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
@@ -605,8 +606,8 @@ fun TaskScreen(
                                 viewModel.showDialog.value = false
                             },
                             onPositiveButtonClick = {
+                                viewModel.updateMissionFilter()
                                 viewModel.markActivityCompleteStatus()
-
                                 navigateToActivityCompletionScreen(
                                     isFromActivity = true,
                                     navController = navController,
@@ -796,6 +797,7 @@ fun TaskRowView(
                     label = BLANK_STRING,
                     icon = null
                 )
+                viewModel.updateMissionFilter()
                 viewModel.updateTaskAvailableStatus(
                     taskId = task.key,
                     status = SurveyStatusEnum.NOT_AVAILABLE.name
