@@ -165,8 +165,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
 //Please change the logic from id to type
                                 selectedType = listOf(
                                     subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
-                                        .uppercase(),
-                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
                                         .uppercase()
                                 )
                             )
