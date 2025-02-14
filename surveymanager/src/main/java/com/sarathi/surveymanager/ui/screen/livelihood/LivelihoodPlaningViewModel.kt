@@ -191,11 +191,20 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 ignoreCase = true
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
                         }
+
+                        _primaryLivelihoodList.value = _primaryLivelihoodList.value.onEach {
+                            it.isSelected =
+                                primaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId
+                        }
                         _secondaryLivelihoodList.value = livelihoodUiList.filter {
                             it.livelihoodEntity.type.equals(
                                 secondaryLivelihoodType.value,
                                 ignoreCase = true
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+                        }
+                        _secondaryLivelihoodList.value = _secondaryLivelihoodList.value.onEach {
+                            it.isSelected =
+                                secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId
                         }
                         checkButtonValidation()
                         checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
