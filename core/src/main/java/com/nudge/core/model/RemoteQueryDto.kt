@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.model.dataModel
+package com.nudge.core.model
 
 data class RemoteQueryDto(
     val databaseName: String,

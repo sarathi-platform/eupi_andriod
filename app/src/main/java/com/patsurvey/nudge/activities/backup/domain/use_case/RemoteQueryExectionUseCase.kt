@@ -9,6 +9,17 @@ class RemoteQueryExecutionUseCase @Inject constructor(
 
     suspend operator fun invoke() {
 
+        val remoteQuery = remoteQueryExecutionRepository.getRemoteQuery()
+
+        remoteQuery?.let {
+            if (remoteQueryExecutionRepository.checkIfQueryIsValid(
+                    it.query,
+                    remoteQueryExecutionRepository.isUserIdCheckNotRequired(it)
+                )
+            ) {
+                remoteQueryExecutionRepository.executeQuery(it)
+            }
+        }
     }
 
 }

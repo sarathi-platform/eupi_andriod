@@ -13,10 +13,12 @@ import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.dao.RemoteQueryAuditTrailEntityDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.database.entities.AppConfigEntity
 import com.nudge.core.database.entities.CasteEntity
+import com.nudge.core.database.entities.RemoteQueryAuditTrailEntity
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.database.entities.traslation.TranslationConfigEntity
 import com.nudge.core.utils.CoreLogger
@@ -27,7 +29,8 @@ import java.sql.SQLException
         AppConfigEntity::class,
         TranslationConfigEntity::class,
         LanguageEntity::class,
-        CasteEntity::class
+        CasteEntity::class,
+        RemoteQueryAuditTrailEntity::class
     ],
     version = CORE_DB_VERSION,
     exportSchema = false
@@ -39,6 +42,7 @@ abstract class CoreDatabase : RoomDatabase() {
     abstract fun casteListDao(): CasteListDao
     abstract fun translationConfigDao(): TranslationConfigDao
     abstract fun languageListDao(): LanguageListDao
+    abstract fun remoteQueryAuditTrailEntityDao(): RemoteQueryAuditTrailEntityDao
 
     companion object {
 

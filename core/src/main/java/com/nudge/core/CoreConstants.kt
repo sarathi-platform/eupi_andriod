@@ -23,6 +23,7 @@ const val APP_CONFIG_TABLE = "app_config"
 const val TRANSLATION_CONFIG_TABLE_NAME = "translation_config_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val CASTE_TABLE = "caste_table"
+const val REMOTE_QUERY_AUDIT_TRAIL_TABLE_NAME = "remote_query_edit_trail_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -88,6 +89,7 @@ const val MULTIPART_FORM_DATA = "multipart/form-data"
 const val MULTIPART_IMAGE_PARAM_NAME = "files"
 
 const val SUCCESS = "SUCCESS"
+const val FAILED = "FAILED"
 const val FAIL = "FAIL"
 
 const val SUCCESS_CODE = "200"
@@ -264,3 +266,6 @@ const val GENERAL_MISSION_FILTER_VALUE = "General Missions"
 const val DOUBLE_SLASH_N = "\\n"
 const val SLASH_N = "\n"
 const val ELLIPSIS_MAX_LENGTH = 40
+
+const val INPROGRESS = "INPROGRESS"
+const val INVALID_OPERATION_MESSAGE = "Invalid operationType:"

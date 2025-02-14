@@ -18,6 +18,7 @@ import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.RemoteQueryAuditTrailEntityDao
 import com.nudge.core.database.dao.RequestStatusDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
@@ -514,6 +515,7 @@ object UseCaseModule {
         syncManagerDatabase: SyncManagerDatabase,
         coreDatabase: CoreDatabase,
         appConfigDao: ApiConfigDao,
+        remoteQueryAuditTrailEntityDao: RemoteQueryAuditTrailEntityDao,
         coreSharedPrefs: CoreSharedPrefs
     ): RemoteQueryExecutionRepository {
         return RemoteQueryExecutionRepositoryImpl(
@@ -523,6 +525,7 @@ object UseCaseModule {
             syncDatabase = syncManagerDatabase,
             coreDatabase = coreDatabase,
             appConfigDao = appConfigDao,
+            remoteQueryAuditTrailEntityDao = remoteQueryAuditTrailEntityDao,
             coreSharedPrefs = coreSharedPrefs
         )
 
