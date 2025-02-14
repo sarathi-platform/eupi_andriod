@@ -8,6 +8,7 @@ interface InfoUiModel {
     var livelihoodOrder: String?
     var livelihoodType: String?
     var livelihoodName: String?
+    val programLivelihoodReferenceId: List<Int>?
 }
 
 data class MissionInfoUIModel(
@@ -15,6 +16,7 @@ data class MissionInfoUIModel(
     override var livelihoodOrder: String? = BLANK_STRING,
     override var livelihoodType: String? = BLANK_STRING,
     override var livelihoodName: String? = BLANK_STRING,
+    override val programLivelihoodReferenceId: List<Int>? = emptyList()
 ) : InfoUiModel {
     fun getActivityScreenSubTitle(): String {
         val livelihoodString =

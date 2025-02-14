@@ -22,7 +22,8 @@ interface ActivityLanguageDao {
     fun deleteActivityLanguageAttributeForActivity(userId: String, missionId: Int, activityId: Int)
 
     @Query(
-        "select mission_language_table.description as missionName , activity_language_attribute_table.description as activityName ,mission_livelihood_config_table.livelihoodOrder as livelihoodOrder,mission_livelihood_config_table.description as livelihoodType " +
+        "select mission_language_table.description as missionName , activity_language_attribute_table.description as activityName ,mission_livelihood_config_table.livelihoodOrder as livelihoodOrder, \n" +
+                "mission_livelihood_config_table.description as livelihoodType, mission_livelihood_config_table.programLivelihoodReferenceId \n" +
                 "from $ACTIVITY_LANGUAGE_ATTRIBUTE_TABLE_NAME" +
                 " left join mission_livelihood_config_table on activity_language_attribute_table.missionId=mission_livelihood_config_table.missionId and mission_livelihood_config_table.userId=:userId and mission_livelihood_config_table.languageCode=:languageCode " +
                 " left join mission_language_table on activity_language_attribute_table.missionId=mission_language_table.missionId and mission_language_table.userId=:userId and mission_language_table.languageCode=:languageCode" +

@@ -383,4 +383,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         val prefValue = prefs.getString(PREF_MISSION_LIVELIHOOD_FILTER_VALUE, null) ?: return null
         return gson.fromJson(prefValue, FilterUiModel::class.java)
     }
+
+    override fun resetMissionFilter() {
+        prefs.edit()
+            .remove(PREF_MISSION_LIVELIHOOD_FILTER_VALUE)
+            .apply()
+    }
 }

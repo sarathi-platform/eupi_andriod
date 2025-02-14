@@ -63,6 +63,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 )
             )
         }
+        if (data.containsKey(AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name,
+                data[AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name].toBoolean()
+            )
+        }
         // TODO Uncomment code after navigation is fixed.
         /*if (data.containsKey(AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name)) {
             data[AppConfigKeysEnum.SOFT_EVENT_LIMIT_THRESHOLD.name]?.toInt()?.let {

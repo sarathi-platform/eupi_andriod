@@ -16,4 +16,6 @@ interface ExportImportRepository {
   fun getStateId(): Int
   suspend fun fetchMissionsForUser(): List<MissionUiModel>
 
+  fun isRegenerateAllowed(): Boolean
+
 }

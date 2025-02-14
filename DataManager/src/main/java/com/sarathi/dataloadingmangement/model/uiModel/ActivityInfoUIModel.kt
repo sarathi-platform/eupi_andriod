@@ -9,7 +9,8 @@ data class ActivityInfoUIModel(
     var activityName: String,
     override var livelihoodOrder: String? = BLANK_STRING,
     override var livelihoodType: String? = BLANK_STRING,
-    override var livelihoodName: String? = BLANK_STRING
+    override var livelihoodName: String? = BLANK_STRING,
+    override var programLivelihoodReferenceId: List<Int>? = emptyList()
 ) : InfoUiModel {
 
     private fun getActivityScreenSubTitle(): String {

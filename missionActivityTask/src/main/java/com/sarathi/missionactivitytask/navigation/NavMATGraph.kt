@@ -941,6 +941,9 @@ fun NavGraphBuilder.MatNavigation(
                 }
                 )
         ) {
+            val formattedActivityName=  (it.arguments?.getString(
+                ARG_ACTIVITY_NAME
+            ) ?: BLANK_STRING).replace(CLEAN_ROUTE_DELIMITER,FORWARD_SLASH_DELIMITER)
             ActivitySelectTaskScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
@@ -950,9 +953,7 @@ fun NavGraphBuilder.MatNavigation(
                 activityId = it.arguments?.getInt(
                     ARG_ACTIVITY_ID
                 ) ?: 0,
-                activityName = it.arguments?.getString(
-                    ARG_ACTIVITY_NAME
-                ) ?: BLANK_STRING,
+                activityName = formattedActivityName,
                 onSettingClick = onSettingIconClick,
                 programId = it.arguments?.getInt(ARG_PROGRAM_ID).value()
             )
@@ -1426,7 +1427,10 @@ fun navigateToActivitySelectTaskScreen(
     activityName: String,
     programId: Int,
 ) {
-    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+
+    val formattedActivityName =
+        activityName.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
+    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$formattedActivityName/$programId")
 }
 
 fun navigateToFormQuestionScreen(
