@@ -125,8 +125,7 @@ class MissionFilterUtils @Inject constructor(
         else {
             getMissionFilterListForLivelihood()
                 .find {
-                    (it.type as FilterType.OTHER).filterValue.toString()
-                        .equals(infoUIModel.livelihoodType, true)
+                    infoUIModel.programLivelihoodReferenceId?.contains((it.type as FilterType.OTHER).filterValue) == true
                 }
         }
 
