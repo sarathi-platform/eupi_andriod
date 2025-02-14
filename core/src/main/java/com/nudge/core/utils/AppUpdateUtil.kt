@@ -1,7 +1,6 @@
-package com.patsurvey.nudge.utils
+package com.nudge.core.utils
 
 import android.app.Activity
-import android.util.Log
 import com.google.android.gms.tasks.Task
 import com.google.android.material.snackbar.Snackbar
 import com.google.android.play.core.appupdate.AppUpdateInfo
@@ -13,33 +12,36 @@ import com.google.android.play.core.install.model.InstallStatus
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
-import com.patsurvey.nudge.R
+import com.nudge.core.APP_UPDATE_REQUEST_CODE
+import com.nudge.core.R
+import com.nudge.core.model.CoreAppDetails
 
-private fun getUpdateType(): Int {
-    return AppUpdateType.IMMEDIATE
-}
-
-fun Activity.checkForAppUpdates(appUpdateManager: AppUpdateManager) {
-    Log.d("TAG", "checkForAppUpdates: UPdateDetails")
+const val APP_UPDATE_TAG = "AppUpdateDetails"
+fun Activity.checkForAppUpdates(appUpdateManager: AppUpdateManager, appUpdateType: Int) {
+    CoreLogger.d(
+        CoreAppDetails.getApplicationContext(),
+        APP_UPDATE_TAG,
+        "UpdateDetails Type: $appUpdateType"
+    )
     val appUpdateInfoTask: Task<AppUpdateInfo> = appUpdateManager.appUpdateInfo
     appUpdateInfoTask.addOnSuccessListener { info ->
-        Log.d("TAG", "checkForAppUpdates: addOnSuccessListener")
         val isUpdateAvailable = info.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE
-        Log.d("TAG", "checkForAppUpdates: addOnSuccessListener 11")
-
-        val isUpdateAllowed = when (getUpdateType()) {
+        val isUpdateAllowed = when (appUpdateType) {
             AppUpdateType.FLEXIBLE -> info.isFlexibleUpdateAllowed
             AppUpdateType.IMMEDIATE -> info.isImmediateUpdateAllowed
             else -> false
         }
 
         if (isUpdateAvailable && isUpdateAllowed) {
-            requestAppUpdate(appUpdateManager, info, getUpdateType())
+            requestAppUpdate(appUpdateManager, info, appUpdateType)
         }
     }
     appUpdateInfoTask.addOnFailureListener {
-        it.printStackTrace()
-        Log.d("TAG", "checkForAppUpdates Exception: ${it.message} ")
+        CoreLogger.e(
+            CoreAppDetails.getApplicationContext(),
+            APP_UPDATE_TAG,
+            "CheckForAppUpdates Exception: ${it.message}"
+        )
     }
 }
 
@@ -49,6 +51,11 @@ private fun Activity.requestAppUpdate(
     updateType: Int
 ) {
     try {
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            APP_UPDATE_TAG,
+            "UpdateDetails requestAppUpdate"
+        )
         appUpdateManager.startUpdateFlowForResult(
             appUpdateInfo,
             this,
@@ -56,14 +63,19 @@ private fun Activity.requestAppUpdate(
             APP_UPDATE_REQUEST_CODE
         )
     } catch (e: Exception) {
-        e.printStackTrace()
+        CoreLogger.e(
+            CoreAppDetails.getApplicationContext(),
+            APP_UPDATE_TAG,
+            "requestAppUpdate Exception: ${e.message}"
+        )
     }
 }
 
 fun Activity.setupAppUpdateListeners(
     appUpdateManager: AppUpdateManager,
+    updateType: Int
 ) {
-    val updateType = getUpdateType()
+
 
     when (updateType) {
         AppUpdateType.FLEXIBLE -> setupFlexibleUpdateSuccessListener(appUpdateManager)
@@ -91,8 +103,8 @@ private fun Activity.setupFlexibleUpdateSuccessListener(appUpdateManager: AppUpd
     }
 }
 
-fun Activity.unregisterAppUpdateListeners(appUpdateManager: AppUpdateManager) {
-    if (getUpdateType() == AppUpdateType.FLEXIBLE) {
+fun Activity.unregisterAppUpdateListeners(appUpdateManager: AppUpdateManager, updateType: Int) {
+    if (updateType == AppUpdateType.FLEXIBLE) {
         appUpdateManager.unregisterListener(getInstallStateUpdateListener(appUpdateManager))
     }
 }
