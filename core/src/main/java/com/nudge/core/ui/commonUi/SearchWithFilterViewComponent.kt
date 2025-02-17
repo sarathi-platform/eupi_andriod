@@ -32,6 +32,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -199,7 +200,9 @@ fun SimpleSearchComponent(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp
-                    ), color = placeholderGrey
+                    ), color = placeholderGrey,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
             },
             textStyle = TextStyle(
