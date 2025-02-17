@@ -122,7 +122,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 selectedLivelihoodType,
                 ignoreCase = true
             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-        }.onEach { it.isSelected = false }
+        }.map { it.copy(isSelected = false) }
         primaryLivelihoodType.value = selectedLivelihoodType
         checkButtonValidation()
     }
@@ -135,7 +135,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                 selectedLivelihoodType,
                 ignoreCase = true
             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-        }.onEach { it.isSelected = false }
+        }.map { it.copy(isSelected = false) }
         secondaryLivelihoodType.value = selectedLivelihoodType
         checkButtonValidation()
     }
@@ -165,8 +165,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
 //Please change the logic from id to type
                                 selectedType = listOf(
                                     subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
-                                        .uppercase(),
-                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
                                         .uppercase()
                                 )
                             )
@@ -193,12 +191,14 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                 ignoreCase = true
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
                         }
+                            .map { it.copy(isSelected = primaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
                         _secondaryLivelihoodList.value = livelihoodUiList.filter {
                             it.livelihoodEntity.type.equals(
                                 secondaryLivelihoodType.value,
                                 ignoreCase = true
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
                         }
+                            .map { it.copy(isSelected = secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
                         checkButtonValidation()
                         checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
                     }

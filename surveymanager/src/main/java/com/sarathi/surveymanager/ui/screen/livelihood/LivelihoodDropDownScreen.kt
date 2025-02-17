@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
+import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -233,7 +234,8 @@ fun DropdownView(
             ),
             isMandatory = true,
             enableItem = selectedItem1 ?: DEFAULT_LIVELIHOOD_ID,
-            diableItem = selectedItem2 ?: 0,
+            diableItem = if (selectedItem2 == NOT_DECIDED_LIVELIHOOD_ID) NOT_DECIDED_LIVELIHOOD_ID else 0
+                ?: 0,
             sources = livelihoodTypeList,
             onAnswerSelection = { selectedValue ->
                 onPrimaryLivelihoodTypeSelected(selectedValue.livelihoodEntity.type)
@@ -259,7 +261,7 @@ fun DropdownView(
             ),
             isEditAllowed = isEditAllowed,
             isMandatory = true,
-            diableItem = selectedItem1 ?: 0,
+            diableItem = if (selectedItem1 == NOT_DECIDED_LIVELIHOOD_ID) NOT_DECIDED_LIVELIHOOD_ID else 0,
             enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,
             sources = secondarylivelihoodTypeList,
             onAnswerSelection = { selectedValue ->

@@ -34,8 +34,8 @@ fun LivelihoodPlanningDropDownComponent(
     val defaultSourceList =
         sources ?: listOf()
     var expanded by remember { mutableStateOf(false) }
-    var selectedOptionText by remember(defaultSourceList) {
-        mutableStateOf<String>(getSelectedOptionText(defaultSourceList, enableItem))
+    var selectedOptionText by remember(sources) {
+        mutableStateOf<String>(getSelectedOptionText(sources, enableItem))
     }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }

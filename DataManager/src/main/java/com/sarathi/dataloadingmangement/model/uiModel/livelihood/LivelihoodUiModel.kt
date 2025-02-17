@@ -49,7 +49,7 @@ data class LivelihoodUiEntity(
                     LivelihoodUiEntity(
                         livelihoodDropDownUiModel.programLivelihoodId,
                         livelihoodDropDownUiModel,
-                        isSelected = selectedType.contains(livelihoodDropDownUiModel.type),
+                        isSelected = selectedType.contains(livelihoodDropDownUiModel.type.uppercase()),
                         isLivelihoodTypeDropdown = true
                     )
                 )

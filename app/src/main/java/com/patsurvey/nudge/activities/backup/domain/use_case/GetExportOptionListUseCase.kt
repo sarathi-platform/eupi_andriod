@@ -12,6 +12,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 class GetExportOptionListUseCase(private val repository: ExportImportRepository) {
 
     fun fetchExportOptionList(): List<SettingOptionModel> {
+        val isRegenerateAllowed = repository.isRegenerateAllowed()
         val list = ArrayList<SettingOptionModel>()
         val context = BaselineCore.getAppContext()
 
@@ -34,14 +35,16 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
             )
         )
 
-        list.add(
-            SettingOptionModel(
-                3,
-                context.getString(R.string.regenerate_all_events),
-                BLANK_STRING,
-                SettingTagEnum.REGENERATE_EVENTS.name
+        if (isRegenerateAllowed) {
+            list.add(
+                SettingOptionModel(
+                    3,
+                    context.getString(R.string.regenerate_all_events),
+                    BLANK_STRING,
+                    SettingTagEnum.REGENERATE_EVENTS.name
+                )
             )
-        )
+        }
         if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
