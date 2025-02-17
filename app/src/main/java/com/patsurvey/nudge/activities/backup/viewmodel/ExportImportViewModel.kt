@@ -268,6 +268,8 @@ class ExportImportViewModel @Inject constructor(
     }
 
     fun checkAndRunRemoteQueryExecution() {
-
+        ioViewModelScope {
+            remoteQueryExecutionUseCase.invoke()
+        }
     }
 }
