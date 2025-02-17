@@ -122,10 +122,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             )
         )
         appUpdateManager = AppUpdateManagerFactory.create(this)
-        appUpdateType.value = getAppUpdateType(
-            sharedPrefs.getPref(APP_UPDATE_TYPE, APP_UPDATE_IMMEDIATE)
-                ?: APP_UPDATE_IMMEDIATE
-        )
         validateAppVersionAndCheckUpdate()
 
         CoreObserverManager.addObserver(this)
@@ -301,6 +297,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     }
 
     private fun validateAppVersionAndCheckUpdate() {
+        appUpdateType.value = getAppUpdateType(
+            sharedPrefs.getPref(APP_UPDATE_TYPE, APP_UPDATE_IMMEDIATE)
+                ?: APP_UPDATE_IMMEDIATE
+        )
         val currentAppVersion = BuildConfig.VERSION_CODE
         val minAppVersion = sharedPrefs.getPref(MINIMUM_VERSION_CODE, currentAppVersion)
         if (sharedPrefs.getPref(IS_APP_NEED_UPDATE, false)) {
