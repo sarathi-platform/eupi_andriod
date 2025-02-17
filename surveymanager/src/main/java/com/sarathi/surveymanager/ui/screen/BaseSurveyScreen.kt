@@ -271,9 +271,6 @@ fun QuestionUiContent(
         val showCardView = grantType.equals(
             ActivityTypeEnum.SURVEY.name,
             ignoreCase = true
-        ) || grantType.equals(
-            ActivityTypeEnum.BASIC.name,
-            ignoreCase = true
         )
         when (question.type) {
             QuestionType.InputNumber.name,
