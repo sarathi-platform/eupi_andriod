@@ -36,7 +36,7 @@ abstract class BaseViewModel : ViewModel() {
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
     val mainDispatcher: CoroutineDispatcher = Dispatchers.Main
     val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default
-
+    val isSettingClicked = mutableStateOf(false)
     @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
     private val _translationMap =
