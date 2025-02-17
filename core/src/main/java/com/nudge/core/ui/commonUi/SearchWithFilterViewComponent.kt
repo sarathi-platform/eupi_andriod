@@ -199,7 +199,7 @@ fun SimpleSearchComponent(
                     text = placeholderString, style = TextStyle(
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
+                        fontSize = 14.sp
                     ), color = placeholderGrey,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
