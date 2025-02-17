@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -115,7 +115,7 @@ fun GridTypeComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = manualMinHeight, maxCustomHeight + manualMinHeight)
+            .wrapContentHeight()
     ) {
 
         Card(
@@ -139,16 +139,11 @@ fun GridTypeComponent(
                         dimen_18_dp
                     )
                 ) {
-                    LazyColumn(
-                        state = outerState,
+                    Column(
                         modifier = Modifier
-                            .heightIn(
-                                min = manualMinHeight,
-                                max = maxCustomHeight + manualMinHeight
-                            )
+                            .wrapContentHeight()
                     ) {
                         if (isQuestionDisplay) {
-                            item {
                                 Row(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
@@ -163,12 +158,9 @@ fun GridTypeComponent(
                                     )
                                 }
                             }
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(dimen_10_dp))
-                        }
 
-                        item {
+                            Spacer(modifier = Modifier.height(dimen_10_dp))
+
                             if (optionUiModelList?.isNotEmpty() == true) {
                                 LazyVerticalGrid(
                                     userScrollEnabled = false,
@@ -208,8 +200,7 @@ fun GridTypeComponent(
 
                                 }
                             }
-                        }
-                        item {
+
                             if (showCardView && content?.isNotEmpty() == true) {
                                 ContentBottomViewComponent(
                                 contents = content,
@@ -221,7 +212,6 @@ fun GridTypeComponent(
                                     }
                                 )
                             }
-                        }
                     }
 
                 }

@@ -19,10 +19,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
@@ -627,7 +627,7 @@ private fun OptionsUI(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .heightIn(dimen_100_dp, customGridHeight(questionUiModel?.options?.size ?: 0)),
+            .wrapContentHeight(),
     ) {
         questionUiModel?.options?.sortedBy { it.order }?.let {
             when (questionUiModel.type.toLowerCase()) {
