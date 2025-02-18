@@ -90,6 +90,9 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO).launch {
+            withContext(CoreDispatchers.mainDispatcher) {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+            }
             delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
