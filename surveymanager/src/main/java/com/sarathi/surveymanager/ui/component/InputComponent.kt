@@ -70,6 +70,7 @@ fun InputComponent(
     totalSubmittedAmount: Int = 0,
     isZeroNotAllowed: Boolean = false,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isFromTypeQuestion: Boolean = false,
     resetResponse: Boolean = false,
     optionsItem: OptionsUiModel? = null,
@@ -106,7 +107,7 @@ fun InputComponent(
                 QuestionComponent(
                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                     title = title,
-                    questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
                     isRequiredField = isMandatory,
                     onDetailIconClicked = {
                         onDetailIconClicked()

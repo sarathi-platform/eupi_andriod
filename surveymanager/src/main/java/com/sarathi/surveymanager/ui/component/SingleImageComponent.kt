@@ -38,6 +38,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
 import com.nudge.core.showCustomToast
@@ -65,6 +66,8 @@ import java.io.File
 @Composable
 fun SingleImageComponent(
     isMandatory: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
+    questionIndex: Int = 0,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
     isEditable: Boolean = true,
@@ -109,6 +112,7 @@ fun SingleImageComponent(
                 isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                 onDetailIconClicked = { onDetailIconClicked() },
                 title = title,
+                questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
                 isRequiredField = isMandatory,
                 subTitle = BLANK_STRING
             )

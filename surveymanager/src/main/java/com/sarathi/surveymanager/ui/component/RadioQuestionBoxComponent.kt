@@ -68,6 +68,7 @@ fun RadioQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isEditAllowed: Boolean = true,
     isQuestionTypeToggle: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
@@ -145,7 +146,7 @@ fun RadioQuestionBoxComponent(
                                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                     onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
-                                    questionNumber = if (showCardView) getQuestionNumber(
+                                    questionNumber = if (isQuestionNumberVisible) getQuestionNumber(
                                         questionIndex
                                     ) else BLANK_STRING,
                                     isRequiredField = isRequiredField
@@ -234,6 +235,7 @@ fun ToggleQuestionBoxComponent(
     optionUiModelList: List<OptionsUiModel>,
     selectedOptionIndex: Int = -1,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
@@ -252,6 +254,7 @@ fun ToggleQuestionBoxComponent(
         selectedOptionIndex = selectedOptionIndex,
         isQuestionTypeToggle = true,
         showCardView = showCardView,
+        isQuestionNumberVisible = isQuestionNumberVisible,
         optionUiModelList = optionUiModelList,
         isEditAllowed = isEditAllowed,
         onAnswerSelection = onAnswerSelection,

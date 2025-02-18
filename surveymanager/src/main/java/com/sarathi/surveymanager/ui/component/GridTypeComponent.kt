@@ -84,6 +84,7 @@ fun GridTypeComponent(
     questionIndex: Int,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
@@ -156,7 +157,7 @@ fun GridTypeComponent(
                                         isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                         onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
-                                        questionNumber = if (showCardView) getQuestionNumber(
+                                        questionNumber = if (isQuestionNumberVisible) getQuestionNumber(
                                             questionIndex
                                         ) else BLANK_STRING,
                                         isRequiredField = isRequiredField

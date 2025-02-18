@@ -272,6 +272,10 @@ fun QuestionUiContent(
             ActivityTypeEnum.SURVEY.name,
             ignoreCase = true
         )
+        val isQuestionNumberVisible = grantType.equals(
+            ActivityTypeEnum.BASIC.name,
+            ignoreCase = true
+        )
         when (question.type) {
             QuestionType.InputNumber.name,
             QuestionType.TextField.name,
@@ -299,10 +303,11 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isEditable = !viewModel.isActivityCompleted.value,
                     defaultValue = question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
                     optionsItem = question.options?.firstOrNull(),
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     isOnlyNumber = question.type == QuestionType.InputNumber.name || question.type == QuestionType.NumericField.name,
                     isError = !viewModel.fieldValidationAndMessageMap.get(question.questionId)?.first.value(
                         true
@@ -332,9 +337,10 @@ fun QuestionUiContent(
                     isMandatory = question.isMandatory,
                     defaultValue = question.options?.firstOrNull()?.selectedValue
                         ?: BLANK_STRING,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     isEditable = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -355,13 +361,14 @@ fun QuestionUiContent(
             QuestionType.MultiImage.name -> {
                 AddImageComponent(
                     contents = question.contentEntities,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths = commaSeparatedStringToList(
                         question.options?.firstOrNull()?.selectedValue
                             ?: BLANK_STRING
                     ),
                     isMandatory = question.isMandatory,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     isEditable = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -385,13 +392,15 @@ fun QuestionUiContent(
             }
             QuestionType.SingleImage.name -> {
                 SingleImageComponent(
+                    isQuestionNumberVisible = isQuestionNumberVisible,
+                    questionIndex = index,
                     content = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths =
                     question.options?.firstOrNull()?.selectedValue
                         ?: com.nudge.core.BLANK_STRING,
                     isMandatory = question.isMandatory,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     isEditable = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     subtitle = question.display,
@@ -406,7 +415,8 @@ fun QuestionUiContent(
                     contents = question.contentEntities,
                     questionIndex = index,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
                     sources = getOptionsValueDto(question.options ?: listOf()),
@@ -432,12 +442,13 @@ fun QuestionUiContent(
                 TypeMultiSelectedDropDownComponent(
                     content = question.contentEntities,
                     questionIndex = index,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     isMandatory = question.isMandatory,
                     sources = getOptionsValueDto(question.options ?: listOf()),
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
                         question.questionId
                     ),
@@ -469,7 +480,7 @@ fun QuestionUiContent(
 
             QuestionType.AutoCalculation.name -> {
                 CalculationResultComponent(
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     defaultValue = viewModel.autoCalculateQuestionResultMap[question.questionId].value(),
                     showCardView = showCardView
                 )
@@ -479,11 +490,12 @@ fun QuestionUiContent(
                 RadioQuestionBoxComponent(
                     content = question.contentEntities,
                     questionIndex = index,
-                    questionDisplay = question.getQuestionDisplay(grantType = grantType),
+                    questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
@@ -509,11 +521,12 @@ fun QuestionUiContent(
                 GridTypeComponent(
                     content = question.contentEntities,
                     questionIndex = index,
-                    questionDisplay = question.getQuestionDisplay(grantType = grantType),
+                    questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     optionStateMap = viewModel.optionStateMap,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -552,10 +565,11 @@ fun QuestionUiContent(
                 ToggleQuestionBoxComponent(
                     content = question.contentEntities,
                     questionIndex = index,
-                    questionDisplay = question.getQuestionDisplay(grantType = grantType),
+                    questionDisplay = question.questionDisplay,
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
@@ -579,12 +593,13 @@ fun QuestionUiContent(
             QuestionType.IncrementDecrementList.name -> {
                 IncrementDecrementCounterList(
                     content = question.contentEntities,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    title = question.questionDisplay,
                     questionIndex = index,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     editNotAllowedMsg = stringResource(R.string.edit_disable_message),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
@@ -607,10 +622,12 @@ fun QuestionUiContent(
 
             QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                 HrsMinRangePickerComponent(
+                    questionIndex = index,
                     content = question.contentEntities,
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
-                    title = question.getQuestionDisplay(grantType = grantType),
+                    isQuestionNumberVisible = isQuestionNumberVisible,
+                    title = question.questionDisplay,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     typePicker = question.type,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -693,6 +710,7 @@ fun FormQuestionUiContent(
     grantType: String,
     index: Int,
     onClick: () -> Unit,
+    isQuestionNumberVisible: Boolean = false,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
     showEditErrorToast: (context: Context, editErrorType: String) -> Unit,
@@ -716,7 +734,7 @@ fun FormQuestionUiContent(
                     QuestionComponent(
                         title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)
                             ?.firstOrNull()?.value.value(),
-                        questionNumber = getQuestionNumber(index),
+                        questionNumber = if (isQuestionNumberVisible) getQuestionNumber(index) else BLANK_STRING,
                         isRequiredField = question.isMandatory
                     )
 

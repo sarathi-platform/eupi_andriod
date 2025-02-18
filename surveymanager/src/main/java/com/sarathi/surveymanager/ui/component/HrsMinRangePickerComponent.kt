@@ -25,6 +25,7 @@ import com.nudge.core.HOURS
 import com.nudge.core.MINUTE
 import com.nudge.core.MONTHS
 import com.nudge.core.YEAR
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -44,11 +45,13 @@ import com.sarathi.surveymanager.R
 fun HrsMinRangePickerComponent(
     content: List<ContentList?>? = listOf(),
     isMandatory: Boolean = false,
+    questionIndex: Int = 0,
     isEditAllowed: Boolean = true,
     title: String? = BLANK_STRING,
     defaultValue: String = BLANK_STRING,
     typePicker: String,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isFromTypeQuestion: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
@@ -81,11 +84,13 @@ fun HrsMinRangePickerComponent(
             if (title != null) {
                 if (title.isNotBlank()) {
                     QuestionComponent(
-                    isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
-                        onDetailIconClicked = { onDetailIconClicked() },
+                        isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                         title = title,
-                        isRequiredField = isMandatory
-                    )
+                        questionNumber = if (isQuestionNumberVisible) getQuestionNumber(
+                            questionIndex
+                        ) else BLANK_STRING,
+                        isRequiredField = isMandatory,
+                        onDetailIconClicked = { onDetailIconClicked() })
                 }
             }
 
@@ -339,6 +344,7 @@ fun getSecondDefaultValue(typePicker: String): String {
 @Composable
 fun PreviewTimePickerComponent() {
     HrsMinRangePickerComponent(
+        questionIndex = 0,
         defaultValue = ":15",
         typePicker = "HrsMinPicker",
         onAnswerSelection = { selectValue, selectedValueId ->

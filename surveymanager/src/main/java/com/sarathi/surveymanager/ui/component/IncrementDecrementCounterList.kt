@@ -36,6 +36,7 @@ fun IncrementDecrementCounterList(
     editNotAllowedMsg: String = BLANK_STRING,
     isMandatory: Boolean = false,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (optionId: Int?, selectValue: String) -> Unit,
 ) {
@@ -59,7 +60,7 @@ fun IncrementDecrementCounterList(
             if (title?.isNotBlank() == true) {
                 QuestionComponent(
                     title = title,
-                    questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
                     isRequiredField = isMandatory
                 )
             }

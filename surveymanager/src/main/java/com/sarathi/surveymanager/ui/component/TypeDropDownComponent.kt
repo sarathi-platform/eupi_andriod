@@ -187,6 +187,7 @@ fun DropDownTypeComponent(
     sources: List<ValuesDto>?,
     isMandatory: Boolean = false,
     showQuestionInCard: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isEditAllowed: Boolean = true,
     isFromTypeQuestion: Boolean = false,
     onDetailIconClicked: () -> Unit = {},
@@ -204,7 +205,7 @@ fun DropDownTypeComponent(
             sources = sources,
             isMandatory = isMandatory,
             isEditAllowed = isEditAllowed,
-            questionNumber = getQuestionNumber(questionIndex),
+            questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
             navigateToMediaPlayerScreen = { imageContent ->
                 navigateToMediaPlayerScreen(imageContent)
             },
@@ -224,7 +225,7 @@ fun DropDownTypeComponent(
                 sources = sources,
                 isMandatory = isMandatory,
                 isEditAllowed = isEditAllowed,
-                questionNumber = BLANK_STRING,
+                questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
                 onDetailIconClicked = { onDetailIconClicked() },
                 navigateToMediaPlayerScreen = { contentList ->
                     navigateToMediaPlayerScreen(contentList)

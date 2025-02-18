@@ -54,6 +54,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
 import com.nudge.core.showCustomToast
@@ -83,6 +84,8 @@ import java.io.File
 fun AddImageComponent(
     contents: List<ContentList?>? = listOf(),
     showCardView: Boolean = false,
+    questionIndex: Int = 0,
+    isQuestionNumberVisible: Boolean = false,
     isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
@@ -129,8 +132,9 @@ fun AddImageComponent(
         if (title.isNotBlank()) {
             QuestionComponent(
                 title = title,
-                isRequiredField = isMandatory,
-                subTitle = subtitle ?: "Signed & Sealed Physical Format D"
+                questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
+                subTitle = subtitle ?: "Signed & Sealed Physical Format D",
+                isRequiredField = isMandatory
             )
         }
 
