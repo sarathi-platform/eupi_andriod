@@ -26,7 +26,7 @@ import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_72_dp
+import com.nudge.core.ui.theme.dimen_80_dp
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -61,7 +61,7 @@ fun SubmitPhysicalFormScreen(
             BottomAppBar(
                 backgroundColor = white, modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(dimen_72_dp, dimen_100_dp)
+                    .heightIn(dimen_80_dp, dimen_100_dp)
             ) {
                 Row(
                     modifier = Modifier
