@@ -28,6 +28,7 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
+import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -56,7 +57,7 @@ fun LivelihoodDropDownScreen(
     subjectName: String,
     onSettingClicked: () -> Unit
 ) {
-    val context = LocalContext.current
+
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
@@ -73,7 +74,9 @@ fun LivelihoodDropDownScreen(
             negativeButtonTitle = viewModel.stringResource(R.string.cancel_txt),
             onPositiveButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
-                navController.popBackStack()
+                if (viewModel.isSettingClicked.value) {
+                    onSettingClicked()
+                } else navController.popBackStack()
             }, onNegativeButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
             }
@@ -89,7 +92,13 @@ fun LivelihoodDropDownScreen(
         isSearch = false,
         onSearchValueChange = {},
         onSettingClick = {
-            onSettingClicked()
+            viewModel.isSettingClicked.value = true
+            if (viewModel.checkDialogueValidation.value) {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
+            } else {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                onSettingClicked()
+            }
         },
         onBottomUI = {
             Box(
@@ -196,8 +205,8 @@ fun LivelihoodDropDownScreen(
 }
 
 fun handleBackPress(viewModel: LivelihoodPlaningViewModel, navController: NavController) {
-
-    if ((viewModel.primaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID || viewModel.secondaryLivelihoodId.value !=DEFAULT_LIVELIHOOD_ID) && !viewModel.checkDialogueValidation.value) {
+    viewModel.isSettingClicked.value = false
+    if (viewModel.checkDialogueValidation.value) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     } else {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -233,7 +242,8 @@ fun DropdownView(
             ),
             isMandatory = true,
             enableItem = selectedItem1 ?: DEFAULT_LIVELIHOOD_ID,
-            diableItem = selectedItem2 ?: 0,
+            diableItem = if (selectedItem2 == NOT_DECIDED_LIVELIHOOD_ID) NOT_DECIDED_LIVELIHOOD_ID else 0
+                ?: 0,
             sources = livelihoodTypeList,
             onAnswerSelection = { selectedValue ->
                 onPrimaryLivelihoodTypeSelected(selectedValue.livelihoodEntity.type)
@@ -259,7 +269,7 @@ fun DropdownView(
             ),
             isEditAllowed = isEditAllowed,
             isMandatory = true,
-            diableItem = selectedItem1 ?: 0,
+            diableItem = if (selectedItem1 == NOT_DECIDED_LIVELIHOOD_ID) NOT_DECIDED_LIVELIHOOD_ID else 0,
             enableItem = selectedItem2 ?: DEFAULT_LIVELIHOOD_ID,
             sources = secondarylivelihoodTypeList,
             onAnswerSelection = { selectedValue ->
