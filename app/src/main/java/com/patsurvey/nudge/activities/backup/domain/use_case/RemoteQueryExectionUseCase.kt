@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.backup.domain.use_case
 
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.activities.backup.domain.repository.RemoteQueryExecutionRepository
 import javax.inject.Inject
 
@@ -19,6 +20,11 @@ class RemoteQueryExecutionUseCase @Inject constructor(
             ) {
                 remoteQueryExecutionRepository.executeQuery(it)
             }
+        } ?: {
+            CoreLogger.d(
+                tag = "RemoteQueryExecutionUseCase",
+                msg = "invoke no query found for execution",
+            )
         }
     }
 

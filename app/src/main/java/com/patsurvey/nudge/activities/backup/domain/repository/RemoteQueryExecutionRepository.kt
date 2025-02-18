@@ -36,6 +36,8 @@ interface RemoteQueryExecutionRepository {
 
     fun runAppVersionCheck(remoteQueryDto: RemoteQueryDto): Boolean
 
-//    fun isTableExists(): Boolean
+    suspend fun isQueryAlreadyExecuted(remoteQueryDto: RemoteQueryDto): Boolean
+
+    suspend fun isTableExists(tableName: String, database: RoomDatabase): Boolean
 
 }

@@ -21,4 +21,15 @@ interface RemoteQueryAuditTrailEntityDao {
         modifiedDate: Long = System.currentTimeMillis()
     )
 
+    @Query("SELECT * FROM remote_query_edit_trail_table WHERE userId = :userId AND databaseName = :databaseName AND dbVersion = :dbVersion AND tableName = :tableName AND operationType = :operationType AND appVersion = :appVersion AND `query` = :query")
+    suspend fun isQueryAlreadyExecuted(
+        userId: String,
+        databaseName: String,
+        dbVersion: Int,
+        tableName: String,
+        operationType: String,
+        appVersion: String,
+        query: String
+    ): RemoteQueryAuditTrailEntity?
+
 }

@@ -19,4 +19,18 @@ enum class DatabaseEnum(val databaseName: String, val dbVersion: Int) {
     SyncDatabase(SYNC_MANAGER_DATABASE, SYNC_MANAGER_DB_VERSION),
     CoreDatabase(CORE_DATABASE, CORE_DB_VERSION);
 
+    companion object {
+        fun getDbVersion(databaseName: String): Int {
+
+            return when (databaseName) {
+                NudgeDatabase.databaseName -> NudgeDatabase.dbVersion
+                NudgeBaselineDatabase.databaseName -> NudgeBaselineDatabase.dbVersion
+                NudgeGrantDatabase.databaseName -> NudgeGrantDatabase.dbVersion
+                SyncDatabase.databaseName -> SyncDatabase.dbVersion
+                CoreDatabase.databaseName -> CoreDatabase.dbVersion
+                else -> -1
+            }
+        }
+    }
+
 }

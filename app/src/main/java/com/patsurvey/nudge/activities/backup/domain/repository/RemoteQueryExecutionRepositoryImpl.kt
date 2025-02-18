@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.backup.domain.repository
 import android.text.TextUtils
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteStatement
+import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nudge.core.CASTE_TABLE
 import com.nudge.core.FAILED
@@ -52,35 +53,90 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
     override fun checkIfQueryIsValid(query: String, isUserIdCheckRequired: Boolean): Boolean {
         val cleanQuery = getCleanQuery(query).lowercase()
 
-        if (isUserIdCheckRequired && !cleanQuery.contains(USER_ID_FILTER))
+        if (isUserIdCheckRequired && !cleanQuery.contains(USER_ID_FILTER.lowercase())) {
+            CoreLogger.d(
+                tag = TAG,
+                msg = "checkIfQueryIsValid failed due to userId Filter -> query: ${query}",
+            )
             return false
+        }
 
-        if (cleanQuery.contains(SUSPICIOUS_PATTERN_REGEX))
-            return false
+//        TODO Check this regex and handle appropriately before merge.
+//        if (cleanQuery.contains(SUSPICIOUS_PATTERN_REGEX))
+//            return false
 
         return true
     }
 
     override suspend fun getRemoteQuery(): RemoteQueryDto? {
-        val config = appConfigDao.getConfig(
-            AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
-            coreSharedPrefs.getUniqueUserIdentifier()
-        )?.value
+        try {
+            val config = appConfigDao.getConfig(
+                AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
+                coreSharedPrefs.getUniqueUserIdentifier()
+            )?.value
 
-        if (TextUtils.isEmpty(config))
+//            Test Query for execution
+//            TODO Delete before merge after testing with BE integration.
+//            val config = "{\"databaseName\": \"NudgeGrantDatabase\",\"dbVersion\": 7,\"tableName\": \"mission_config_table\",\"query\": \"UPDATE mission_config_table SET missionName = 'Livelihood Planning New' where userId = 'Ultra Poor change maker (UPCM)_9862345078' and missionId = 6;\",\n" +
+//                    "  \"operationType\": \"UPDATE\",\"appVersion\": \"132\"}"
+
+            if (TextUtils.isEmpty(config))
+                return null
+
+            return config.fromJson<RemoteQueryDto>()
+        } catch (ex: JsonSyntaxException) {
+            CoreLogger.e(
+                tag = TAG,
+                msg = "getRemoteQuery -> JsonSyntaxException ex: ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
             return null
+        } catch (ex: Exception) {
+            CoreLogger.e(
+                tag = TAG,
+                msg = "getRemoteQuery -> Exception ex: ${ex.message}",
+                ex = ex,
+                stackTrace = true
+            )
+            return null
+        }
 
-        return config.fromJson<RemoteQueryDto>()
     }
 
     override suspend fun executeQuery(remoteQueryDto: RemoteQueryDto) {
         val isAppVersionValid = runAppVersionCheck(remoteQueryDto)
 
-        if (!isAppVersionValid)
+        if (!isAppVersionValid) {
+            CoreLogger.d(
+                tag = TAG,
+                msg = "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryDto.appVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+            )
             return
+        }
 
-        if (!isDatabaseVersionValidForExecution(remoteQueryDto))
+        if (!isDatabaseVersionValidForExecution(remoteQueryDto)) {
+            CoreLogger.d(
+                tag = TAG,
+                msg = "executeQuery failed due to invalid Database version, required: ${
+                    DatabaseEnum.getDbVersion(
+                        remoteQueryDto.databaseName
+                    )
+                }, found: ${remoteQueryDto.dbVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+            )
             return
+        }
+
+        if (isQueryAlreadyExecuted(remoteQueryDto)) {
+            CoreLogger.d(
+                tag = TAG,
+                msg = "executeQuery failed due to query already executed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+            )
+            return
+        }
 
         getDatabaseForQueryExecution(remoteQueryDto)?.let { database ->
 
@@ -228,10 +284,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
 
     override fun isDatabaseVersionValidForExecution(remoteQueryDto: RemoteQueryDto): Boolean {
         return when (remoteQueryDto.databaseName) {
-            DatabaseEnum.NudgeDatabase.databaseName -> {
-                remoteQueryDto.dbVersion == DatabaseEnum.NudgeDatabase.dbVersion
-            }
-
+            DatabaseEnum.NudgeDatabase.databaseName -> remoteQueryDto.dbVersion == DatabaseEnum.NudgeDatabase.dbVersion
             DatabaseEnum.NudgeBaselineDatabase.databaseName -> remoteQueryDto.dbVersion == DatabaseEnum.NudgeBaselineDatabase.dbVersion
             DatabaseEnum.NudgeGrantDatabase.databaseName -> remoteQueryDto.dbVersion == DatabaseEnum.NudgeGrantDatabase.dbVersion
             DatabaseEnum.SyncDatabase.databaseName -> remoteQueryDto.dbVersion == DatabaseEnum.SyncDatabase.dbVersion
@@ -244,4 +297,30 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         return remoteQueryDto.appVersion == BuildConfig.VERSION_CODE.toString()
     }
 
+    override suspend fun isQueryAlreadyExecuted(remoteQueryDto: RemoteQueryDto): Boolean {
+        remoteQueryAuditTrailEntityDao.isQueryAlreadyExecuted(
+            coreSharedPrefs.getUniqueUserIdentifier(), databaseName = remoteQueryDto.databaseName,
+            dbVersion = remoteQueryDto.dbVersion,
+            tableName = remoteQueryDto.tableName,
+            operationType = remoteQueryDto.operationType,
+            appVersion = remoteQueryDto.appVersion,
+            query = remoteQueryDto.query
+        )?.let {
+            return it.status == SUCCESS
+        } ?: return false
+    }
+
+    //TODO Test this before implementing.
+    override suspend fun isTableExists(tableName: String, database: RoomDatabase): Boolean {
+        val query =
+            ("select DISTINCT tbl_name from sqlite_master where tbl_name = '$tableName").toString() + "'"
+        database.openHelper.readableDatabase.query(query, emptyArray()).use { cursor ->
+            if (cursor.count > 0) {
+                cursor.close()
+                return true
+            }
+            cursor.close()
+            return false
+        }
+    }
 }
