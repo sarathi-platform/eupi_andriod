@@ -72,6 +72,7 @@ import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.redDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.uriFromFile
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.surveymanager.R
@@ -104,9 +105,26 @@ fun AddImageComponent(
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicture(),
         onResult = { success ->
-            if (success) {
-                imageList = (imageList + currentImageUri)
-                onImageSelection(currentImageUri?.path ?: BLANK_STRING, false)
+            try {
+                if (success) {
+                    CoreLogger.d(
+                        context,
+                        "AddImageComponent",
+                        "Image capture success -> ${currentImageUri?.path}"
+                    )
+                    imageList = (imageList + currentImageUri)
+                    onImageSelection(currentImageUri?.path ?: BLANK_STRING, false)
+                } else {
+                    CoreLogger.d(context, "AddImageComponent", "Image capture failure")
+                }
+            } catch (ex: Exception) {
+                ex.message?.let {
+                    CoreLogger.d(
+                        context,
+                        "AddImageComponent",
+                        "${"Image capture exception"} $it"
+                    )
+                }
             }
         }
     )
@@ -166,10 +184,23 @@ fun AddImageComponent(
                                                 }.png",
                                                 true
                                             )
-
-                                            cameraLauncher.launch(
-                                                currentImageUri
+                                            CoreLogger.d(
+                                                context,
+                                                "AddImageComponent",
+                                                "${"Image capture for Camera Lunch"} $it"
                                             )
+                                            try {
+                                                cameraLauncher.launch(
+                                                    currentImageUri
+                                                )
+                                            } catch (ex: Exception) {
+                                                CoreLogger.d(
+                                                    context,
+                                                    "AddImageComponent",
+                                                    "Camera Lunch Exception-: ${ex.message}"
+                                                )
+                                            }
+
                                         }
                                     }
                                 } else {
