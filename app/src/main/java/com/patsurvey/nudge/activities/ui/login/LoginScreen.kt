@@ -8,10 +8,23 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.*
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
+import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
+import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -29,17 +42,19 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.nudge.core.setKeyboardToReadjust
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.theme.*
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
 import com.patsurvey.nudge.utils.onlyNumberField
-import com.patsurvey.nudge.utils.setKeyboardToReadjust
 import com.patsurvey.nudge.utils.stringToInt
 
 @SuppressLint("StringFormatInvalid")

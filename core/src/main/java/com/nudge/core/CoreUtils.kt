@@ -1,6 +1,7 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -23,6 +24,7 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
+import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -1489,4 +1491,12 @@ inline fun <reified T> String?.fromJson(): T? {
     if (this == null) return null // Handle null safely
     val type = object : TypeToken<T>() {}.type
     return Gson().fromJson(this, type)
+}
+
+fun setKeyboardToPan(context: Activity) {
+    context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun setKeyboardToReadjust(context: Activity) {
+    context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
