@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel
 
+import android.net.Uri
 import android.text.TextUtils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -19,6 +20,7 @@ import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
@@ -72,6 +74,9 @@ class DataTabScreenViewModel @Inject constructor(
         mutableStateOf(Triple(false, -1, listOf()))
 
     var isSearchEnable = mutableStateOf<Boolean>(false)
+
+    val isDidiImageDialogVisible = mutableStateOf(Triple(false, BLANK_STRING, Uri.EMPTY))
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
