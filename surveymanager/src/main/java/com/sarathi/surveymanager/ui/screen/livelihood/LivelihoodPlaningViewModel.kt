@@ -16,7 +16,6 @@ import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -92,19 +91,23 @@ class LivelihoodPlaningViewModel @Inject constructor(
             }
 
             is LivelihoodPlanningEvent.PrimaryLivelihoodPlanningEvent -> {
+                checkDialogueValidation.value = true
                 primaryLivelihoodId.value = event.livelihoodId
                 checkButtonValidation()
             }
 
             is LivelihoodPlanningEvent.SecondaryLivelihoodPlanningEvent -> {
+                checkDialogueValidation.value = true
                 secondaryLivelihoodId.value = event.livelihoodId
                 checkButtonValidation()
             }
             is LivelihoodPlanningEvent.PrimaryLivelihoodTypePlanningEvent -> {
+                checkDialogueValidation.value = true
                 onPrimaryLivelihoodTypeSelect(event.livelihoodType)
             }
 
             is LivelihoodPlanningEvent.SecondaryLivelihoodTypePlanningEvent -> {
+                checkDialogueValidation.value = true
                 onSecondaryLivelihoodTypeSelect(event.livelihoodType)
             }
             is DialogEvents.ShowDialogEvent -> {
@@ -200,7 +203,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         }
                             .map { it.copy(isSelected = secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
                         checkButtonValidation()
-                        checkDialogueValidation.value =  checkDialogueValidation(subjectLivelihoodMapping)
+
                     }
                 else {
                         val mLivelihoodUiEntityList =
@@ -241,9 +244,6 @@ class LivelihoodPlaningViewModel @Inject constructor(
         }
     }
 
-    private fun checkDialogueValidation(subjectLivelihoodMapping: List<SubjectLivelihoodMappingEntity?>) :Boolean{
-       return if((subjectLivelihoodMapping.first()?.livelihoodId!=null &&  subjectLivelihoodMapping.last()?.livelihoodId!=null) || (primaryLivelihoodId.value==subjectLivelihoodMapping.first()?.livelihoodId) ||(secondaryLivelihoodId.value==subjectLivelihoodMapping.last()?.livelihoodId)) true else false
-    }
 
     fun setPreviousScreenData(
         mTaskId: Int,

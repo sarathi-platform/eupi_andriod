@@ -242,7 +242,7 @@ class AddEventViewModel @Inject constructor(
                 isSelected = it.id == selectedEventId.value,
                 originalName = it.originalName
             )
-        })
+        }.sortedBy { it.originalName?.lowercase() })
     }
 
     private fun resetForm() {

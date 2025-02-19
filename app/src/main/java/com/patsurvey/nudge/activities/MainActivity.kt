@@ -8,6 +8,7 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -30,8 +31,16 @@ import androidx.navigation.compose.rememberNavController
 import com.akexorcist.localizationactivity.core.LocalizationActivityDelegate
 import com.akexorcist.localizationactivity.core.OnLocaleChangedListener
 import com.google.android.gms.auth.api.phone.SmsRetriever
+import com.google.android.play.core.appupdate.AppUpdateManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.nudge.core.APP_UPDATE_IMMEDIATE
+import com.nudge.core.APP_UPDATE_REQUEST_CODE
+import com.nudge.core.APP_UPDATE_TYPE
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
+import com.nudge.core.IS_APP_NEED_UPDATE
+import com.nudge.core.MINIMUM_VERSION_CODE
 import com.nudge.core.enums.SyncAlertType
 import com.nudge.core.helper.ProvideTranslationHelper
 import com.nudge.core.helper.TranslationEnum
@@ -41,6 +50,10 @@ import com.nudge.core.notifications.NotificationHandler
 import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
+import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.checkForAppUpdates
+import com.nudge.core.utils.setupAppUpdateListeners
+import com.nudge.core.utils.unregisterAppUpdateListeners
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
@@ -77,6 +90,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
     private val mViewModel: MainActivityViewModel by viewModels()
 
+    private lateinit var appUpdateManager: AppUpdateManager
 
     val isLoggedInLive: MutableLiveData<Boolean> = MutableLiveData(false)
     val isOnline = mutableStateOf(true)
@@ -84,6 +98,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     val connectionSpeed = mutableStateOf(0)
     val isBackFromSummary = mutableStateOf(false)
     val isFilterApplied = mutableStateOf(false)
+    val appUpdateType = mutableStateOf(AppUpdateType.IMMEDIATE)
 
     var downloader: AndroidDownloader? = null
     var quesImageList = mutableListOf<String>()
@@ -106,6 +121,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 buildVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
             )
         )
+        appUpdateManager = AppUpdateManagerFactory.create(this)
+        validateAppVersionAndCheckUpdate()
+
         CoreObserverManager.addObserver(this)
         setContent {
             ProvideTranslationHelper(translationHelper) {
@@ -278,6 +296,31 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
     }
 
+    private fun validateAppVersionAndCheckUpdate() {
+        appUpdateType.value = getAppUpdateType(
+            sharedPrefs.getPref(APP_UPDATE_TYPE, APP_UPDATE_IMMEDIATE)
+                ?: APP_UPDATE_IMMEDIATE
+        )
+        val currentAppVersion = BuildConfig.VERSION_CODE
+        val minAppVersion = sharedPrefs.getPref(MINIMUM_VERSION_CODE, currentAppVersion)
+        if (sharedPrefs.getPref(IS_APP_NEED_UPDATE, false)) {
+            CoreLogger.d(
+                CoreAppDetails.getApplicationContext(),
+                "validateAppVersion",
+                "UpdateDetails : CurrVersion: $currentAppVersion" +
+                        ":minAppVersion : $minAppVersion" +
+                        ":appUpdateType: ${appUpdateType.value}"
+            )
+            if (currentAppVersion < minAppVersion) {
+                appUpdateType.value = AppUpdateType.IMMEDIATE
+            }
+            checkForAppUpdates(
+                appUpdateManager = appUpdateManager,
+                appUpdateType = appUpdateType.value
+            )
+        }
+
+    }
 
     private fun startSmartUserConsent() {
         val client = SmsRetriever.getClient(this)
@@ -317,6 +360,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 val message = data.getStringExtra(SmsRetriever.EXTRA_SMS_MESSAGE)
                 getOtpFromMessage(message)
             }
+        } else if (requestCode == APP_UPDATE_REQUEST_CODE && resultCode != RESULT_OK) {
+            Toast.makeText(this, getString(R.string.str_app_update_fail), Toast.LENGTH_SHORT).show()
+
         }
 
     }
@@ -361,6 +407,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         CoreObserverManager.removeObserver(this)
         RetryHelper.cleanUp()
         super.onDestroy()
+        unregisterAppUpdateListeners(appUpdateManager, appUpdateType.value)
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -380,6 +427,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     override fun onResume() {
         localizationDelegate.onResume(applicationContext)
         super.onResume()
+        setupAppUpdateListeners(appUpdateManager, appUpdateType.value)
     }
 
     override fun getApplicationContext(): Context {
@@ -421,5 +469,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                     ?: mutableListOf()
             NudgeLogger.d(TAG, "onRestoreInstanceState: $quesImageList")
         }
+    }
+    fun getAppUpdateType(type: String): Int {
+        return if (type == APP_UPDATE_IMMEDIATE) AppUpdateType.IMMEDIATE else AppUpdateType.FLEXIBLE
     }
 }

@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.add_event_screen
 
+import android.app.Activity
 import android.text.TextUtils
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Row
@@ -15,6 +16,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.remember
@@ -28,6 +30,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.setKeyboardToPan
+import com.nudge.core.setKeyboardToReadjust
 import com.nudge.core.ui.commonUi.CustomDatePickerTextFieldComponent
 import com.nudge.core.ui.commonUi.IncrementDecrementNumberComponent
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -76,6 +80,7 @@ fun AddEventScreen(
     showDeleteButton: Boolean = false,
     onSettingClick: () -> Unit
 ) {
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
@@ -88,8 +93,12 @@ fun AddEventScreen(
             transactionId = BLANK_STRING
         )
     }
-    val context = LocalContext.current
-
+    DisposableEffect(Unit) {
+        onDispose {
+            setKeyboardToPan((context as Activity))
+        }
+    }
+    setKeyboardToReadjust((context as Activity))
 
     val dropDownWithSearchState = remember(viewModel.livelihoodEventDropdownValue) {
         rememberSearchBarWithDropDownState<ValuesDto>(
