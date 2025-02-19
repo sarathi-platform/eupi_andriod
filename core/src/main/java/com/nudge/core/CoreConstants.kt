@@ -275,3 +275,6 @@ const val APP_UPDATE_FLEXIBLE = "FLEXIBLE"
 
 const val INPROGRESS = "INPROGRESS"
 const val INVALID_OPERATION_MESSAGE = "Invalid operationType:"
+
+const val LOGGING_TYPE_DEBUG: String = "DEBUG"
+const val LOGGING_TYPE_EXCEPTION: String = "EXCEPTION"

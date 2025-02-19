@@ -12,6 +12,13 @@ interface RemoteQueryExecutionRepository {
 
     suspend fun executeQuery(remoteQueryDto: RemoteQueryDto)
 
+    suspend fun getSQLiteStatement(
+        database: RoomDatabase,
+        remoteQueryDto: RemoteQueryDto,
+        auditTrailRowId: Long,
+        userId: String
+    ): SupportSQLiteStatement?
+
     suspend fun executeInsertState(
         auditTrailRowId: Int,
         userId: String,
@@ -38,6 +45,7 @@ interface RemoteQueryExecutionRepository {
 
     suspend fun isQueryAlreadyExecuted(remoteQueryDto: RemoteQueryDto): Boolean
 
-    suspend fun isTableExists(tableName: String, database: RoomDatabase): Boolean
+
+    fun logEvent(loggingType: String, status: String, msg: String, exception: Exception?)
 
 }

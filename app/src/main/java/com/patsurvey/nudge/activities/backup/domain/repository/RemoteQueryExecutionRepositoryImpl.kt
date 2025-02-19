@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.backup.domain.repository
 
+import android.database.sqlite.SQLiteException
 import android.text.TextUtils
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteStatement
@@ -10,12 +11,16 @@ import com.nudge.core.FAILED
 import com.nudge.core.INPROGRESS
 import com.nudge.core.INVALID_OPERATION_MESSAGE
 import com.nudge.core.LANGUAGE_TABLE_NAME
+import com.nudge.core.LOGGING_TYPE_DEBUG
+import com.nudge.core.LOGGING_TYPE_EXCEPTION
 import com.nudge.core.SUCCESS
+import com.nudge.core.analytics.AnalyticsManager
+import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.database.CoreDatabase
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.RemoteQueryAuditTrailEntityDao
 import com.nudge.core.database.entities.RemoteQueryAuditTrailEntity
-import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.fromJson
 import com.nudge.core.model.RemoteQueryDto
 import com.nudge.core.preference.CoreSharedPrefs
@@ -37,7 +42,8 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
     private val coreDatabase: CoreDatabase,
     private val appConfigDao: ApiConfigDao,
     private val remoteQueryAuditTrailEntityDao: RemoteQueryAuditTrailEntityDao,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val analyticsManager: AnalyticsManager
 ) : RemoteQueryExecutionRepository {
 
     companion object {
@@ -54,9 +60,11 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         val cleanQuery = getCleanQuery(query).lowercase()
 
         if (isUserIdCheckRequired && !cleanQuery.contains(USER_ID_FILTER.lowercase())) {
-            CoreLogger.d(
-                tag = TAG,
-                msg = "checkIfQueryIsValid failed due to userId Filter -> query: ${query}",
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                FAILED,
+                "checkIfQueryIsValid failed due to userId Filter -> query: ${query}",
+                null
             )
             return false
         }
@@ -70,34 +78,35 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
 
     override suspend fun getRemoteQuery(): RemoteQueryDto? {
         try {
-            val config = appConfigDao.getConfig(
-                AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
-                coreSharedPrefs.getUniqueUserIdentifier()
-            )?.value
+//            val config = appConfigDao.getConfig(
+//                AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
+//                coreSharedPrefs.getUniqueUserIdentifier()
+//            )?.value
 
 //            Test Query for execution
 //            TODO Delete before merge after testing with BE integration.
-//            val config = "{\"databaseName\": \"NudgeGrantDatabase\",\"dbVersion\": 7,\"tableName\": \"mission_config_table\",\"query\": \"UPDATE mission_config_table SET missionName = 'Livelihood Planning New' where userId = 'Ultra Poor change maker (UPCM)_9862345078' and missionId = 6;\",\n" +
-//                    "  \"operationType\": \"UPDATE\",\"appVersion\": \"132\"}"
+            val config =
+                "{\"databaseName\": \"NudgeGrantDatabase\",\"dbVersion\": 7,\"tableName\": \"mission_configs_table\",\"query\": \"UPDATE mission_configs_table SET missionName = 'Livelihood Planning New' where userId = 'Ultra Poor change maker (UPCM)_9862345078' and missionId = 6;\",\n" +
+                        "  \"operationType\": \"UPDATE\",\"appVersion\": \"134\"}"
 
             if (TextUtils.isEmpty(config))
                 return null
 
             return config.fromJson<RemoteQueryDto>()
         } catch (ex: JsonSyntaxException) {
-            CoreLogger.e(
-                tag = TAG,
-                msg = "getRemoteQuery -> JsonSyntaxException ex: ${ex.message}",
-                ex = ex,
-                stackTrace = true
+            logEvent(
+                LOGGING_TYPE_EXCEPTION,
+                FAILED,
+                "getRemoteQuery -> JsonSyntaxException ex: ${ex.message}",
+                ex
             )
             return null
         } catch (ex: Exception) {
-            CoreLogger.e(
-                tag = TAG,
-                msg = "getRemoteQuery -> Exception ex: ${ex.message}",
-                ex = ex,
-                stackTrace = true
+            logEvent(
+                LOGGING_TYPE_EXCEPTION,
+                FAILED,
+                "getRemoteQuery -> Exception ex: ${ex.message}",
+                ex
             )
             return null
         }
@@ -108,32 +117,36 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         val isAppVersionValid = runAppVersionCheck(remoteQueryDto)
 
         if (!isAppVersionValid) {
-            CoreLogger.d(
-                tag = TAG,
-                msg = "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryDto.appVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                FAILED,
+                "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryDto.appVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
                         "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+                null
             )
             return
         }
 
         if (!isDatabaseVersionValidForExecution(remoteQueryDto)) {
-            CoreLogger.d(
-                tag = TAG,
-                msg = "executeQuery failed due to invalid Database version, required: ${
-                    DatabaseEnum.getDbVersion(
-                        remoteQueryDto.databaseName
-                    )
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                FAILED,
+                "executeQuery failed due to invalid Database version, required: ${
+                    DatabaseEnum.getDbVersion(remoteQueryDto.databaseName)
                 }, found: ${remoteQueryDto.dbVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
                         "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+                null
             )
             return
         }
 
         if (isQueryAlreadyExecuted(remoteQueryDto)) {
-            CoreLogger.d(
-                tag = TAG,
-                msg = "executeQuery failed due to query already executed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                FAILED,
+                "executeQuery failed due to query already executed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
                         "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+                null
             )
             return
         }
@@ -142,22 +155,24 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
 
             val userId = coreSharedPrefs.getUniqueUserIdentifier()
 
-            val supportSQLiteStatement =
-                database.compileStatement(getCleanQuery(remoteQueryDto.query))
-
             val auditTrailRowId = remoteQueryAuditTrailEntityDao.insertRemoteQueryAuditTrailEntity(
                 RemoteQueryAuditTrailEntity.getRemoteQueryAuditTrailEntity(remoteQueryDto, userId)
             )
 
+            val supportSQLiteStatement: SupportSQLiteStatement? =
+                getSQLiteStatement(database, remoteQueryDto, auditTrailRowId, userId)
+
             when (remoteQueryDto.operationType) {
                 DatabaseOperationEnum.INSERT.name -> {
                     try {
-                        executeInsertState(
-                            auditTrailRowId.toInt(),
-                            userId,
-                            remoteQueryDto,
-                            supportSQLiteStatement
-                        )
+                        supportSQLiteStatement?.let {
+                            executeInsertState(
+                                auditTrailRowId.toInt(),
+                                userId,
+                                remoteQueryDto,
+                                it
+                            )
+                        }
                     } catch (ex: Exception) {
                         remoteQueryAuditTrailEntityDao
                             .updateRemoteQueryAuditTrailEntityStatus(
@@ -166,11 +181,12 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                                 errorMessage = ex.message.value(),
                                 userId = userId
                             )
-                        CoreLogger.e(
-                            tag = TAG,
-                            msg = "executeQuery failed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
-                                    "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexcetion: ${ex.message}",
-                            ex = ex, stackTrace = true
+                        logEvent(
+                            LOGGING_TYPE_EXCEPTION,
+                            FAILED,
+                            "executeQuery failed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
+                                    "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                            ex
                         )
                     }
                 }
@@ -178,12 +194,14 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 DatabaseOperationEnum.DELETE.name,
                 DatabaseOperationEnum.UPDATE.name -> {
                     try {
-                        executeUpdateDeleteStatement(
-                            auditTrailRowId.toInt(),
-                            userId,
-                            remoteQueryDto,
-                            supportSQLiteStatement
-                        )
+                        supportSQLiteStatement?.let {
+                            executeUpdateDeleteStatement(
+                                auditTrailRowId.toInt(),
+                                userId,
+                                remoteQueryDto,
+                                it
+                            )
+                        }
                     } catch (ex: Exception) {
                         remoteQueryAuditTrailEntityDao.updateRemoteQueryAuditTrailEntityStatus(
                             auditTrailRowId.toInt(),
@@ -191,11 +209,12 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                             errorMessage = ex.message.value(),
                             userId = userId
                         )
-                        CoreLogger.e(
-                            tag = TAG,
-                            msg = "executeQuery failed -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
-                                    "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexcetion: ${ex.message}",
-                            ex = ex, stackTrace = true
+                        logEvent(
+                            LOGGING_TYPE_EXCEPTION,
+                            FAILED,
+                            "executeQuery failed due to exception -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
+                                    "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                            ex
                         )
                     }
                 }
@@ -213,6 +232,51 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getSQLiteStatement(
+        database: RoomDatabase,
+        remoteQueryDto: RemoteQueryDto,
+        auditTrailRowId: Long,
+        userId: String
+    ): SupportSQLiteStatement? {
+        return try {
+            database.compileStatement(getCleanQuery(remoteQueryDto.query))
+        } catch (ex: SQLiteException) {
+            remoteQueryAuditTrailEntityDao
+                .updateRemoteQueryAuditTrailEntityStatus(
+                    auditTrailRowId.toInt(),
+                    status = FAILED,
+                    errorMessage = ex.message.value(),
+                    userId = userId
+                )
+            logEvent(
+                LOGGING_TYPE_EXCEPTION,
+                FAILED,
+                msg = "executeQuery failed due to SQLiteException -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                ex
+            )
+
+            null
+        } catch (ex: Exception) {
+            remoteQueryAuditTrailEntityDao
+                .updateRemoteQueryAuditTrailEntityStatus(
+                    auditTrailRowId.toInt(),
+                    status = FAILED,
+                    errorMessage = ex.message.value(),
+                    userId = userId
+                )
+            logEvent(
+                LOGGING_TYPE_EXCEPTION,
+                FAILED,
+                msg = "executeQuery failed due to Exception -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                ex
+            )
+
+            null
+        }
+    }
+
     override suspend fun executeInsertState(
         auditTrailRowId: Int,
         userId: String,
@@ -227,10 +291,12 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 userId = userId
             )
             //TODO add code to update query status in locally and remotely here
-            CoreLogger.d(
-                tag = TAG,
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                SUCCESS,
                 msg = "executeInsertState success -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}, rowId: $rowId"
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}, rowId: $rowId",
+                null
             )
             return rowId
         } catch (ex: Exception) {
@@ -252,10 +318,12 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 userId = userId
             )
             //TODO add code to update query status in locally and remotely here
-            CoreLogger.d(
-                tag = TAG,
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                SUCCESS,
                 msg = "executeUpdateDeleteStatement success -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}, affectedRowCount: $affectedRowCount"
+                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}, affectedRowCount: $affectedRowCount",
+                null
             )
             return affectedRowCount
         } catch (ex: Exception) {
@@ -310,17 +378,34 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         } ?: return false
     }
 
-    //TODO Test this before implementing.
-    override suspend fun isTableExists(tableName: String, database: RoomDatabase): Boolean {
-        val query =
-            ("select DISTINCT tbl_name from sqlite_master where tbl_name = '$tableName").toString() + "'"
-        database.openHelper.readableDatabase.query(query, emptyArray()).use { cursor ->
-            if (cursor.count > 0) {
-                cursor.close()
-                return true
+    override fun logEvent(
+        loggingType: String,
+        status: String,
+        msg: String,
+        exception: Exception?
+    ) {
+        analyticsManager.trackEvent(
+            AnalyticsEvents.SQL_INJECTION.eventName, properties = mapOf(
+                AnalyticsEventsParam.SQL_INJECTION_STATUS.eventParam to status,
+                AnalyticsEventsParam.SQL_INJECTION_MESSAGE.eventParam to msg
+            )
+        )
+        when (loggingType) {
+            LOGGING_TYPE_DEBUG -> {
+                CoreLogger.d(
+                    tag = TAG,
+                    msg = msg
+                )
             }
-            cursor.close()
-            return false
+
+            LOGGING_TYPE_EXCEPTION -> {
+                CoreLogger.e(
+                    tag = TAG,
+                    msg = msg,
+                    ex = exception, stackTrace = true
+                )
+            }
         }
     }
+
 }
