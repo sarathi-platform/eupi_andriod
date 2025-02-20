@@ -235,7 +235,6 @@ fun MissionScreen(
                         FilterRowItem(
                             item = item,
                             selectedItem = viewModel.missionFilterUtils.getSelectedMissionFilterValue()
-//                            isSelected = viewModel.missionFilterUtils.getSelectedMissionFilterValue() == item
                         ) {
                             viewModel.onEvent(CommonEvents.OnFilterUiModelSelected(item))
                         }
