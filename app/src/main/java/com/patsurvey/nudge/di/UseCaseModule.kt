@@ -516,7 +516,8 @@ object UseCaseModule {
         coreDatabase: CoreDatabase,
         appConfigDao: ApiConfigDao,
         remoteQueryAuditTrailEntityDao: RemoteQueryAuditTrailEntityDao,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        analyticsManager: AnalyticsManager
     ): RemoteQueryExecutionRepository {
         return RemoteQueryExecutionRepositoryImpl(
             nudgeDatabase = nudgeDatabase,
@@ -526,7 +527,8 @@ object UseCaseModule {
             coreDatabase = coreDatabase,
             appConfigDao = appConfigDao,
             remoteQueryAuditTrailEntityDao = remoteQueryAuditTrailEntityDao,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            analyticsManager = analyticsManager
         )
 
     }
