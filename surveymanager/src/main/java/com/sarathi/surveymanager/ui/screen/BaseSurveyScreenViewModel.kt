@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
@@ -7,6 +8,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
@@ -152,8 +154,17 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
+    @SuppressLint("SuspiciousIndentation")
     open suspend fun intiQuestions() {
         taskEntity = getTaskUseCase.getTask(taskId)
+        isAnyOptionValueChanged.value = false
+        if (activityConfig?.activityType.equals(
+                ActivityTypeEnum.GRANT.name,
+                ignoreCase = true
+            ) && _questionUiModel.value.isNotEmpty()
+        ) {
+            _questionUiModel.value = emptyList()
+        }
         if (_questionUiModel.value.isEmpty()) {
             _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,

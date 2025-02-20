@@ -57,7 +57,6 @@ fun LivelihoodDropDownScreen(
     subjectName: String,
     onSettingClicked: () -> Unit
 ) {
-    val context = LocalContext.current
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
