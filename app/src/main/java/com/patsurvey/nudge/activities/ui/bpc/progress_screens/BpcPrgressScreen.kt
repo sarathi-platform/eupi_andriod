@@ -56,7 +56,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -68,6 +67,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavHostController
 import com.nudge.core.enums.NetworkSpeed
+import com.nudge.core.setKeyboardToPan
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.UserDataView
@@ -100,13 +100,11 @@ import com.patsurvey.nudge.utils.NudgeCore.getVoNameForState
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.PREF_KEY_IDENTITY_NUMBER
 import com.patsurvey.nudge.utils.PREF_KEY_NAME
-import com.patsurvey.nudge.utils.PREF_KEY_TYPE_STATE_ID
 import com.patsurvey.nudge.utils.PREF_OPEN_FROM_HOME
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TableCell
 import com.patsurvey.nudge.utils.TextButtonWithIcon
-import com.patsurvey.nudge.utils.setKeyboardToPan
 import com.patsurvey.nudge.utils.showCustomToast
 import kotlinx.coroutines.delay
 

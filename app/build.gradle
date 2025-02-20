@@ -162,6 +162,7 @@ dependencies {
     implementation "androidx.compose.material:material:1.5.3"
     implementation 'androidx.hilt:hilt-work:1.0.0'
     implementation 'com.google.firebase:firebase-config-ktx:21.6.1'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
     androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_version"
 
     annotationProcessor "com.github.bumptech.glide:compiler:$glide"

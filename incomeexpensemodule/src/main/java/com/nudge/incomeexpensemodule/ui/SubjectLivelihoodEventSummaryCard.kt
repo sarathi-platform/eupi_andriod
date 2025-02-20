@@ -71,7 +71,8 @@ fun SubjectLivelihoodEventSummaryCard(
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
     subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     onAssetCountClicked: (subjectId: Int) -> Unit,
-    onSummaryCardClicked: () -> Unit
+    onSummaryCardClicked: () -> Unit,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     val context = LocalContext.current
     BasicCardView(
@@ -121,7 +122,9 @@ fun SubjectLivelihoodEventSummaryCard(
                         CircularImageViewComponent(
                             modifier = Modifier,
                             imagePath = imageUri
-                        )
+                        ) {
+                            onImageClicked(Triple(true, name, imageUri))
+                        }
                     } else if (name != BLANK_STRING) {
                         Box(
                             modifier = Modifier
@@ -240,9 +243,13 @@ fun UserProfileCardList() {
             subjectLivelihoodMapping = listOf(),
             onAssetCountClicked = {
 
-            }
-        ) {
+            },
+            onImageClicked = {
 
-        }
+            },
+            onSummaryCardClicked = {
+
+            }
+        )
     }
 }

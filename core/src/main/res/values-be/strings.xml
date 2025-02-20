@@ -76,5 +76,8 @@
     <string name="complete_survey">Complete Survey</string>
     <string name="exclude_in_calculation_message">*बे खरसाखौ गासै साननायाव सोफानाय जाया।</string>
     <string name="contact_to_admin_id_missing">Access issue (एक्सेस इसु) खौ हमनो हादों। हेफाजाबनि थाखाय अन्नानै बि.पि.सि.जों सोमोन्दो लाखि।</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
 
 </resources>
