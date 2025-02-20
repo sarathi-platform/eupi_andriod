@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -20,7 +21,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
@@ -40,7 +40,6 @@ import com.nudge.core.ui.theme.darkBlueColor
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -188,7 +187,10 @@ private fun TextDataRowView(
     data3: String? = null,
     data3TextColor: Color = blueDark,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.fillMaxWidth()
+    ) {
 
         data1?.let {
             Text(
@@ -198,11 +200,12 @@ private fun TextDataRowView(
         }
         data2?.let {
             Text(
-                modifier = Modifier.padding(end = dimen_20_dp),
-                text = it,
+                modifier = Modifier
+                    .widthIn(100.dp, 170.dp)
+                    .padding(end = 10.dp, start = dimen_5_dp),
+                text = it.trim(),
                 style = defaultTextStyle.copy(color = data2textColor),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis
+                maxLines = 5
             )
         }
         Spacer(modifier = Modifier.weight(1.0f))
@@ -211,8 +214,7 @@ private fun TextDataRowView(
                 Text(
                     text = it,
                     style = defaultTextStyle.copy(color = data3TextColor),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
+                    maxLines = 5
                 )
             }
         }
