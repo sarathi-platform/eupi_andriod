@@ -82,14 +82,14 @@ class MissionFilterUtils @Inject constructor(
 
         missionFilterList.addAll(filterList.distinctBy { it.filterValue })
 
-        updateSelectedLivelihoodFilterOnInit()
+        updateSelectedLivelihoodFilterLabelOnInit()
 
     }
 
-    private fun updateSelectedLivelihoodFilterOnInit() {
+    private fun updateSelectedLivelihoodFilterLabelOnInit() {
         val selectedFilter = getSelectedMissionFilterValue()
         setSelectedMissionFilterValue((missionFilterList.find { it.type == selectedFilter.type }
-            ?: DEFAULT_MISSION_FILTER), true)
+            ?: DEFAULT_MISSION_FILTER))
     }
 
     fun getMissionFiltersList(): SnapshotStateList<FilterUiModel> {
