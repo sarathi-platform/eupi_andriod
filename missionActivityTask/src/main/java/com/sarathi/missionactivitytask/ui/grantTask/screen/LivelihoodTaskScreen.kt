@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
+import android.net.Uri
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
@@ -17,6 +18,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.navigation.navigateToLivelihoodDropDownScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.LivelihoodTaskCard
+import com.sarathi.missionactivitytask.ui.components.ShowDidiImageDialog
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.LivelihoodTaskScreenViewModel
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
@@ -37,6 +39,19 @@ fun LivelihoodTaskScreen(
         viewModel.onEvent(InitDataEvent.InitLivelihoodPlanningScreenState(missionId, activityId))
     }
 
+    if (viewModel.isDidiImageDialogVisible.value.first
+        && viewModel.isDidiImageDialogVisible.value.third != null
+        && viewModel.isDidiImageDialogVisible.value.third != Uri.EMPTY
+    ) {
+        ShowDidiImageDialog(
+            didiName = viewModel.isDidiImageDialogVisible.value.second ?: BLANK_STRING,
+            imagePath = viewModel.isDidiImageDialogVisible.value.third
+        ) {
+            viewModel.isDidiImageDialogVisible.value = Triple(false, BLANK_STRING, Uri.EMPTY)
+        }
+    }
+
+
     TaskScreen(
         missionId = missionId,
         activityId = activityId,
@@ -51,10 +66,21 @@ fun LivelihoodTaskScreen(
         taskList = emptyList(),//viewModel.taskUiList.value,
         navController = navController,
         taskScreenContent = { vm: TaskScreenViewModel, nvController: NavController ->
-            livelihoodTaskScreenContent((vm as LivelihoodTaskScreenViewModel), nvController)
+            livelihoodTaskScreenContent(
+                (vm as LivelihoodTaskScreenViewModel),
+                nvController,
+                onImageClicked = { path ->
+                    viewModel.isDidiImageDialogVisible.value = path
+                })
         },
         taskScreenContentForGroup = { groupKey, _, _ ->
-            livelihoodTaskScreenContentForGroup(groupKey, viewModel, navController)
+            livelihoodTaskScreenContentForGroup(
+                groupKey,
+                viewModel,
+                navController,
+                onImageClicked = { path ->
+                    viewModel.isDidiImageDialogVisible.value = path
+                })
         },
         programId = programId
 
@@ -63,13 +89,14 @@ fun LivelihoodTaskScreen(
 
 fun LazyListScope.livelihoodTaskScreenContent(
     viewModel: LivelihoodTaskScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
 
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
     ) { _, task ->
-        LivelihoodTaskRowView(viewModel, navController, task)
+        LivelihoodTaskRowView(viewModel, navController, task, onImageClicked = onImageClicked)
 
         CustomVerticalSpacer()
     }
@@ -82,13 +109,14 @@ fun LazyListScope.livelihoodTaskScreenContent(
 fun LazyListScope.livelihoodTaskScreenContentForGroup(
     groupKey: String,
     viewModel: LivelihoodTaskScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
 
     itemsIndexed(
         items = viewModel.filterTaskMap[groupKey].value()
     ) { _, task ->
-        LivelihoodTaskRowView(viewModel, navController, task)
+        LivelihoodTaskRowView(viewModel, navController, task, onImageClicked = onImageClicked)
 
         CustomVerticalSpacer()
     }
@@ -102,8 +130,8 @@ fun LazyListScope.livelihoodTaskScreenContentForGroup(
 fun LivelihoodTaskRowView(
     viewModel: LivelihoodTaskScreenViewModel,
     navController: NavController,
-
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     LivelihoodTaskCard(
         translationHelper = viewModel.translationHelper,
@@ -126,8 +154,9 @@ fun LivelihoodTaskRowView(
 
 
         },
-
-
+        onImageIconClicked = { path ->
+            onImageClicked(path)
+        },
         onNotAvailable = {
             if (!viewModel.isActivityCompleted.value) {
                 task.value[TaskCardSlots.TASK_STATUS.name] = TaskCardModel(

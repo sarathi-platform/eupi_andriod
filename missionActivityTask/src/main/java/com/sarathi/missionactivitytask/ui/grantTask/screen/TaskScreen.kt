@@ -1,6 +1,7 @@
 package com.sarathi.missionactivitytask.ui.grantTask.screen
 
 import android.content.Context
+import android.net.Uri
 import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -680,14 +681,15 @@ private fun getFilterAppliedText(context: Context?, viewModel: TaskScreenViewMod
 
 fun LazyListScope.TaskScreenContent(
     viewModel: TaskScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
 
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
     ) { _, task ->
 
-        TaskRowView(viewModel, navController, task)
+        TaskRowView(viewModel, navController, task, onImageClicked = { onImageClicked(it) })
 
         CustomVerticalSpacer()
     }
@@ -700,13 +702,14 @@ fun LazyListScope.TaskScreenContent(
 fun LazyListScope.TaskScreenContentForGroup(
     groupKey: String,
     viewModel: TaskScreenViewModel,
-    navController: NavController
+    navController: NavController,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     itemsIndexed(
         items = viewModel.filterTaskMap[groupKey].value()
     ) { _, task ->
 
-        TaskRowView(viewModel, navController, task)
+        TaskRowView(viewModel, navController, task, onImageClicked = { onImageClicked(it) })
 
         CustomVerticalSpacer()
     }
@@ -720,6 +723,7 @@ fun TaskRowView(
     viewModel: TaskScreenViewModel,
     navController: NavController,
     task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     TaskCard(
         translationHelper = viewModel.translationHelper,
@@ -826,6 +830,9 @@ fun TaskRowView(
         isShowSecondaryStatusIcon = task.value[TaskCardSlots.TASK_SECOND_STATUS_AVAILABLE.name]?.value.equals(
             "true"
         ),
+        onImageIconClicked = { path ->
+            onImageClicked(path)
+        }
     )
 }
 
