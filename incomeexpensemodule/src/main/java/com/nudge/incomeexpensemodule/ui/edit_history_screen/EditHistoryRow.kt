@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
@@ -39,6 +40,7 @@ import com.nudge.core.ui.theme.darkBlueColor
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -191,13 +193,16 @@ private fun TextDataRowView(
         data1?.let {
             Text(
                 text = it,
-                style = defaultTextStyle.copy(data1TextColor)
+                style = defaultTextStyle.copy(color = data1TextColor),
             )
         }
         data2?.let {
             Text(
+                modifier = Modifier.padding(end = dimen_20_dp),
                 text = it,
-                style = defaultTextStyle.copy(data2textColor)
+                style = defaultTextStyle.copy(color = data2textColor),
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
             )
         }
         Spacer(modifier = Modifier.weight(1.0f))
@@ -205,7 +210,9 @@ private fun TextDataRowView(
             data3?.let {
                 Text(
                     text = it,
-                    style = defaultTextStyle.copy(data3TextColor)
+                    style = defaultTextStyle.copy(color = data3TextColor),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
                 )
             }
         }

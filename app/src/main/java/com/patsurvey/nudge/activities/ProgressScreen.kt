@@ -61,6 +61,7 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.nrlm.baselinesurvey.utils.numberInEnglishFormat
+import com.nudge.core.setKeyboardToPan
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.progress.ProgressScreenViewModel
@@ -101,7 +102,6 @@ import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.TextButtonWithIcon
 import com.patsurvey.nudge.utils.findStepNameForSelectedLanguage
-import com.patsurvey.nudge.utils.setKeyboardToPan
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 

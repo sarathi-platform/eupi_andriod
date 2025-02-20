@@ -256,4 +256,3 @@ const val PAT_SURVEY_STEP_ID = 43
 const val VO_ENDORSEMENT_STEP_ID = 44
 
 const val FOR_VO_ENDORSEMENT_VALUE = 1
-

@@ -57,6 +57,7 @@ fun LivelihoodDropDownScreen(
     subjectName: String,
     onSettingClicked: () -> Unit
 ) {
+
     LaunchedEffect(key1 = true) {
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.setPreviousScreenData(taskId, activityId, missionId, subjectName)
@@ -73,7 +74,9 @@ fun LivelihoodDropDownScreen(
             negativeButtonTitle = viewModel.stringResource(R.string.cancel_txt),
             onPositiveButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
-                navController.popBackStack()
+                if (viewModel.isSettingClicked.value) {
+                    onSettingClicked()
+                } else navController.popBackStack()
             }, onNegativeButtonClick = {
                 viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
             }
@@ -89,7 +92,13 @@ fun LivelihoodDropDownScreen(
         isSearch = false,
         onSearchValueChange = {},
         onSettingClick = {
-            onSettingClicked()
+            viewModel.isSettingClicked.value = true
+            if (viewModel.checkDialogueValidation.value) {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
+            } else {
+                viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                onSettingClicked()
+            }
         },
         onBottomUI = {
             Box(
@@ -196,8 +205,8 @@ fun LivelihoodDropDownScreen(
 }
 
 fun handleBackPress(viewModel: LivelihoodPlaningViewModel, navController: NavController) {
-
-    if ((viewModel.primaryLivelihoodId.value != DEFAULT_LIVELIHOOD_ID || viewModel.secondaryLivelihoodId.value !=DEFAULT_LIVELIHOOD_ID) && !viewModel.checkDialogueValidation.value) {
+    viewModel.isSettingClicked.value = false
+    if (viewModel.checkDialogueValidation.value) {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(true))
     } else {
         viewModel.onEvent(DialogEvents.ShowDialogEvent(false))
