@@ -1,5 +1,6 @@
 package com.nudge.core.model
 
+import androidx.annotation.StringRes
 import com.google.gson.JsonDeserializationContext
 import com.google.gson.JsonDeserializer
 import com.google.gson.JsonElement
@@ -8,6 +9,7 @@ import com.google.gson.JsonObject
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.utils.CoreLogger
 import java.lang.reflect.Type
 
@@ -49,6 +51,14 @@ data class FilterUiModel(
     }
 
 }
+
+fun FilterUiModel.updateTranslations(
+    translationHelper: TranslationHelper,
+    @StringRes resId: Int
+): FilterUiModel {
+    return this.copy(filterLabel = translationHelper.stringResource(resId))
+}
+
 
 sealed class FilterType {
     object ALL : FilterType()
