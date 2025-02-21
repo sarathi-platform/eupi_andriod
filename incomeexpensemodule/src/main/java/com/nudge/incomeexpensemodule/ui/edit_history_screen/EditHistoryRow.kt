@@ -210,7 +210,6 @@ private fun TextDataRowView(
             Text(
                 text = it.trim(),
                 style = defaultTextStyle.copy(color = data2textColor),
-                maxLines = 2,
                 modifier = Modifier
                     .constrainAs(text2) {
                         start.linkTo(text1.end)
@@ -229,7 +228,6 @@ private fun TextDataRowView(
                     text = it,
                     textAlign = TextAlign.End,
                     style = defaultTextStyle.copy(color = data3TextColor),
-                    maxLines = 2,
                     modifier = Modifier.constrainAs(text3) {
                         end.linkTo(parent.end)
                         top.linkTo(parent.top)
