@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
@@ -21,7 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
 import com.google.gson.Gson
@@ -187,34 +189,52 @@ private fun TextDataRowView(
     data3: String? = null,
     data3TextColor: Color = blueDark,
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
+    ConstraintLayout(
         modifier = Modifier.fillMaxWidth()
     ) {
+        val (text1, text2, text3) = createRefs()
 
         data1?.let {
             Text(
                 text = it,
                 style = defaultTextStyle.copy(color = data1TextColor),
+                modifier = Modifier.constrainAs(text1) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
             )
         }
+
         data2?.let {
             Text(
-                modifier = Modifier
-                    .widthIn(100.dp, 170.dp)
-                    .padding(end = 10.dp, start = dimen_5_dp),
                 text = it.trim(),
                 style = defaultTextStyle.copy(color = data2textColor),
-                maxLines = 5
+                maxLines = 2,
+                modifier = Modifier
+                    .constrainAs(text2) {
+                        start.linkTo(text1.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(text3.start)
+                        width = Dimension.fillToConstraints
+                    }
+                    .padding(horizontal = dimen_8_dp)
             )
         }
-        Spacer(modifier = Modifier.weight(1.0f))
+
         if (!TextUtils.isEmpty(data3)) {
             data3?.let {
                 Text(
                     text = it,
+                    textAlign = TextAlign.End,
                     style = defaultTextStyle.copy(color = data3TextColor),
-                    maxLines = 5
+                    maxLines = 2,
+                    modifier = Modifier.constrainAs(text3) {
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
                 )
             }
         }
