@@ -163,12 +163,21 @@ fun BaseSurveyScreen(
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onBackIconClick = {
-            if (grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase())
-                navController.popBackStack()
-            else {
-                navController.popBackStack()
-                navController.popBackStack()
+            if (viewModel.activityConfig?.activityType.equals(
+                    ActivityTypeEnum.GRANT.name,
+                    ignoreCase = true
+                )
+            ) {
+                onBackClicked()
+            } else {
+                if (grantType.toLowerCase() == ActivityTypeEnum.SURVEY.name.toLowerCase())
+                    navController.popBackStack()
+                else {
+                    navController.popBackStack()
+                    navController.popBackStack()
+                }
             }
+
         },
         isSearch = false,
         onSearchValueChange = {

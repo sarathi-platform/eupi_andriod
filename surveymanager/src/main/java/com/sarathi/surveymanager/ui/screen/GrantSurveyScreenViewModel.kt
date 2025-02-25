@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.screen
 
 import android.text.TextUtils
+import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -77,6 +78,7 @@ class GrantSurveyScreenViewModel @Inject constructor(
     fetchInfoUiModelUseCase = fetchInfoUiModelUseCase,
     missionFilterUtils = missionFilterUtils
 ) {
+    val showCustomDialog = mutableStateOf(false)
 
 
     fun saveButtonClicked() {
