@@ -3,6 +3,8 @@ package com.sarathi.surveymanager.ui.screen
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.sarathi.dataloadingmangement.R
+import com.sarathi.surveymanager.ui.component.ShowCustomDialog
 
 @Composable
 fun GrantSurveyScreen(
@@ -21,6 +23,25 @@ fun GrantSurveyScreen(
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit
 ) {
+    if (viewModel.showCustomDialog.value) {
+        ShowCustomDialog(
+            title = viewModel.stringResource(R.string.are_you_sure),
+            message = viewModel.stringResource(R.string.form_alert_dialog_message),
+            positiveButtonTitle = viewModel.stringResource(R.string.proceed_txt),
+            negativeButtonTitle = viewModel.stringResource(R.string.cancel_txt),
+            onPositiveButtonClick = {
+                viewModel.showCustomDialog.value = false
+                if (viewModel.isSettingClicked.value) {
+                    onSettingClick()
+                } else {
+                    navController.popBackStack()
+                }
+            }, onNegativeButtonClick = {
+                viewModel.showCustomDialog.value = false
+
+            }
+        )
+    }
 
     BaseSurveyScreen(
         viewModel = viewModel,
@@ -36,13 +57,29 @@ fun GrantSurveyScreen(
         grantType = grantType,
         sanctionedAmount = sanctionedAmount,
         totalSubmittedAmount = totalSubmittedAmount,
-        onSettingClick = onSettingClick,
+        onSettingClick = {
+            viewModel.isSettingClicked.value = true
+            if (viewModel.isAnyOptionValueChanged.value) {
+                viewModel.showCustomDialog.value = true
+            } else {
+                onSettingClick()
+            }
+        },
         onAnswerSelect = { questionUiModel ->
+            viewModel.isAnyOptionValueChanged.value = true
             viewModel.isButtonEnable.value = viewModel.checkButtonValidation()
         },
         onSubmitButtonClick = {
             viewModel.saveButtonClicked()
             navController.popBackStack()
+        },
+        onBackClicked = {
+            viewModel.isSettingClicked.value = false
+            if (viewModel.isAnyOptionValueChanged.value) {
+                viewModel.showCustomDialog.value = true
+            } else {
+                navController.popBackStack()
+            }
         }
     )
 
