@@ -569,7 +569,7 @@ class AddEventViewModel @Inject constructor(
                     selectedLivelihood = selectedLivelihood,
                     assetCount = assetCount.value,
                     amount = amount.value,
-                    message = conditionalMessage.languageList.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.message
+                    message = conditionalMessage.languageList?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.message
                         ?: BLANK_STRING,
                     transactionId = transactionId
                 )

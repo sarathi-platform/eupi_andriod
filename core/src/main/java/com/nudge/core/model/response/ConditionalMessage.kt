@@ -9,5 +9,5 @@ data class ConditionalMessage(
     val condition: String,
     @SerializedName("languageList")
     @Expose
-    val languageList: List<ConditionalMessageLanguage>
+    val languageList: List<ConditionalMessageLanguage>?
 )
