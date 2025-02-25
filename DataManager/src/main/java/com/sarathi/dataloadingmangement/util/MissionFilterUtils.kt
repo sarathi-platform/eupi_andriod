@@ -51,7 +51,7 @@ class MissionFilterUtils @Inject constructor(
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
             .filter { livelihood -> // filtering livelihood that user's have mapped mission
                 missionList.any() {
-                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
+                    it.programLivelihoodReferenceId?.contains(livelihood.programLivelihoodId) == true
                 }
             }
 
