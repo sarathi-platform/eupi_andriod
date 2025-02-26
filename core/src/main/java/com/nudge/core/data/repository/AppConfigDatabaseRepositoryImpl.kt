@@ -2,6 +2,7 @@ package com.nudge.core.data.repository
 
 import android.util.Base64
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.database.dao.ApiConfigDao
@@ -61,6 +62,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                     data[AppConfigKeysEnum.SENSITIVE_INFO_KEY.name].toString().toByteArray(),
                     Base64.DEFAULT
                 )
+            )
+        }
+        if (data.containsKey(AppConfigKeysEnum.SHOW_QUESTION_INDEX.name)) {
+            coreSharedPrefs.savePref(
+                REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE,
+                data[AppConfigKeysEnum.SHOW_QUESTION_INDEX.name].toBoolean()
             )
         }
         // TODO Uncomment code after navigation is fixed.

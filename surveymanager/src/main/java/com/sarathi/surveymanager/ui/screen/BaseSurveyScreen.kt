@@ -275,7 +275,7 @@ fun QuestionUiContent(
         val isQuestionNumberVisible = grantType.equals(
             ActivityTypeEnum.BASIC.name,
             ignoreCase = true
-        )
+        ) && viewModel.isRemoteShowQuestionIndex()
         when (question.type) {
             QuestionType.InputNumber.name,
             QuestionType.TextField.name,
