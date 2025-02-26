@@ -135,6 +135,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitDataState -> {
                 CoroutineScope(ioDispatcher + exceptionHandler).launch {
+                    isButtonEnable.value = false
                     intiQuestions()
                 }
             }
