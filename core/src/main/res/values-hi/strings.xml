@@ -74,6 +74,7 @@
     <string name="exclude_in_calculation_message">*This expense is not included in the total calculation.</string>
     <string name="contact_to_admin_id_missing">पहुँच संबंधी समस्या. कृपया सहायता के लिए बीपीसी अथवा डीपीसी  से संपर्क करें।</string>
     <string name="str_download_complete">Application download complete.</string>
-    <string name="str_restart">Application Restarting..</string>
+    <string name="click_here_to_install">Click here to install.</string>
     <string name="str_app_update_fail">Application Update fail.</string>
+
 </resources>

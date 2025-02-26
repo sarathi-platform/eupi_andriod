@@ -24,7 +24,15 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "progress_item_text",
             "didis_item_text_plural",
             "general_missions_filter_label",
-            "all_missions_filter_label"
+            "all_missions_filter_label",
+            "update_available",
+            "version_available_message",
+            "app_update_cancel",
+            "app_update",
+            "invalid_url",
+            "str_app_update_fail",
+            "str_download_complete",
+            "click_here_to_install"
         )
     ),
     AddEventScreen(

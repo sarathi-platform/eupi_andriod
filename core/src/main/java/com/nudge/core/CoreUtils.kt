@@ -28,6 +28,7 @@ import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -1499,4 +1500,10 @@ fun setKeyboardToPan(context: Activity) {
 
 fun setKeyboardToReadjust(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+}
+
+@Composable
+fun Context.redirectToLink(link: String?) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    this.startActivity(intent)
 }
