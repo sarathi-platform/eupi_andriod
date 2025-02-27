@@ -170,7 +170,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                     subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
                                         .uppercase()
                                 )
-                            )
+                            ).sortedBy { it.livelihoodEntity.name.lowercase() }
                         _SecondarylivelihoodTypeList.value =
                             LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
                                 livelihoodUiModelList = livelihoodList.distinctBy { it.type },
@@ -179,7 +179,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                                     subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
                                         .uppercase()
                                 )
-                            )
+                            ).sortedBy { it.livelihoodEntity.name.lowercase() }
                         primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
                         primaryLivelihoodType.value =
@@ -195,6 +195,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
                         }
                             .map { it.copy(isSelected = primaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
+                            .sortedBy { it.livelihoodEntity.name.lowercase() }
                         _secondaryLivelihoodList.value = livelihoodUiList.filter {
                             it.livelihoodEntity.type.equals(
                                 secondaryLivelihoodType.value,
@@ -202,6 +203,7 @@ class LivelihoodPlaningViewModel @Inject constructor(
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
                         }
                             .map { it.copy(isSelected = secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
+                            .sortedBy { it.livelihoodEntity.name.lowercase() }
                         checkButtonValidation()
 
                     }
