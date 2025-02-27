@@ -50,8 +50,11 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.GetUserDetailsExpor
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityEventHelperUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
 import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
+import com.patsurvey.nudge.activities.domain.repository.impls.SyncEventProgressRepositoryImpl
 import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
+import com.patsurvey.nudge.activities.domain.repository.interfaces.SyncEventProgressRepository
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
+import com.patsurvey.nudge.activities.domain.useCase.SyncEventProgressUseCase
 import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepository
 import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepositoryImpl
 import com.patsurvey.nudge.activities.forms.domain.usecase.SettingFormsUseCase
@@ -486,6 +489,32 @@ object UseCaseModule {
             repository,
             getUserDetailsUseCase = GetUserDetailsUseCase(settingBSRepository),
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(settingBSRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSyncEventProgressUseCase(
+        syncEventProgressRepository: SyncEventProgressRepository
+    ): SyncEventProgressUseCase {
+        return SyncEventProgressUseCase(
+            syncEventProgressRepository = syncEventProgressRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSyncEventProgressRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
+        analyticsManager: AnalyticsManager
+    ): SyncEventProgressRepository {
+        return SyncEventProgressRepositoryImpl(
+            prefRepo = coreSharedPrefs,
+            eventsDao = eventsDao,
+            eventStatusDao = eventStatusDao,
+            analyticsManager = analyticsManager
         )
     }
 }
