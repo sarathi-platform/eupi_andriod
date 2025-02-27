@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.model.dataModel
 
-import com.nudge.core.datamodel.FederationDetailModel
 import com.patsurvey.nudge.database.VillageEntity
 
 data class UserAndVillageDetailsModel(
@@ -20,6 +19,5 @@ data class UserDetailsModel(
     val identityNumber: String,
     val profileImage: String,
     val roleName: String,
-    val typeName: String,
-    val federationDetailModel: FederationDetailModel
+    val typeName: String
 )

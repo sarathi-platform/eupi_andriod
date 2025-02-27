@@ -4,7 +4,6 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nrlm.baselinesurvey.model.datamodel.ReferenceIdModel
 import com.patsurvey.nudge.database.VillageEntity
-import com.nudge.core.datamodel.FederationDetailModel
 
 data class UserDetailsResponse(
     @SerializedName("username")
@@ -41,9 +40,5 @@ data class UserDetailsResponse(
 
     @SerializedName("referenceId")
     @Expose
-    val referenceId: List<ReferenceIdModel>,
-
-    @SerializedName("federationDetail")
-    @Expose
-    val federationDetail: FederationDetailModel?
+    val referenceId: List<ReferenceIdModel>
 )
