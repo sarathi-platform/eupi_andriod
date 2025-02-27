@@ -11,7 +11,7 @@ data class AppUpdateConfigModel(
     val minimumVersionCode: Int? = 0,
     @SerializedName("updateType")
     val updateType: String? = APP_UPDATE_IMMEDIATE,
-    @SerializedName("inAppUpdate")
+    @SerializedName("isInAppUpdate")
     val isInAppUpdate: Boolean? = false,
     @SerializedName("redirectLink")
     val redirectLink: String? = BLANK_STRING,

@@ -5,7 +5,6 @@ import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.google.android.play.core.install.model.AppUpdateType
 import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
-import com.nudge.core.IS_IN_APP_UPDATE
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.enums.SyncAlertType
@@ -70,7 +69,6 @@ class MainActivityViewModel @Inject constructor(
 
     init {
         prefRepo.saveBuildEnvironment(BuildConfig.FLAVOR.uppercase(Locale.ENGLISH))
-        isInAppUpdate.value = prefRepo.getPref(IS_IN_APP_UPDATE, false)
     }
 
     fun isLoggedIn() = (prefRepo.getAccessToken()?.isNotEmpty() == true)

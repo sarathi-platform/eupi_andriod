@@ -41,6 +41,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.IS_APP_NEED_UPDATE
+import com.nudge.core.IS_IN_APP_UPDATE
 import com.nudge.core.LATEST_VERSION_CODE
 import com.nudge.core.MINIMUM_VERSION_CODE
 import com.nudge.core.enums.SyncAlertType
@@ -255,6 +256,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                                     finishActivity()
 
                                 mViewModel.showUpdateDialog.value = false
+                                mViewModel.isAppLinkOpen.value = false
                             },
                             onPositiveButtonClick = {
                                 mViewModel.isAppLinkOpen.value = true
@@ -333,13 +335,14 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
     }
 
-    private fun validateAppVersionAndCheckUpdate() {
+    fun validateAppVersionAndCheckUpdate() {
         mViewModel.appUpdateType.value = getAppUpdateType(
             sharedPrefs.getPref(APP_UPDATE_TYPE, APP_UPDATE_IMMEDIATE)
                 ?: APP_UPDATE_IMMEDIATE
         )
         val currentAppVersion = BuildConfig.VERSION_CODE
         val minAppVersion = sharedPrefs.getPref(MINIMUM_VERSION_CODE, currentAppVersion)
+        mViewModel.isInAppUpdate.value = sharedPrefs.getPref(IS_IN_APP_UPDATE, false)
         if (sharedPrefs.getPref(IS_APP_NEED_UPDATE, false)) {
             CoreLogger.d(
                 CoreAppDetails.getApplicationContext(),
@@ -347,11 +350,13 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 "UpdateDetails : CurrVersion: $currentAppVersion" +
                         ":minAppVersion : $minAppVersion" +
                         ":appUpdateType: ${mViewModel.appUpdateType.value}" +
-                        ":isInAppUpdate: ${mViewModel.isInAppUpdate.value}"
+                        ":isInAppUpdate: ${mViewModel.isInAppUpdate.value}" +
+                        ":showUpdateDialog: ${mViewModel.showUpdateDialog.value}"
             )
             if (currentAppVersion < minAppVersion) {
                 mViewModel.appUpdateType.value = AppUpdateType.IMMEDIATE
             }
+            mViewModel.showUpdateDialog.value = false
             if (currentAppVersion < sharedPrefs.getPref(LATEST_VERSION_CODE, currentAppVersion)) {
                 if (mViewModel.isInAppUpdate.value) {
                     checkForAppUpdates(

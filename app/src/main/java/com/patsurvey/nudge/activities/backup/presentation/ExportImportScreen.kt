@@ -170,7 +170,9 @@ fun ExportImportScreen(
 
                     SettingTagEnum.APP_CONFIG.name -> {
                         if (isOnline(context)) {
-                            viewModel.fetchAppConfig()
+                            viewModel.fetchAppConfig {
+                                (context as MainActivity).validateAppVersionAndCheckUpdate()
+                            }
                             viewModel.showConfirmationDialog.value = false
                             viewModel.appConfigDataAnalytic()
                         } else {

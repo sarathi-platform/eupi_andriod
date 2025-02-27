@@ -125,4 +125,12 @@ class ConfigViewModel @Inject constructor(
             fetchAppConfigFromNetworkUseCase.invoke()
         }
     }
+
+    fun fetchAppConfigForPropertiesWithAppUpdate(onApiSuccess: () -> Unit) {
+        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            fetchAppConfigFromNetworkUseCase.getAppConfigurations {
+                onApiSuccess()
+            }
+        }
+    }
 }

@@ -32,4 +32,25 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
             throw ex
         }
     }
+
+
+    suspend fun getAppConfigurations(
+        propertiesName: List<String> = AppConfigKeysEnum.values().map { it.name },
+        onApiSuccess: () -> Unit
+    ) {
+        try {
+            val apiResponse = apiConfigNetworkRepository.getAppConfigFromNetwork(propertiesName)
+            if (apiResponse.status.equals(SUCCESS, true)) {
+                apiResponse.data?.let {
+                    apiConfigDatabaseRepository.saveAppConfig(apiResponse.data)
+                    onApiSuccess()
+                }
+            }
+
+        } catch (apiException: ApiException) {
+            throw apiException
+        } catch (ex: Exception) {
+            throw ex
+        }
+    }
 }
