@@ -89,7 +89,7 @@ class FilterTypeAdapter : JsonDeserializer<FilterType>, JsonSerializer<FilterTyp
                 "OTHER" -> {
                     val filterValue = jsonObject.get("filterValue")
                     FilterType.OTHER(
-                        context?.deserialize(filterValue, Any::class.java) ?: BLANK_STRING
+                        context?.deserialize(filterValue, Int::class.java) ?: BLANK_STRING
                     )
                 }
 

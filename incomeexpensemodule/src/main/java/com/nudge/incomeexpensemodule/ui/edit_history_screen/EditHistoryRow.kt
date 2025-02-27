@@ -20,7 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
 import com.google.gson.Gson
@@ -186,26 +189,50 @@ private fun TextDataRowView(
     data3: String? = null,
     data3TextColor: Color = blueDark,
 ) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
+    ConstraintLayout(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        val (text1, text2, text3) = createRefs()
 
         data1?.let {
             Text(
                 text = it,
-                style = defaultTextStyle.copy(data1TextColor)
+                style = defaultTextStyle.copy(color = data1TextColor),
+                modifier = Modifier.constrainAs(text1) {
+                    start.linkTo(parent.start)
+                    top.linkTo(parent.top)
+                    bottom.linkTo(parent.bottom)
+                }
             )
         }
+
         data2?.let {
             Text(
-                text = it,
-                style = defaultTextStyle.copy(data2textColor)
+                text = it.trim(),
+                style = defaultTextStyle.copy(color = data2textColor),
+                modifier = Modifier
+                    .constrainAs(text2) {
+                        start.linkTo(text1.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                        end.linkTo(text3.start)
+                        width = Dimension.fillToConstraints
+                    }
+                    .padding(horizontal = dimen_8_dp)
             )
         }
-        Spacer(modifier = Modifier.weight(1.0f))
+
         if (!TextUtils.isEmpty(data3)) {
             data3?.let {
                 Text(
                     text = it,
-                    style = defaultTextStyle.copy(data3TextColor)
+                    textAlign = TextAlign.End,
+                    style = defaultTextStyle.copy(color = data3TextColor),
+                    modifier = Modifier.constrainAs(text3) {
+                        end.linkTo(parent.end)
+                        top.linkTo(parent.top)
+                        bottom.linkTo(parent.bottom)
+                    }
                 )
             }
         }

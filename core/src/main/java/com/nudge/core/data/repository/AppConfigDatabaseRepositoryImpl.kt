@@ -1,13 +1,18 @@
 package com.nudge.core.data.repository
 
 import android.util.Base64
+import com.nudge.core.APP_UPDATE_IMMEDIATE
+import com.nudge.core.APP_UPDATE_TYPE
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.MINIMUM_VERSION_CODE
 import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.entities.AppConfigEntity
 import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.fromJson
+import com.nudge.core.model.AppUpdateConfigModel
 import com.nudge.core.preference.CoreSharedPrefs
 import javax.inject.Inject
 
@@ -64,6 +69,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 )
             )
         }
+        if (data.containsKey(AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name,
+                data[AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name].toBoolean()
+            )
+        }
         if (data.containsKey(AppConfigKeysEnum.SHOW_QUESTION_INDEX.name)) {
             coreSharedPrefs.savePref(
                 REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE,
@@ -93,6 +104,25 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name,
                 data[AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name].toBoolean()
             )
+        }
+        if (data.containsKey(AppConfigKeysEnum.APP_UPDATE_CONFIG.name)) {
+            data[AppConfigKeysEnum.APP_UPDATE_CONFIG.name]?.let {
+                val configModel = it.fromJson<AppUpdateConfigModel?>()
+                configModel?.let { appUpdateConfig ->
+                    coreSharedPrefs.savePref(
+                        IS_APP_NEED_UPDATE,
+                        appUpdateConfig.isAppNeedUpdate ?: false
+                    )
+                    coreSharedPrefs.savePref(
+                        MINIMUM_VERSION_CODE,
+                        appUpdateConfig.minimumVersionCode ?: 0
+                    )
+                    coreSharedPrefs.savePref(
+                        APP_UPDATE_TYPE,
+                        appUpdateConfig.updateType ?: APP_UPDATE_IMMEDIATE
+                    )
+                }
+            }
         }
 
     }
