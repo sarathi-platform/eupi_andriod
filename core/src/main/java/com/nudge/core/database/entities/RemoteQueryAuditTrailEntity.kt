@@ -20,6 +20,7 @@ data class RemoteQueryAuditTrailEntity(
     val operationType: String,
     val appVersion: String,
     val query: String,
+    val executionOrder: Int,
     val status: String,
     val errorMessage: String = BLANK_STRING,
     val createdDate: Long = System.currentTimeMillis(),
@@ -40,6 +41,7 @@ data class RemoteQueryAuditTrailEntity(
                 appVersion = remoteQueryDto.appVersion,
                 query = remoteQueryDto.query,
                 status = INPROGRESS,
+                executionOrder = remoteQueryDto.executionOrder,
                 modifiedDate = System.currentTimeMillis()
             )
         }

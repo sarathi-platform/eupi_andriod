@@ -8,7 +8,7 @@ interface RemoteQueryExecutionRepository {
 
     fun checkIfQueryIsValid(query: String, isUserIdCheckRequired: Boolean = true): Boolean
 
-    suspend fun getRemoteQuery(): RemoteQueryDto?
+    suspend fun getRemoteQuery(): List<RemoteQueryDto?>
 
     suspend fun executeQuery(remoteQueryDto: RemoteQueryDto)
 

@@ -90,6 +90,7 @@ const val MULTIPART_IMAGE_PARAM_NAME = "files"
 
 const val SUCCESS = "SUCCESS"
 const val FAILED = "FAILED"
+const val OPEN = "OPEN"
 const val FAIL = "FAIL"
 
 const val SUCCESS_CODE = "200"

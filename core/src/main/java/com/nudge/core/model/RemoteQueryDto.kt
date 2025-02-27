@@ -7,4 +7,6 @@ data class RemoteQueryDto(
     val query: String,
     val operationType: String,
     val appVersion: String,
+    val executionOrder: Int,
+    val status: String
 )

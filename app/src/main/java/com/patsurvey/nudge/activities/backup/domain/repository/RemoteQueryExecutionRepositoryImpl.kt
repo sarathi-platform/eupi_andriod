@@ -8,11 +8,11 @@ import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nudge.core.CASTE_TABLE
 import com.nudge.core.FAILED
-import com.nudge.core.INPROGRESS
 import com.nudge.core.INVALID_OPERATION_MESSAGE
 import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.nudge.core.LOGGING_TYPE_DEBUG
 import com.nudge.core.LOGGING_TYPE_EXCEPTION
+import com.nudge.core.OPEN
 import com.nudge.core.SUCCESS
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
@@ -21,6 +21,7 @@ import com.nudge.core.database.CoreDatabase
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.RemoteQueryAuditTrailEntityDao
 import com.nudge.core.database.entities.RemoteQueryAuditTrailEntity
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.fromJson
 import com.nudge.core.model.RemoteQueryDto
 import com.nudge.core.preference.CoreSharedPrefs
@@ -76,23 +77,24 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         return true
     }
 
-    override suspend fun getRemoteQuery(): RemoteQueryDto? {
+    override suspend fun getRemoteQuery(): List<RemoteQueryDto?> {
         try {
-//            val config = appConfigDao.getConfig(
-//                AppConfigKeysEnum.EXCLUDE_IN_INCOME_SUMMARY.name,
-//                coreSharedPrefs.getUniqueUserIdentifier()
-//            )?.value
+            val config = appConfigDao.getConfig(
+                AppConfigKeysEnum.SQL_QUERY_EXECUTOR.name,
+                coreSharedPrefs.getUniqueUserIdentifier()
+            )?.value
 
+            CoreLogger.d(tag = TAG, msg = "getRemoteQuery -> config: $config")
 //            Test Query for execution
 //            TODO Delete before merge after testing with BE integration.
-            val config =
-                "{\"databaseName\": \"NudgeGrantDatabase\",\"dbVersion\": 7,\"tableName\": \"mission_configs_table\",\"query\": \"UPDATE mission_configs_table SET missionName = 'Livelihood Planning New' where userId = 'Ultra Poor change maker (UPCM)_9862345078' and missionId = 6;\",\n" +
-                        "  \"operationType\": \"UPDATE\",\"appVersion\": \"134\"}"
+//            val config =
+//                "{\"databaseName\": \"NudgeGrantDatabase\",\"dbVersion\": 7,\"tableName\": \"mission_configs_table\",\"query\": \"UPDATE mission_configs_table SET missionName = 'Livelihood Planning New' where userId = 'Ultra Poor change maker (UPCM)_9862345078' and missionId = 6;\",\n" +
+//                        "  \"operationType\": \"UPDATE\",\"appVersion\": \"134\"}"
 
             if (TextUtils.isEmpty(config))
-                return null
+                return emptyList()
 
-            return config.fromJson<RemoteQueryDto>()
+            return config.fromJson<List<RemoteQueryDto>>() ?: emptyList()
         } catch (ex: JsonSyntaxException) {
             logEvent(
                 LOGGING_TYPE_EXCEPTION,
@@ -100,7 +102,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 "getRemoteQuery -> JsonSyntaxException ex: ${ex.message}",
                 ex
             )
-            return null
+            return emptyList()
         } catch (ex: Exception) {
             logEvent(
                 LOGGING_TYPE_EXCEPTION,
@@ -108,19 +110,29 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 "getRemoteQuery -> Exception ex: ${ex.message}",
                 ex
             )
-            return null
+            return emptyList()
         }
 
     }
 
     override suspend fun executeQuery(remoteQueryDto: RemoteQueryDto) {
+        if (remoteQueryDto.status != OPEN) {
+            logEvent(
+                LOGGING_TYPE_DEBUG,
+                remoteQueryDto.status,
+                msg = "executeQuery: failed as query was already executed",
+                exception = null
+            )
+            return
+        }
+
         val isAppVersionValid = runAppVersionCheck(remoteQueryDto)
 
         if (!isAppVersionValid) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
-                "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryDto.appVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
+                "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryDto.appVersion} -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
                         "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
                 null
             )
@@ -133,7 +145,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 FAILED,
                 "executeQuery failed due to invalid Database version, required: ${
                     DatabaseEnum.getDbVersion(remoteQueryDto.databaseName)
-                }, found: ${remoteQueryDto.dbVersion} -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
+                }, found: ${remoteQueryDto.dbVersion} -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}," +
                         "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
                 null
             )
@@ -222,7 +234,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                 else -> {
                     remoteQueryAuditTrailEntityDao.updateRemoteQueryAuditTrailEntityStatus(
                         auditTrailRowId.toInt(),
-                        status = INPROGRESS,
+                        status = OPEN,
                         errorMessage = "$INVALID_OPERATION_MESSAGE ${remoteQueryDto.operationType}",
                         userId = userId
                     )
