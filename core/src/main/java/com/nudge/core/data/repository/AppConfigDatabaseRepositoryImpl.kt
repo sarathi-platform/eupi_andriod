@@ -4,6 +4,7 @@ import android.util.Base64
 import com.nudge.core.APP_UPDATE_IMMEDIATE
 import com.nudge.core.APP_UPDATE_TYPE
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.IS_APP_NEED_UPDATE
 import com.nudge.core.MINIMUM_VERSION_CODE
 import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
