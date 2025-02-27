@@ -205,7 +205,7 @@ fun DropDownTypeComponent(
             sources = sources,
             isMandatory = isMandatory,
             isEditAllowed = isEditAllowed,
-            questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
+            questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
             navigateToMediaPlayerScreen = { imageContent ->
                 navigateToMediaPlayerScreen(imageContent)
             },
@@ -225,7 +225,7 @@ fun DropDownTypeComponent(
                 sources = sources,
                 isMandatory = isMandatory,
                 isEditAllowed = isEditAllowed,
-                questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
+                questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                 onDetailIconClicked = { onDetailIconClicked() },
                 navigateToMediaPlayerScreen = { contentList ->
                     navigateToMediaPlayerScreen(contentList)

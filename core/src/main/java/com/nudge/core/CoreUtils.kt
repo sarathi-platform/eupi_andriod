@@ -1268,8 +1268,10 @@ fun onlyNumberField(value: String): Boolean {
     return false
 }
 
-fun getQuestionNumber(questionIndex: Int): String {
-    return "${questionIndex + 1}. "
+fun getQuestionNumber(isQuestionNumberVisible: Boolean = false, questionIndex: Int): String {
+    return if (isQuestionNumberVisible) {
+        "${questionIndex + 1}. "
+    } else BLANK_STRING
 }
 
 fun String.stringToInt(): Int {

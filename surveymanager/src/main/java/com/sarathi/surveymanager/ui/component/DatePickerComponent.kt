@@ -127,7 +127,7 @@ fun DatePickerComponent(
                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contents?.isNotEmpty() == true,
                     onDetailIconClicked = { onDetailIconClicked() },
                     title = title,
-                    questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                     isRequiredField = isMandatory
                 )
             }

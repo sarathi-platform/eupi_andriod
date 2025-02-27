@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -146,9 +145,10 @@ fun RadioQuestionBoxComponent(
                                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                     onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
-                                    questionNumber = if (isQuestionNumberVisible) getQuestionNumber(
+                                    questionNumber = getQuestionNumber(
+                                        isQuestionNumberVisible,
                                         questionIndex
-                                    ) else BLANK_STRING,
+                                    ),
                                     isRequiredField = isRequiredField
                                 )
                             }

@@ -86,9 +86,7 @@ fun HrsMinRangePickerComponent(
                     QuestionComponent(
                         isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                         title = title,
-                        questionNumber = if (isQuestionNumberVisible) getQuestionNumber(
-                            questionIndex
-                        ) else BLANK_STRING,
+                        questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                         isRequiredField = isMandatory,
                         onDetailIconClicked = { onDetailIconClicked() })
                 }

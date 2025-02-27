@@ -132,7 +132,7 @@ fun AddImageComponent(
         if (title.isNotBlank()) {
             QuestionComponent(
                 title = title,
-                questionNumber = if (isQuestionNumberVisible) getQuestionNumber(questionIndex) else BLANK_STRING,
+                questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                 subTitle = subtitle ?: "Signed & Sealed Physical Format D",
                 isRequiredField = isMandatory
             )

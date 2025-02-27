@@ -734,7 +734,7 @@ fun FormQuestionUiContent(
                     QuestionComponent(
                         title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)
                             ?.firstOrNull()?.value.value(),
-                        questionNumber = if (isQuestionNumberVisible) getQuestionNumber(index) else BLANK_STRING,
+                        questionNumber = getQuestionNumber(isQuestionNumberVisible, index),
                         isRequiredField = question.isMandatory
                     )
 
