@@ -115,23 +115,6 @@ fun SplashScreenV2(
                         userType = viewModel.getUserType() ?: CRP_USER_TYPE,
                         navController = navController
                     )
-                    /*
-                    NudgeLogger.d(
-                        "SplashScreen",
-                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = true"
-                    )
-                    if (viewModel.getLoggedInUserType() == UPCM_USER) {
-                        navController.popBackStack()
-                        navController.navigate(
-                            Graph.HOME
-                        )
-                    } else {
-                        navController.navigate(AuthScreen.VILLAGE_SELECTION_SCREEN.route) {
-                            popUpTo(AuthScreen.START_SCREEN.route) {
-                                inclusive = true
-                            }
-                        }
-                    }*/
                 } else {
                     NudgeLogger.d(
                         "SplashScreen",
@@ -193,7 +176,6 @@ fun SplashScreenV2(
     }
 }
 
-// Component for NRLM Logo
 @Composable
 fun NrlmLogo(modifier: Modifier) {
     Box(modifier = modifier) {
@@ -246,7 +228,6 @@ fun Loader(modifier: Modifier) {
     }
 }
 
-// Bottom Content Component
 @Composable
 fun BottomContent(modifier: Modifier) {
     Box(modifier = modifier.padding(vertical = dimen_10_dp)) {

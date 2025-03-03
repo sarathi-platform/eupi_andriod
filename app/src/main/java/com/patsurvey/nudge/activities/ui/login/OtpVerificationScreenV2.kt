@@ -54,7 +54,6 @@ import androidx.navigation.NavController
 import com.nudge.core.maskMobileNumber
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_48_dp
-import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
@@ -180,7 +179,7 @@ fun OtpVerificationScreenV2(
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(dimen_6_dp))
+                    //Spacer(modifier = Modifier.height(dimen_6_dp))
                     OtpSentMessage(mobileNumber = viewModel.getUserMobileNumber())
                     Spacer(modifier = Modifier.height(dimen_3_dp))
 

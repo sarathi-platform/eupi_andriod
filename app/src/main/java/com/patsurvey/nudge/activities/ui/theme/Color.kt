@@ -112,5 +112,7 @@ val dateRangeFieldColor = Color(0xFFD9D9D9)
 val blueDarkColor = Color(0xFF094FA2)
 val darkYellow = Color(0xFFFFBA5D)
 val darkGray = Color(0xFFA4A4A4)
+val midiumBlueColor = Color(0xFF1A73E9)
+val midiumGrayColor = Color(0xFFBFC1C5)
 
 

@@ -17,7 +17,7 @@ import com.patsurvey.nudge.R
 
 @Preview
 @Composable
-fun SarathiLogoTextViewV2() {
+fun SarathiLogoTextViewV2(modifier: Modifier = Modifier) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
