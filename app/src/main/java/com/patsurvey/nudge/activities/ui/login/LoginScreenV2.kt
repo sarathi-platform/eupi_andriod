@@ -52,12 +52,15 @@ import androidx.navigation.NavController
 import com.nudge.core.setKeyboardToReadjust
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_48_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
+import com.patsurvey.nudge.activities.ui.theme.midiumBlueColor
+import com.patsurvey.nudge.activities.ui.theme.midiumGrayColor
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
 import com.patsurvey.nudge.customviews.rememberSnackBarState
@@ -69,9 +72,7 @@ import com.patsurvey.nudge.utils.stringToInt
 @SuppressLint("StringFormatInvalid")
 @Composable
 fun LoginScreenV2(
-    navController: NavController,
-    viewModel: LoginViewModel,
-    modifier: Modifier
+    navController: NavController, viewModel: LoginViewModel, modifier: Modifier
 ) {
     val context = LocalContext.current
     val snackState = rememberSnackBarState()
@@ -88,21 +89,13 @@ fun LoginScreenV2(
     }
     if (networkErrorMessage.isNotEmpty()) {
         snackState.addMessage(
-            message = networkErrorMessage,
-            isSuccess = false,
-            isCustomIcon = false
+            message = networkErrorMessage, isSuccess = false, isCustomIcon = false
         )
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(
-//                horizontal = dimensionResource(id = R.dimen.padding_16dp),
-//                vertical = dimensionResource(
-//                    id = R.dimen.padding_32dp
-//                )
-            )
             .then(modifier)
     ) {
         Image(
@@ -111,8 +104,11 @@ fun LoginScreenV2(
             modifier = Modifier.matchParentSize(),
             contentScale = ContentScale.Crop
         )
-        SarathiLogoTextViewV2()
-
+        Box(modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = dimen_60_dp)) {
+            SarathiLogoTextViewV2(modifier)
+        }
         AnimatedVisibility(
             visible = viewModel.showLoader.value,
             exit = fadeOut(),
@@ -139,20 +135,18 @@ fun LoginScreenV2(
         Column(
             modifier = Modifier
                 .align(Alignment.Center)
-                .offset(y = (-70).dp)
+                .offset(y = (-120).dp)
                 .padding(horizontal = dimen_10_dp)
         ) {
             Box(
                 modifier = Modifier
                     .height(60.dp)
                     .border(
-                        width = 2.dp,
-                        color = when {
-                            isFocused -> Color.Blue
-                            !isFocused -> Color.Gray
+                        width = 2.dp, color = when {
+                            isFocused -> midiumBlueColor
+                            !isFocused -> midiumGrayColor
                             else -> Color.Transparent
-                        },
-                        shape = RoundedCornerShape(4.dp) // Optional: Rounded corners
+                        }, shape = RoundedCornerShape(4.dp) // Optional: Rounded corners
                     )
             ) {
                 OutlinedTextField(
@@ -161,11 +155,11 @@ fun LoginScreenV2(
                         .background(Color.White)
                         .onFocusChanged { focusState ->
                             isFocused = focusState.isFocused
-                        }, // Correct focus tracking
+                        },
                     singleLine = true,
                     value = viewModel.mobileNumber.value,
                     placeholder = {
-                        Text(text = "Mobile number", color = Color.Gray)
+                        Text(text = "Mobile number", color = midiumGrayColor)
                     },
                     textStyle = TextStyle(
                         fontSize = 16.sp,
@@ -175,8 +169,8 @@ fun LoginScreenV2(
                     ),
                     onValueChange = {
                         if (onlyNumberField(it.text)) {
-                            if (it.text.length <= MOBILE_NUMBER_LENGTH)
-                                viewModel.mobileNumber.value = it
+                            if (it.text.length <= MOBILE_NUMBER_LENGTH) viewModel.mobileNumber.value =
+                                it
                         }
                     },
                     colors = TextFieldDefaults.textFieldColors(
@@ -208,18 +202,14 @@ fun LoginScreenV2(
                         viewModel.generateOtp { success, message ->
                             if (success) {
                                 if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME,
-                                        true
+                                        NudgeNavigationGraph.HOME, true
                                     ) == true
                                 ) {
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
-                                } else
-                                    navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                                } else navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                             } else {
                                 snackState.addMessage(
-                                    message = message,
-                                    isSuccess = false,
-                                    isCustomIcon = false
+                                    message = message, isSuccess = false, isCustomIcon = false
                                 )
                             }
                         }
@@ -229,8 +219,9 @@ fun LoginScreenV2(
                     .fillMaxWidth()
                     .height(dimen_48_dp)
                     .background(Color.Transparent),
-                colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
-                    ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH) ButtonDefaults.buttonColors(
+                    blueDark
+                ) else ButtonDefaults.buttonColors(
                     buttonBgColor
                 ),
                 shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
@@ -238,8 +229,7 @@ fun LoginScreenV2(
             ) {
                 Text(
                     text = stringResource(id = R.string.next),
-                    color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
-                        Color.White else blueDark,
+                    color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH) Color.White else blueDark,
                     fontSize = 16.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
