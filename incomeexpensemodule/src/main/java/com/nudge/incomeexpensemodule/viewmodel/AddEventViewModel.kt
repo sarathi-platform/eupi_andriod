@@ -7,9 +7,11 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -27,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLiv
 import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
+import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
@@ -35,6 +38,10 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import getLivelihoodIdsWithOrderForSubject
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.withContext
 import java.util.UUID
 import javax.inject.Inject
 
@@ -81,13 +88,18 @@ class AddEventViewModel @Inject constructor(
     var amount = mutableStateOf("")
     var selectedDate = mutableStateOf("")
     var isSubmitButtonEnable = mutableStateOf(false)
+    var isDateOfEventVisible = mutableStateOf(true)
     var selectedDateInLong: Long = 0
     val maxAssetValue = mutableIntStateOf(MAXIMUM_RANGE)
-    var fieldValidationAndMessageMap = mutableStateMapOf<String, Pair<Boolean, String>>()
+    private val _fieldValidationAndMessageMap =
+        MutableStateFlow<Map<String, Pair<Boolean, String>>>(emptyMap())
+    val fieldValidationAndMessageMap: StateFlow<Map<String, Pair<Boolean, String>>> =
+        _fieldValidationAndMessageMap
 
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitAddEventState -> {
+                setTranslationConfig()
                 fetchEventData(event.subjectId, event.transactionId)
             }
 
@@ -96,8 +108,11 @@ class AddEventViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
-
         }
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.AddEventScreen
     }
 
 
@@ -108,7 +123,9 @@ class AddEventViewModel @Inject constructor(
                 transactionId = transactionId
             )
             LivelihoodEventDataCaptureTypeEnum.values().forEach {
-                questionVisibilityMap[it] = false
+                if (!questionVisibilityMap.containsKey(it)) {
+                    questionVisibilityMap[it] = false
+                }
             }
             if (savedEvent != null) {
 
@@ -132,18 +149,25 @@ class AddEventViewModel @Inject constructor(
             if (livelihoodForDidi != null) {
                 livelihoodList = getLivelihoodListFromDbUseCase.invoke(
                     listOf(
-                        livelihoodForDidi.first()?.livelihoodId.value(),
-                        livelihoodForDidi.last()?.livelihoodId.value()
+                        livelihoodForDidi.find { it.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value(),
+                        livelihoodForDidi.find { it.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
                     ).filter { it != NOT_DECIDED_LIVELIHOOD_ID }//Filter Not decided events
                 )
+
+                val livelihoodIdsWithOrder = getLivelihoodIdsWithOrderForSubject(livelihoodForDidi)
+
                 _livelihoodDropdownValue.clear()
-                _livelihoodDropdownValue.addAll(getLivelihooldDropValue(livelihoodList))
+                livelihoodIdsWithOrder.sortedBy { it?.second }.forEach { idsWithOrder ->
+                    livelihoodList.find { it.programLivelihoodId == idsWithOrder?.first }
+                        ?.let { livelihoodModel ->
+                            _livelihoodDropdownValue.add(getLivelihooldDropValue(livelihoodModel))
+                        }
+                }
                 revalidateAllFieldsInEdit(subjectId, transactionId)
-
-
+            }
         }
     }
-    }
+
 
 
     private fun revalidateAllFieldsInEdit(subjectId: Int, transactionId: String) {
@@ -153,7 +177,7 @@ class AddEventViewModel @Inject constructor(
                 fieldName = it.name,
                 transactionId = transactionId,
                 onValidationComplete = { evalutorResult, message ->
-                    fieldValidationAndMessageMap[it.name] = Pair(evalutorResult, message)
+                    updateFieldValidationMessageAndMap(key = it.name, Pair(evalutorResult, message))
 
                 }
             )
@@ -185,6 +209,7 @@ class AddEventViewModel @Inject constructor(
             selectedLivelihoodId.value,
             selectedAssetTypeId.value
         )
+        _livelihoodAssetDropdownValue.clear()
         _livelihoodAssetDropdownValue.addAll(
             assetTypeList.map {
                 ValuesDto(
@@ -217,7 +242,7 @@ class AddEventViewModel @Inject constructor(
                 isSelected = it.id == selectedEventId.value,
                 originalName = it.originalName
             )
-        })
+        }.sortedBy { it.originalName?.lowercase() })
     }
 
     private fun resetForm() {
@@ -226,8 +251,11 @@ class AddEventViewModel @Inject constructor(
             questionVisibilityMap[it] = false
 
         }
-        AddEventFieldEnum.values().forEach {
-            fieldValidationAndMessageMap[it.name] = Pair(true, BLANK_STRING)
+        AddEventFieldEnum.values().forEach { eventFieldName ->
+            _fieldValidationAndMessageMap.value =
+                _fieldValidationAndMessageMap.value.toMutableMap().apply {
+                    this[eventFieldName.name] = Pair(true, BLANK_STRING)
+            }
         }
     }
 
@@ -235,10 +263,21 @@ class AddEventViewModel @Inject constructor(
     private fun getLivelihooldDropValue(livelihoodForDidi: List<LivelihoodModel>): List<ValuesDto> {
         return livelihoodForDidi.map {
             ValuesDto(
-                id = it.livelihoodId,
+                id = it.programLivelihoodId,
                 value = it.name,
                 originalName = it.originalName,
-                isSelected = selectedLivelihoodId.value == it.livelihoodId
+                isSelected = selectedLivelihoodId.value == it.programLivelihoodId
+            )
+        }
+    }
+
+    private fun getLivelihooldDropValue(livelihoodForDidi: LivelihoodModel): ValuesDto {
+        return livelihoodForDidi.let {
+            ValuesDto(
+                id = it.programLivelihoodId,
+                value = it.name,
+                originalName = it.originalName,
+                isSelected = selectedLivelihoodId.value == it.programLivelihoodId
             )
         }
     }
@@ -270,7 +309,22 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
-    fun onSubmitButtonClick(subjectId: Int, transactionId: String) {
+    fun updateAssetVisibility(isValid: Boolean) {
+        val livelihoodDataCaptureTypes = getLivelihoodEventFromName(eventType)
+            .livelihoodEventDataCaptureTypes
+            .filterNot { it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET }
+        isDateOfEventVisible.value = isValid
+        livelihoodDataCaptureTypes.forEach { captureType ->
+            questionVisibilityMap[captureType] = if (isValid) {
+                questionVisibilityMap.containsKey(captureType)
+            } else {
+                !questionVisibilityMap.containsKey(captureType)
+            }
+        }
+    }
+
+
+    fun onSubmitButtonClick(subjectId: Int, transactionId: String, onComplete: () -> Unit) {
 
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
@@ -311,6 +365,10 @@ class AddEventViewModel @Inject constructor(
                 createdDateTime = createdDateTime,
                 modifiedDate = modifiedDate
             )
+            withContext(mainDispatcher)
+            {
+                onComplete()
+            }
 
         }
     }
@@ -343,17 +401,17 @@ class AddEventViewModel @Inject constructor(
             transactionId = transactionId
         ) { isValid, message ->
             // Pass the result back through the callback
-            onValidationComplete(isValid, message)
             // Update submit button state based on validation result
             var fieldValidationFromConfig = true
-            fieldValidationAndMessageMap.forEach {
+            onValidationComplete(isValid, message)
+
+            fieldValidationAndMessageMap.value.forEach {
 
                 if (!it.value.first) {
                     fieldValidationFromConfig = false
                 }
             }
             isSubmitButtonEnable.value = fieldValidationFromConfig && checkValidData()
-
         }
 
     }
@@ -422,16 +480,17 @@ class AddEventViewModel @Inject constructor(
     ) {
         ioViewModelScope {
             val selectedLivelihood =
-                livelihoodList.find { it.livelihoodId == selectedLivelihoodId.value }
+                livelihoodList.find { it.programLivelihoodId == selectedLivelihoodId.value }
             val selectedEvent = eventList.find { it.id == selectedEventId.value }
             val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
             val selectedValidations =
-                selectedLivelihood?.validations?.filter { it.livelihoodType == selectedLivelihood.type && it.eventName == selectedEvent?.originalName }
+                selectedLivelihood?.validations?.filter { it.eventName == selectedEvent?.originalName }
 
             if (selectedValidations != null && selectedValidations.isNotEmpty()) {
                 var validation =
                     selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
+                        ?: selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
                 if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null) {
                     validation =
@@ -448,6 +507,7 @@ class AddEventViewModel @Inject constructor(
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
                     validation =
                         selectedValidations.find { it.productType == selectedProduct?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
+                            ?: selectedValidations.find { it.productType == selectedProduct?.type }?.validation?.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
                     validateExpression(
                         validation,
@@ -484,24 +544,55 @@ class AddEventViewModel @Inject constructor(
         transactionId: String,
         onValidationResult: (Boolean, String) -> Unit
     ) {
-        if (validation != null) {
-            val expressionResult = validationUseCase.invoke(
-                validationExpression = validation.condition,
-                subjectId = subjectId,
-                selectedAsset = selectedAssetType,
-                selectedLivelihood = selectedLivelihood,
-                assetCount = assetCount.value,
-                amount = amount.value,
-                message = validation.message,
-                transactionId = transactionId
-            )
-            onValidationResult(expressionResult.first, expressionResult.second)
-        } else {
+        if (validation == null) {
             onValidationResult(true, BLANK_STRING)
-
+            return
         }
+        val expressionResult = validationUseCase.invoke(
+            validationExpression = validation.condition,
+            validationRegex = validation.regex,
+            subjectId = subjectId,
+            selectedAsset = selectedAssetType,
+            selectedLivelihood = selectedLivelihood,
+            assetCount = assetCount.value,
+            amount = amount.value,
+            message = validation.message,
+            transactionId = transactionId
+        )
+        validation.conditionalMessage?.let { conditionalMessages ->
+            conditionalMessages.forEach { conditionalMessage ->
+                val conditionalMessageExpressionResult = validationUseCase.invoke(
+                    validationExpression = conditionalMessage.condition,
+                    validationRegex = validation.regex,
+                    subjectId = subjectId,
+                    selectedAsset = selectedAssetType,
+                    selectedLivelihood = selectedLivelihood,
+                    assetCount = assetCount.value,
+                    amount = amount.value,
+                    message = conditionalMessage.languageList?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.message
+                        ?: BLANK_STRING,
+                    transactionId = transactionId
+                )
+                if (conditionalMessageExpressionResult.first) {
+                    onValidationResult(
+                        expressionResult.first,
+                        conditionalMessageExpressionResult.second
+                    )
+                    return
+                }
+            }
+
+        } ?: onValidationResult(expressionResult.first, expressionResult.second)
     }
+
+    fun updateFieldValidationMessageAndMap(key: String, value: Pair<Boolean, String>) {
+        _fieldValidationAndMessageMap.value =
+            _fieldValidationAndMessageMap.value.toMutableMap().apply {
+                this[key] = value
+            }
 }
+}
+
 
 
 

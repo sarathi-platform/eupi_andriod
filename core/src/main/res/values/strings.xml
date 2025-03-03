@@ -6,7 +6,7 @@
     <string name="not_able_to_load">Not able to load data please try again..</string>
     <string name="retry">Retry</string>
 
-    <string name="didi_sub_tab_title">Didi</string>
+    <string name="didis_item_text_plural">Didi</string>
     <string name="small_group_sub_tab_title">Small Group</string>
     <string name="search_label">Search</string>
 
@@ -53,6 +53,25 @@
     <string name="details_have_already_been_added">Details have already been added!</string>
     <string name="no_result_found">No result found</string>
     <string name="proceed">Proceed</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
-
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
+    <string name="last_sync_date_time">Last Sync Time:</string>
+    <string name="profile_phone">Phone Number</string>
+    <string name="sync_days">%1$s days</string>
+    <string name="sync_hours">%1$s hours</string>
+    <string name="sync_minutes">%1$s minutes</string>
+    <string name="sync_ago">ago</string>
+    <string name="just_now">Just Now</string>
+    <string name="ongoing_tab_title">Ongoing</string>
+    <string name="completed_tab_title">Completed</string>
+    <string name="search_by_mission">Search by Mission</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
+    <string name="complete_survey">Complete Survey</string>
+    <string name="exclude_in_calculation_message">*This expense is not included in the total calculation.</string>
+    <string name="contact_to_admin_id_missing">Access issue detected. Please contact the admin for assistance.</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="missions_filter_label_suffix">Missions</string>
 </resources>

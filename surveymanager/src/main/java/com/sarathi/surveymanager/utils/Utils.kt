@@ -1,9 +1,15 @@
 package com.sarathi.surveymanager.utils
 
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.input.OffsetMapping
+import androidx.compose.ui.text.input.TransformedText
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.core.text.isDigitsOnly
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_NUMERIC_INPUT_MAX_LENGTH
 import com.nudge.core.DEFAULT_TEXT_INPUT_MAX_LENGTH
+import com.nudge.core.ELLIPSIS_MAX_LENGTH
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.toSafeInt
 import com.sarathi.dataloadingmangement.enums.ValidationExpressionEnum
@@ -49,8 +55,10 @@ fun getMaxInputLength(
                                 ValidationExpressionEnum.INPUT_LENGTH.originalValue, true
                             )
                         }
-                        length = lengthValidation?.field.toSafeInt(defaultLength.toString())
-                        break
+                        if (lengthValidation != null) {
+                            length = lengthValidation.field.toSafeInt(defaultLength.toString())
+                            break
+                        }
                     }
                 }
             }
@@ -58,4 +66,22 @@ fun getMaxInputLength(
 
     return length
 
+}
+
+@Composable
+fun ellipsisVisualTransformation() = VisualTransformation { text ->
+    val ellipsis = "..."
+    val maxLength = ELLIPSIS_MAX_LENGTH
+
+    if (text.length <= maxLength) {
+        TransformedText(text = text, offsetMapping = OffsetMapping.Identity)
+    } else {
+        TransformedText(
+            AnnotatedString.Builder().apply {
+                append(text.take(maxLength - ellipsis.length))
+                append(ellipsis)
+            }.toAnnotatedString(),
+            OffsetMapping.Identity
+        )
+    }
 }

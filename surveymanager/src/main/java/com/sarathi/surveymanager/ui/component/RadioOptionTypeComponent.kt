@@ -1,127 +1,282 @@
 package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
+import androidx.compose.material.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.nudge.core.ui.theme.NotoSans
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.helper.LocalTranslationHelper
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.dimen_18_dp
-import com.nudge.core.ui.theme.dimen_8_dp
-import com.nudge.core.ui.theme.red
+import com.nudge.core.ui.theme.dimen_0_dp
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_12_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.greenActiveIcon
+import com.nudge.core.ui.theme.languageItemInActiveBorderBg
+import com.nudge.core.ui.theme.lightGray2
+import com.nudge.core.ui.theme.lightGrayColor
+import com.nudge.core.ui.theme.placeholderGrey
+import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.surveymanager.R
 
 @Composable
 fun RadioOptionTypeComponent(
-    isMandatory: Boolean = false,
-    isContent: Boolean = false,
-    selectedValue: String = "",
-    onOptionSelected: (optionValue: String, optionId: Int) -> Unit
+    optionItemEntityState: List<OptionsUiModel>,
+    isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
+    selectedValue: String = BLANK_STRING,
+    isActivityCompleted: Boolean,
+    onOptionSelected: (index: Int, optionValue: String, optionId: Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
-        mutableStateOf(0.dp)
+        mutableStateOf(dimen_0_dp)
     }
     val localDensity = LocalDensity.current
+
+    val context = LocalContext.current
+    val translationHelper = LocalTranslationHelper.current
+
+    val selectedValueState =
+        remember(selectedValue, optionItemEntityState, isTaskMarkedNotAvailable) {
+            if (isTaskMarkedNotAvailable.value)
+                mutableStateOf(BLANK_STRING)
+            else
+                mutableStateOf(selectedValue)
+        }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(modifier = Modifier.fillMaxWidth(.9f),
-                text = buildAnnotatedString {
-                    withStyle(
-                        style = SpanStyle(
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp,
-                            color = textColorDark
-                        )
-                    ) {
-//                            append(optionItemEntityState.optionItemEntity?.display)
-                    }
-                    withStyle(
-                        style = SpanStyle(
-                            color = red,
-                            fontSize = 16.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = NotoSans
-                        )
-                    ) {
-                        if (isMandatory) {
-                            append(" *")
-                        }
-                    }
-                }
-            )
-            if (isContent) {
-                Spacer(modifier = Modifier.size(dimen_8_dp))
-                Icon(
-                    painter = painterResource(id = R.drawable.info_icon),
-                    contentDescription = "question info button",
-                    Modifier
-                        .size(dimen_18_dp)
-                        .clickable {
-                        },
+            .padding(horizontal = dimen_16_dp)
 
-                    tint = blueDark
-                )
-            }
-        }
+    ) {
 
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 10.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(white, shape = RoundedCornerShape(6.dp))
+                .padding(top = dimen_10_dp)
+                .clip(RoundedCornerShape(dimen_6_dp))
+                .background(
+                    white, shape = RoundedCornerShape(dimen_6_dp)
+                )
                 .padding(0.dp)
         ) {
             Row(
-                Modifier
-                    .onGloballyPositioned { coordinates ->
-                        yesNoButtonViewHeight.value =
-                            with(localDensity) { coordinates.size.height.toDp() }
+                Modifier.onGloballyPositioned { coordinates ->
+                    yesNoButtonViewHeight.value =
+                        with(localDensity) { coordinates.size.height.toDp() }
 
-                    },
-                horizontalArrangement = Arrangement.Center,
+                },
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
-            )
-            {
+            ) {
+                Spacer(modifier = Modifier.width(dimen_5_dp))
+                optionItemEntityState.forEachIndexed { index, optionValueText ->
+                    OptionCard(
+                        modifier = Modifier.weight(1f),
+                        index = index,
+                        textColor = selectTextColor(
+                            selectedValueState,
+                            optionValueText,
+                            isTaskMarkedNotAvailable
+                        ),
+                        backgroundColor = selectBackgroundColor(
+                            selectedValueState,
+                            optionValueText,
+                            isTaskMarkedNotAvailable
+                        ),
+                        borderColor = getBorderColor(
+                            selectedValueState = selectedValueState,
+                            optionValueText = optionValueText,
+                            isTaskMarkedNotAvailable = isTaskMarkedNotAvailable
+                        ),
+                        optionText = optionValueText.description.toString(),
+                        isOptionSelected = selectedValueState.value.equals(
+                            optionValueText.description.toString(), ignoreCase = true
+                        )
+                    ) {
+                        if (!isActivityCompleted) {
+                            selectedValueState.value = optionValueText.description.toString()
+                            isTaskMarkedNotAvailable.value = false
+                            onOptionSelected(
+                                index,
+                                optionValueText.description.toString(),
+                                optionValueText.optionId ?: -1
+                            )
+                        } else {
+                            showCustomToast(
+                                context,
+                                translationHelper.getString(
+                                    R.string.activity_completed_unable_to_edit
+                                )
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(dimen_5_dp))
+                }
             }
         }
     }
+
+
 }
+
+@Composable
+fun selectBackgroundColor(
+    selectedValueState: MutableState<String>,
+    optionValueText: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+): Color {
+    return if (isTaskMarkedNotAvailable.value)
+        lightGrayColor
+    else {
+        if (selectedValueState.value == BLANK_STRING
+            && optionValueText.selectedValue.toString() == BLANK_STRING
+        ) {
+            Color.White
+        } else if (selectedValueState.value.equals(
+                optionValueText.description.toString(), ignoreCase = true
+            )
+        ) {
+            blueDark
+        } else {
+            Color.White
+        }
+    }
+}
+
+@Composable
+fun getBorderColor(
+    selectedValueState: MutableState<String>,
+    optionValueText: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+): Color {
+    return if (isTaskMarkedNotAvailable.value)
+        languageItemInActiveBorderBg
+    else {
+        if (selectedValueState.value == BLANK_STRING
+            && optionValueText.selectedValue.toString() == BLANK_STRING
+        ) {
+            lightGray2
+        } else if (selectedValueState.value.equals(
+                optionValueText.description.toString(), ignoreCase = true
+            )
+        ) {
+            blueDark
+        } else {
+            languageItemInActiveBorderBg
+        }
+    }
+}
+
+@Composable
+fun selectTextColor(
+    selectedValueState: MutableState<String>,
+    optionValueText: OptionsUiModel,
+    isTaskMarkedNotAvailable: MutableState<Boolean>
+): Color {
+
+    return if (isTaskMarkedNotAvailable.value)
+        placeholderGrey
+    else {
+        if (selectedValueState.value == BLANK_STRING
+            && optionValueText.selectedValue.toString() == BLANK_STRING
+        ) {
+            textColorDark
+        } else if (selectedValueState.value.equals(
+                optionValueText.description.toString(), ignoreCase = true
+            )
+        ) {
+            white
+        } else {
+            textColorDark
+        }
+    }
+}
+
+@Composable
+fun OptionCard(
+    modifier: Modifier,
+    textColor: Color,
+    optionText: String,
+    backgroundColor: Color,
+    borderColor: Color,
+    isOptionSelected: Boolean = false,
+    isNotAvailableOption: Boolean = false,
+    index: Int? = 0,
+    onClick: () -> Unit
+) {
+    TextButton(
+        onClick = {
+            onClick()
+        }, modifier = Modifier
+            .background(
+                backgroundColor, RoundedCornerShape(
+                    dimen_6_dp
+                )
+            )
+            .border(
+                dimen_1_dp, color = borderColor, RoundedCornerShape(dimen_6_dp)
+            )
+            .then(modifier)
+
+    ) {
+        if (!isNotAvailableOption) {
+            Icon(
+                if (index == 0)
+                    painterResource(id = R.drawable.icon_check)
+                else
+                    painterResource(id = R.drawable.icon_close),
+                contentDescription = "Button Icon",
+                tint = if (isOptionSelected) {
+                    white
+                } else {
+                    if (index == 0)
+                        greenActiveIcon
+                    else
+                        redOffline
+                },
+                modifier = Modifier.height(dimen_12_dp)
+            )
+            Spacer(modifier = Modifier.width(dimen_5_dp))
+        }
+        Text(
+            text = optionText, color = textColor
+        )
+    }
+}
+
 
 @Preview(showBackground = true)
 @Composable

@@ -19,6 +19,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.incomeexpensemodule.R
+import com.nudge.core.formatToIndianRupee
+import com.nudge.core.getFileNameFromURL
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.theme.assetValueIconColor
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -30,24 +32,28 @@ import com.nudge.core.utils.FileUtils
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
+import com.sarathi.dataloadingmangement.model.uiModel.livelihood.SubjectEntityWithLivelihoodMappingUiModel
+import sortTotalAssetCountForLivelihood
+import java.math.BigDecimal
 
 @Composable
 fun TotalIncomeExpenseAssetSummaryView(
     incomeExpenseSummaryUiModel: IncomeExpenseSummaryUiModel?,
+    subjectLivelihoodMapping: List<SubjectEntityWithLivelihoodMappingUiModel>,
     onAssetCountClicked: () -> Unit
 ) {
     val context = LocalContext.current
     Column {
-        Text(text = "Income", style = getTextColor(newMediumTextStyle))
+        Text(text = stringResource(R.string.income), style = getTextColor(newMediumTextStyle))
         Text(
-            text = "₹ ${incomeExpenseSummaryUiModel?.totalIncome.value()}",
+            text = formatToIndianRupee(BigDecimal(incomeExpenseSummaryUiModel?.totalIncome.value()).toPlainString()),
             style = getTextColor(defaultTextStyle)
         )
     }
     Column {
-        Text(text = "Expense", style = getTextColor(newMediumTextStyle))
+        Text(text = stringResource(R.string.expense), style = getTextColor(newMediumTextStyle))
         Text(
-            text = "₹ ${incomeExpenseSummaryUiModel?.totalExpense.value()}",
+            text = formatToIndianRupee(BigDecimal(incomeExpenseSummaryUiModel?.totalExpense.value()).toPlainString()),
             style = getTextColor(defaultTextStyle)
         )
     }
@@ -63,10 +69,14 @@ fun TotalIncomeExpenseAssetSummaryView(
         Text(text = stringResource(R.string.total_asset), style = getTextColor(newMediumTextStyle))
         if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.isNotEmpty() == true) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.forEach {
+                sortTotalAssetCountForLivelihood(
+                    incomeExpenseSummaryUiModel,
+                    subjectLivelihoodMapping
+                )?.forEach {
                     incomeExpenseSummaryUiModel.imageUriForLivelihood.get(it.key)
                         ?.let { fileName ->
-                            FileUtils.getImageUri(context = context, fileName = fileName)
+                            val fileNameFromUrl = getFileNameFromURL(fileName)
+                            FileUtils.getImageUri(context = context, fileName = fileNameFromUrl)
                                 ?.let { it1 -> ImageViewer(uri = it1) }
                         }
                     CustomHorizontalSpacer(size = dimen_5_dp)

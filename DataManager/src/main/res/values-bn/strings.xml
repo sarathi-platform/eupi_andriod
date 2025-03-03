@@ -84,7 +84,7 @@
     <string name="primary_and_secondary_value_not_same">প্রথম ও দ্বিতীয় জীবিকা এক হতে পারে না</string>
     <string name="select_first_livelihood_for_didi">দিদির জন্য প্রথম জীবিকা বেছে নিন</string>
     <string name="select_second_livelihood_for_didi">দিদির জন্য দ্বিতীয় জীবিকা বেছে নিন</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="proceed_txt">এগিয়ে যান</string>
     <string name="cancel_txt">বাতিল করুন</string>
     <string name="not_be_able_to_make_changes_after_completing_this_activity">আপনি কি সাবমিট করতে চান? এটি সম্পূর্ণ হওয়ার পরে আপনি এই কার্যকলাপে এডিট করতে পারবেন না।</string>
@@ -108,6 +108,14 @@
     <string name="save_text">েভ করুন</string>
     <string name="proceed">এগিয়ে যান</string>
     <string name="cancel_text">বাতিল করুন</string>
+    <string name="edit_event">"ইভেন্ট এডিট করুন "</string>
+    <string name="showing">"Showing "</string>
+    <string name="results_for">" results for "</string>
+    <string name="assets">"সম্পদ "</string>
+    <string name="last_updated_days_ago">"সর্বশেষ আপডেট করা হয়েছে: %1$s দিনের আগে"</string>
+    <string name="last_1_month">"গত 1 মাস "</string>
+    <string name="income">"আয় "</string>
+    <string name="expense">"ব্যয় "</string>
     <string name="created_date">Created Date : Ascending</string>
     <string name="created_date_descending">Created Date : Descending</string>
     <string name="modified_date">Modified Date : Ascending</string>
@@ -122,12 +130,6 @@
         <item>@string/name_ascending</item>
         <item>@string/name_descending</item>
     </string-array>
-    <string name="edit_event">"ইভেন্ট এডিট করুন "</string>
-    <string name="showing">showing</string>
-    <string name="results_for">" results for "</string>
-    <string name="assets">"সম্পদ "</string>
-    <string name="last_updated_days_ago">"সর্বশেষ আপডেট করা হয়েছে: %1$s দিন আগে "</string>
-    <string name="last_1_month">"গত 1 মাস "</string>
     <string name="sync_on">অটো-সিঙ্ক: শুরু</string>
     <string name="sync_off">অটো-সিঙ্ক: বন্ধ</string>
     <string name="hours">ঘন্টার</string>
@@ -138,5 +140,8 @@
     <string name="sync_view_progress">প্রগ্রেস দেখুন</string>
     <string name="sync_worker_cancelled">সিঙ্ক কর্মী বাতিল হয়েছে</string>
     <string name="sync_already_cancelled">"সিঙ্ক আগে থেকে বাতিল করা রয়েছে "</string>
+    <string name="sort_by">Sort By</string>
+    <string name="income_expanse">আয় / ব্যয়</string>
+    <string name="date_of_event">ঘটনার তারিখ</string>
 
 </resources>

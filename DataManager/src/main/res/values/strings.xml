@@ -63,7 +63,7 @@
     <string name="primary_and_secondary_value_not_same">First and Second livelihood cannot be the same</string>
     <string name="select_first_livelihood_for_didi">Select first livelihood for didi</string>
     <string name="select_second_livelihood_for_didi">Select second livelihood for didi</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="proceed_txt">Proceed</string>
     <string name="cancel_txt">Cancel</string>
     <string name="search_by_didis">Search by didis</string>
@@ -123,7 +123,7 @@
     <string name="save_text">Save</string>
     <string name="proceed">Proceed</string>
     <string name="cancel_text">Cancel</string>
-    <string name="decrease_in_number">decrease in Number</string>
+    <string name="decrease_in_number">Decrease in Number</string>
     <string name="no_didi_s_assigned_to_you">No Didi’s assigned to you</string>
     <string name="data_send_to_server">Data sent to Server</string>
     <string name="sync_on">Auto Sync - On</string>
@@ -141,11 +141,15 @@
     <string name="edit_event">Edit Event</string>
     <string name="showing">"Showing "</string>
     <string name="results_for">" results for "</string>
-    <string name="assets">Assets</string>
+    <string name="assets">Asset Count</string>
     <string name="last_updated_days_ago">Last updated: %1$s days ago</string>
     <string name="last_1_month">Last 1 Month</string>
     <string name="hours">Hours</string>
     <string name="years">Years</string>
     <string name="minute">Minute</string>
     <string name="month">Month</string>
+    <string name="income_expanse">"Income/Expense"</string>
+    <string name="income">Income</string>
+    <string name="expense">Expense</string>
+    <string name="date_of_event">Date of Event</string>
 </resources>

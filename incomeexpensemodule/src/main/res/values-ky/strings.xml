@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="event_deleted_successfully">Event deleted successfully</string>
+    <string name="event_added_successfully">Event added successfully</string>
+</resources>

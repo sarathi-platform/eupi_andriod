@@ -13,7 +13,9 @@ data class SubjectLivelihoodEventSummaryUiModel(
     val assetCount: Int?,
     val assetJournalFlow: String?,
     val status: Int,
-    val createdDate: Long
+    val createdDate: Long,
+    val livelihoodImage: String?,
+    val eventId: Int
 ) {
 
 

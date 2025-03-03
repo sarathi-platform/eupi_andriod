@@ -32,7 +32,10 @@ class AssetJournalRepositoryImpl @Inject constructor(
             referenceType = "LivelihoodEvent",
             referenceId = eventData.livelihoodId,
             assetId = eventData.assetType,
-            createdDate = createdDate
+            createdDate = createdDate,
+            eventId = eventData.eventId,
+            eventType = eventData.selectedEvent.name
+
         )
 
         assetJournalDao.insetAssetJournalEntry(assetJournal)
@@ -88,7 +91,9 @@ class AssetJournalRepositoryImpl @Inject constructor(
             transactionFlow = eventData.selectedEvent.assetJournalEntryFlowType?.name
                 ?: BLANK_STRING,
             assetId = eventData.assetType,
-            modifiedDate = modifiedDateTIme
+            modifiedDate = modifiedDateTIme,
+            eventId = eventData.eventId,
+            eventType = eventData.selectedEvent.name
         )
     }
 

@@ -1,6 +1,7 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -20,8 +21,10 @@ import android.os.Build
 import android.os.Environment
 import android.provider.MediaStore
 import android.provider.Settings
+import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
+import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
@@ -914,6 +917,9 @@ fun String?.value(defaultValue: String, ignoreCase: Boolean): String {
 }
 
 fun String?.toSafeInt(defaultValue: String = "0"): Int {
+    if (TextUtils.isEmpty(this))
+        return defaultValue.toInt()
+
     return try {
         this.value(defaultValue).toInt()
     } catch (ex: Exception) {
@@ -1152,8 +1158,6 @@ fun formatToIndianRupee(amount: String): String {
             formattedAmount
         }
     } catch (ex: Exception) {
-        CoreAppDetails.getContext()
-            ?.let { CoreLogger.e(it, "CoreUtils", "formatToIndianRupee:${ex.message}", ex, false) }
         return amount
     }
 
@@ -1266,9 +1270,10 @@ fun onlyNumberField(value: String): Boolean {
     return false
 }
 
-fun getQuestionNumber(questionIndex: Int): String {
-//    return "${questionIndex + 1}. "
-    return BLANK_STRING // TODO remove this line and uncomment the above once correct question number logic is figured out
+fun getQuestionNumber(isQuestionNumberVisible: Boolean = false, questionIndex: Int): String {
+    return if (isQuestionNumberVisible) {
+        "${questionIndex + 1}. "
+    } else BLANK_STRING
 }
 
 fun String.stringToInt(): Int {
@@ -1393,27 +1398,6 @@ fun extractSubstrings(input: String): List<String> {
     return pattern.findAll(input).map { it.value }.toList()
 }
 
-//TEMP Code to be removed when CasteEntity is moved to core.
-val casteMap = mapOf(
-    "en" to mapOf(
-        1 to "GEN- General",
-        2 to "OBC- Other Backward Class",
-        3 to "SC- Scheduled Caste",
-        4 to "ST- Scheduled Tribes"
-    ),
-    "hi" to mapOf(
-        1 to "GEN- सामान्य जाति",
-        2 to "OBC- अन्य पिछड़ी जाति",
-        3 to "SC- अनुसूचित जाति",
-        4 to "ST- अनुसूचित जनजाति"
-    ),
-    "bn" to mapOf(
-        1 to "GEN- সাধারণ",
-        2 to "OBC- অন্যান্য অনগ্রসর শ্রেণী",
-        3 to "SC- তফসিলি জাতি",
-        4 to "ST- তফসিলি উপজাতি"
-    ),
-)
 
 fun findUserTypeForMetadata(userType: String): String {
     return when (userType) {
@@ -1440,4 +1424,80 @@ fun Int.intToFloat(): Float {
     } catch (e: Exception) {
         0F
     }
+}
+
+
+@SuppressLint("StringFormatMatches")
+fun getTimeAgoDetailed(timeInMillis: Long, context: Context): String {
+    val currentTime = System.currentTimeMillis()
+    val diff = currentTime - timeInMillis
+
+    if (diff < 0) {
+        return BLANK_STRING
+    }
+
+    val days = TimeUnit.MILLISECONDS.toDays(diff)
+    val hours = TimeUnit.MILLISECONDS.toHours(diff) % 24
+    val minutes = TimeUnit.MILLISECONDS.toMinutes(diff) % 60
+
+    if (days > 2) {
+        return SimpleDateFormat(SYNC_VIEW_DATE_TIME_FORMAT, Locale.ENGLISH).format(
+            timeInMillis
+        )
+    }
+
+    return when {
+        days > 0 -> "${context.getString(R.string.sync_days, days)} " +
+                context.getString(R.string.sync_ago)
+
+        hours > 0 -> "${context.getString(R.string.sync_hours, hours)}, " +
+                "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
+
+        minutes > 0 -> "${context.getString(R.string.sync_minutes, minutes)} " +
+                context.getString(R.string.sync_ago)
+
+        else -> context.getString(R.string.just_now)
+    }
+}
+
+fun String.toCamelCase(): String {
+    return this.split(" ")
+        .mapIndexed { _, word ->
+            word.lowercase().replaceFirstChar { it.uppercase() }
+        }
+        .joinToString(" ")
+}
+
+fun getFirstAndLastInitials(name: String?): String {
+    return name?.let {
+        val parts = name.trim().split("\\s+".toRegex())
+        when {
+            parts.size == 1 -> parts.first().firstOrNull()?.uppercaseChar()?.toString()
+                ?: BLANK_STRING
+
+            parts.size > 1 -> {
+                val firstInitial = parts.first().firstOrNull()?.uppercaseChar()
+                val lastInitial = parts.last().firstOrNull()?.uppercaseChar()
+                listOfNotNull(firstInitial, lastInitial).joinToString(BLANK_STRING)
+            }
+
+            else -> BLANK_STRING
+        }
+    } ?: BLANK_STRING
+
+}
+
+inline fun <reified T> String?.fromJson(): T? {
+    if (this == null) return null // Handle null safely
+    val type = object : TypeToken<T>() {}.type
+    return Gson().fromJson(this, type)
+}
+
+fun setKeyboardToPan(context: Activity) {
+    context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun setKeyboardToReadjust(context: Activity) {
+    context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }

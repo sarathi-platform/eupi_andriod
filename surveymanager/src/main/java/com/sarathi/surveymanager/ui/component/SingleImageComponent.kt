@@ -38,8 +38,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.componet_.component.dottedBorder
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -64,6 +66,8 @@ import java.io.File
 @Composable
 fun SingleImageComponent(
     isMandatory: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
+    questionIndex: Int = 0,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
     isEditable: Boolean = true,
@@ -108,6 +112,7 @@ fun SingleImageComponent(
                 isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                 onDetailIconClicked = { onDetailIconClicked() },
                 title = title,
+                questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                 isRequiredField = isMandatory,
                 subTitle = BLANK_STRING
             )
@@ -121,28 +126,30 @@ fun SingleImageComponent(
             Box(
                 modifier =
                 boxModifier
-                    .clickable(
-                        enabled = isEditable
-                    ) {
+                    .clickable {
+                        if (isEditable) {
+                            requestCameraPermission(context as Activity) {
+                                shouldRequestPermission.value = it
 
-                        requestCameraPermission(context as Activity) {
-                            shouldRequestPermission.value = it
+                                if (!it) {
+                                    currentImageUri = getSingleImageUri(
+                                        context, "${fileNamePrefix}${
+                                            System.currentTimeMillis()
+                                        }.png",
+                                        true
+                                    )
 
-                            if (!it) {
-                                currentImageUri = getSingleImageUri(
-                                    context, "${fileNamePrefix}${
-                                        System.currentTimeMillis()
-                                    }.png",
-                                    true
-                                )
-
-                                cameraLauncher.launch(
-                                    currentImageUri
-                                )
+                                    cameraLauncher.launch(
+                                        currentImageUri
+                                    )
+                                }
                             }
+                        } else {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
+                            )
                         }
-
-
                     }
                     .background(white)
                     .dottedBorder(
@@ -182,12 +189,20 @@ fun SingleImageComponent(
                                     modifier = Modifier
                                         .padding(dimen_10_dp)
                                         .align(Alignment.BottomEnd)
-                                        .clickable(enabled = isEditable) {
-                                            image = null
-                                            onImageSelection(
-                                                currentImageUri?.path ?: BLANK_STRING,
-                                                true
-                                            )
+                                        .clickable() {
+                                            if (isEditable) {
+                                                image = null
+                                                onImageSelection(
+                                                    currentImageUri?.path ?: BLANK_STRING,
+                                                    true
+                                                )
+
+                                            } else {
+                                                showCustomToast(
+                                                    context,
+                                                    context.getString(R.string.edit_disable_message)
+                                                )
+                                            }
                                         }
                                         .size(dimen_24_dp),
                                     colorFilter = ColorFilter.tint(redDark)

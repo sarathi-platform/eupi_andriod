@@ -1,9 +1,9 @@
 package com.patsurvey.nudge.di
 
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.activities.ui.splash.ConfigRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.BpcScorePercentageDao
-import com.patsurvey.nudge.database.dao.LanguageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
 import dagger.Module
 import dagger.Provides
@@ -19,17 +19,15 @@ object RepositoryModule {
     @Provides
     fun provideConfigRepository(
         apiService: ApiService,
-        languageListDao: LanguageListDao,
         bpcScorePercentageDao: BpcScorePercentageDao,
         prefRepo: PrefRepo,
-        baselineLanguageListDao: com.nrlm.baselinesurvey.database.dao.LanguageListDao
+        languageConfigUseCase: LanguageConfigUseCase
     ): ConfigRepository {
         return ConfigRepository(
             apiService,
-            languageListDao,
-            baselineLanguageListDao,
             bpcScorePercentageDao,
             prefRepo,
+            languageConfigUseCase
         )
     }
 

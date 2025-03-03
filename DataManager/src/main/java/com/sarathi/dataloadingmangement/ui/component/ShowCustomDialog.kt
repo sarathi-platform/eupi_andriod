@@ -23,16 +23,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.black100Percent
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_100_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_300_dp
+import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.white
 
@@ -63,11 +68,11 @@ fun ShowCustomDialog(
             Box(contentAlignment = Alignment.Center) {
                 Column(
                     modifier = Modifier
-                        .background(color = white, shape = RoundedCornerShape(6.dp)),
+                        .background(color = white, shape = RoundedCornerShape(dimen_6_dp)),
                 ) {
                     Column(
-                        Modifier.padding(vertical = 16.dp, horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        Modifier.padding(vertical = dimen_16_dp, horizontal = dimen_16_dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                     ) {
                         if (title.isNotEmpty()) {
                             Row(
@@ -87,7 +92,7 @@ fun ShowCustomDialog(
                         }
                         Box(
                             modifier = Modifier
-                                .heightIn(max = dimen_300_dp, min = dimen_100_dp)
+                                .heightIn(max = dimen_300_dp, min = dimen_20_dp)
                                 .padding(horizontal = dimen_5_dp)
                                 .verticalScroll(scrollState)
                         ) {
@@ -101,15 +106,14 @@ fun ShowCustomDialog(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(4.dp))
+                        Spacer(modifier = Modifier.height(dimen_4_dp))
 
                         Row(modifier = Modifier.fillMaxWidth()) {
 
                             if (!negativeButtonTitle.isNullOrEmpty()) {
-                                ButtonPositive(
+                                ButtonNegative(
                                     buttonTitle = negativeButtonTitle,
                                     isArrowRequired = false,
-                                    isActive = true,
                                     modifier = Modifier.weight(1f)
                                 ) {
                                     onNegativeButtonClick()
@@ -119,7 +123,7 @@ fun ShowCustomDialog(
                                 Spacer(modifier = Modifier.weight(2f))
                             }
 
-                            Spacer(modifier = Modifier.width(8.dp))
+                            Spacer(modifier = Modifier.width(dimen_8_dp))
                             positiveButtonTitle?.let {
                                 if (it.isNotEmpty()) {
                                     ButtonPositive(
@@ -128,7 +132,7 @@ fun ShowCustomDialog(
                                         isArrowRequired = false,
                                         modifier = Modifier
                                             .weight(1f)
-                                            .padding(vertical = 2.dp)
+                                            .padding(vertical = dimen_1_dp)
                                     ) {
                                         onPositiveButtonClick()
                                     }
@@ -143,6 +147,19 @@ fun ShowCustomDialog(
     }
 }
 
+@Preview(showBackground = true)
+@Composable
+fun ShowCustomDialogPreview() {
+    ShowCustomDialog(
+        title = "Exit",
+        message = "Are you sure you want to exit?",
+        dismissOnClickOutside = true,
+        onNegativeButtonClick = {},
+        onPositiveButtonClick = {},
+        positiveButtonTitle = "yes",
+        negativeButtonTitle = "no"
+    )
+}
 
 @Composable
 fun MainTitle(title: String, modifier: Modifier, align: TextAlign = TextAlign.Start) {

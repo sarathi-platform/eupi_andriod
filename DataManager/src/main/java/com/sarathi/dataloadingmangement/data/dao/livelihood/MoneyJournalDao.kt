@@ -11,7 +11,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpens
 interface MoneyJournalDao {
 
     @Insert
-    suspend fun insetMoneyJournalEntry(moneyJournalEntity: MoneyJournalEntity)
+    suspend fun insertMoneyJournalEntry(moneyJournalEntity: MoneyJournalEntity)
 
     @Insert
     suspend fun insertMoneyJournalEntry(moneyJournalEntity: List<MoneyJournalEntity>)
@@ -26,10 +26,28 @@ interface MoneyJournalDao {
     @Query("Select count(*) from money_journal_table where userId=:userId and transactionId=:transactionId and status=1")
     suspend fun isTransactionAlreadyExist(userId: String, transactionId: String): Int
 
+    @Query("Select count(*) from money_journal_table where userId=:userId and referenceId = :referenceId and referenceType = :referenceType and subjectId = :subjectId and subjectType = :subjectType and status=1")
+    suspend fun isTransactionAlreadyExist(
+        userId: String,
+        referenceId: Int,
+        referenceType: String,
+        subjectId: Int,
+        subjectType: String
+    ): Int
+
     @Query("Select * from money_journal_table where userId=:userId and transactionId=:transactionId and status=1")
     suspend fun getMoneyJournalTransaction(
         userId: String,
         transactionId: String
+    ): MoneyJournalEntity
+
+    @Query("Select * from money_journal_table where userId=:userId and referenceId = :referenceId and referenceType = :referenceType and subjectId = :subjectId and subjectType = :subjectType and status=1")
+    suspend fun getMoneyJournalTransaction(
+        userId: String,
+        referenceId: Int,
+        referenceType: String,
+        subjectId: Int,
+        subjectType: String
     ): MoneyJournalEntity
 
     @Query("update money_journal_table set transactionAmount=:amount, transactionDate=:date, transactionDetails=:particulars, modifiedDate=:modifiedDate where userId=:userId and transactionId=:transactionId ")
@@ -50,6 +68,15 @@ interface MoneyJournalDao {
         userId: String
     )
 
+    @Query("update money_journal_table set status=2 where userId=:userId and referenceId = :referenceId and referenceType = :referenceType and subjectId = :subjectId and subjectType = :subjectType")
+    suspend fun softDeleteTransaction(
+        userId: String,
+        referenceId: Int,
+        referenceType: String,
+        subjectId: Int,
+        subjectType: String
+    )
+
     @Query("update money_journal_table set status=0 where transactionId=:transactionId and userId=:userId and transactionFlow=:transactionFlow")
     suspend fun softDeleteTransaction(
         transactionId: String,
@@ -61,21 +88,23 @@ interface MoneyJournalDao {
     suspend fun deleteMoneyJournal(userId: String)
 
 
-    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and status=1 group by subjectId")
-    suspend fun getTotalIncomeExpenseForSubject(
-        transactionFlow: String,
-        userId: String,
-        subjectId: Int,
-        referenceType: String
-    ): IncomeExpenseUiModel?
-
-    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and referenceId = :referenceId and status=1 group by subjectId")
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and eventId NOT in (:exclusionEventIds) and status=1 group by subjectId")
     suspend fun getTotalIncomeExpenseForSubject(
         transactionFlow: String,
         userId: String,
         subjectId: Int,
         referenceType: String,
-        referenceId: Int
+        exclusionEventIds: List<Int>
+    ): IncomeExpenseUiModel?
+
+    @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and referenceId = :referenceId and eventId NOT in (:exclusionEventIds) and status=1 group by subjectId")
+    suspend fun getTotalIncomeExpenseForSubject(
+        transactionFlow: String,
+        userId: String,
+        subjectId: Int,
+        referenceType: String,
+        referenceId: Int,
+        exclusionEventIds: List<Int>
     ): IncomeExpenseUiModel?
 
     @Query("select subjectId as subjectId, sum(transactionAmount) as totalIncome from money_journal_table where userId = :userId and subjectId = :subjectId and transactionFlow = :transactionFlow and referenceType = :referenceType and transactionDate BETWEEN :durationStart and :durationEnd and status=1 group by subjectId")

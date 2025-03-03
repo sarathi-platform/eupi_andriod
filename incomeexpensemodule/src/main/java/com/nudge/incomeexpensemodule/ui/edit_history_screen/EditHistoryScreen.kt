@@ -16,7 +16,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.getCurrentTimeInMillis
@@ -96,7 +95,7 @@ fun EditHistoryScreen(
         }
     ) {
         ToolBarWithMenuComponent(
-            title = stringResource(R.string.edit_history),
+            title = viewModel.stringResource(R.string.edit_history),
             modifier = Modifier,
             onBackIconClick = { navController.popBackStack() },
             onSearchValueChange = {},
@@ -110,7 +109,9 @@ fun EditHistoryScreen(
                     CustomDateRangePickerDisplay(
                         modifier = Modifier.padding(horizontal = dimen_15_dp),
                         value = "${viewModel.dateRangeFilter.value.first.getDate()} - ${viewModel.dateRangeFilter.value.second.getDate()}",
-                        label = stringResource(R.string.date_range_picker_label_text)
+                        label = viewModel.stringResource(
+                            R.string.date_range_picker_label_text
+                        )
                     ) {
                         scope.launch {
                             sheetState.show()
@@ -129,6 +130,7 @@ fun EditHistoryScreen(
                             val currentItem = items[index]
                             val nextItem = if (index < items.size - 1) items[index + 1] else null
                             EditHistoryRow(
+                                translationHelper = viewModel.translationHelper,
                                 currentHistoryData = currentItem,
                                 nextHistoryData = nextItem,
                                 isRecentData = index == 0,

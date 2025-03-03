@@ -1,8 +1,10 @@
 package com.nudge.core.di
 
+import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
 import com.nudge.core.data.repository.SyncMigrationRepository
+import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
@@ -43,5 +45,13 @@ class UsecaseModule {
         repository: SyncMigrationRepository
     ): SyncMigrationUseCase {
         return SyncMigrationUseCase(repository)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAnalyticsEventUseCase(
+        analyticsManager: AnalyticsManager,
+    ): AnalyticsEventUseCase {
+        return AnalyticsEventUseCase(analyticsManager)
     }
 }

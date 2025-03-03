@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.screens.dataTab.viewModel
 
+import android.net.Uri
 import android.text.TextUtils
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
@@ -15,9 +16,11 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
@@ -70,9 +73,14 @@ class DataTabScreenViewModel @Inject constructor(
     val showAssetDialog: MutableState<Triple<Boolean, Int, List<Int>>> =
         mutableStateOf(Triple(false, -1, listOf()))
 
+    var isSearchEnable = mutableStateOf<Boolean>(false)
+
+    val isDidiImageDialogVisible = mutableStateOf(Triple(false, BLANK_STRING, Uri.EMPTY))
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAddDataForDataTab(isRefresh = false)
             }
 
@@ -96,14 +104,16 @@ class DataTabScreenViewModel @Inject constructor(
             }
 
             is DataTabEvents.LivelihoodSortApplied -> {
-                if (isSortApplied.value) {
-                    _filteredDataTabScreenUiEntityList.value =
-                        _filteredDataTabScreenUiEntityList.value.sortedByDescending { it.lastUpdated }
-                } else {
-                    _filteredDataTabScreenUiEntityList.value =
-                        _filteredDataTabScreenUiEntityList.value.sortedBy { it.lastUpdated }
-
-                }
+                _filteredDataTabScreenUiEntityList.value =
+                    _filteredDataTabScreenUiEntityList.value.sortedBy { it.subjectName.toLowerCase() }
+//                if (isSortApplied.value) {
+//                    _filteredDataTabScreenUiEntityList.value =
+//                        _filteredDataTabScreenUiEntityList.value.sortedByDescending { it.lastUpdated }
+//                } else {
+//                    _filteredDataTabScreenUiEntityList.value =
+//                        _filteredDataTabScreenUiEntityList.value.sortedBy { it.lastUpdated }
+//
+//                }
             }
 
             is DataTabEvents.OnSubTabChanged -> {
@@ -113,6 +123,7 @@ class DataTabScreenViewModel @Inject constructor(
     }
 
     private fun onSearchQueryChanged(searchQuery: String) {
+        isSearchEnable.value = !TextUtils.isEmpty(searchQuery)
         var filteredList = if (isFilterApplied.value) {
             getFilteredList(LIVELIHOOD_FILTER, selectedFilterValue.value)
         } else {
@@ -175,11 +186,13 @@ class DataTabScreenViewModel @Inject constructor(
             _incomeExpenseSummaryUiModel.clear()
             val currentTime = getCurrentTimeInMillis()
             _incomeExpenseSummaryUiModel.putAll(
-                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjectForDuration(
-                    subjectLivelihoodMappingEntityList = subjectList.value,
-                    durationStart = getDayPriorCurrentTimeMillis(currentTime),
-                    durationEnd = currentTime
-                )
+//                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase.getSummaryForSubjectForDuration(
+//                    subjectLivelihoodMappingEntityList = subjectList.value,
+//                    durationStart = getDayPriorCurrentTimeMillis(IncomeExpenseConstants.MONTH_DURATION),
+//                    durationEnd = currentTime
+//                )
+                dataTabUseCase.fetchSubjectIncomeExpenseSummaryUseCase
+                    .getSummaryForSubjects(subjectLivelihoodMappingEntityList = subjectList.value)
             )
 
             lastEventDateMapForSubject =
@@ -189,7 +202,7 @@ class DataTabScreenViewModel @Inject constructor(
 
             livelihoodModelList =
                 getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
-                    .distinctBy { it.livelihoodId }
+                    .distinctBy { it.programLivelihoodId }
 
             createFilterBottomSheetList(livelihoodModelList)
 
@@ -301,6 +314,10 @@ class DataTabScreenViewModel @Inject constructor(
         loadAddDataForDataTab(isRefresh = true)
 
 
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DataTabScreen
     }
 }
 

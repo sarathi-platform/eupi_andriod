@@ -40,7 +40,8 @@ class SyncRepositoryImpl @Inject constructor(
     val pendingEventStatusList = listOf(
         EventSyncStatus.OPEN.eventSyncStatus,
         EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus,
-        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus
+        EventSyncStatus.PRODUCER_FAILED.eventSyncStatus,
+        EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus
     )
     override fun getUserMobileNumber(): String {
         return corePrefRepo.getMobileNo()

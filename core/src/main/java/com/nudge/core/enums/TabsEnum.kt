@@ -7,7 +7,22 @@ enum class TabsEnum(val id: Int, val tabIndex: Int) {
     DidiUpcmTab(4, 2),
     DataTab(5, 1),
     DataSummaryTab(6, 3),
-    SettingsTab(7, 0)
+    SettingsTab(7, 0);
+
+    companion object {
+        val tabsList: Map<TabsEnum, List<SubTabs>> = mapOf(
+            MissionTab to listOf(SubTabs.OngoingMissions, SubTabs.CompletedMissions),
+            DataTab to listOf(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab),
+            SettingsTab to listOf(SubTabs.Step1, SubTabs.Step2),
+            DataSummaryTab to listOf(
+                SubTabs.LastWeekTab,
+                SubTabs.LastMonthTab,
+                SubTabs.Last3MonthsTab,
+                SubTabs.CustomDateRange
+            ),
+            DidiUpcmTab to listOf(SubTabs.DidiTab, SubTabs.SmallGroupTab)
+        )
+    }
 
 }
 
@@ -24,6 +39,6 @@ sealed class SubTabs(val id: Int) {
     object CustomDateRange : SubTabs(8)
     object Step1 : SubTabs(9)
     object Step2 : SubTabs(10)
-
-
+    object OngoingMissions : SubTabs(11)
+    object CompletedMissions : SubTabs(12)
 }

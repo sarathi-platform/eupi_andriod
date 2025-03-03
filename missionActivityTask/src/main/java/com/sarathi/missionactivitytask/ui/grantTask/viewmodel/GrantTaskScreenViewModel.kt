@@ -7,6 +7,7 @@ import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUs
 import com.sarathi.dataloadingmangement.DELEGATE_COMM
 import com.sarathi.dataloadingmangement.SANCTIONED_AMOUNT_EQUAL_DISBURSED_FORM_E_GENERATED
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -17,6 +18,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.GrantTaskFormSlots
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
@@ -41,6 +43,8 @@ class GrantTaskScreenViewModel @Inject constructor(
     private val formUseCase: FormUseCase,
     private val formUiConfigUseCase: GetFormUiConfigUseCase,
     fetchAllDataUseCase: FetchAllDataUseCase,
+    missionFilterUtils: MissionFilterUtils,
+    fetchInfoUiModelUseCase: FetchInfoUiModelUseCase
 ) : TaskScreenViewModel(
     getTaskUseCase,
     surveyAnswerUseCase,
@@ -50,7 +54,9 @@ class GrantTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    missionFilterUtils = missionFilterUtils,
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {
     var taskUiList = mutableStateOf<List<TaskUiModel>>(emptyList())
     var isGenerateFormButtonEnable = mutableStateOf(false)

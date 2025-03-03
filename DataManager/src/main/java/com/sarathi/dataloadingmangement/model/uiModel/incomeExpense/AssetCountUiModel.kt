@@ -27,6 +27,7 @@ data class AssetCountUiModel(
 
 
 data class AssetsCountWithValueUiModel(
+    val livelihoodId: Int,
     val assetId: Int,
     val assetCount: Int,
     val totalAssetValue: Double
@@ -34,6 +35,7 @@ data class AssetsCountWithValueUiModel(
 
     companion object {
         fun getAssetsCountWithValueUiModel(
+            livelihoodId: Int,
             assetCountUiModel: AssetCountUiModel,
             assetValue: Double?
         ): AssetsCountWithValueUiModel {
@@ -41,6 +43,7 @@ data class AssetsCountWithValueUiModel(
             val totalAssetValue = assetCountUiModel.totalAssetCountForFlow * assetValue.value()
 
             return AssetsCountWithValueUiModel(
+                livelihoodId,
                 assetCountUiModel.assetId,
                 assetCountUiModel.totalAssetCountForFlow,
                 totalAssetValue
@@ -55,15 +58,18 @@ data class AssetsCountWithValueUiModel(
 
             val assetsCountWithValueUiModelList = ArrayList<AssetsCountWithValueUiModel>()
 
-            val assetCountUiModelMap = assetCountUiModelList.associateBy { it.assetId }
-            assetsList.forEach {
-                assetCountUiModelMap[it.assetId]?.let { assetCountUiModel ->
-                    assetsCountWithValueUiModelList.add(
-                        getAssetsCountWithValueUiModel(
-                            assetCountUiModel,
-                            it.value
+            val assetCountUiModelMap = assetCountUiModelList.groupBy { it.livelihoodId }
+            assetsList.map { it.livelihoodId }.distinct().forEach {
+                assetCountUiModelMap[it]?.let { assetCountUiModelList ->
+                    assetCountUiModelList.forEach { assetCountUiModel ->
+                        assetsCountWithValueUiModelList.add(
+                            getAssetsCountWithValueUiModel(
+                                it,
+                                assetCountUiModel,
+                                assetsList.find { asset -> asset.livelihoodId == it && asset.assetId == assetCountUiModel.assetId }?.value
+                            )
                         )
-                    )
+                    }
                 }
             }
 

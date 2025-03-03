@@ -34,9 +34,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomDatePickerComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
@@ -57,6 +59,7 @@ import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
+import com.sarathi.surveymanager.R
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -72,6 +75,7 @@ fun DatePickerComponent(
     hintText: String = BLANK_STRING,
     defaultValue: String = BLANK_STRING,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isMandatory: Boolean = false,
     isEditable: Boolean = true,
     isFutureDateDisable: Boolean = false,
@@ -95,6 +99,7 @@ fun DatePickerComponent(
     val scope = rememberCoroutineScope()
     val outerState: LazyListState = rememberLazyListState()
     val innerState: LazyGridState = rememberLazyGridState()
+    val context = LocalContext.current
     SideEffect {
         if (outerState.layoutInfo.visibleItemsInfo.size == 2 && innerState.layoutInfo.totalItemsCount == 0)
             scope.launch { outerState.scrollToItem(outerState.layoutInfo.totalItemsCount) }
@@ -122,7 +127,7 @@ fun DatePickerComponent(
                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contents?.isNotEmpty() == true,
                     onDetailIconClicked = { onDetailIconClicked() },
                     title = title,
-                    questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                     isRequiredField = isMandatory
                 )
             }
@@ -175,9 +180,15 @@ fun DatePickerComponent(
                     modifier = Modifier
                         .matchParentSize()
                         .background(Color.Transparent)
-                        .clickable(enabled = isEditable) {
-                            datePickerDialogProperties.show()
-
+                        .clickable {
+                            if (isEditable) {
+                                datePickerDialogProperties.show()
+                            } else {
+                                showCustomToast(
+                                    context,
+                                    context.getString(R.string.edit_disable_message)
+                                )
+                            }
                         },
                 )
                 CustomDatePickerComponent(

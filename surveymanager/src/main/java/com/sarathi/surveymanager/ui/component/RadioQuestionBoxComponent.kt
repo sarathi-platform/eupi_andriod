@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -68,6 +67,7 @@ fun RadioQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isEditAllowed: Boolean = true,
     isQuestionTypeToggle: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
@@ -116,7 +116,7 @@ fun RadioQuestionBoxComponent(
             Column(modifier = Modifier.background(white)) {
 
                 Column(
-                    Modifier.padding(top = if (isQuestionTypeToggle) dimen_5_dp else dimen_16_dp),
+                    Modifier.padding(top = if (isQuestionTypeToggle) dimen_5_dp else dimen_10_dp),
                     verticalArrangement = Arrangement.spacedBy(if (isQuestionTypeToggle) dimen_5_dp else dimen_18_dp)
                 ) {
                     LazyColumn(
@@ -132,12 +132,12 @@ fun RadioQuestionBoxComponent(
 
                             Row(
                                 modifier = Modifier
-                                    .padding(bottom = 10.dp)
+                                    .padding(bottom = dimen_5_dp)
                                     .padding(
                                         horizontal = if (showCardView) {
                                             dimen_16_dp
                                         } else {
-                                            dimen_0_dp
+                                            dimen_5_dp
                                         }
                                     )
                             ) {
@@ -145,9 +145,10 @@ fun RadioQuestionBoxComponent(
                                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                     onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
-                                    questionNumber = if (showCardView) getQuestionNumber(
+                                    questionNumber = getQuestionNumber(
+                                        isQuestionNumberVisible,
                                         questionIndex
-                                    ) else BLANK_STRING,
+                                    ),
                                     isRequiredField = isRequiredField
                                 )
                             }
@@ -166,7 +167,8 @@ fun RadioQuestionBoxComponent(
                                             modifier = Modifier.weight(1f),
                                             index = _index,
                                             optionsItem = option,
-                                            isIconRequired = !isQuestionTypeToggle,
+                                            isIconRequired = !option.optionImage.isNullOrEmpty(),
+                                            isQuestionTypeToggle = isQuestionTypeToggle,
                                             selectedIndex = selectedIndex
                                         ) {
                                             if (isEditAllowed) {
@@ -233,6 +235,7 @@ fun ToggleQuestionBoxComponent(
     optionUiModelList: List<OptionsUiModel>,
     selectedOptionIndex: Int = -1,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
@@ -251,6 +254,7 @@ fun ToggleQuestionBoxComponent(
         selectedOptionIndex = selectedOptionIndex,
         isQuestionTypeToggle = true,
         showCardView = showCardView,
+        isQuestionNumberVisible = isQuestionNumberVisible,
         optionUiModelList = optionUiModelList,
         isEditAllowed = isEditAllowed,
         onAnswerSelection = onAnswerSelection,

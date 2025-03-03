@@ -20,14 +20,19 @@ interface MissionDao {
     fun deleteMissionsForUser(userId: String)
 
     @Query(
-        "select mission_table.missionId, mission_language_table.description,  mission_table.status as missionStatus , \n" +
+        "select mission_table.missionId, mission_language_table.description, mission_table.status as missionStatus , \n" +
                 "count(activity_table.activityId) as activityCount,\n" +
-                " mission_table.programmeId as programId,\n" +
-                " SUM(CASE WHEN activity_table.status = :status THEN 1 ELSE 0 END) AS pendingActivityCount\n" +
+                " mission_table.programmeId as programId, \n" +
+                " SUM(CASE WHEN activity_table.status = :status THEN 1 ELSE 0 END) AS pendingActivityCount,\n" +
+                " COALESCE(NullIF(mission_config_table.missionType,''), 'NON LIVELIHOOD') as missionType, \n" +
+                " mission_livelihood_config_table.livelihoodType as livelihoodType, \n" +
+                " mission_livelihood_config_table.livelihoodOrder as livelihoodOrder, \n" +
+                " mission_livelihood_config_table.programLivelihoodReferenceId \n" +
                 " from mission_table\n" +
-                "\n" +
                 "inner join mission_language_table on mission_table.missionId = mission_language_table.missionId  \n" +
                 "left join activity_table on mission_table.missionId = activity_table.missionId\n" +
+                "left join mission_livelihood_config_table on mission_table.missionId = mission_livelihood_config_table.missionId and mission_livelihood_config_table.userId=:userId and mission_livelihood_config_table.languageCode=:languageCode\n" +
+                "left join mission_config_table on mission_config_table.missionId = mission_table.missionId and mission_config_table.userId=:userId\n" +
                 " where mission_language_table.languageCode =:languageCode and mission_table.isActive=1 and activity_table.isActive=1 and mission_table.userId=:userId and activity_table.userId=:userId and mission_language_table.userId=:userId " +
                 "group by mission_table.missionId \n" +
                 "ORDER BY mission_table.missionOrder ASC"

@@ -31,7 +31,7 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
         try {
             val userId = corePrefRepo.getUserName().toInt()
             val response = dataLoadingApiService.getDidisFromNetwork(userId = userId)
-
+            apiStatusDao.insert(ApiStatusEntity.getApiStatusEntity(SUBPATH_GET_DIDI_LIST))
             if (response.status.equals(SUCCESS)) {
 
                 response.data?.let {

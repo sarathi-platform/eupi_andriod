@@ -9,11 +9,11 @@ data class GrantConfigResponse(
     @SerializedName("grantId")
     val grantId: Int,
     @SerializedName("mode")
-    val grantMode: String,
+    var grantMode: String,
     @SerializedName("grantName")
     val grantName: String,
     @SerializedName("nature")
-    val grantNature: String,
+    var grantNature: String,
     @SerializedName("grantType")
     val grantType: String
 )

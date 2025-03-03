@@ -5,6 +5,8 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nrlm.baselinesurvey.NUDGE_BASELINE_DATABASE
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase.Companion.MIGRATION_2_3
+import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase.Companion.MIGRATION_3_4
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +24,7 @@ object DatabaseModule {
         Room.databaseBuilder(context, NudgeBaselineDatabase::class.java, NUDGE_BASELINE_DATABASE)
             // Add Migrations for each migration object created.
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
-            .addMigrations(NudgeBaselineDatabase.MIGRATION_1_2)
+            .addMigrations(NudgeBaselineDatabase.MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4)
             .addCallback(NudgeBaselineDatabase.NudgeDatabaseCallback())
             .fallbackToDestructiveMigration()
             .build()
@@ -32,9 +34,6 @@ object DatabaseModule {
     @Singleton
     fun provideVillageDao(db: NudgeBaselineDatabase) = db.villageListDao()
 
-    @Provides
-    @Singleton
-    fun provideLanguageDao(db: NudgeBaselineDatabase) = db.languageListDao()
 
     @Provides
     @Singleton

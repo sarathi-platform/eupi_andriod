@@ -19,7 +19,7 @@
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
 
-    <string name="didi_sub_tab_title">Didi</string>
+    <string name="didis_item_text_plural">Didi</string>
     <string name="small_group_sub_tab_title">Small Group</string>
     <string name="search_label">Search</string>
 
@@ -33,10 +33,10 @@
     <string name="end_date_label">শেষের দিন</string>
     <string name="reopen_activity_step_1">ধাপ 1</string>
     <string name="reopen_activity_step_2">ধাপ 2</string>
+    <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="warning_title">Warning</string>
     <string name="warning_text">Warning</string>
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
-    <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
     <string name="all">"সব "</string>
     <string name="no_entry_this_month">"এই মাসে কোন ডেটা এন্ট্রি নেই "</string>
     <string name="no_entry_this_week">"এই সপ্তাহে কোনো ডাটা এন্ট্রি নেই "</string>
@@ -44,7 +44,7 @@
     <string name="last_month">"গত মাসে "</string>
     <string name="last_3_months">"গত 3 মাস "</string>
     <string name="custom_date">"কাস্টম তারিখ "</string>
-    <string name="small_group_filter_label">"ছোট গ্রুপ দ্বারা ফিল্টার: "</string>
+    <string name="small_group_filter_label">"ছোট দল গুলির মধ্যে থেকে ফিল্টার করুন: "</string>
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
@@ -60,5 +60,25 @@
     <string name="details_have_already_been_added">বিস্তারিত ইতিমধ্যে যোগ করা হয়েছে!</string>
     <string name="no_result_found">কোন ফলাফল পাওয়া যায়নি</string>
     <string name="proceed">এগিয়ে যান</string>
-    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\nআপনি কি অবিরত করতে চান?</string>
+    <string name="form_alert_dialog_message">আপনি ফর্ম জমা না দিয়ে এগিয়ে গেলে এই পরিবর্তনগুলি হারিয়ে যাবে৷ \n\n আপনি কি অবিরত করতে চান?</string>
+    <string name="last_sync_date_time">আগের সিঙ্ক সময়:</string>
+    <string name="profile_phone">ফোন নম্বর</string>
+    <string name="sync_days">%1$s দিন</string>
+    <string name="sync_hours">%1$s ঘন্টা</string>
+    <string name="sync_minutes">%1$s মিনিট</string>
+    <string name="sync_ago">আগে</string>
+    <string name="just_now">মাত্ৰ এতিয়াই</string>
+    <string name="ongoing_tab_title">এখন চলছে</string>
+    <string name="completed_tab_title">সম্পন্ন</string>
+    <string name="search_by_mission">মিশন সার্চ করো</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">সব মিশন দ্যাখো</string>
+    <string name="general_missions_filter_label">জেনারাল মিশন</string>
+    <string name="complete_survey">সার্ভে সম্পন্ন হলো</string>
+    <string name="exclude_in_calculation_message">*এই খরচ টা মোট হিসাবের মধ্যে যোগ হয়নি</string>
+    <string name="contact_to_admin_id_missing">অ্যাক্সেস সমস্যা ধরা পড়েছে। সহায়তার জন্য অনুগ্রহ করে বিপিসির সাথে যোগাযোগ করুন</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="missions_filter_label_suffix">মিশন</string>
 </resources>

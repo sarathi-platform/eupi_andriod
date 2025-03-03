@@ -530,7 +530,7 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="regenerate_event_file">Regenerate event file</string>
     <string name="load_server_data">Load Server Data</string>
-    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure you want to load server data? This may lead to the loss of unsynced data.</string>
     <string name="didi_verified_by_bpc">Didi verified by BPC</string>
     <string name="recover_old_data">Recover Old Data</string>
     <plurals name="vo">
@@ -572,4 +572,5 @@
     <string name="sync_failed_message">"Some of data or images are not synced. Please Export Failed events file/ Share Or Contact to Admin."</string>
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
     <string name="sync_data_first_message">Data sync is required before image sync\n</string>
+    <string name="data">Data</string>
 </resources>

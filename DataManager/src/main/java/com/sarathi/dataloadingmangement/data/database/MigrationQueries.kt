@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.data.database
 
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.ACTIVITY_TABLE_NAME
 import com.sarathi.dataloadingmangement.ANSWER_TABLE
@@ -9,6 +10,8 @@ import com.sarathi.dataloadingmangement.CONDITIONS_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_EVENT_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
 import com.sarathi.dataloadingmangement.LIVELIHOOD_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_CONFIG_TABLE_NAME
+import com.sarathi.dataloadingmangement.MISSION_LIVELIHOOD_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.MISSION_TABLE_NAME
 import com.sarathi.dataloadingmangement.MONEY_JOURNAL_TABLE_NAME
 import com.sarathi.dataloadingmangement.PRODUCT_TABLE_NAME
@@ -255,5 +258,55 @@ object MigrationQueries {
     val ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER =
         "ALTER TABLE $ACTIVITY_TABLE_NAME ADD COLUMN activityOrder INTEGER DEFAULT 1 NOT NULL"
 
-}
+    val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
+    val ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID =
+        "ALTER TABLE $LIVELIHOOD_TABLE_NAME ADD COLUMN programLivelihoodId INTEGER DEFAULT 0 NOT NULL"
+    val CREATE_MISSION_CONFIG_ENTITY_TABLE =
+        "CREATE TABLE IF NOT EXISTS $MISSION_CONFIG_TABLE_NAME (\n" +
+                "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    userId TEXT,\n" +
+                "    missionName TEXT NOT NULL,\n" +
+                "    missionId INTEGER NOT NULL,\n" +
+                "    missionType TEXT NOT NULL\n" +
+                ");"
+    val CREATE_LIVELIHOOD_CONFIG_ENTITY_TABLE =
+        "CREATE TABLE IF NOT EXISTS $MISSION_LIVELIHOOD_CONFIG_TABLE_NAME (\n" +
+                "    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,\n" +
+                "    userId TEXT,\n" +
+                "    missionId INTEGER NOT NULL,\n" +
+                "    missionType TEXT NOT NULL,\n" +
+                "    livelihoodType TEXT NOT NULL,\n" +
+                "    livelihoodOrder INTEGER NOT NULL,\n" +
+                "    description TEXT, \n" +
+                "    languageCode TEXT NOT NULL\n" +
+                ");"
 
+    val ALTER_ACTIVITY_CONFIG_TABLE_ADD_MONEY_JOURNAL_CONFIG =
+        "ALTER TABLE $ACTIVITY_CONFIG_TABLE_NAME \n" +
+                "            ADD COLUMN moneyJournalConfig TEXT"
+    val ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID =
+        "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventId INTEGER"
+
+    val ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE =
+        "ALTER TABLE $MONEY_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventType TEXT"
+
+    val ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_ID =
+        "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventId INTEGER"
+
+    val ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_TYPE =
+        "ALTER TABLE $ASSET_JOURNAL_TABLE_NAME \n" +
+                "            ADD COLUMN eventType TEXT"
+
+    val ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE =
+        "ALTER TABLE $SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME \n" +
+                "ADD COLUMN livelihoodType TEXT"
+    val ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY =
+        "ALTER TABLE $LIVELIHOOD_TABLE_NAME \n" +
+                "ADD COLUMN  category TEXT"
+
+    val ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID =
+        "ALTER TABLE $MISSION_LIVELIHOOD_CONFIG_TABLE_NAME ADD COLUMN programLivelihoodReferenceId TEXT"
+}

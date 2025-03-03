@@ -3,7 +3,8 @@ package com.sarathi.dataloadingmangement.model.events.incomeExpense
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
 
-data class SaveAssetJournalEventDto(
+data class
+SaveAssetJournalEventDto(
     @SerializedName("assetCount")
     val assetCount: Int,
     @SerializedName("createdDate")
@@ -32,6 +33,10 @@ data class SaveAssetJournalEventDto(
     val assetId: Int,
     @SerializedName("modifiedDate")
     val modifiedDate: Long,
+    @SerializedName("eventId")
+    val eventId: Int?,
+    @SerializedName("eventType")
+    val eventType: String?,
 
 ) {
     companion object {
@@ -51,7 +56,9 @@ data class SaveAssetJournalEventDto(
                 transactionDate = assetJournalEntity.transactionDate,
                 transactionType = assetJournalEntity.transactionType,
                 createdDate = assetJournalEntity.createdDate,
-                modifiedDate = assetJournalEntity.modifiedDate
+                modifiedDate = assetJournalEntity.modifiedDate,
+                eventId = assetJournalEntity.eventId,
+                eventType = assetJournalEntity.eventType
 
             )
         }

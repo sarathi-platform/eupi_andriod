@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">বিন্যাস পুনৰায় সেট কৰক</string>
     <string name="common_error_message_text">No network available</string>
 
     <string name="english" translatable="false">English</string>
@@ -63,6 +64,10 @@
     <string name="update_didi">Update Didi</string>
     <string name="house_number">House Number</string>
     <string name="didi_name">Didi Name</string>
+    <string name="dada_name_txt">Dada Name</string>
+    <string name="adhar_card_txt">Aadhar Card</string>
+    <string name="voterId_card_txt">VoterId Card</string>
+    <string name="phone_number_txt">Phone Number</string>
     <string name="dada_name">Husband / Father\'s Name</string>
     <string name="dada">Husband / Father</string>
     <string name="enter">Enter</string>
@@ -136,8 +141,8 @@
     <string name="share_button_text">Share</string>
     <string name="download_button_text">Download</string>
     <string name="downloading_button_text">Downloading</string>
-    <string name="option_yes">Yes</string>
-    <string name="option_no">No</string>
+    <string name="option_yes">En</string>
+    <string name="option_no">Enhi</string>
     <string name="no_photo_available_text">No Photo Available</string>
     <string name="enter_name_text">Enter Name</string>
     <string name="enter_tola_name_message">Enter Para / Tola Name</string>
@@ -147,6 +152,7 @@
     <string name="pat_survey_complete">PAT Survey</string>
     <string name="result_summary">Summary Result</string>
     <string name="summary_text">Summary</string>
+    <string name="question">Questions</string>
     <string name="complete_section_1_text">Complete Section 1</string>
     <plurals name="didis_added">
         <item quantity="one">Didi Added</item>
@@ -338,6 +344,8 @@
     <string name="profile_phone">Phone Number</string>
     <string name="profile_identity_num">Identity Number</string>
     <string name="user_profile_text">User Profile</string>
+    <string name="profile_state_name">State Name</string>
+    <string name="profile_district_name">District Name</string>
     <string name="edit_didi">Edit</string>
     <string name="delete_didi">Delete</string>
     <string name="you_want_to_delete_video">You want to delete %1$s</string>
@@ -470,16 +478,18 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="edit_disable_message">Edits are not allowed after activity is completed</string>
     <string name="start">"Start "</string>
+    <string name="share_export_file">Share exported file</string>
     <string name="share_export_image">আৰম্ভ কৰক</string>
-    <string name="regenerate_all_events">Regenerate all events</string>
+    <string name="retry">Retry</string>
+    <string name="regenerate_all_events">Taisa wngrwdi bebak wngmung no</string>
     <string name="load_server_data">Load Server Data</string>
-    <string name="import_data">Import Data</string>
-    <string name="export_images">Export Only Images</string>
-    <string name="export_backup_file">Export BackUp File</string>
-    <string name="export_database">Export Only Database</string>
+    <string name="import_data">Data nahordi</string>
+    <string name="export_images">Mangphli najak simi Tunhordi</string>
+    <string name="export_backup_file">Backup Laihkang tunhorma</string>
+    <string name="export_database">Database simi tunhordi</string>
     <string name="backup_recovery">Backup/Recovery</string>
-    <string name="export_event_file">Export Event File</string>
-    <string name="export_log_file">Export Only Log File</string>
+    <string name="export_event_file">Wngmung laihkang tunhordi</string>
+    <string name="export_log_file">Chirphang Laihkang simi tunhordi</string>
     <string name="madnatory_question_not_marked_error">All mandatory questions not answered, please answer all questions!</string>
     <string name="view_label">Khulok di</string>
     <string name="task_completed_label">"Tangmung Paikha - "</string>
@@ -501,7 +511,8 @@
     <string name="total_addelabel">"Total added: "</string>
     <string name="view_summary_label">Summary Khulok di</string>
     <string name="are_you_sure_you_want_to_load_data_from_server">Are you sure to reload fresh data from server that can lead to loss of unsynced data?</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="export_baseline_qna">Baseline QnA tunhordi</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
     <string name="no_data_available_at_the_moment">No data available at the moment</string>
     <string name="start_baseline">Baseline chengdi</string>
     <string name="start_activity">%s chengdi</string>
@@ -509,8 +520,14 @@
     <string name="content">Content</string>
     <string name="average_cost">Bebaktwi beraimung rang baima: ₹ %1$s</string>
     <string name="only_one_entry_can_be_added">Only one entry can be added</string>
-    <string name="all_activities_marked_as_in_progress">All activities marked as In progress</string>
-    <string name="mark_activity_inprogress_label">Mark Activity Inprogress</string>
+    <string name="all_activities_marked_as_in_progress">Tangmung ni mari chengsamung khlai di</string>
+    <string name="mark_activity_inprogress_label">Tangnai raida ni mari no taisa khlai di.</string>
     <string name="form_e">Form E</string>
-    <string name="export_data">Export Data</string>
+    <string name="export_data">Bakdi Data</string>
+    <string name="are_you_sure_you_want_to_reset_app_configuration">Nwng kubui da App ni configurations no reset khlai na muchung?</string>
+    <string name="are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action">Nwng kubui da samung khlai finai muchung kha? Abo khlai mani yagula data rok kwmai wi thang nai</string>
+    <string name="are_you_sure_you_want_proceed_with_action">Are you sure you want to proceed with this action?</string>
+    <string name="refresh_config">Reset Configuration</string>
+    <string name="profile_block_name">Block Name</string>
+
 </resources>

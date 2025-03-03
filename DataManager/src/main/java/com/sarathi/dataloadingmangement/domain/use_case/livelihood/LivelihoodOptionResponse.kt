@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class LivelihoodOptionResponse(
 
@@ -11,8 +12,10 @@ data class LivelihoodOptionResponse(
 )
 
 data class LivelihoodDTO(
-    @SerializedName("livelihoodId")
-    val livelihoodId: Int,
+    @SerializedName("programLivelihoodId")
+    val programLivelihoodId: Int,
     @SerializedName("order")
     val order: Int,
+    @SerializedName("type")
+    val type: String? = BLANK_STRING
 )

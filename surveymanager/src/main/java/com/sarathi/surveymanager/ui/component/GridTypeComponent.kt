@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
@@ -47,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.GreyLight
@@ -59,6 +58,7 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
@@ -83,6 +83,7 @@ fun GridTypeComponent(
     questionIndex: Int,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
@@ -106,7 +107,7 @@ fun GridTypeComponent(
         println("outer ${outerState.layoutInfo.visibleItemsInfo.map { it.index }}")
         println("inner ${innerState.layoutInfo.visibleItemsInfo.map { it.index }}")
     }
-    val manualMaxHeight = 100.dp
+    val manualMinHeight = dimen_50_dp
 
     BoxWithConstraints(
         modifier = modifier
@@ -114,7 +115,7 @@ fun GridTypeComponent(
                 state = outerState,
                 Orientation.Vertical,
             )
-            .heightIn(min = 100.dp, maxCustomHeight + manualMaxHeight)
+            .wrapContentHeight()
     ) {
 
         Card(
@@ -132,20 +133,17 @@ fun GridTypeComponent(
             Column(modifier = Modifier.background(white)) {
                 Column(
                     Modifier.padding(
-                        top = dimen_16_dp,
                         bottom = if (showCardView) dimen_16_dp else dimen_2_dp
                     ),
                     verticalArrangement = Arrangement.spacedBy(
                         dimen_18_dp
                     )
                 ) {
-                    LazyColumn(
-                        state = outerState,
+                    Column(
                         modifier = Modifier
-                            .heightIn(min = 110.dp, max = maxCustomHeight + manualMaxHeight)
+                            .wrapContentHeight()
                     ) {
                         if (isQuestionDisplay) {
-                            item {
                                 Row(
                                     modifier = Modifier.padding(horizontal = dimen_16_dp)
                                 ) {
@@ -153,19 +151,17 @@ fun GridTypeComponent(
                                         isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                         onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
-                                        questionNumber = if (showCardView) getQuestionNumber(
+                                        questionNumber = getQuestionNumber(
+                                            isQuestionNumberVisible,
                                             questionIndex
-                                        ) else BLANK_STRING,
+                                        ),
                                         isRequiredField = isRequiredField
                                     )
                                 }
                             }
-                        }
-                        item {
-                            Spacer(modifier = Modifier.height(dimen_10_dp))
-                        }
 
-                        item {
+                            Spacer(modifier = Modifier.height(dimen_10_dp))
+
                             if (optionUiModelList?.isNotEmpty() == true) {
                                 LazyVerticalGrid(
                                     userScrollEnabled = false,
@@ -175,8 +171,8 @@ fun GridTypeComponent(
                                         .wrapContentWidth()
                                         .padding(horizontal = dimen_16_dp)
                                         .heightIn(
-                                            min = 110.dp,
-                                            max = maxCustomHeight + manualMaxHeight
+                                            min = manualMinHeight,
+                                            max = maxCustomHeight + manualMinHeight
                                         ),
                                     horizontalArrangement = Arrangement.Center
                                 ) {
@@ -205,8 +201,7 @@ fun GridTypeComponent(
 
                                 }
                             }
-                        }
-                        item {
+
                             if (showCardView && content?.isNotEmpty() == true) {
                                 ContentBottomViewComponent(
                                 contents = content,
@@ -218,7 +213,6 @@ fun GridTypeComponent(
                                     }
                                 )
                             }
-                        }
                     }
 
                 }

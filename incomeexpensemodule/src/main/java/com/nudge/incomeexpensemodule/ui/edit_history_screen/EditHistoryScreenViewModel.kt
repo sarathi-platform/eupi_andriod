@@ -5,11 +5,12 @@ import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.getDayPriorCurrentTimeMillis
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
-import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectLivelihoodEventMappingUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
@@ -22,11 +23,11 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
     BaseViewModel() {
     private val tag = EditHistoryScreenViewModel::class.java.simpleName
     private val _subjectLivelihoodEventSummaryUiModelList =
-        mutableListOf<SubjectLivelihoodEventMappingEntity>()
-    private val subjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventMappingEntity> get() = _subjectLivelihoodEventSummaryUiModelList
+        mutableListOf<SubjectLivelihoodEventHistoryUiModel>()
+    private val subjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventHistoryUiModel> get() = _subjectLivelihoodEventSummaryUiModelList
     private val _filterSubjectLivelihoodEventSummaryUiModelList =
-        mutableListOf<SubjectLivelihoodEventMappingEntity>()
-    val filterSubjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventMappingEntity> get() = _filterSubjectLivelihoodEventSummaryUiModelList
+        mutableListOf<SubjectLivelihoodEventHistoryUiModel>()
+    val filterSubjectLivelihoodEventSummaryUiModelList: List<SubjectLivelihoodEventHistoryUiModel> get() = _filterSubjectLivelihoodEventSummaryUiModelList
 
     val showCustomDatePicker = mutableStateOf(false)
     private val _dateRangeFilter: MutableState<Pair<Long, Long>> = mutableStateOf(
@@ -40,6 +41,7 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitEditHistoryState -> {
+                setTranslationConfig()
                 loadEditHistoryData(transactionId = event.transactionId)
             }
 
@@ -61,7 +63,7 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
         ioViewModelScope {
             try {
                 _subjectLivelihoodEventSummaryUiModelList.clear()
-                fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListForTransactionIdFromDb(
+                fetchSubjectLivelihoodEventMappingUseCase.getSubjectLivelihoodEventMappingListForHistory(
                     transactionId = transactionId
                 )?.let {
                     _subjectLivelihoodEventSummaryUiModelList.addAll(
@@ -93,5 +95,9 @@ class EditHistoryScreenViewModel @Inject constructor(private val fetchSubjectLiv
         _filterSubjectLivelihoodEventSummaryUiModelList.addAll(result.filter {
             (it.date.value() >= dateRangeFilter.value.first) && (it.date.value() <= dateRangeFilter.value.second)
         })
+    }
+
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.EditHistoryScreen
     }
 }

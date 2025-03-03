@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.enums.SubTabs
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
@@ -46,11 +47,12 @@ class DidiTabViewModel @Inject constructor(
     val isSubjectApiStatusFailed =
         mutableStateOf(false)
 
-
+    val isSearchListEmpty = mutableStateOf(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
+                setTranslationConfig()
                 loadAllDataForDidiTab(false)
             }
 
@@ -99,7 +101,7 @@ class DidiTabViewModel @Inject constructor(
     private fun initDidiTab() {
         ioViewModelScope {
             _didiList.value = didiTabUseCase.fetchDidiDetailsFromDbUseCase.invoke()
-            _filteredDidiList.value = didiList.value.sortedBy { it.subjectName }
+            _filteredDidiList.value = didiList.value.sortedBy { it.subjectName.toLowerCase() }
             _smallGroupList.value =
                 didiTabUseCase.fetchSmallGroupListsFromDbUseCase.invoke()
             _filteredSmallGroupList.value = smallGroupList.value
@@ -142,14 +144,16 @@ class DidiTabViewModel @Inject constructor(
                     filteredList.add(subjectEntity)
                 }
             }
-            filteredList.sortedBy { it.subjectName }
+            filteredList.sortedBy { it.subjectName.toLowerCase() }
         } else {
-            didiList.value.sortedBy { it.subjectName }
+            didiList.value.sortedBy { it.subjectName.toLowerCase() }
         }
     }
 
     override fun refreshData() {
         loadAllDataForDidiTab(true)
     }
-
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DidiTabScreen
+    }
 }

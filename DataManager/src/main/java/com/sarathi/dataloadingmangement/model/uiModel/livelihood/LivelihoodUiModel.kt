@@ -5,7 +5,8 @@ import com.nudge.core.model.uiModel.LivelihoodModel
 data class LivelihoodUiEntity(
     val id: Int,
     val livelihoodEntity: LivelihoodModel,
-    var isSelected: Boolean
+    var isSelected: Boolean,
+    var isLivelihoodTypeDropdown: Boolean = false
 ) {
 
     companion object {
@@ -13,7 +14,11 @@ data class LivelihoodUiEntity(
             livelihoodUiModel: LivelihoodModel,
             isSelected: Boolean
         ): LivelihoodUiEntity {
-            return LivelihoodUiEntity(livelihoodUiModel.livelihoodId, livelihoodUiModel, isSelected)
+            return LivelihoodUiEntity(
+                livelihoodUiModel.programLivelihoodId,
+                livelihoodUiModel,
+                isSelected
+            )
         }
 
         fun getLivelihoodUiEntityList(
@@ -24,9 +29,9 @@ data class LivelihoodUiEntity(
             livelihoodUiModelList.forEach { livelihoodDropDownUiModel ->
                 livelihoodUIEntityList.add(
                     LivelihoodUiEntity(
-                        livelihoodDropDownUiModel.livelihoodId,
+                        livelihoodDropDownUiModel.programLivelihoodId,
                         livelihoodDropDownUiModel,
-                        isSelected = selectedIds.contains(livelihoodDropDownUiModel.livelihoodId)
+                        isSelected = selectedIds.contains(livelihoodDropDownUiModel.programLivelihoodId)
                     )
                 )
             }
@@ -34,6 +39,24 @@ data class LivelihoodUiEntity(
             return livelihoodUIEntityList.distinct()
         }
 
+        fun getLivelihoodUiTypeEntityList(
+            livelihoodUiModelList: List<LivelihoodModel>,
+            selectedType: List<String>
+        ): List<LivelihoodUiEntity> {
+            val livelihoodUIEntityList = ArrayList<LivelihoodUiEntity>()
+            livelihoodUiModelList.forEach { livelihoodDropDownUiModel ->
+                livelihoodUIEntityList.add(
+                    LivelihoodUiEntity(
+                        livelihoodDropDownUiModel.programLivelihoodId,
+                        livelihoodDropDownUiModel,
+                        isSelected = selectedType.contains(livelihoodDropDownUiModel.type.uppercase()),
+                        isLivelihoodTypeDropdown = true
+                    )
+                )
+            }
+
+            return livelihoodUIEntityList.distinct()
+        }
 
     }
 

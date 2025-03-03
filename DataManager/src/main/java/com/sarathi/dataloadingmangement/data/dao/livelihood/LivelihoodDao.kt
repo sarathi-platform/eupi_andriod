@@ -19,14 +19,30 @@ interface LivelihoodDao {
     @Query("DELETE FROM $LIVELIHOOD_TABLE_NAME where userId=:userId ")
     fun deleteLivelihoodForUser(userId: String)
 
-    @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status,lt.validations ,lt.type from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType ")
+    @Query(
+        "SELECT  COALESCE(lr.name, lt.name) AS name,lt.name as originalName,lt.status,lt.validations , COALESCE(lr2.name, lt.type) AS livelihoodTypeDisplayName, " +
+                "lt.type, lt.programLivelihoodId, lt.image from $LIVELIHOOD_TABLE_NAME " +
+                "lt left join $LIVELIHOOD_LANGUAGE_TABLE_NAME " +
+                " lr On lt.programLivelihoodId = lr.referenceId And lr.userId= :userId And lr.languageCode = :languageCode and lr.referenceType = :referenceType " +
+                "left join $LIVELIHOOD_LANGUAGE_TABLE_NAME " +
+                " lr2 On lt.programLivelihoodId = lr2.referenceId And lr2.userId= :userId And lr2.languageCode = :languageCode and lr2.referenceType = 'LivelihoodType' " +
+                " Where lt.userId =:userId  and lt.status = 1 "
+    )
     fun getLivelihoodList(
         userId: String,
         languageCode: String,
         referenceType: String = LivelihoodLanguageReferenceType.Livelihood.name
     ): List<LivelihoodModel>
 
-    @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status, lt.validations,lt.type  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.livelihoodId!=-1 ")
+    @Query(
+        "SELECT  COALESCE(lr.name, lt.name) AS name,lt.name as originalName,lt.status, lt.validations,lt.type, lt.programLivelihoodId, lt.image, COALESCE(lr2.name, lt.type) AS livelihoodTypeDisplayName" +
+                " from $LIVELIHOOD_TABLE_NAME lt " +
+                "left join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.programLivelihoodId = lr.referenceId And lr.userId= :userId And lr.languageCode = :languageCode and lr.referenceType = :referenceType " +
+                "left join $LIVELIHOOD_LANGUAGE_TABLE_NAME " +
+                " lr2 On lt.programLivelihoodId = lr2.referenceId And lr2.userId= :userId And lr2.languageCode = :languageCode and lr2.referenceType = 'LivelihoodType' " +
+
+                " Where lt.userId =:userId  and lt.status = 1  and lt.programLivelihoodId!=-1 "
+    )
     fun getLivelihoodListWithoutNotDecided(
         userId: String,
         languageCode: String,
@@ -38,13 +54,37 @@ interface LivelihoodDao {
         userId: String,
     ): List<LivelihoodEntity>
 
-    @Query("SELECT* from $LIVELIHOOD_TABLE_NAME where userId=:userId  and livelihoodId=:livelihoodId")
+    @Query("SELECT* from $LIVELIHOOD_TABLE_NAME where userId=:userId  and programLivelihoodId=:livelihoodId")
     fun getLivelihoodImageForUser(
         userId: String,
         livelihoodId: Int
     ): LivelihoodEntity
 
-    @Query("SELECT lt.livelihoodId,lr.name,lt.name as originalName,lt.status, lt.validations, lt.type  from $LIVELIHOOD_TABLE_NAME lt join $LIVELIHOOD_LANGUAGE_TABLE_NAME  lr On lt.livelihoodId = lr.referenceId Where lt.userId =:userId And lr.userId= :userId And lr.languageCode = :languageCode and lt.status = 1 and lr.referenceType = :referenceType and lt.livelihoodId in(:ids)")
+    @Query(
+        "SELECT \n" +
+                "    lt.name AS originalName,\n" +
+                "    COALESCE(lr.name, lt.name) AS name,\n" +
+                "    lt.status,\n" +
+                "    lt.validations,\n" +
+                "    lt.type,\n" +
+                "    lt.programLivelihoodId, \n" +
+                "COALESCE(lr2.name, lt.type) AS livelihoodTypeDisplayName " +
+                "FROM \n" +
+                "    livelihood_table lt\n" +
+                "LEFT JOIN \n" +
+                "    livelihood_language_reference_table lr \n" +
+                "ON \n" +
+                "    lt.programLivelihoodId = lr.referenceId \n" +
+                "    AND lr.languageCode = :languageCode\n" +
+                "    AND lr.userId = :userId\n" +
+                "    AND lr.referenceType = :referenceType\n" +
+                "left join $LIVELIHOOD_LANGUAGE_TABLE_NAME " +
+                " lr2 On lt.programLivelihoodId = lr2.referenceId And lr2.userId= :userId And lr2.languageCode = :languageCode and lr2.referenceType = 'LivelihoodType' " +
+                "WHERE \n" +
+                "    lt.userId = :userId \n" +
+                "    AND lt.status = 1\n" +
+                "    AND lt.programLivelihoodId IN (:ids);"
+    )
     fun getLivelihoodList(
         userId: String,
         languageCode: String,

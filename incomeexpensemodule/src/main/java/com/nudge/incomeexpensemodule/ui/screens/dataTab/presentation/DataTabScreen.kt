@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.screens.dataTab.presentation
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDurationDifferenceInDays
 import com.nudge.core.isOnline
@@ -48,6 +50,7 @@ import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomTextViewComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ShowDidiImageDialog
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -104,10 +107,18 @@ fun DataTabScreen(
 
     if (showAppExitDialog.value) {
         ShowCustomDialog(
-            title = stringResource(id = R.string.are_you_sure),
-            message = stringResource(id = R.string.do_you_want_to_exit_the_app),
-            positiveButtonTitle = stringResource(id = R.string.exit),
-            negativeButtonTitle = stringResource(id = R.string.cancel),
+            title = dataTabScreenViewModel.stringResource(
+                resId = R.string.are_you_sure
+            ),
+            message = dataTabScreenViewModel.stringResource(
+                resId = R.string.do_you_want_to_exit_the_app
+            ),
+            positiveButtonTitle = dataTabScreenViewModel.stringResource(
+                resId = R.string.exit
+            ),
+            negativeButtonTitle = dataTabScreenViewModel.stringResource(
+                resId = R.string.cancel
+            ),
             onNegativeButtonClick = {
                 showAppExitDialog.value = false
             },
@@ -122,7 +133,7 @@ fun DataTabScreen(
             dataTabScreenViewModel.incomeExpenseSummaryUiModel[dataTabScreenViewModel.showAssetDialog.value.second],
             dataTabScreenViewModel.livelihoodModelList.filter {
                 dataTabScreenViewModel.showAssetDialog.value.third.contains(
-                    it.livelihoodId
+                    it.programLivelihoodId
                 )
             },
             onDismissRequest = {
@@ -162,6 +173,18 @@ fun DataTabScreen(
         mutableStateOf(false)
     }
 
+    if (dataTabScreenViewModel.isDidiImageDialogVisible.value.first
+        && dataTabScreenViewModel.isDidiImageDialogVisible.value.third != null
+        && dataTabScreenViewModel.isDidiImageDialogVisible.value.third != Uri.EMPTY
+    ) {
+        ShowDidiImageDialog(
+            didiName = dataTabScreenViewModel.isDidiImageDialogVisible.value.second ?: BLANK_STRING,
+            imagePath = dataTabScreenViewModel.isDidiImageDialogVisible.value.third
+        ) {
+            dataTabScreenViewModel.isDidiImageDialogVisible.value =
+                Triple(false, BLANK_STRING, Uri.EMPTY)
+        }
+    }
 
     Surface(modifier = Modifier.padding(bottom = dimen_56_dp)) {
         BottomSheetScaffoldComponent<LivelihoodModel>(
@@ -170,13 +193,15 @@ fun DataTabScreen(
             onBottomSheetItemSelected = {
                 dataTabScreenViewModel.onEvent(
                     DataTabEvents.LivelihoodFilterApplied(
-                        dataTabScreenViewModel.filters[it].livelihoodId
+                        dataTabScreenViewModel.filters[it].programLivelihoodId
                     )
                 )
             }
         ) {
             ToolBarWithMenuComponent(
-                title = stringResource(id = com.sarathi.dataloadingmangement.R.string.app_name),
+                title = dataTabScreenViewModel.stringResource(
+                    resId = com.sarathi.dataloadingmangement.R.string.app_name
+                ),
                 modifier = modifier,
                 isSearch = true,
                 iconResId = R.drawable.ic_sarathi_logo,
@@ -210,122 +235,127 @@ fun DataTabScreen(
                                 .zIndex(1f),
                             contentColor = blueDark,
                         )
-                        if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(horizontal = 16.dp),
-                                verticalArrangement = Arrangement.Center,
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = dimen_16_dp)
+                                .padding(top = dimen_10_dp),
+                            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                        ) {
+
+                            CustomSubTabLayoutWithCallBack(
+                                parentTabIndex = TabsEnum.DataTab.tabIndex,
+                                tabs = dataTabScreenViewModel.tabs,
+                                countMap = dataTabScreenViewModel.countMap
                             ) {
-                                Text(
-                                    text = "LHP not done. Hence no didi list available.",
-                                    modifier = Modifier.fillMaxWidth(),
-                                    textAlign = TextAlign.Center,
-                                    style = mediumTextStyle,
-                                    color = textColorDark
-                                )
+                                dataTabScreenViewModel.onEvent(DataTabEvents.OnSubTabChanged)
                             }
-                        } else {
-                            Column(
-                                modifier = Modifier
-                                    .padding(horizontal = dimen_16_dp)
-                                    .padding(top = dimen_10_dp),
-                                verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+
+                            Row(
+                                horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
                             ) {
 
-                                CustomSubTabLayoutWithCallBack(
-                                    parentTabIndex = TabsEnum.DataTab.tabIndex,
-                                    tabs = dataTabScreenViewModel.tabs,
-                                    dataTabScreenViewModel.countMap
-                                ) {
-                                    dataTabScreenViewModel.onEvent(DataTabEvents.OnSubTabChanged)
-                                }
-
-                                Row(
-                                    horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
-                                ) {
-
-                                    SimpleSearchComponent(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .weight(1f),
-                                        placeholderString = stringResource(DataRes.string.search_by_didis),
-                                        searchFieldHeight = dimen_50_dp,
-                                        onSearchValueChange = {
-                                            dataTabScreenViewModel.onEvent(
-                                                DataTabEvents.OnSearchQueryChanged(
-                                                    it
-                                                )
+                                SimpleSearchComponent(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .weight(1f),
+                                    placeholderString = dataTabScreenViewModel.stringResource(
+                                        DataRes.string.search_by_didis
+                                    ),
+                                    searchFieldHeight = dimen_50_dp,
+                                    onSearchValueChange = {
+                                        dataTabScreenViewModel.onEvent(
+                                            DataTabEvents.OnSearchQueryChanged(
+                                                it
                                             )
+                                        )
+                                    }
+                                )
+
+                                CustomIconButton(
+                                    onClick = {
+                                        coroutineScope.launch {
+                                            customBottomSheetScaffoldProperties.sheetState.show()
+                                        }
+                                    },
+                                    icon = painterResource(id = CoreRes.drawable.filter_icon),
+                                    iconTintColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark,
+                                    contentDescription = "filter_list",
+                                    buttonContainerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        containerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
+                                        contentColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark
+                                    )
+                                )
+
+                                /*CustomIconButton(
+                                    onClick = {
+                                        dataTabScreenViewModel.isSortApplied.value =
+                                            !dataTabScreenViewModel.isSortApplied.value
+                                        dataTabScreenViewModel.onEvent(DataTabEvents.LivelihoodSortApplied)
+                                    },
+                                    iconTintColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark,
+                                    icon = painterResource(id = CoreRes.drawable.ic_new_sort_icon),
+                                    buttonContainerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
+                                    colors = IconButtonDefaults.iconButtonColors(
+                                        containerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
+                                        contentColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark
+                                    ),
+                                    contentDescription = "Sort List"
+                                )*/
+
+                            }
+
+                            if (dataTabScreenViewModel.isFilterApplied.value) {
+                                CustomTextViewComponent(
+                                    textProperties = TextProperties.getBasicTextProperties(
+                                        text = buildAnnotatedString {
+                                            //TODO write function to get this string for the filter applied.
+                                            append(stringResource(R.string.showing))
+                                            withStyle(
+                                                SpanStyle(
+                                                    color = textColorDark,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            ) {
+                                                append(" ${dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString()}")
+                                            }
+                                            append(stringResource(R.string.results_for))
+                                            withStyle(
+                                                SpanStyle(
+                                                    color = textColorDark,
+                                                    fontWeight = FontWeight.Bold
+                                                )
+                                            ) {
+                                                append(
+                                                    dataTabScreenViewModel.filters.toList()
+                                                        .find { it.programLivelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
+                                                )
+                                            }
                                         }
                                     )
+                                )
+                            }
+                            if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
 
-                                    CustomIconButton(
-                                        onClick = {
-                                            coroutineScope.launch {
-                                                customBottomSheetScaffoldProperties.sheetState.show()
-                                            }
-                                        },
-                                        icon = painterResource(id = CoreRes.drawable.filter_icon),
-                                        iconTintColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark,
-                                        contentDescription = "filter_list",
-                                        buttonContainerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
-                                        colors = IconButtonDefaults.iconButtonColors(
-                                            containerColor = if (dataTabScreenViewModel.isFilterApplied.value) blueDark else Color.Transparent,
-                                            contentColor = if (dataTabScreenViewModel.isFilterApplied.value) white else blueDark
-                                        )
-                                    )
-
-                                    CustomIconButton(
-                                        onClick = {
-                                            dataTabScreenViewModel.isSortApplied.value =
-                                                !dataTabScreenViewModel.isSortApplied.value
-                                            dataTabScreenViewModel.onEvent(DataTabEvents.LivelihoodSortApplied)
-                                        },
-                                        iconTintColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark,
-                                        icon = painterResource(id = CoreRes.drawable.ic_new_sort_icon),
-                                        buttonContainerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
-                                        colors = IconButtonDefaults.iconButtonColors(
-                                            containerColor = if (dataTabScreenViewModel.isSortApplied.value) blueDark else Color.Transparent,
-                                            contentColor = if (dataTabScreenViewModel.isSortApplied.value) white else blueDark
-                                        ),
-                                        contentDescription = "Sort List"
-                                    )
-
-                                }
-
-                                if (dataTabScreenViewModel.isFilterApplied.value) {
-                                    CustomTextViewComponent(
-                                        textProperties = TextProperties.getBasicTextProperties(
-                                            text = buildAnnotatedString {
-                                                //TODO write function to get this string for the filter applied.
-                                                append(stringResource(R.string.showing))
-                                                withStyle(
-                                                    SpanStyle(
-                                                        color = textColorDark,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                ) {
-                                                    append(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.size.toString())
-                                                }
-                                                append(stringResource(R.string.results_for))
-                                                withStyle(
-                                                    SpanStyle(
-                                                        color = textColorDark,
-                                                        fontWeight = FontWeight.Bold
-                                                    )
-                                                ) {
-                                                    append(
-                                                        dataTabScreenViewModel.filters.toList()
-                                                            .find { it.livelihoodId == dataTabScreenViewModel.selectedFilterValue.value }?.name.value()
-                                                    )
-                                                }
-                                            }
-                                        )
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .padding(horizontal = 16.dp),
+                                    verticalArrangement = Arrangement.Center,
+                                ) {
+                                    Text(
+                                        text = if (dataTabScreenViewModel.isSearchEnable.value)
+                                            stringResource(R.string.no_result_found)
+                                        else
+                                            stringResource(R.string.lhp_empty),
+                                        modifier = Modifier.fillMaxWidth(),
+                                        textAlign = TextAlign.Center,
+                                        style = mediumTextStyle,
+                                        color = textColorDark
                                     )
                                 }
-
+                            } else {
                                 LazyColumn(verticalArrangement = Arrangement.spacedBy(dimen_8_dp)) {
 
                                     itemsIndexed(dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value) { index, subject ->
@@ -342,6 +372,7 @@ fun DataTabScreen(
                                                 subject.lastUpdated
                                             ),
                                             incomeExpenseSummaryUiModel = summaryForSubject,
+                                            subjectLivelihoodMapping = dataTabScreenViewModel.subjectList.value.filter { it.subjectId == summaryForSubject?.subjectId.value() },
                                             onAssetCountClicked = {
                                                 dataTabScreenViewModel.onEvent(
                                                     DataTabEvents.ShowAssetDialogForSubject(
@@ -350,15 +381,19 @@ fun DataTabScreen(
                                                         subject.livelihoodIds
                                                     )
                                                 )
+                                            },
+                                            onImageClicked = { path ->
+                                                dataTabScreenViewModel.isDidiImageDialogVisible.value =
+                                                    path
+                                            },
+                                            onSummaryCardClicked = {
+                                                navigateToDataSummaryScreen(
+                                                    navController = navHostController,
+                                                    subjectId = subject.subjectId,
+                                                    subjectName = subject.subjectName
+                                                )
                                             }
-                                        ) {
-                                            navigateToDataSummaryScreen(
-                                                navController = navHostController,
-                                                subjectId = subject.subjectId,
-                                                subjectName = subject.subjectName
-                                            )
-
-                                        }
+                                        )
 
                                     }
 
@@ -369,9 +404,6 @@ fun DataTabScreen(
                                 }
                             }
                         }
-
-
-
                     }
                 }
             )

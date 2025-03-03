@@ -41,7 +41,9 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nudge.core.ARG_IS_FROM_BACKSTACK
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
@@ -57,7 +59,6 @@ import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_45_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_8_dp
-import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.lightGray2
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.quesOptionTextStyle
@@ -75,6 +76,7 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
+import com.sarathi.surveymanager.ui.component.AddImageComponent
 import com.sarathi.surveymanager.ui.component.CalculationResultComponent
 import com.sarathi.surveymanager.ui.component.DatePickerComponent
 import com.sarathi.surveymanager.ui.component.DropDownTypeComponent
@@ -91,7 +93,6 @@ import com.sarathi.surveymanager.ui.description_component.presentation.ModelBott
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.utils.getMaxInputLength
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -125,21 +126,25 @@ fun FormQuestionScreen(
     val coroutineScope = rememberCoroutineScope()
 
     val showAlertDialog = remember { mutableStateOf(false) }
+    val stateHandle = navController.currentBackStackEntry?.savedStateHandle
+    //Listen the result from Media screen
+    val isFromBackStack = remember { stateHandle?.getLiveData<Boolean>(ARG_IS_FROM_BACKSTACK) }
 
     LaunchedEffect(key1 = Unit) {
-        viewModel.setPreviousScreenData(
-            taskId,
-            sectionId,
-            surveyId,
-            formId,
-            activityId,
-            activityConfigId,
-            missionId,
-            referenceId,
-            subjectType = subjectType
-        )
-        viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
-
+        if (isFromBackStack?.value != true) {
+            viewModel.setPreviousScreenData(
+                taskId,
+                sectionId,
+                surveyId,
+                formId,
+                activityId,
+                activityConfigId,
+                missionId,
+                referenceId,
+                subjectType = subjectType
+            )
+            viewModel.onEvent(InitDataEvent.InitFormQuestionScreenState)
+        }
     }
 
     BackHandler {
@@ -241,11 +246,14 @@ fun FormQuestionScreen(
                         .fillMaxWidth()
                 ) {
                     SubmitButtonBottomUi(
-                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value,
+                        isButtonActive = viewModel.isButtonEnable.value && viewModel.isActivityNotCompleted.value && !viewModel.isSubmitButtonClicked.value,
                         buttonTitle = stringResource(R.string.submit),
                         onSubmitButtonClick = {
+                            if (!viewModel.isSubmitButtonClicked.value) {
+                                viewModel.isSubmitButtonClicked.value = true
                             viewModel.saveAllAnswers {
                                 viewModel.updateTaskStatus(taskId)
+                                viewModel.updateMissionFilter()
                                 viewModel.updateSectionStatus(
                                     missionId,
                                     surveyId,
@@ -253,10 +261,12 @@ fun FormQuestionScreen(
                                     taskId,
                                     SurveyStatusEnum.INPROGRESS.name
                                 )
-                                withContext(Dispatchers.Main) {
-                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+                                withContext(CoreDispatchers.mainDispatcher) {
                                     onNavigateBack()
+                                    viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+
                                 }
+                            }
                             }
                         }
                     )
@@ -332,7 +342,15 @@ fun FormQuestionScreen(
                                     viewModel.runConditionCheck(question)
                                     viewModel.runValidationCheck(question.questionId) { isValid, message ->
                                         viewModel.fieldValidationAndMessageMap[question.questionId] =
-                                            Pair(isValid, message)
+                                            Triple(
+                                                isValid,
+                                                message,
+                                                if (QuestionType.userInputQuestionTypeList.contains(
+                                                        question.type.toLowerCase()
+                                                    )
+                                                ) (question.options?.firstOrNull()?.selectedValue
+                                                    ?: BLANK_STRING) else null
+                                            )
                                     }
                                 }
                             )
@@ -394,6 +412,9 @@ fun FormScreenQuestionUiContent(
                         isOnlyNumber = question.type == QuestionType.NumericField.name || question.type == QuestionType.InputNumber.name,
                         hintText = question.options?.firstOrNull()?.description
                             ?: BLANK_STRING,
+                        isError = !viewModel.fieldValidationAndMessageMap.get(question.questionId)?.first.value(
+                            true
+                        ),
                         navigateToMediaPlayerScreen = { contentList ->
                             handleContentClick(
                                 viewModel = viewModel,
@@ -438,7 +459,37 @@ fun FormScreenQuestionUiContent(
                     }
                 }
 
-                QuestionType.MultiImage.name,
+                QuestionType.MultiImage.name -> {
+                    AddImageComponent(
+                        contents = question.contentEntities,
+                        fileNamePrefix = viewModel.getPrefixFileName(question),
+                        filePaths = commaSeparatedStringToList(
+                            question.options?.firstOrNull()?.selectedValue
+                                ?: com.sarathi.dataloadingmangement.BLANK_STRING
+                        ),
+                        isMandatory = question.isMandatory,
+                        title = question.questionDisplay,
+                        isEditable = viewModel.isActivityNotCompleted.value,
+                        maxCustomHeight = maxHeight,
+                        navigateToMediaPlayerScreen = { contentList ->
+                            handleContentClick(
+                                viewModel = viewModel,
+                                context = context,
+                                navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                                contentList = contentList
+                            )
+                        },
+                        subtitle = question.display
+                    ) { selectedValue, isDeleted ->
+                        saveMultiImageTypeAnswer(
+                            selectedValue,
+                            question.options,
+                            isDeleted
+                        )
+                        onAnswerSelect(question)
+
+                    }
+                }
                 QuestionType.SingleImage.name -> {
                     SingleImageComponent(
                         content = question.contentEntities,
@@ -502,6 +553,9 @@ fun FormScreenQuestionUiContent(
                         isEditAllowed = viewModel.isActivityNotCompleted.value,
                         showCardView = false,
                         maxCustomHeight = maxHeight,
+                        optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
+                            question.questionId
+                        ),
                         navigateToMediaPlayerScreen = { contentList ->
                             handleContentClick(
                                 viewModel = viewModel,
@@ -521,6 +575,12 @@ fun FormScreenQuestionUiContent(
                                     options.isSelected = false
                                 }
                             }
+
+                            val noneOptionCheckResult = viewModel.runNoneOptionCheck(question)
+                            runNoneCheckForMultiSelectDropDownQuestions(
+                                noneOptionCheckResult,
+                                question
+                            )
                             onAnswerSelect(question)
                         }
                     )
@@ -648,15 +708,24 @@ fun FormScreenQuestionUiContent(
                     }
                 }
             }
-            if (viewModel.fieldValidationAndMessageMap[question.questionId]?.second != BLANK_STRING) {
-                Text(
-                    text = viewModel.fieldValidationAndMessageMap[question.questionId]?.second
-                        ?: com.sarathi.dataloadingmangement.BLANK_STRING,
-                    modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
-                    style = quesOptionTextStyle.copy(color = eventTextColor)
-                )
-                CustomVerticalSpacer()
-            }
+            viewModel.fieldValidationAndMessageMap[question.questionId]?.second?.let {
+                if (it != BLANK_STRING) {
+                    Text(
+                        text = it,
+                        modifier = Modifier.padding(end = dimen_16_dp, top = dimen_8_dp),
+                        style = quesOptionTextStyle.copy(
+                            color = getValidationMessageColor(
+                                question,
+                                viewModel.fieldValidationAndMessageMap[question.questionId]
+                            )
+                        )
+                    )
+                    CustomVerticalSpacer()
+                } else {
+                    CustomVerticalSpacer(size = dimen_20_dp)
+                }
+            } ?: CustomVerticalSpacer(size = dimen_20_dp)
+
         }
 
     }

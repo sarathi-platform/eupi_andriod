@@ -61,9 +61,11 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
+import com.sarathi.surveymanager.utils.ellipsisVisualTransformation
 import kotlinx.coroutines.launch
 
 
@@ -82,6 +84,8 @@ fun MultiSelectSelectDropDown(
     hint: String = stringResource(R.string.select),
     expanded: Boolean = false,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
+    enabledOptions: Map<Int, Boolean?> = mapOf(),
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onExpandedChange: (Boolean) -> Unit,
     onDismissRequest: () -> Unit,
@@ -136,7 +140,7 @@ fun MultiSelectSelectDropDown(
                     QuestionComponent(
                         isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                         title = title,
-                        questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                        questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                         isRequiredField = isMandatory,
                         onDetailIconClicked = { onDetailIconClicked() }
                     )
@@ -176,6 +180,7 @@ fun MultiSelectSelectDropDown(
                         focusedIndicatorColor = borderGrey,
                         unfocusedIndicatorColor = borderGrey,
                     ),
+                    visualTransformation = ellipsisVisualTransformation(),
                     trailingIcon = {
                         Icon(icon, "contentDescription",
                             Modifier.clickable { onExpandedChange(expanded) })
@@ -203,6 +208,7 @@ fun MultiSelectSelectDropDown(
                                 onCheckedChange = {
                                     onItemSelected(item.value)
                                 },
+                                enabled = enabledOptions[item.id].value(true),
                                 colors = CheckboxDefaults.colors(
                                     checkedColor = blueDark,
                                     uncheckedColor = Color.Gray,
@@ -213,11 +219,16 @@ fun MultiSelectSelectDropDown(
                                 text = item.value,
                                 style = newMediumTextStyle,
                                 textAlign = TextAlign.Start,
-                                color = if (selectedItems.contains(item.value)) blueDark else Color.Black,
+                                color = getDropDownOptionTextColor(
+                                    item.value,
+                                    selectedItems,
+                                    enabledOptions[item.id].value(true)
+                                ),
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .clickable {
-                                        onItemSelected(item.value.toString())
+                                        if (enabledOptions[item.id].value(true))
+                                            onItemSelected(item.value.toString())
                                     }
                             )
                         }
@@ -239,4 +250,13 @@ fun MultiSelectSelectDropDown(
             }
         }
     }
+}
+
+fun getDropDownOptionTextColor(
+    value: String,
+    selectedItems: List<String>,
+    isEnabled: Boolean
+): Color {
+    val alpha = if (isEnabled) 1f else 0.5f
+    return if (selectedItems.contains(value)) blueDark.copy(alpha = alpha) else blueDark.copy(alpha)
 }

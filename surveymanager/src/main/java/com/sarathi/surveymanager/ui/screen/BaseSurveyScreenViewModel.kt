@@ -1,5 +1,6 @@
 package com.sarathi.surveymanager.ui.screen
 
+import android.annotation.SuppressLint
 import android.text.TextUtils
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateMapOf
@@ -7,6 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
+import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
@@ -20,6 +23,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyAnswerEntity
 import com.sarathi.dataloadingmangement.data.entities.SurveyConfigEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.FormEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FormUseCase
@@ -35,6 +39,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SaveSurveyAnswerUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
+import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.SubjectAttributes
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyCardModel
@@ -42,6 +47,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CALCULATION_TYPE
 import com.sarathi.dataloadingmangement.model.uiModel.SurveyConfigCardSlots.Companion.CONFIG_SLOT_TYPE_QUESTION_CARD
 import com.sarathi.dataloadingmangement.model.uiModel.UiConfigAttributeType
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -74,7 +80,9 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val getSurveyValidationsFromDbUseCase: GetSurveyValidationsFromDbUseCase,
     private val validationUseCase: SurveyValidationUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase
+    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
+    private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
+    private val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
 
     val LOGGER_TAG = BaseSurveyScreenViewModel::class.java.simpleName
@@ -110,7 +118,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     val showSummaryView = mutableMapOf<Int, Int>()
 
     var validations: List<SurveyValidations>? = mutableListOf()
-    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Pair<Boolean, String>>()
+    var fieldValidationAndMessageMap = mutableStateMapOf<Int, Triple<Boolean, String, String?>>()
 
     private var formResponseMap = mapOf<Int, List<SurveyAnswerEntity>>()
 
@@ -122,10 +130,13 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     private val _filteredSurveyModels = mutableStateMapOf<Int, List<SurveyCardModel>>()
     val filteredSurveyModels: SnapshotStateMap<Int, List<SurveyCardModel>> get() = _filteredSurveyModels
 
+    var activityUIInfo: ActivityInfoUIModel = ActivityInfoUIModel.getDefaultValue()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
                 CoroutineScope(ioDispatcher + exceptionHandler).launch {
+                    isButtonEnable.value = false
                     intiQuestions()
                 }
             }
@@ -145,8 +156,20 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
+    fun clearQuestionList() {
+        if (activityConfig?.activityType.equals(
+                ActivityTypeEnum.GRANT.name,
+                ignoreCase = true
+            ) && _questionUiModel.value.isNotEmpty()
+        ) {
+            _questionUiModel.value = emptyList()
+        }
+    }
+
+    @SuppressLint("SuspiciousIndentation")
     open suspend fun intiQuestions() {
         taskEntity = getTaskUseCase.getTask(taskId)
+        isAnyOptionValueChanged.value = false
         if (_questionUiModel.value.isEmpty()) {
             _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
@@ -230,6 +253,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                 autoCalculateQuestionResultMap
             )
         }
+        activityUIInfo = fetchInfoUiModelUseCase.fetchActivityInfo(
+            activityConfig?.missionId.value(),
+            activityConfig?.activityId.value()
+        )
         fetchFilteredSurveyModels()
         isTaskStatusCompleted()
 
@@ -339,7 +366,8 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
             } else {
                 // For cases where showSummaryView has multiple items
-                result = showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
+                result =
+                    result && showSummaryView.isNotEmpty() && showSummaryView.all { it.value != 0 }
             }
         }
 
@@ -396,7 +424,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
     }
 
     private suspend fun isTaskStatusCompleted() {
-        isActivityCompleted.value = getActivityUseCase.isAllActivityCompleted(
+        isActivityCompleted.value = getActivityUseCase.isActivityCompleted(
             missionId = taskEntity?.missionId ?: 0,
             activityId = taskEntity?.activityId ?: 0
         )
@@ -408,6 +436,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun getPrefixFileName(question: QuestionUiModel): String {
         return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
+    }
+
+    fun isRemoteShowQuestionIndex(): Boolean {
+        return coreSharedPrefs.getPref(REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE, false)
     }
 
     open fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
@@ -472,6 +504,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                             selectedValue = BLANK_STRING
                         )
                     }
+                    runNoneOptionCheck(it)
                     if (saveSurveyAnswerUseCase.isAnswerAvailableInDb(
                             it,
                             taskEntity?.subjectId ?: DEFAULT_ID,
@@ -629,6 +662,14 @@ open class BaseSurveyScreenViewModel @Inject constructor(
             _filteredSurveyModels[it.formId] = filteredModels
 
         }
+    }
+
+    fun getOptionStateMapForMutliSelectDropDownQuestion(questionId: Int): Map<Int, Boolean?> {
+        return conditionsUtils.getOptionStateMapForMutliSelectDropDownQuestion(questionId)
+    }
+
+    fun updateMissionFilter() {
+        missionFilterUtils.updateMissionFilterOnUserAction(activityUIInfo)
     }
 
 }

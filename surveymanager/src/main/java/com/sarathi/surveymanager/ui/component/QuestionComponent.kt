@@ -1,6 +1,5 @@
 package com.sarathi.surveymanager.ui.component
 
-import android.text.TextUtils
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -23,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.grayColor
@@ -54,20 +55,11 @@ fun QuestionComponent(
                 horizontalArrangement = Arrangement.Start, // Align text to start
                 verticalAlignment = Alignment.Top
             ) {
+                if (questionNumber.isNotBlank()) {
+                    Text(text = questionNumber, style = defaultTextStyle.copy(color = blueDark))
+                }
                 androidx.compose.material.Text(
                     text = buildAnnotatedString {
-                        if (!TextUtils.isEmpty(questionNumber)) {
-                            withStyle(
-                                style = SpanStyle(
-                                    color = blueDark,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.SemiBold,
-                                    fontFamily = NotoSans
-                                )
-                            ) {
-                                append(questionNumber)
-                            }
-                        }
                         withStyle(
                             style = SpanStyle(
                                 color = blueDark,

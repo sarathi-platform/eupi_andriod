@@ -2,6 +2,8 @@ package com.nudge.core.preference
 
 import android.content.Context
 import android.content.SharedPreferences
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_BUILD_ENVIRONMENT
 import com.nudge.core.DEFAULT_HARD_EVENT_LIMIT_THRESHOLD
@@ -17,6 +19,9 @@ import com.nudge.core.PREF_SYNC_IMAGE_UPLOAD_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
+import com.nudge.core.model.FilterType
+import com.nudge.core.model.FilterTypeAdapter
+import com.nudge.core.model.FilterUiModel
 import com.nudge.core.value
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -41,6 +46,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_ROLE_NAME = "role_name"
         const val PREF_KEY_TYPE_NAME = "type_name"
         const val PREF_STATE_ID = "type_state_id"
+        const val PREF_STATE_CODE = "type_state_code"
+        const val PREF_STATE_NAME = "state_name"
+        const val PREF_DISTRICT_NAME = "district_name"
+        const val PREF_BLOCK_NAME = "block_name"
         const val PREF_KEY_USER_BPC = "is_user_bpc"
         const val PREF_KEY_USER_NAME = "key_user_name"
         const val PREF_MOBILE_NUMBER = "pref_mobile_number"
@@ -55,7 +64,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
         const val PREF_KEY_DATA_TAB_DATA_LOADED = "is_data_tab_data_loaded"
         const val PREF_KEY_IS_SYNC_DB_MIGRATE = "is_sync_db_migrate"
 
+        const val PREF_KEY_TYPE_STATE_ID = "type_state_id"
+        const val PREF_KEY_ACCESS_TOKEN = "ACCESS_TOKEN"
 
+        const val PREF_MISSION_LIVELIHOOD_FILTER_VALUE = "pref_mission_livelihood_filter_value"
 
         @Volatile
         private var INSTANCE: CoreSharedPrefs? = null
@@ -68,6 +80,10 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
             }
         }
     }
+
+    val gson: Gson = GsonBuilder()
+        .registerTypeAdapter(FilterType::class.java, FilterTypeAdapter())
+        .create()
 
     val prefs: SharedPreferences by lazy {
 
@@ -212,6 +228,13 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
     fun getStateId(): Int {
         return getPref(PREF_STATE_ID, -1)
     }
+    fun setStateCode(stateCode: String) {
+        savePref(PREF_STATE_CODE, stateCode)
+    }
+
+    fun getStateCode(): String {
+        return getPref(PREF_STATE_CODE, BLANK_STRING)
+    }
 
     fun setUserRole(role: String) {
         savePref(PREF_KEY_ROLE_NAME, role)
@@ -348,5 +371,22 @@ class CoreSharedPrefs @Inject constructor(@ApplicationContext private val contex
 
     override fun isUserBPC(): Boolean {
         return prefs.getBoolean(PREF_KEY_USER_BPC, false)
+    }
+
+    override fun saveMissionFilter(missionFilterUiModel: FilterUiModel) {
+        prefs.edit()
+            .putString(PREF_MISSION_LIVELIHOOD_FILTER_VALUE, gson.toJson(missionFilterUiModel))
+            .apply()
+    }
+
+    override fun getMissionFilter(): FilterUiModel? {
+        val prefValue = prefs.getString(PREF_MISSION_LIVELIHOOD_FILTER_VALUE, null) ?: return null
+        return gson.fromJson(prefValue, FilterUiModel::class.java)
+    }
+
+    override fun resetMissionFilter() {
+        prefs.edit()
+            .remove(PREF_MISSION_LIVELIHOOD_FILTER_VALUE)
+            .apply()
     }
 }

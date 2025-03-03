@@ -22,10 +22,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.incomeexpensemodule.R
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.textColorGreyLight
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 
@@ -43,7 +47,7 @@ fun AssetsDialog(
             Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = stringResource(R.string.assets),
-                    style = defaultTextStyle,
+                    style = mediumTextStyle,
                     color = textColorDark
                 )
                 Spacer(
@@ -63,22 +67,34 @@ fun AssetsDialog(
             Column {
                 livelihoodModel.forEach { livelihood ->
                     if (incomeExpenseSummaryUiModel?.totalAssetCountForLivelihood?.containsKey(
-                            livelihood.livelihoodId
+                            livelihood.programLivelihoodId
                         ) == true
-                        && incomeExpenseSummaryUiModel.totalAssetCountForLivelihood[livelihood.livelihoodId] != 0
+                        && incomeExpenseSummaryUiModel.totalAssetCountForLivelihood[livelihood.programLivelihoodId] != 0
                     ) {
                         Text(
                             text = livelihood.name,
                             style = defaultTextStyle.copy(fontWeight = FontWeight.Bold),
                             color = textColorDark
                         )
+                        CustomVerticalSpacer(size = dimen_5_dp)
                         Column() {
-                            incomeExpenseSummaryUiModel?.assetsCountWithValue?.distinctBy { it.assetId }
+                            incomeExpenseSummaryUiModel?.assetsCountWithValue?.distinctBy {
+                                Pair(
+                                    it.livelihoodId,
+                                    it.assetId
+                                )
+                            }
                                 ?.forEach { assetsCountWithValueItem ->
                                     val assets =
-                                        incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.livelihoodId]
-                                    val itemIndex = assets?.map { it.assetId }
-                                        ?.indexOf(assetsCountWithValueItem.assetId).value()
+                                        incomeExpenseSummaryUiModel.livelihoodAssetMap[livelihood.programLivelihoodId]
+                                    val itemIndex =
+                                        assets?.map { Pair(it.livelihoodId, it.assetId) }
+                                            ?.indexOf(
+                                                Pair(
+                                                    assetsCountWithValueItem.livelihoodId,
+                                                    assetsCountWithValueItem.assetId
+                                                )
+                                            ).value()
                                     if (itemIndex != -1) {
                                         AssetRow(
                                             assets?.get(itemIndex)?.name.value(),
@@ -110,7 +126,7 @@ fun AssetRow(label: String, quantity: String, amount: String) {
         Text(
             text = "$label: ",
             style = defaultTextStyle.copy(fontWeight = FontWeight.SemiBold),
-            color = textColorDark.copy(alpha = 0.8f)
+            color = textColorGreyLight
         )
         Spacer(modifier = Modifier.width(4.dp))
         Text(

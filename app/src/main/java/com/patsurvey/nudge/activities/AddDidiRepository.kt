@@ -4,6 +4,8 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.database.entities.getDependentEventsId
@@ -20,7 +22,6 @@ import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.QuestionEntity
@@ -30,7 +31,6 @@ import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.converters.BeneficiaryProcessStatusModel
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.LastSelectedTolaDao
 import com.patsurvey.nudge.database.dao.NumericAnswerDao
 import com.patsurvey.nudge.database.dao.QuestionListDao

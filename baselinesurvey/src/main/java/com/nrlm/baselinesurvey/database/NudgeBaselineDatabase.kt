@@ -1,6 +1,5 @@
 package com.nrlm.baselinesurvey.database
 
-import android.util.Log
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
@@ -21,7 +20,6 @@ import com.nrlm.baselinesurvey.database.dao.DidiInfoDao
 import com.nrlm.baselinesurvey.database.dao.DidiSectionProgressEntityDao
 import com.nrlm.baselinesurvey.database.dao.FormQuestionResponseDao
 import com.nrlm.baselinesurvey.database.dao.InputTypeQuestionAnswerDao
-import com.nrlm.baselinesurvey.database.dao.LanguageListDao
 import com.nrlm.baselinesurvey.database.dao.MissionActivityDao
 import com.nrlm.baselinesurvey.database.dao.MissionEntityDao
 import com.nrlm.baselinesurvey.database.dao.OptionItemDao
@@ -37,7 +35,6 @@ import com.nrlm.baselinesurvey.database.entity.DidiInfoEntity
 import com.nrlm.baselinesurvey.database.entity.DidiSectionProgressEntity
 import com.nrlm.baselinesurvey.database.entity.FormQuestionResponseEntity
 import com.nrlm.baselinesurvey.database.entity.InputTypeQuestionAnswerEntity
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.database.entity.MissionActivityEntity
 import com.nrlm.baselinesurvey.database.entity.MissionEntity
 import com.nrlm.baselinesurvey.database.entity.OptionItemEntity
@@ -48,15 +45,16 @@ import com.nrlm.baselinesurvey.database.entity.SurveyEntity
 import com.nrlm.baselinesurvey.database.entity.SurveyeeEntity
 import com.nrlm.baselinesurvey.database.entity.VillageEntity
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.CASTE_TABLE
+import com.nudge.core.LANGUAGE_TABLE_NAME
 import java.sql.SQLException
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
-const val NUDGE_BASELINE_DATABASE_VERSION = 2
+const val NUDGE_BASELINE_DATABASE_VERSION = 4
 
 @Database(
     entities = [
         VillageEntity::class,
-        LanguageEntity::class,
         SurveyeeEntity::class,
         SurveyEntity::class,
         SectionEntity::class,
@@ -90,7 +88,6 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
 
     abstract fun villageListDao(): VillageListDao
 
-    abstract fun languageListDao(): LanguageListDao
 
     abstract fun didiDao(): SurveyeeEntityDao
 
@@ -121,13 +118,30 @@ abstract class NudgeBaselineDatabase: RoomDatabase()  {
         private const val ALTER_FORM_RESPONSE_TABLE =
             "ALTER TABLE form_question_response_table ADD selectedValueId TEXT NOT NULL DEFAULT '';"
 
+
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                Log.d("NudgeDatabase", "MIGRATION_42_43")
+                BaselineLogger.d("NudgeDatabase", "MIGRATION_1_2")
                 migration(database, listOf(ALTER_FORM_RESPONSE_TABLE))
             }
         }
+
+        val DROP_CASTE_TABLE = "DROP TABLE $CASTE_TABLE"
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                BaselineLogger.d("NudgeDatabase", "MIGRATION_2_3")
+                migration(db, listOf(DROP_CASTE_TABLE))
+            }
+        }
+        const val DROP_LANGUAGE_TABLE = "DROP TABLE $LANGUAGE_TABLE_NAME"
+        val MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                BaselineLogger.d("NudgeDatabase", "MIGRATION_3_4")
+                migration(db, listOf(DROP_LANGUAGE_TABLE))
+            }
+        }
+
 
         private fun migration(database: SupportSQLiteDatabase, execSqls: List<String>) {
             for(sql in execSqls) {

@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
+import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 import com.sarathi.dataloadingmangement.repository.liveihood.SubjectLivelihoodEventMappingRepositoryImpl
 import javax.inject.Inject
@@ -36,4 +37,9 @@ class FetchSubjectLivelihoodEventMappingUseCase @Inject constructor(
         )
     }
 
+    suspend fun getSubjectLivelihoodEventMappingListForHistory(transactionId: String): List<SubjectLivelihoodEventHistoryUiModel>? {
+        return subjectLivelihoodEventMappingRepositoryImpl.getSubjectLivelihoodEventMappingListForHistory(
+            transactionId = transactionId
+        )
+    }
 }

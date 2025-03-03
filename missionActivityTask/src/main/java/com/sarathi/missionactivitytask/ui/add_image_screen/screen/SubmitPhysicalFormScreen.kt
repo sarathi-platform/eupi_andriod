@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -18,13 +19,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_80_dp
 import com.nudge.core.ui.theme.largeTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -49,7 +51,7 @@ fun SubmitPhysicalFormScreen(
     val outerState = rememberLazyListState()
     val context = LocalContext.current
     LaunchedEffect(key1 = true) {
-
+        viewModel.setTranslationConfig()
         viewModel.setTotalDidi(activityId = activityId, missionId)
     }
     Scaffold(modifier = Modifier.fillMaxWidth(),
@@ -59,6 +61,7 @@ fun SubmitPhysicalFormScreen(
             BottomAppBar(
                 backgroundColor = white, modifier = Modifier
                     .fillMaxWidth()
+                    .heightIn(dimen_80_dp, dimen_100_dp)
             ) {
                 Row(
                     modifier = Modifier
@@ -67,7 +70,7 @@ fun SubmitPhysicalFormScreen(
                 ) {
                     ButtonNegative(
                         modifier = Modifier.weight(0.4f),
-                        buttonTitle = stringResource(R.string.go_back),
+                        buttonTitle = viewModel.stringResource(context, R.string.go_back),
                         isArrowRequired = true,
                         onClick = {
                             navController.popBackStack()

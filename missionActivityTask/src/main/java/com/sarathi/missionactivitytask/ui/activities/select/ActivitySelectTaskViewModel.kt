@@ -11,6 +11,7 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -23,6 +24,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
 import com.sarathi.dataloadingmangement.model.uiModel.TaskUiModel
+import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.missionactivitytask.ui.grantTask.domain.usecases.GetActivityConfigUseCase
 import com.sarathi.missionactivitytask.ui.grantTask.viewmodel.TaskScreenViewModel
@@ -49,7 +51,9 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val surveyAnswerEventWriterUseCase: SurveyAnswerEventWriterUseCase,
-    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase
+    private val saveSurveyAnswerUseCase: SaveSurveyAnswerUseCase,
+    missionFilterUtils: MissionFilterUtils,
+    fetchInfoUiModelUseCase: FetchInfoUiModelUseCase
 ) : TaskScreenViewModel(
     getActivityTaskUseCase,
     surveyAnswerUseCase,
@@ -59,7 +63,9 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase
+    fetchAllDataUseCase,
+    missionFilterUtils = missionFilterUtils,
+    fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {
 
     var referenceId: String = BLANK_STRING
@@ -74,6 +80,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         super.onEvent(event)
         when (event) {
             is InitDataEvent.InitActivitySelectTaskScreenState -> {
+//                setTranslationConfig()
                 onEvent(LoaderEvent.UpdateLoaderState(true))
                 initActivitySelectTaskScreen(event.missionId, event.activityId)
             }
@@ -83,10 +90,12 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO).launch {
+            withContext(CoreDispatchers.mainDispatcher) {
+                onEvent(LoaderEvent.UpdateLoaderState(true))
+            }
             delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
-            expandedIds.clear()
             taskUiList.value.forEach { task ->
                 val list = intiQuestions(
                     taskId = task.taskId,
@@ -170,17 +179,30 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     }
 
     override fun expandFirstNotStartedItem() {
-        if (!isActivityCompleted.value) {
+        expandedIds.clear()
 
-            val firstGroupWithNotStatedTask = if (isGroupingApplied.value) {
-                getFirstGroupWithNotStatedTask()
-            } else
-                null
+        if (isGroupingApplied.value) {
 
-            val firstNotStartedTaskIndex = filterList.value.entries.toList()
-                .indexOfFirst { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
-            expandNextItem(firstNotStartedTaskIndex - 1, firstGroupWithNotStatedTask)
+            val groupKeySet = filterTaskMap.keys
+            groupKeySet.forEach { key ->
+                val notStartedTasks = filterTaskMap[key]?.value()?.filter { task ->
+                    task.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name
+                }
+                notStartedTasks?.forEach {
+                    if (!expandedIds.contains(it.key)) {
+                        expandedIds.add(it.key)
+                    }
+                }
+            }
+        } else {
+            val filterIdsList = filterList.value.entries.toList()
+                .filter { it.value[TaskCardSlots.TASK_STATUS.name]?.value == StatusEnum.NOT_STARTED.name }
 
+            filterIdsList.forEach {
+                if (!expandedIds.contains(it.key)) {
+                    expandedIds.add(it.key)
+                }
+            }
         }
     }
 
@@ -254,6 +276,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
 
             taskStatusUseCase.markActivityInProgress(missionId, activityId)
             taskStatusUseCase.markMissionInProgress(missionId)
+            getTaskUseCase.updateTaskStatus(
+                taskId = taskId,
+                status = status
+            )
             eventWriterUseCase.markMATStatus(
                 missionId = missionId,
                 activityId = activityId,
@@ -261,14 +287,14 @@ open class ActivitySelectTaskViewModel @Inject constructor(
                 subjectType = activityConfigUiModel?.subject ?: BLANK_STRING,
                 surveyName = ActivityTypeEnum.SELECT.name
             )
-            getTaskUseCase.updateTaskStatus(
-                taskId = taskId,
-                status = status
-            )
+
             checkButtonValidation()
             updateProgress()
         }
     }
 
+//    override fun getScreenName(): TranslationEnum {
+//        return TranslationEnum.ActivitySelectTaskScreen
+//    }
 
 }

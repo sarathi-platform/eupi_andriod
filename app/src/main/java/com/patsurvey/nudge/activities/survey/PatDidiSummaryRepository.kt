@@ -3,6 +3,8 @@ package com.patsurvey.nudge.activities.survey
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.EventSyncStatus
 import com.nudge.core.SELECTION_MISSION
+import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
 import com.nudge.core.enums.EventName
@@ -16,11 +18,9 @@ import com.nudge.core.value
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.data.prefs.SharedPrefs.Companion.PREF_KEY_TEMP_CRP_FILE_PATH
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.TolaEntity
 import com.patsurvey.nudge.database.dao.AnswerDao
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.model.dataModel.AbleBodiedFlagEventModel

@@ -4,15 +4,16 @@ import android.content.Context
 import com.nrlm.baselinesurvey.BLANK_STRING
 import com.nrlm.baselinesurvey.LANGUAGE_OPEN_FROM_SETTING
 import com.nrlm.baselinesurvey.utils.BaselineCore
+import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.getDefaultBackUpFileName
 import com.nudge.core.getDefaultImageBackUpFileName
 import com.nudge.core.preference.CoreSharedPrefs
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.NudgeDatabase
 import com.patsurvey.nudge.database.StepListEntity
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.service.csv.ExportHelper
@@ -58,6 +59,7 @@ class SettingBSRepositoryImpl(
                 )
             )
             coreSharedPrefs.setFileExported(false)
+            coreSharedPrefs.resetMissionFilter()
         }
         prefRepo.setPreviousUserMobile(prefRepo.getMobileNumber() ?: BLANK_STRING)
         prefRepo.savePref(PREF_KEY_TYPE_NAME, BLANK_STRING)
@@ -148,5 +150,9 @@ class SettingBSRepositoryImpl(
 
     override fun getStateId(): Int {
         return prefRepo.getStateId()
+    }
+
+    override fun getLastSyncTime(): Long {
+        return prefRepo.getPref(LAST_SYNC_TIME, 0L)
     }
 }

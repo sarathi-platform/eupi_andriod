@@ -9,13 +9,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
+import com.nudge.core.database.entities.CasteEntity
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
 import com.patsurvey.nudge.CheckDBStatus
 import com.patsurvey.nudge.MyApplication.Companion.appScopeLaunch
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.base.BaseViewModel
-import com.patsurvey.nudge.database.CasteEntity
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.LastTolaSelectedEntity
 import com.patsurvey.nudge.database.TolaEntity
@@ -206,7 +206,7 @@ class AddDidiViewModel @Inject constructor(
     fun getCastName(castId : Int) : String{
         var castName = ""
         for(cast in castList){
-            if(castId == cast.id)
+            if (castId == cast.casteId)
                 castName = cast.casteName
         }
         return castName

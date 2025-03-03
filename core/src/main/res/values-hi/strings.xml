@@ -41,9 +41,10 @@
     <string name="summary_text">Summary</string>
     <string name="default_confirm_button_text">Confirm</string>
     <string name="default_dismiss_button_text">Dismiss</string>
-    <string name="view_summary">सारांश देखें</string>
     <string name="since_you_have_completed_all_the_tasks_please_complete_the_activity">Since you have completed all the tasks please complete the activity</string>
     <string name="on_completing_the_activity_you_will_not_be_able_to_edit_the_details">*On completing the activity, you will not be able to edit the details</string>
+
+    <string name="view_summary">सारांश देखें</string>
     <string name="all_tab_title">All</string>
     <string name="questions_data_tab_title">Questions</string>
     <string name="section_information_tab_title">Sections</string>
@@ -52,6 +53,28 @@
     <string name="details_have_already_been_added">Details have already been added!</string>
     <string name="no_result_found">कोई परिणाम नहीं मिला</string>
     <string name="proceed">Proceed</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
-
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
+    <string name="last_sync_date_time">सिंक का अंतिम समय:</string>
+    <string name="profile_phone">फ़ोन नंबर</string>
+    <string name="sync_days">%1$s दिन</string>
+    <string name="sync_hours">%1$s घंटे</string>
+    <string name="sync_minutes">%1$s मिनट</string>
+    <string name="sync_ago">पहले</string>
+    <string name="just_now">अभी</string>
+    <string name="ongoing_tab_title">Ongoing</string>
+    <string name="completed_tab_title">Completed</string>
+    <string name="search_by_mission">Search by Mission</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">All Missions</string>
+    <string name="general_missions_filter_label">General Missions</string>
+    <string name="complete_survey">Complete Survey</string>
+    <string name="didis_item_text_plural">Didi</string>
+    <string name="small_group_sub_tab_title">Small Group</string>
+    <string name="search_label">Search</string>
+    <string name="exclude_in_calculation_message">*This expense is not included in the total calculation.</string>
+    <string name="contact_to_admin_id_missing">पहुँच संबंधी समस्या. कृपया सहायता के लिए बीपीसी अथवा डीपीसी  से संपर्क करें।</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="missions_filter_label_suffix">Missions</string>
 </resources>

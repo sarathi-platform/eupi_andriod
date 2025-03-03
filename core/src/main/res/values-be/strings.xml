@@ -19,8 +19,8 @@
     <string name="cancel">"বাতিল কৰা "</string>
     <string name="search">"সন্ধান কৰক "</string>
 
-    <string name="didi_sub_tab_title">Didi</string>
-    <string name="small_group_sub_tab_title">Small Group</string>
+    <string name="didis_item_text_plural">आब’मोन</string>
+    <string name="small_group_sub_tab_title">फिसा हान्जानि</string>
     <string name="search_label">Search</string>
 
     <string name="are_you_sure">Are you sure?</string>
@@ -37,7 +37,7 @@
     <string name="warning_text">Warning</string>
     <string name="notification_alert_message">Sync pending data now to stay up-to-date!</string>
     <string name="hard_threshold_alert_message">Sync now to prevent data loss!</string>
-    <string name="small_group_filter_label">"Filter by Small group: "</string>
+    <string name="small_group_filter_label">"फिसा हानजाजों फिलटार खालाम: "</string>
     <string name="all">"गासैबो "</string>
     <string name="no_entry_this_month">"बे दानाव हाबनो मोना "</string>
     <string name="no_entry_this_week">No entry this week</string>
@@ -59,5 +59,26 @@
     <string name="details_have_already_been_added">Details have already been added!</string>
     <string name="no_result_found">जेबो फिथाइ मोननाय जायाखै</string>
     <string name="proceed">Proceed</string>
-    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\nDo you want to continue?</string>
+    <string name="form_alert_dialog_message">These changes will be lost if you proceed without submitting the form. \n\n Do you want to continue?</string>
+    <string name="last_sync_date_time">जोबथा sync time:</string>
+    <string name="profile_phone">फन नम्बर</string>
+    <string name="sync_days">%1$s days</string>
+    <string name="sync_hours">%1$s hours</string>
+    <string name="sync_minutes">%1$s minutes</string>
+    <string name="sync_ago">ago</string>
+    <string name="just_now">Just Now</string>
+    <string name="ongoing_tab_title">सोलिगासिनो दं</string>
+    <string name="completed_tab_title">गासैबो जाजुबबाय</string>
+    <string name="search_by_mission">मिसनजों नागिर</string>
+    <string name="lhp_empty">LHP not done. Hence no didi list available.</string>
+    <string name="all_missions_filter_label">गासैबो मिसनफोर</string>
+    <string name="general_missions_filter_label">सरासनस्रा मिसनफोर</string>
+    <string name="complete_survey">Complete Survey</string>
+    <string name="exclude_in_calculation_message">*बे खरसाखौ गासै साननायाव सोफानाय जाया।</string>
+    <string name="contact_to_admin_id_missing">Access issue (एक्सेस इसु) खौ हमनो हादों। हेफाजाबनि थाखाय अन्नानै बि.पि.सि.जों सोमोन्दो लाखि।</string>
+    <string name="str_download_complete">Application download complete.</string>
+    <string name="str_restart">Application Restarting..</string>
+    <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="missions_filter_label_suffix">मिसनफोर</string>
+
 </resources>

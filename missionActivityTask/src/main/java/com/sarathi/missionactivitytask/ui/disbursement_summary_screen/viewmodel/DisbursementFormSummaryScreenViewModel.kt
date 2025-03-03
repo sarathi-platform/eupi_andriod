@@ -7,6 +7,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DD_MMM_YYYY_FORMAT
 import com.nudge.core.PDF_MIME_TYPE
 import com.nudge.core.PDF_TYPE
+import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
 import com.nudge.core.saveFileToDownload
@@ -65,6 +66,7 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDisbursmentFormSummaryScreenState -> {
+                setTranslationConfig()
                 initDisbursementSummaryScreen(
                     event.activityId,
                     event.missionId,
@@ -221,7 +223,11 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
     }
 
     fun getFilePathUri(filePath: String): Uri? {
-        return formUseCase.getFilePathUri(filePath)
+        val imageFile = File(filePath)
+        return if (filePath != BLANK_STRING && imageFile.isFile && imageFile.exists())
+            formUseCase.getFilePathUri(filePath)
+        else
+            Uri.EMPTY
     }
 
     fun generateFormE(
@@ -331,5 +337,8 @@ class DisbursementFormSummaryScreenViewModel @Inject constructor(
         _filterList.value = filteredList
     }
 
+    override fun getScreenName(): TranslationEnum {
+        return TranslationEnum.DisbursementFormSummaryScreen
+    }
 }
 

@@ -49,6 +49,7 @@ import com.nudge.core.getImagePathFromPicture
 import com.nudge.core.getSizeInLong
 import com.nudge.core.json
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.getMetaDataDtoFromString
 import com.nudge.core.model.response.EventResult
 import com.nudge.core.model.response.SyncEventResponse
@@ -59,6 +60,7 @@ import com.nudge.core.network.ApiException.NullResponse
 import com.nudge.core.network.ApiException.TimeoutException
 import com.nudge.core.toDate
 import com.nudge.core.utils.CoreLogger
+import com.nudge.core.utils.FileUtils.findImageFile
 import com.nudge.core.utils.SyncType
 import com.nudge.core.value
 import com.nudge.syncmanager.R
@@ -714,7 +716,10 @@ class SyncUploadWorker @AssistedInject constructor(
             "findImageEventAndImageList: ${imageEventList.json()} "
         )
         imageEventList.forEach { imageDetail ->
-            val picturePath = getImagePathFromPicture() + "/${imageDetail.fileName}"
+            val picturePath = findImageFile(
+                CoreAppDetails.getContext()?.applicationContext!!,
+                imageDetail.fileName ?: BLANK_STRING
+            ).absolutePath
             var uploadedBlobUrl = BLANK_STRING
             try {
                 if (imageDetail.fileName?.isNotEmpty() == true) {

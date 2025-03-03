@@ -12,10 +12,13 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMi
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.RequestStatusDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
@@ -49,6 +52,9 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCa
 import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
 import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
+import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepository
+import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepositoryImpl
+import com.patsurvey.nudge.activities.forms.domain.usecase.SettingFormsUseCase
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepository
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryImpl
 import com.patsurvey.nudge.activities.settings.domain.repository.GetSummaryFileRepositoryV2
@@ -81,7 +87,6 @@ import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillag
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.data.prefs.SharedPrefs
 import com.patsurvey.nudge.database.NudgeDatabase
-import com.patsurvey.nudge.database.dao.CasteListDao
 import com.patsurvey.nudge.database.dao.DidiDao
 import com.patsurvey.nudge.database.dao.StepsListDao
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -160,7 +165,10 @@ object UseCaseModule {
         nudgeDatabase: NudgeDatabase,
         coreSharedPrefs: CoreSharedPrefs,
         syncManagerDatabase: SyncManagerDatabase,
-        missionDao: MissionDao
+        missionDao: MissionDao,
+        casteListDao: CasteListDao,
+        translationConfigDao: TranslationConfigDao,
+        languageListDao: LanguageListDao
     ):ExportImportRepository{
         return ExportImportRepositoryImpl(
             nudgeBaselineDatabase = nudgeBaselineDatabase,
@@ -168,7 +176,10 @@ object UseCaseModule {
             nudgeDatabase = nudgeDatabase,
             coreSharedPrefs = coreSharedPrefs,
             syncManagerDatabase = syncManagerDatabase,
-            missionDao = missionDao
+            missionDao = missionDao,
+            casteListDao = casteListDao,
+            languageListDao = languageListDao,
+            translationConfigDao = translationConfigDao
         )
     }
 
@@ -457,4 +468,24 @@ object UseCaseModule {
         return GetSummaryFileRepositoryV2Impl(coreSharedPrefs, taskDao, activityDao, missionDao)
     }
 
+    @Provides
+    @Singleton
+    fun providesSettingFormsRepository(
+        prefRepo: PrefRepo
+    ): SettingFormsRepository {
+        return SettingFormsRepositoryImpl(prefRepo)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSettingFormsUseCase(
+        repository: SettingFormsRepository,
+        settingBSRepository: SettingBSRepository
+    ): SettingFormsUseCase {
+        return SettingFormsUseCase(
+            repository,
+            getUserDetailsUseCase = GetUserDetailsUseCase(settingBSRepository),
+            getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(settingBSRepository)
+        )
+    }
 }

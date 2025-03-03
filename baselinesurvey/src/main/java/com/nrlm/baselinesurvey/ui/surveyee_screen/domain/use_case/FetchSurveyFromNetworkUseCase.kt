@@ -1,12 +1,12 @@
 package com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case
 
 import com.nrlm.baselinesurvey.SUCCESS_CODE
-import com.nrlm.baselinesurvey.database.entity.LanguageEntity
 import com.nrlm.baselinesurvey.model.request.SurveyRequestBodyModel
 import com.nrlm.baselinesurvey.network.ApiException
 import com.nrlm.baselinesurvey.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.repository.DataLoadingScreenRepository
 import com.nrlm.baselinesurvey.utils.BaselineLogger
+import com.nudge.core.database.entities.language.LanguageEntity
 
 class FetchSurveyFromNetworkUseCase(
     private val repository: DataLoadingScreenRepository

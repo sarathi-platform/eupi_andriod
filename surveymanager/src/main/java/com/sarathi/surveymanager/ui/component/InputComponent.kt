@@ -1,6 +1,7 @@
 package com.sarathi.surveymanager.ui.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,6 +19,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
@@ -27,6 +29,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -64,14 +67,17 @@ fun InputComponent(
     isEditable: Boolean = true,
     sanctionedAmount: Int = 0,
     remainingAmount: Int = 0,
+    totalSubmittedAmount: Int = 0,
     isZeroNotAllowed: Boolean = false,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isFromTypeQuestion: Boolean = false,
     resetResponse: Boolean = false,
     optionsItem: OptionsUiModel? = null,
+    isError: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
-    onAnswerSelection: (selectValue: String, remainingAmount: Int) -> Unit,
+    onAnswerSelection: (selectValue: String, totalSubmittedAmount: Int) -> Unit,
 ) {
     val txt = remember(resetResponse, optionsItem?.optionId) {
         mutableStateOf(defaultValue)
@@ -79,6 +85,7 @@ fun InputComponent(
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
+    val context = LocalContext.current
     BasicCardView(
         cardElevation = CardDefaults.cardElevation(
             defaultElevation = if (showCardView) defaultCardElevation else dimen_0_dp
@@ -100,7 +107,7 @@ fun InputComponent(
                 QuestionComponent(
                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                     title = title,
-                    questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                     isRequiredField = isMandatory,
                     onDetailIconClicked = {
                         onDetailIconClicked()
@@ -110,10 +117,19 @@ fun InputComponent(
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimen_56_dp),
+                    .height(dimen_56_dp)
+                    .clickable {
+                        if (!isEditable) {
+                            showCustomToast(
+                                context,
+                                context.getString(R.string.edit_disable_message)
+                            )
+                        }
+                    },
                 value = txt.value,
                 textStyle = newMediumTextStyle.copy(blueDark),
                 enabled = isEditable,
+                isError = isError && txt.value.isNotEmpty(),
                 onValueChange = { value ->
                     if (value.isEmpty()) {
                         // Allow clearing the field
@@ -134,7 +150,7 @@ fun InputComponent(
                             txt.value = value
                         }
                     }
-                    onAnswerSelection(txt.value, remainingAmount)
+                    onAnswerSelection(txt.value, totalSubmittedAmount)
                 },
                 placeholder = {
                     androidx.compose.material3.Text(
@@ -162,7 +178,7 @@ fun InputComponent(
                 keyboardActions = KeyboardActions(onDone = {
                     focusManager.clearFocus()
                     keyboardController?.hide()
-                    onAnswerSelection(txt.value, remainingAmount)
+                    onAnswerSelection(txt.value, totalSubmittedAmount)
                 }),
                 maxLines = 2,
                 colors = TextFieldDefaults.outlinedTextFieldColors(

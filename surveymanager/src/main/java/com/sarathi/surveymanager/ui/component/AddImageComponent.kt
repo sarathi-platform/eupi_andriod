@@ -54,8 +54,10 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import coil.compose.rememberAsyncImagePainter
 import com.nudge.core.getFileNameFromURL
+import com.nudge.core.getQuestionNumber
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openSettings
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_100_dp
@@ -82,6 +84,8 @@ import java.io.File
 fun AddImageComponent(
     contents: List<ContentList?>? = listOf(),
     showCardView: Boolean = false,
+    questionIndex: Int = 0,
+    isQuestionNumberVisible: Boolean = false,
     isMandatory: Boolean = false,
     maxCustomHeight: Dp = 200.dp,
     title: String = BLANK_STRING,
@@ -128,8 +132,9 @@ fun AddImageComponent(
         if (title.isNotBlank()) {
             QuestionComponent(
                 title = title,
-                isRequiredField = isMandatory,
-                subTitle = subtitle ?: "Signed & Sealed Physical Format D"
+                questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
+                subTitle = subtitle ?: "Signed & Sealed Physical Format D",
+                isRequiredField = isMandatory
             )
         }
 
@@ -149,30 +154,34 @@ fun AddImageComponent(
                         modifier =
                         boxModifier
                             .clickable(
-                                enabled = isEditable && isClickEnabled(
+                                enabled = isClickEnabled(
                                     areMultipleImagesAllowed,
                                     imageList.size
                                 )
                             ) {
+                                if (isEditable) {
+                                    requestCameraPermission(context as Activity) {
+                                        shouldRequestPermission.value = it
 
-                                requestCameraPermission(context as Activity) {
-                                    shouldRequestPermission.value = it
+                                        if (!it) {
+                                            currentImageUri = getImageUri(
+                                                context, "${fileNamePrefix}${
+                                                    System.currentTimeMillis()
+                                                }.png",
+                                                true
+                                            )
 
-                                    if (!it) {
-                                        currentImageUri = getImageUri(
-                                            context, "${fileNamePrefix}${
-                                                System.currentTimeMillis()
-                                            }.png",
-                                            true
-                                        )
-
-                                        cameraLauncher.launch(
-                                            currentImageUri
-                                        )
+                                            cameraLauncher.launch(
+                                                currentImageUri
+                                            )
+                                        }
                                     }
+                                } else {
+                                    showCustomToast(
+                                        context,
+                                        context.getString(R.string.edit_disable_message)
+                                    )
                                 }
-
-
                             }
                             .background(white)
                             .dottedBorder(
@@ -309,6 +318,7 @@ fun getSavedImageUri(
 
 @Composable
 fun ImageView(uri: Uri, isEditable: Boolean, onDelete: (fileUri: Uri) -> Unit) {
+    val context = LocalContext.current
     Box(
         modifier = Modifier
             .size(dimen_150_dp)
@@ -330,8 +340,15 @@ fun ImageView(uri: Uri, isEditable: Boolean, onDelete: (fileUri: Uri) -> Unit) {
             modifier = Modifier
                 .padding(dimen_10_dp)
                 .align(Alignment.BottomEnd)
-                .clickable(enabled = isEditable) {
-                    onDelete(uri)
+                .clickable {
+                    if (isEditable) {
+                        onDelete(uri)
+                    } else {
+                        showCustomToast(
+                            context,
+                            context.getString(R.string.edit_disable_message)
+                        )
+                    }
                 }
                 .size(dimen_24_dp),
             colorFilter = ColorFilter.tint(redDark)

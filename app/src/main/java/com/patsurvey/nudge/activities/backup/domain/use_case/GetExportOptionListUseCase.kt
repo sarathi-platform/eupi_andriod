@@ -12,22 +12,14 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 class GetExportOptionListUseCase(private val repository: ExportImportRepository) {
 
     fun fetchExportOptionList(): List<SettingOptionModel> {
+        val isRegenerateAllowed = repository.isRegenerateAllowed()
         val list = ArrayList<SettingOptionModel>()
         val context = BaselineCore.getAppContext()
 
-        if (repository.getLoggedInUserType() == UPCM_USER) {
-            list.add(
-                SettingOptionModel(
-                    1,
-                    context.getString(R.string.export_baseline_qna),
-                    BLANK_STRING,
-                    SettingTagEnum.EXPORT_BASELINE_QNA.name
-                )
-            )
-        }
+
         list.add(
             SettingOptionModel(
-                2,
+                1,
                 context.getString(R.string.import_data),
                 BLANK_STRING,
                 SettingTagEnum.IMPORT_DATA.name
@@ -36,31 +28,42 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
         list.add(
             SettingOptionModel(
-                3,
+                2,
                 context.getString(R.string.load_server_data),
                 BLANK_STRING,
                 SettingTagEnum.LOAD_SERVER_DATA.name
             )
         )
 
-        list.add(
-            SettingOptionModel(
-                4,
-                context.getString(R.string.regenerate_all_events),
-                BLANK_STRING,
-                SettingTagEnum.REGENERATE_EVENTS.name
+        if (isRegenerateAllowed) {
+            list.add(
+                SettingOptionModel(
+                    3,
+                    context.getString(R.string.regenerate_all_events),
+                    BLANK_STRING,
+                    SettingTagEnum.REGENERATE_EVENTS.name
+                )
             )
-        )
+        }
         if (repository.getLoggedInUserType() == UPCM_USER) {
             list.add(
                 SettingOptionModel(
-                    5,
+                    4,
                     context.getString(R.string.mark_activity_inprogress_label),
                     BLANK_STRING,
                     SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name
                 )
             )
         }
+        list.add(
+            SettingOptionModel(
+                5,
+                context.getString(R.string.refresh_config),
+                BLANK_STRING,
+                SettingTagEnum.APP_CONFIG.name
+
+            )
+        )
         return list.ifEmpty { arrayListOf() }
     }
 
@@ -73,7 +76,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 1,
                 context.getString(R.string.export_images),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_IMAGES.name
+                SettingTagEnum.EXPORT_IMAGES.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -81,7 +85,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 2,
                 context.getString(R.string.export_event_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_EVENT_FILE.name
+                SettingTagEnum.EXPORT_EVENT_FILE.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -89,7 +94,8 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 3,
                 context.getString(R.string.export_database),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_DATABASE.name
+                SettingTagEnum.EXPORT_DATABASE.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
         list.add(
@@ -97,9 +103,21 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
                 4,
                 context.getString(R.string.export_log_file),
                 BLANK_STRING,
-                SettingTagEnum.EXPORT_LOG_FILE.name
+                SettingTagEnum.EXPORT_LOG_FILE.name,
+                trailingIcon = R.drawable.ic_share_icon
             )
         )
+        if (repository.getLoggedInUserType() == UPCM_USER) {
+            list.add(
+                SettingOptionModel(
+                    5,
+                    context.getString(R.string.export_baseline_qna),
+                    BLANK_STRING,
+                    SettingTagEnum.EXPORT_BASELINE_QNA.name,
+                    trailingIcon = R.drawable.ic_share_icon
+                )
+            )
+        }
         return list.ifEmpty { arrayListOf() }
     }
 

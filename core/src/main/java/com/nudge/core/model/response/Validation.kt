@@ -17,7 +17,14 @@ data class Validation(
     @SerializedName("message")
     @Expose
     val message: String,
+    @SerializedName("conditionalMessage")
+    @Expose
+    val conditionalMessage: List<ConditionalMessage>?,
     @SerializedName("languageCode")
     @Expose
-    val languageCode: String
+    val languageCode: String,
+    @SerializedName("regex")
+    @Expose
+    val regex: String?,
+
 )

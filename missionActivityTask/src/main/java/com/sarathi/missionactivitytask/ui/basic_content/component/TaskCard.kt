@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
@@ -28,18 +30,21 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.formatToIndianRupee
+import com.nudge.core.getFirstAndLastInitials
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
@@ -49,7 +54,9 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_22_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
+import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
@@ -57,10 +64,13 @@ import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.greyColor
 import com.nudge.core.ui.theme.languageItemActiveBg
+import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
+import com.nudge.core.ui.theme.yellowBg
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
@@ -70,6 +80,7 @@ import com.sarathi.missionactivitytask.utils.StatusEnum
 
 @Composable
 fun TaskCard(
+    translationHelper: TranslationHelper,
     title: TaskCardModel?,
     subTitle1: TaskCardModel?,
     subtitle2: TaskCardModel?,
@@ -90,6 +101,7 @@ fun TaskCard(
     isShowSecondaryStatusIcon: Boolean = false,
     secondaryStatusIcon: Int = R.drawable.ic_green_file,
     onNotAvailable: () -> Unit,
+    onImageIconClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     val taskMarkedNotAvailable = remember(status?.value) {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
@@ -97,13 +109,14 @@ fun TaskCard(
     val taskStatus = remember(status?.value) {
         mutableStateOf(status?.value)
     }
+    val context = LocalContext.current
     BasicCardView(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = dimen_16_dp)
             .border(
                 width = dimen_1_dp,
-                color = if (taskStatus?.value == StatusEnum.COMPLETED.name) greenOnline else greyBorderColor,
+                color = if (taskStatus?.value == StatusEnum.COMPLETED.name || taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) greenOnline else greyBorderColor,
                 shape = RoundedCornerShape(dimen_6_dp)
             )
             .background(Color.Transparent)
@@ -116,12 +129,30 @@ fun TaskCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimen_16_dp, vertical = dimen_5_dp),
+                    .padding(horizontal = dimen_16_dp)
+                    .padding(top = dimen_8_dp, bottom = dimen_5_dp),
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 if (imagePath != null) {
-                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath) {}
+                    CircularImageViewComponent(modifier = Modifier, imagePath = imagePath) {
+                        onImageIconClicked(Triple(true, title?.value.value(), imagePath))
+                    }
+                } else if (title?.value != BLANK_STRING) {
+                    Box(
+                        modifier = Modifier
+                            .border(width = dimen_2_dp, shape = CircleShape, color = brownDark)
+                            .clip(CircleShape)
+                            .width(dimen_56_dp)
+                            .height(dimen_56_dp)
+                            .background(color = yellowBg)
+                    ) {
+                        Text(
+                            getFirstAndLastInitials(title?.value),
+                            modifier = Modifier.align(Alignment.Center),
+                            style = mediumTextStyle.copy(color = brownDark)
+                        )
+                    }
                 }
                 Column(
                     modifier = Modifier
@@ -161,7 +192,7 @@ fun TaskCard(
                     )
                 } else if (taskStatus?.value == StatusEnum.NOT_AVAILABLE.name) {
                     Text(
-                        text = stringResource(id = R.string.not_available),
+                        text = translationHelper.stringResource(R.string.not_available),
                         style = defaultTextStyle,
                         modifier = Modifier
                             .padding(horizontal = dimen_5_dp),
@@ -177,7 +208,7 @@ fun TaskCard(
                         )
                     } else {
                         Text(
-                            text = stringResource(id = R.string.in_progress),
+                            text = translationHelper.stringResource(R.string.in_progress),
                             style = defaultTextStyle,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp),
@@ -239,6 +270,7 @@ fun TaskCard(
                 ) {
 
                     PrimarySecondaryButtonView(
+                        translationHelper = translationHelper,
                         modifier = Modifier.weight(1.0f),
                         secondaryButtonText?.value ?: BLANK_STRING,
                         taskMarkedNotAvailable,
@@ -276,7 +308,9 @@ fun TaskCard(
                             onPrimaryButtonClick(title?.value ?: BLANK_STRING)
                         }) {
                             Text(
-                                text = stringResource(R.string.task_view),
+                                text = translationHelper.stringResource(
+                                    R.string.task_view
+                                ),
                                 modifier = Modifier
                                     .padding(horizontal = dimen_5_dp)
                                     .absolutePadding(bottom = 3.dp),
@@ -293,11 +327,14 @@ fun TaskCard(
 
                     } else {
                         PrimarySecondaryButtonView(
+                            translationHelper = translationHelper,
                             modifier = Modifier.weight(1.0f),
                             secondaryButtonText?.value ?: BLANK_STRING,
                             taskMarkedNotAvailable,
                             onNotAvailable,
-                            primaryButtonText = stringResource(R.string.continue_text),
+                            primaryButtonText = translationHelper.stringResource(
+                                R.string.continue_text
+                            ),
                             onPrimaryButtonClick,
                             title?.value ?: BLANK_STRING,
                             isActivityCompleted,
@@ -356,6 +393,7 @@ fun ImageViewer(uri: Uri) {
 
 @Composable
 fun PrimarySecondaryButtonView(
+    translationHelper: TranslationHelper,
     modifier: Modifier = Modifier,
     secondaryButtonText: String,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -369,53 +407,60 @@ fun PrimarySecondaryButtonView(
 
 ) {
     val context = LocalContext.current
-    if (secondaryButtonText.isNotBlank()) {
-        PrimaryButton(
-            text = secondaryButtonText,
-            enabled = isNotAvailableButtonEnable,
-            isIcon = false,
-            onClick = {
-                if (!isActivityCompleted) {
-                    taskMarkedNotAvailable.value = true
-                    taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
-                    onNotAvailable()
-                } else {
-                    showCustomToast(
-                        context,
-                        context.getString(R.string.activity_completed_unable_to_edit)
-                    )
-                }
-            },
-            color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
-                containerColor = blueDark,
-                contentColor = white
-            ) else ButtonDefaults.buttonColors(
-                containerColor = languageItemActiveBg,
-                contentColor = blueDark
-            ),
-            modifier = Modifier
-        )
-    } else {
-        Spacer(modifier = modifier)
-    }
-    if (primaryButtonText.isNotBlank()) {
-        PrimaryButton(
-            text = primaryButtonText,
-            color = if (!isActivityCompleted && !taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
-                containerColor = blueDark,
-                contentColor = white
-            ) else ButtonDefaults.buttonColors(
-                containerColor = languageItemActiveBg,
-                contentColor = blueDark
-            ),
-            onClick = {
-                if (!isActivityCompleted) {
-                    taskMarkedNotAvailable.value = false
-                }
-                onPrimaryButtonClick(title)
-            },
-            modifier = modifier
-        )
+    Row(modifier = Modifier.fillMaxWidth()) {
+        if (secondaryButtonText.isNotBlank()) {
+            PrimaryButton(
+                text = secondaryButtonText,
+                enabled = isNotAvailableButtonEnable,
+                isIcon = false,
+                onClick = {
+                    if (!isActivityCompleted) {
+                        taskMarkedNotAvailable.value = true
+                        taskStatus.value = SurveyStatusEnum.NOT_AVAILABLE.name
+                        onNotAvailable()
+                    } else {
+                        showCustomToast(
+                            context,
+                            translationHelper.getString(R.string.activity_completed_unable_to_edit)
+                        )
+                    }
+                },
+                color = if (taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                    containerColor = blueDark,
+                    contentColor = white
+                ) else ButtonDefaults.buttonColors(
+                    containerColor = languageItemActiveBg,
+                    contentColor = blueDark
+                ),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 8.dp) // Space between buttons
+            )
+        } else {
+            Spacer(modifier = Modifier.weight(1f))
+        }
+
+        if (primaryButtonText.isNotBlank()) {
+            PrimaryButton(
+                text = primaryButtonText,
+                color = if (!isActivityCompleted && !taskMarkedNotAvailable.value) ButtonDefaults.buttonColors(
+                    containerColor = blueDark,
+                    contentColor = white
+                ) else ButtonDefaults.buttonColors(
+                    containerColor = languageItemActiveBg,
+                    contentColor = blueDark
+                ),
+                onClick = {
+                    if (!isActivityCompleted) {
+                        taskMarkedNotAvailable.value = false
+                    }
+                    onPrimaryButtonClick(title)
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(start = 8.dp)
+            )
+        }
     }
 }
 
