@@ -157,7 +157,8 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "data_not_Loaded",
             "ok",
             "search",
-            "start"
+            "start",
+            "missions_filter_label_suffix"
         )
     ),
     DisbursementFormSummaryScreen(
