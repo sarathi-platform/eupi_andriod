@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -158,6 +159,14 @@ fun BaseSurveyScreen(
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
+
+    DisposableEffect(key1 = true) {
+        onDispose {
+            viewModel.clearQuestionList()
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        }
+    }
+
     ToolBarWithMenuComponent(
         title = toolbarTitle,
         modifier = Modifier.fillMaxSize(),

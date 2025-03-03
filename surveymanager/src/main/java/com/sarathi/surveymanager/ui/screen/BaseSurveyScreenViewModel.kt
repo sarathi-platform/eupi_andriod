@@ -155,10 +155,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         }
     }
 
-    @SuppressLint("SuspiciousIndentation")
-    open suspend fun intiQuestions() {
-        taskEntity = getTaskUseCase.getTask(taskId)
-        isAnyOptionValueChanged.value = false
+    fun clearQuestionList() {
         if (activityConfig?.activityType.equals(
                 ActivityTypeEnum.GRANT.name,
                 ignoreCase = true
@@ -166,6 +163,12 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         ) {
             _questionUiModel.value = emptyList()
         }
+    }
+
+    @SuppressLint("SuspiciousIndentation")
+    open suspend fun intiQuestions() {
+        taskEntity = getTaskUseCase.getTask(taskId)
+        isAnyOptionValueChanged.value = false
         if (_questionUiModel.value.isEmpty()) {
             _questionUiModel.value = fetchDataUseCase.invoke(
                 surveyId = surveyId,
