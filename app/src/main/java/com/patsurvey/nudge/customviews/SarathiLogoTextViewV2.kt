@@ -19,7 +19,7 @@ import com.patsurvey.nudge.R
 @Composable
 fun SarathiLogoTextViewV2(modifier: Modifier = Modifier) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(vertical = dimen_10_dp)
     ) {

@@ -10,12 +10,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -41,22 +39,26 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nudge.core.onlyNumberField
 import com.nudge.core.setKeyboardToReadjust
-import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_28_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_48_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_60_dp
+import com.nudge.core.ui.theme.textStyleMedium
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
-import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
 import com.patsurvey.nudge.activities.ui.theme.midiumBlueColor
@@ -66,7 +68,6 @@ import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.MOBILE_NUMBER_LENGTH
-import com.patsurvey.nudge.utils.onlyNumberField
 import com.patsurvey.nudge.utils.stringToInt
 
 @SuppressLint("StringFormatInvalid")
@@ -93,152 +94,166 @@ fun LoginScreenV2(
         )
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
-    Box(
+    ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
-            .then(modifier)
     ) {
+        val (backgroundImage, logo, loader, inputField, button, spacer, spacer2) = createRefs()
         Image(
             painter = painterResource(id = R.drawable.lokos_bg),
             contentDescription = "Background Image",
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .constrainAs(backgroundImage) { centerTo(parent) }
         )
-        Box(modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = dimen_60_dp)) {
-            SarathiLogoTextViewV2(modifier)
-        }
+        SarathiLogoTextViewV2(
+            modifier = Modifier.constrainAs(logo) {
+                top.linkTo(parent.top, margin = dimen_50_dp)
+            }
+        )
         AnimatedVisibility(
             visible = viewModel.showLoader.value,
             exit = fadeOut(),
             enter = fadeIn(),
-            modifier = Modifier.align(
-                Alignment.Center
-            )
+            modifier = Modifier.constrainAs(loader) {
+                top.linkTo(logo.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                centerVerticallyTo(parent)
+            }
         ) {
             Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .padding(top = 30.dp)
-                    .align(Alignment.Center)
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = dimen_20_dp)
+                    .height(dimen_48_dp)
             ) {
                 CircularProgressIndicator(
                     color = blueDark, modifier = Modifier
-                        .size(28.dp)
+                        .size(dimen_28_dp)
                         .align(Alignment.Center)
                 )
             }
         }
-
-
-        Column(
+        Spacer(
             modifier = Modifier
-                .align(Alignment.Center)
-                .offset(y = (-120).dp)
-                .padding(horizontal = dimen_10_dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .height(60.dp)
-                    .border(
-                        width = 2.dp, color = when {
-                            isFocused -> midiumBlueColor
-                            !isFocused -> midiumGrayColor
-                            else -> Color.Transparent
-                        }, shape = RoundedCornerShape(4.dp) // Optional: Rounded corners
-                    )
-            ) {
-                OutlinedTextField(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Color.White)
-                        .onFocusChanged { focusState ->
-                            isFocused = focusState.isFocused
-                        },
-                    singleLine = true,
-                    value = viewModel.mobileNumber.value,
-                    placeholder = {
-                        Text(text = "Mobile number", color = midiumGrayColor)
-                    },
-                    textStyle = TextStyle(
-                        fontSize = 16.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.Medium,
-                        textAlign = TextAlign.Start
-                    ),
-                    onValueChange = {
-                        if (onlyNumberField(it.text)) {
-                            if (it.text.length <= MOBILE_NUMBER_LENGTH) viewModel.mobileNumber.value =
-                                it
-                        }
-                    },
-                    colors = TextFieldDefaults.textFieldColors(
-                        backgroundColor = Color.Transparent,
-                        textColor = blueDark,
-                        focusedIndicatorColor = Color.Transparent, // Border color when focused (typing)
-                        unfocusedIndicatorColor = Color.Transparent, // Border color when not focused
-                        disabledIndicatorColor = Color.Transparent,
-                    ),
-                    keyboardOptions = KeyboardOptions(
-                        capitalization = KeyboardCapitalization.None,
-                        autoCorrect = true,
-                        keyboardType = KeyboardType.Number,
-                    ),
+                .height(dimen_20_dp)
+                .constrainAs(spacer) {
+                    top.linkTo(logo.bottom)
+                    centerHorizontallyTo(parent)
+                }
+        )
+        Box(
+            modifier = Modifier
+                .constrainAs(inputField) {
+                    top.linkTo(spacer.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                }
+                .height(dimen_60_dp)
+                .padding(horizontal = dimen_16_dp)
+                .border(
+                    width = dimen_2_dp, color = when {
+                        isFocused -> midiumBlueColor
+                        !isFocused -> midiumGrayColor
+                        else -> Color.Transparent
+                    }, shape = RoundedCornerShape(4.dp)
                 )
-            }
-            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
-
-            Button(
-                onClick = {
-                    focusManager.clearFocus()
-                    if (stringToInt(viewModel.mobileNumber.value.text[0].toString()) < 6) {
-                        snackState.addMessage(
-                            message = context.getString(R.string.invalid_mobile_number),
-                            isSuccess = false,
-                            isCustomIcon = false
-                        )
-                    } else {
-                        viewModel.generateOtp { success, message ->
-                            if (success) {
-                                if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME, true
-                                    ) == true
-                                ) {
-                                    navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
-                                } else navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
-                            } else {
-                                snackState.addMessage(
-                                    message = message, isSuccess = false, isCustomIcon = false
-                                )
-                            }
-                        }
-                    }
-                },
+        ) {
+            OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(dimen_48_dp)
-                    .background(Color.Transparent),
-                colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH) ButtonDefaults.buttonColors(
-                    blueDark
-                ) else ButtonDefaults.buttonColors(
-                    buttonBgColor
+                    .background(Color.White)
+                    .onFocusChanged { focusState ->
+                        isFocused = focusState.isFocused
+                    },
+                singleLine = true,
+                value = viewModel.mobileNumber.value,
+                placeholder = {
+                    Text(text = "Mobile number", color = midiumGrayColor)
+                },
+                textStyle = textStyleMedium.copy(textAlign = TextAlign.Start),
+                onValueChange = {
+                    if (onlyNumberField(it.text)) {
+                        if (it.text.length <= MOBILE_NUMBER_LENGTH) viewModel.mobileNumber.value =
+                            it
+                    }
+                },
+                colors = TextFieldDefaults.textFieldColors(
+                    backgroundColor = Color.Transparent,
+                    textColor = blueDark,
+                    focusedIndicatorColor = Color.Transparent, // Border color when focused (typing)
+                    unfocusedIndicatorColor = Color.Transparent, // Border color when not focused
+                    disabledIndicatorColor = Color.Transparent,
                 ),
-                shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
-                enabled = viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH
-            ) {
-                Text(
-                    text = stringResource(id = R.string.next),
-                    color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH) Color.White else blueDark,
-                    fontSize = 16.sp,
-                    fontFamily = NotoSans,
-                    fontWeight = FontWeight.SemiBold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(vertical = dimensionResource(id = R.dimen.dp_6))
-                )
-            }
+                keyboardOptions = KeyboardOptions(
+                    capitalization = KeyboardCapitalization.None,
+                    autoCorrect = true,
+                    keyboardType = KeyboardType.Number,
+                ),
+            )
+        }
+        Spacer(
+            modifier = Modifier
+                .height(dimen_20_dp)
+                .constrainAs(spacer2) {
+                    top.linkTo(inputField.bottom)
+                    centerHorizontallyTo(parent)
+                }
+        )
+        Button(
+            onClick = {
+                focusManager.clearFocus()
+                if (stringToInt(viewModel.mobileNumber.value.text[0].toString()) < 6) {
+                    snackState.addMessage(
+                        message = context.getString(R.string.invalid_mobile_number),
+                        isSuccess = false,
+                        isCustomIcon = false
+                    )
+                } else {
+                    viewModel.generateOtp { success, message ->
+                        if (success) {
+                            if (navController.graph.route?.equals(
+                                    NudgeNavigationGraph.HOME, true
+                                ) == true
+                            ) {
+                                navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                            } else navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
+                        } else {
+                            snackState.addMessage(
+                                message = message, isSuccess = false, isCustomIcon = false
+                            )
+                        }
+                    }
+                }
+            },
+            modifier = Modifier
+                .constrainAs(button) {
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    top.linkTo(spacer2.bottom)
+                }
+                .fillMaxWidth()
+                .height(dimen_48_dp)
+                .padding(horizontal = dimen_16_dp)
+                .background(Color.Transparent),
+            colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH) ButtonDefaults.buttonColors(
+                blueDark
+            ) else ButtonDefaults.buttonColors(
+                buttonBgColor
+            ),
+            shape = RoundedCornerShape(dimensionResource(id = R.dimen.dp_6)),
+            enabled = viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH
+        ) {
+            Text(
+                text = stringResource(id = R.string.next),
+                color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH) Color.White else blueDark,
+                style = buttonTextStyle.copy(textAlign = TextAlign.Center),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = dimensionResource(id = R.dimen.dp_6))
+            )
         }
     }
     CustomSnackBarShow(state = snackState)
