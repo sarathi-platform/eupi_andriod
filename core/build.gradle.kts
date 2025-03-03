@@ -116,4 +116,7 @@ dependencies {
     implementation("com.google.android.play:app-update-ktx:2.1.0")
     implementation("com.google.android.gms:play-services-tasks:18.0.2")
 
+    //Compose Layout
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+
 }

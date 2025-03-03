@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.ui.screens.dataTab.presentation
 
+import android.net.Uri
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDurationDifferenceInDays
 import com.nudge.core.isOnline
@@ -48,6 +50,7 @@ import com.nudge.core.ui.commonUi.CustomIconButton
 import com.nudge.core.ui.commonUi.CustomSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomTextViewComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ShowDidiImageDialog
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
@@ -170,6 +173,18 @@ fun DataTabScreen(
         mutableStateOf(false)
     }
 
+    if (dataTabScreenViewModel.isDidiImageDialogVisible.value.first
+        && dataTabScreenViewModel.isDidiImageDialogVisible.value.third != null
+        && dataTabScreenViewModel.isDidiImageDialogVisible.value.third != Uri.EMPTY
+    ) {
+        ShowDidiImageDialog(
+            didiName = dataTabScreenViewModel.isDidiImageDialogVisible.value.second ?: BLANK_STRING,
+            imagePath = dataTabScreenViewModel.isDidiImageDialogVisible.value.third
+        ) {
+            dataTabScreenViewModel.isDidiImageDialogVisible.value =
+                Triple(false, BLANK_STRING, Uri.EMPTY)
+        }
+    }
 
     Surface(modifier = Modifier.padding(bottom = dimen_56_dp)) {
         BottomSheetScaffoldComponent<LivelihoodModel>(
@@ -366,15 +381,19 @@ fun DataTabScreen(
                                                         subject.livelihoodIds
                                                     )
                                                 )
+                                            },
+                                            onImageClicked = { path ->
+                                                dataTabScreenViewModel.isDidiImageDialogVisible.value =
+                                                    path
+                                            },
+                                            onSummaryCardClicked = {
+                                                navigateToDataSummaryScreen(
+                                                    navController = navHostController,
+                                                    subjectId = subject.subjectId,
+                                                    subjectName = subject.subjectName
+                                                )
                                             }
-                                        ) {
-                                            navigateToDataSummaryScreen(
-                                                navController = navHostController,
-                                                subjectId = subject.subjectId,
-                                                subjectName = subject.subjectName
-                                            )
-
-                                        }
+                                        )
 
                                     }
 

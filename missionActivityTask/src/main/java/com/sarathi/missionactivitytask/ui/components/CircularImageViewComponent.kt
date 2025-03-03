@@ -154,7 +154,7 @@ fun ShowDidiImageDialog(didiName: String, imagePath: Uri, onCloseClick: () -> Un
                         val (titleText, closeButton) = createRefs()
                         Text(
                             text = didiName,
-                            style = mediumTextStyle,
+                            style = mediumTextStyle.copy(color = white),
                             textAlign = TextAlign.Start,
                             modifier = Modifier
                                 .padding(horizontal = dimen_5_dp)
