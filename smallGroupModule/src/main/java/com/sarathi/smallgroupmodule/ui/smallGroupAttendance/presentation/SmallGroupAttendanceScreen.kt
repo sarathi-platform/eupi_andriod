@@ -1,5 +1,7 @@
 package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation
 
+import android.content.Context
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -96,6 +98,16 @@ fun SmallGroupAttendanceScreen(
         smallGroupAttendanceScreenViewModel.onEvent(InitDataEvent.InitDataState)
 
     }
+    BackHandler {
+
+        saveAttendanceData(
+            smallGroupAttendanceScreenViewModel,
+            navHostController,
+            smallGroupId,
+            context,
+            isFromBackButton = true
+        )
+    }
 
     val smallGroupAttendanceList =
         smallGroupAttendanceScreenViewModel.filteredSmallGroupAttendanceEntityState
@@ -126,13 +138,13 @@ fun SmallGroupAttendanceScreen(
             message = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.do_you_want_mark_all_absent
             ),
-            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.yes
             ),
-            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.no
             ),
-            onPositiveButtonClick = {
+            onNegativeButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
                     smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
@@ -156,12 +168,18 @@ fun SmallGroupAttendanceScreen(
                                 smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
                             )
                         )
+                        if (smallGroupAttendanceScreenViewModel.isFromBackButton.value) {
+                            navHostController.navigateUp()
+                        }
                     }
                 })
 
             },
-            onNegativeButtonClick = {
+            onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                if (smallGroupAttendanceScreenViewModel.isFromBackButton.value) {
+                    navHostController.navigateUp()
+                }
             }
         )
 
@@ -170,7 +188,16 @@ fun SmallGroupAttendanceScreen(
     ToolBarWithMenuComponent(
         title = smallGroupAttendanceScreenViewModel.smallGroupDetails.value.smallGroupName,
         modifier = Modifier,
-        onBackIconClick = { navHostController.navigateUp() },
+        onBackIconClick = {
+
+            saveAttendanceData(
+                smallGroupAttendanceScreenViewModel,
+                navHostController,
+                smallGroupId,
+                context,
+                isFromBackButton = true
+            )
+        },
         onSearchValueChange = {},
         isSearch = true,
         isDataNotAvailable = smallGroupAttendanceScreenViewModel.smallGroupDetails.value.smallGroupId == 0,
@@ -193,47 +220,13 @@ fun SmallGroupAttendanceScreen(
                         isActive = true,
                         showLoader = smallGroupAttendanceScreenViewModel.loaderState.value.isLoaderVisible
                     ) {
-                        if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
-                                .isEmpty()) {
-                            smallGroupAttendanceScreenViewModel.onEvent(
-                                DialogEvents.ShowDialogEvent(
-                                    true
-                                )
-                            )
-                        } else {
-                            smallGroupAttendanceScreenViewModel.onEvent(
-                                LoaderEvent.UpdateLoaderState(
-                                    true
-                                )
-                            )
-                            smallGroupAttendanceScreenViewModel.onEvent(
-                                SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
-                                    if (it) {
-                                        smallGroupAttendanceScreenViewModel.onEvent(
-                                            LoaderEvent.UpdateLoaderState(
-                                                false
-                                            )
-                                        )
-                                        navHostController.navigateToHistoryScreenFromAttendance(
-                                            smallGroupId
-                                        )
-                                    } else {
-                                        smallGroupAttendanceScreenViewModel.onEvent(
-                                            LoaderEvent.UpdateLoaderState(
-                                                false
-                                            )
-                                        )
-                                        showCustomToast(
-                                            context = context,
-                                            msg =smallGroupAttendanceScreenViewModel.stringResource(
-                                                R.string.attendance_already_marked,
-                                                smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
-                                            )
-                                        )
-                                    }
-                                }
-                            )
-                        }
+                        saveAttendanceData(
+                            smallGroupAttendanceScreenViewModel,
+                            navHostController,
+                            smallGroupId,
+                            context,
+                            isFromBackButton = false
+                        )
                     }
                 }
 
@@ -407,6 +400,59 @@ fun SmallGroupAttendanceScreen(
             }
         }
     )
+}
+
+private fun saveAttendanceData(
+    smallGroupAttendanceScreenViewModel: SmallGroupAttendanceScreenViewModel,
+    navHostController: NavHostController,
+    smallGroupId: Int,
+    context: Context,
+    isFromBackButton: Boolean
+) {
+    if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
+            .isEmpty()) {
+        smallGroupAttendanceScreenViewModel.onEvent(
+            DialogEvents.ShowAttendanceDialogEvent(
+                true, isFromBackButton = isFromBackButton
+            )
+        )
+    } else {
+        smallGroupAttendanceScreenViewModel.onEvent(
+            LoaderEvent.UpdateLoaderState(
+                true
+            )
+        )
+        smallGroupAttendanceScreenViewModel.onEvent(
+            SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
+                if (it) {
+                    smallGroupAttendanceScreenViewModel.onEvent(
+                        LoaderEvent.UpdateLoaderState(
+                            false
+                        )
+                    )
+                    navHostController.navigateToHistoryScreenFromAttendance(
+                        smallGroupId
+                    )
+                } else {
+                    smallGroupAttendanceScreenViewModel.onEvent(
+                        LoaderEvent.UpdateLoaderState(
+                            false
+                        )
+                    )
+                    showCustomToast(
+                        context = context,
+                        msg = smallGroupAttendanceScreenViewModel.stringResource(
+                            R.string.attendance_already_marked,
+                            smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
+                        )
+                    )
+                    if (isFromBackButton) {
+                        navHostController.navigateUp()
+                    }
+                }
+            }
+        )
+    }
 }
 
 @Composable
