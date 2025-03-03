@@ -75,6 +75,7 @@ fun DatePickerComponent(
     hintText: String = BLANK_STRING,
     defaultValue: String = BLANK_STRING,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isMandatory: Boolean = false,
     isEditable: Boolean = true,
     isFutureDateDisable: Boolean = false,
@@ -126,7 +127,7 @@ fun DatePickerComponent(
                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && contents?.isNotEmpty() == true,
                     onDetailIconClicked = { onDetailIconClicked() },
                     title = title,
-                    questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                    questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                     isRequiredField = isMandatory
                 )
             }

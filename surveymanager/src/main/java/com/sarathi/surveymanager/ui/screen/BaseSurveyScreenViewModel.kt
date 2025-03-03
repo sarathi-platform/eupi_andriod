@@ -9,6 +9,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
@@ -435,6 +436,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
 
     fun getPrefixFileName(question: QuestionUiModel): String {
         return "${coreSharedPrefs.getMobileNo()}_Question_Answer_Image_${question.questionId}_${question.surveyId}_"
+    }
+
+    fun isRemoteShowQuestionIndex(): Boolean {
+        return coreSharedPrefs.getPref(REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE, false)
     }
 
     open fun saveSingleAnswerIntoDb(question: QuestionUiModel) {
