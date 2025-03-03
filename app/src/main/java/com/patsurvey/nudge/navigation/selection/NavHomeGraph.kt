@@ -20,6 +20,7 @@ import com.nrlm.baselinesurvey.ARG_SUB_MISSION_NAME
 import com.nrlm.baselinesurvey.ui.profile.presentation.ProfileBSScreen
 import com.nrlm.baselinesurvey.ui.surveyee_screen.presentation.DataLoadingScreenComponent
 import com.nudge.core.SYNC_DATA
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.MissionUiModel
 import com.nudge.incomeexpensemodule.navigation.IncomeExpenseNavigation
@@ -63,8 +64,11 @@ import com.patsurvey.nudge.activities.ui.digital_forms.PdfViewer
 import com.patsurvey.nudge.activities.ui.home.HomeUserScreen
 import com.patsurvey.nudge.activities.ui.home.HomeVillageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
+import com.patsurvey.nudge.activities.ui.login.LoginScreenV2
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreenV2
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreenV2
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
@@ -184,7 +188,10 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         socialMappingNavGraph(navController = navController)
         wealthRankingNavGraph(navController = navController)
         patNavGraph(navController = navController)
-        settingNavGraph(navController = navController)
+        settingNavGraph(
+            navController = navController,
+            prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)
+        )
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController = navController, prefRepo)
         bpcDidiListNavGraph(navController = navController)
@@ -698,7 +705,7 @@ sealed class PatScreens(val route: String) {
 
 }
 
-fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.settingNavGraph(navController: NavHostController, v2TheameEnable: Boolean) {
     navigation(
         route = NudgeNavigationGraph.SETTING_GRAPH,
         startDestination = SettingScreens.SETTING_SCREEN.route
@@ -711,12 +718,21 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController) {
         }
 
         composable(route = SettingScreens.LANGUAGE_SCREEN.route) {
-            LanguageScreen(
-                navController = navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
-                pageFrom = ARG_FROM_SETTING
-            )
+            if (v2TheameEnable) {
+                LanguageScreenV2(
+                    navController = navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize(),
+                    pageFrom = ARG_FROM_SETTING
+                )
+            } else {
+                LanguageScreen(
+                    navController = navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize(),
+                    pageFrom = ARG_FROM_SETTING
+                )
+            }
         }
         
         composable(route = SettingScreens.VIDEO_LIST_SCREEN.route) {
@@ -960,11 +976,19 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
             )
         }
         composable(route = LogoutScreens.LOG_LOGIN_SCREEN.route) {
-            LoginScreen(
-                navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
-            )
+            if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)) {
+                LoginScreenV2(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                LoginScreen(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
         composable(
             route = LogoutScreens.LOG_OTP_VERIFICATION.route,
@@ -972,12 +996,22 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
                 type = NavType.StringType
             })
         ) {
-            OtpVerificationScreen(
-                navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
-                it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
-            )
+            if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)) {
+                OtpVerificationScreenV2(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize(),
+                    it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
+                )
+            } else {
+                OtpVerificationScreen(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize(),
+                    it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
+                )
+            }
+
         }
 
         composable(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {

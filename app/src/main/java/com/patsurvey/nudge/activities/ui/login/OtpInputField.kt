@@ -1,14 +1,28 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
@@ -24,8 +38,8 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
+import com.patsurvey.nudge.activities.ui.theme.redDark
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
-import com.patsurvey.nudge.utils.NUMBER_REGEX
 import com.patsurvey.nudge.utils.onlyNumberField
 
 @OptIn(ExperimentalComposeUiApi::class)
@@ -33,6 +47,7 @@ import com.patsurvey.nudge.utils.onlyNumberField
 fun OtpInputField(
     otpLength: Int,
     autoReadOtp: MutableState<String>,
+    isOtpInputWrong: Boolean = false,
     onOtpChanged: (String) -> Unit
 ){
     var otpValue by remember { autoReadOtp }
@@ -79,6 +94,7 @@ fun OtpInputField(
                 OtpCell(
                     char = char,
                     isFocus = isFocus,
+                    isOtpInputWrong = isOtpInputWrong,
                     isShowWarning = isShowWarning,
                     modifier = Modifier.weight(
                         1f
@@ -108,6 +124,7 @@ fun OtpCell(
     char: String,
     isFocus: Boolean,
     isShowWarning: Boolean,
+    isOtpInputWrong: Boolean = false,
     modifier: Modifier=Modifier
 ){
 //    val borderColor = if(isShowWarning){
@@ -124,7 +141,11 @@ fun OtpCell(
         .padding(dimensionResource(id = R.dimen.dp_4))
         .border(
             width = if (isFocus) 2.dp else 1.dp,
-            color = if (isFocus) textColorDark else otpBorderColor,
+            color = when {
+                isFocus -> textColorDark
+                isOtpInputWrong -> redDark
+                else -> otpBorderColor
+            },
             shape = MaterialTheme.shapes.small
         ))
         {

@@ -6,9 +6,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
+import com.patsurvey.nudge.activities.ui.login.LoginScreenV2
 import com.patsurvey.nudge.data.prefs.PrefRepo
 
 @Composable
@@ -22,11 +24,20 @@ fun HomeVillageScreen(
             navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
        }
     } else {
-        LoginScreen(
-            navController,
-            viewModel = hiltViewModel(),
-            modifier = Modifier.fillMaxSize()
-        )
+        if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)) {
+            LoginScreenV2(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            LoginScreen(
+                navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+
     }
 
 

@@ -1500,3 +1500,11 @@ fun setKeyboardToPan(context: Activity) {
 fun setKeyboardToReadjust(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
+
+fun maskMobileNumber(mobileNumber: String): String {
+    return if (mobileNumber.length >= 10) {
+        mobileNumber.take(2) + "XXXXXX" + mobileNumber.takeLast(2)
+    } else {
+        mobileNumber // Return as is if the length is invalid
+    }
+}
