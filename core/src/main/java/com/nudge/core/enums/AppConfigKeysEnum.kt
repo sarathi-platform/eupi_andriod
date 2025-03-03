@@ -1,6 +1,6 @@
 package com.nudge.core.enums
 
-enum class AppConfigKeysEnum {
+enum class AppConfigKeysEnum(val shouldFetch: Boolean = true) {
     SYNC_ENABLED,
     SYNC_ENABLED_V2,
     DATA_TAB_VISIBILITY,
@@ -20,5 +20,5 @@ enum class AppConfigKeysEnum {
     EXCLUDE_IN_INCOME_SUMMARY,
     REGENERATE_EVENT_ENABLED,
     APP_UPDATE_CONFIG,
-    SQL_QUERY_EXECUTOR;
+    SQL_QUERY_EXECUTOR(false);
 }
