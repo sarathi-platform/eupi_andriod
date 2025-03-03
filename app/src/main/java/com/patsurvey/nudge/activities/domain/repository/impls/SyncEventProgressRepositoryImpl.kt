@@ -9,6 +9,7 @@ import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.Events
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.activities.domain.repository.interfaces.SyncEventProgressRepository
 import javax.inject.Inject
 
@@ -41,9 +42,15 @@ class SyncEventProgressRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteSyncedEventForUser(): Int {
+        val thresholdDate = getDayPriorCurrentTimeMillis(TWO_WEEK_DURATION_RANGE)
         val deletedEventIds = eventsDao.deleteOlderEventsAndReturnEventId(
             prefRepo.getMobileNo(),
-            getDayPriorCurrentTimeMillis(TWO_WEEK_DURATION_RANGE)
+            thresholdDate
+        )
+
+        CoreLogger.d(
+            tag = "SyncEventProgressRepositoryImpl",
+            msg = "deleteSyncedEventForUser -> thresholdDate: $thresholdDate, deletedIdSize: ${deletedEventIds.size}, deletedIds: $deletedEventIds"
         )
 
         if (deletedEventIds.isNotEmpty()) {
