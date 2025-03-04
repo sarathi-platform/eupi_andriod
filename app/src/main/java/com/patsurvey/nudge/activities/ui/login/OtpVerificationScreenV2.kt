@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -46,14 +45,22 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.nudge.core.maskMobileNumber
+import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_28_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_48_dp
+import com.nudge.core.ui.theme.dimen_50_dp
+import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.quesOptionTextStyle
+import com.nudge.core.ui.theme.red
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
@@ -65,7 +72,7 @@ import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.blueDarkColor
 import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
-import com.patsurvey.nudge.activities.ui.theme.greenOnline
+import com.patsurvey.nudge.activities.ui.theme.midiumBlueColor
 import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
@@ -119,277 +126,335 @@ fun OtpVerificationScreenV2(
     if (otpValue.value.isBlank()) {
         isOtpInputWrong = false
     }
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    ConstraintLayout(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
+        val (backgroundImage, logo, loader, otpBoxLable, otpBox, button, spacer, spacer2) = createRefs()
         Image(
             painter = painterResource(id = R.drawable.lokos_bg),
             contentDescription = "Background Image",
-            modifier = Modifier.matchParentSize(),
-            contentScale = ContentScale.Crop
-        )
-        Box(
+            contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .padding(
-                    horizontal = dimensionResource(id = R.dimen.padding_16dp),
-                    vertical = dimensionResource(id = R.dimen.padding_32dp)
+                .constrainAs(backgroundImage) { centerTo(parent) }
+        )
+        SarathiLogoTextViewV2(
+            modifier = Modifier.constrainAs(logo) {
+                top.linkTo(parent.top, margin = dimen_50_dp)
+            }
+        )
+
+        AnimatedVisibility(
+            visible = viewModel.showLoader.value,
+            exit = fadeOut(),
+            enter = fadeIn(),
+            modifier = Modifier.constrainAs(loader) {
+                top.linkTo(logo.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                centerVerticallyTo(parent)
+            }
+        ) {
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(top = dimen_20_dp)
+                    .height(dimen_48_dp)
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark, modifier = Modifier
+                        .size(dimen_28_dp)
+                        .align(Alignment.Center)
                 )
-                .then(modifier)
+            }
+        }
+        Spacer(
+            modifier = Modifier
+                .height(dimen_20_dp)
+                .constrainAs(spacer) {
+                    top.linkTo(logo.bottom)
+                    centerHorizontallyTo(parent)
+                }
+        )
+
+        Column(
+            modifier = Modifier
+                .constrainAs(otpBoxLable) {
+                    top.linkTo(spacer.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    centerHorizontallyTo(parent)
+                }
+                .fillMaxWidth(),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = stringResource(R.string.verify_otp),
+                color = blueDark,
+                fontSize = 16.sp,
+                fontFamily = NotoSans,
+                fontWeight = FontWeight.SemiBold,
+                textAlign = TextAlign.Center
+            )
+            OtpSentMessage(mobileNumber = viewModel.getUserMobileNumber())
+            Spacer(modifier = Modifier.height(dimen_3_dp))
+
+        }
+
+        Spacer(
+            modifier = Modifier
+                .height(dimen_10_dp)
+                .constrainAs(spacer2) {
+                    top.linkTo(otpBoxLable.bottom)
+                    centerHorizontallyTo(parent)
+                }
+        )
+
+        Column(
+            modifier = Modifier
+                .constrainAs(otpBox) {
+                    top.linkTo(spacer2.bottom)
+                    start.linkTo(parent.start)
+                    end.linkTo(parent.end)
+                    centerVerticallyTo(parent)
+                }
+                .fillMaxWidth()
+                .padding(horizontal = dimen_16_dp)
 
         ) {
-            SarathiLogoTextViewV2()
-
-            AnimatedVisibility(
-                visible = viewModel.showLoader.value,
-                exit = fadeOut(),
-                enter = fadeIn(),
-                modifier = Modifier.align(
-                    Alignment.Center
+            val currentShape = MaterialTheme.shapes.copy(small = RoundedCornerShape(8))
+            val typography = MaterialTheme.typography.copy(
+                h4 = TextStyle(
+                    fontSize = 12.sp
                 )
+            )
+            val currentColor = MaterialTheme.colors.copy(primary = Color.Magenta)
+
+            MaterialTheme(
+                shapes = currentShape,
+                colors = currentColor,
+                typography = typography
             ) {
-                Box(
+
+                OtpInputField(
+                    isOtpInputWrong = isOtpInputWrong.value(),
+                    otpLength = 6,
+                    autoReadOtp = otpValue,
+                    onOtpChanged = { otp ->
+                        otpValue.value = otp
+                        viewModel.otpNumber.value = otpValue.value
+                    })
+            }
+            AnimatedVisibility(
+                visible = isOtpInputWrong.value(),
+                exit = fadeOut(),
+                enter = fadeIn()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
-                        .size(28.dp)
-                        .padding(top = 30.dp)
-                        .align(Alignment.Center)
-                ) {
-                    CircularProgressIndicator(
-                        color = blueDark, modifier = Modifier
-                            .size(28.dp)
-                            .align(Alignment.Center)
+                        .fillMaxWidth()
+                        .padding(top = dimen_5_dp),
+
+                    ) {
+                    Text(
+                        text = stringResource(R.string.otp_is_invalid),
+                        color = red,
+                        style = quesOptionTextStyle,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 2.dp)
+                            .background(Color.Transparent)
                     )
                 }
             }
 
-            Column(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(y = (-70).dp)
+            AnimatedVisibility(
+                visible = !isResendOTPEnable.value,
+                exit = fadeOut(),
+                enter = fadeIn()
             ) {
-                Column(
+                Row(
+                    horizontalArrangement = Arrangement.Start,
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = stringResource(R.string.verify_otp),
-                        color = blueDark,
-                        fontSize = 16.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
-                        textAlign = TextAlign.Center
-                    )
-                    OtpSentMessage(mobileNumber = viewModel.getUserMobileNumber())
-                    Spacer(modifier = Modifier.height(dimen_3_dp))
-
-                }
-
-                val currentShape = MaterialTheme.shapes.copy(small = RoundedCornerShape(8))
-                val typography = MaterialTheme.typography.copy(
-                    h4 = TextStyle(
-                        fontSize = 12.sp
-                    )
-                )
-                val currentColor = MaterialTheme.colors.copy(primary = Color.Magenta)
-
-                MaterialTheme(
-                    shapes = currentShape,
-                    colors = currentColor,
-                    typography = typography
-                ) {
-
-                    OtpInputField(
-                        isOtpInputWrong = isOtpInputWrong.value(),
-                        otpLength = 6,
-                        autoReadOtp = otpValue,
-                        onOtpChanged = { otp ->
-                            otpValue.value = otp
-                            viewModel.otpNumber.value = otpValue.value
-                        })
-                }
-                AnimatedVisibility(
-                    visible = !isResendOTPEnable.value,
-                    exit = fadeOut(),
-                    enter = fadeIn()
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        modifier = Modifier.fillMaxWidth(),
-
-                        ) {
-                        val countDownTimer =
-                            object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
-                                @SuppressLint("SimpleDateFormat")
-                                override fun onTick(millisUntilFinished: Long) {
-                                    val dateTimeFormat = SimpleDateFormat("00:ss")
-                                    formattedTime.value =
-                                        dateTimeFormat.format(Date(millisUntilFinished))
-
-                                }
-
-                                override fun onFinish() {
-                                    isResendOTPEnable.value = true
-                                    isResendOTPVisible = !isResendOTPVisible
-                                }
-
-                            }
-                        DisposableEffect(key1 = !isResendOTPEnable.value) {
-                            countDownTimer.start()
-                            onDispose {
-                                countDownTimer.cancel()
-                            }
-                        }
-                        Text(
-                            text = stringResource(
-                                id = R.string.expiry_login_verify_otp,
-                                formattedTime.value
-                            ),
-                            color = blueDarkColor,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.Normal,
-                            textAlign = TextAlign.Center,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 2.dp)
-                                .background(Color.Transparent)
-                        )
-                    }
-                }
-                Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
-                Button(
-                    onClick = {
-                        viewModel.validateOtp { userType, success, message ->
-                            isOtpInputWrong = !success
-                            if (success) {
-                                if (userType == UPCM_USER) {
-                                    if (navController.graph.route?.equals(
-                                            NudgeNavigationGraph.HOME,
-                                            true
-                                        ) == true
-                                    ) {
-                                        navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
-                                            launchSingleTop = true
-                                            popUpTo(AuthScreen.START_SCREEN.route) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    } else if (navController.graph.route?.equals(
-                                            NudgeNavigationGraph.HOME_SUB_GRAPH,
-                                            true
-                                        ) == true
-                                    ) {
-                                        navController.navigate(
-                                            HomeScreens.PROGRESS_SEL_SCREEN.route
-                                        )
-                                    } else {
-                                        navController.popBackStack()
-                                        navController.navigate(
-                                            NudgeNavigationGraph.HOME
-                                        )
-                                    }
-                                } else {
-                                    viewModel.savePageFromOTPScreen()
-                                    if (navController.graph.route?.equals(
-                                            NudgeNavigationGraph.HOME,
-                                            true
-                                        ) == true
-                                    ) {
-                                        navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-                                            launchSingleTop = true
-                                            popUpTo(AuthScreen.START_SCREEN.route) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    } else {
-                                        navController.navigate(
-                                            route = AuthScreen.VILLAGE_SELECTION_SCREEN
-                                                .route
-                                        ) {
-                                            launchSingleTop = true
-                                            popUpTo(AuthScreen.START_SCREEN.route) {
-                                                inclusive = true
-                                            }
-                                        }
-                                    }
-                                }
-                                RetryHelper.autoReadOtp.value = ""
-                                viewModel.languageConfigUseCase()
-                            } else {
-                                Log.e("TAG", "OtpVerificationScreen: $message")
-                                snackState.addMessage(
-                                    message = message,
-                                    isSuccess = false,
-                                    isCustomIcon = false
-                                )
-                            }
-                        }
-                    },
-                    modifier = Modifier
-                        .background(Color.Transparent)
                         .fillMaxWidth()
-                        .height(dimen_48_dp)
-                        .height(dimensionResource(id = R.dimen.height_60dp)),
-                    colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(
-                        blueDark
-                    ) else ButtonDefaults.buttonColors(
-                        buttonBgColor
-                    ),
-                    shape = RoundedCornerShape(6.dp),
-                    enabled = otpValue.value.length == OTP_LENGTH
-                ) {
+                        .padding(top = dimen_10_dp),
 
+                    ) {
+                    val countDownTimer =
+                        object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
+                            @SuppressLint("SimpleDateFormat")
+                            override fun onTick(millisUntilFinished: Long) {
+                                val dateTimeFormat = SimpleDateFormat("00:ss")
+                                formattedTime.value =
+                                    dateTimeFormat.format(Date(millisUntilFinished))
+
+                            }
+
+                            override fun onFinish() {
+                                isResendOTPEnable.value = true
+                                isResendOTPVisible = !isResendOTPVisible
+                            }
+
+                        }
+                    DisposableEffect(key1 = !isResendOTPEnable.value) {
+                        countDownTimer.start()
+                        onDispose {
+                            countDownTimer.cancel()
+                        }
+                    }
                     Text(
-                        text = stringResource(R.string.verify),
-                        color = if (otpValue.value.length == OTP_LENGTH) white else blueDark,
-                        fontSize = 16.sp,
-                        fontFamily = NotoSans,
-                        fontWeight = FontWeight.SemiBold,
+                        text = stringResource(
+                            id = R.string.expiry_login_verify_otp,
+                            formattedTime.value
+                        ),
+                        color = blueDarkColor,
+                        style = quesOptionTextStyle,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(vertical = 6.dp)
+                            .padding(start = 2.dp)
+                            .background(Color.Transparent)
                     )
-
                 }
-
-                AnimatedVisibility(
-                    visible = isResendOTPEnable.value,
-                    exit = fadeOut(),
-                    enter = fadeIn()
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.resend_otp),
-                            color = if (isResendOTPEnable.value) greenOnline else placeholderGrey,
-                            fontSize = 14.sp,
-                            fontFamily = NotoSans,
-                            fontWeight = FontWeight.SemiBold,
-                            textAlign = TextAlign.Start,
-                            textDecoration = TextDecoration.Underline,
-                            modifier = Modifier
-                                .padding(start = 2.dp)
-                                .clickable(enabled = isResendOTPEnable.value) {
-                                    viewModel.resendOtp() { success, message ->
-                                        snackState.addMessage(
-                                            message = context.getString(
-                                                R.string.otp_resend_to_mobile_number_message,
-                                                mobileNumber
-                                            ), isSuccess = true, isCustomIcon = false
-                                        )
+            }
+            Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_25)))
+            Button(
+                onClick = {
+                    viewModel.validateOtp { userType, success, message ->
+                        isOtpInputWrong = !success
+                        if (success) {
+                            if (userType == UPCM_USER) {
+                                if (navController.graph.route?.equals(
+                                        NudgeNavigationGraph.HOME,
+                                        true
+                                    ) == true
+                                ) {
+                                    navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
                                     }
-                                    formattedTime.value = SEC_30_STRING
-                                    isResendOTPEnable.value = false
+                                } else if (navController.graph.route?.equals(
+                                        NudgeNavigationGraph.HOME_SUB_GRAPH,
+                                        true
+                                    ) == true
+                                ) {
+                                    navController.navigate(
+                                        HomeScreens.PROGRESS_SEL_SCREEN.route
+                                    )
+                                } else {
+                                    navController.popBackStack()
+                                    navController.navigate(
+                                        NudgeNavigationGraph.HOME
+                                    )
                                 }
-                        )
+                            } else {
+                                viewModel.savePageFromOTPScreen()
+                                if (navController.graph.route?.equals(
+                                        NudgeNavigationGraph.HOME,
+                                        true
+                                    ) == true
+                                ) {
+                                    navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                } else {
+                                    navController.navigate(
+                                        route = AuthScreen.VILLAGE_SELECTION_SCREEN
+                                            .route
+                                    ) {
+                                        launchSingleTop = true
+                                        popUpTo(AuthScreen.START_SCREEN.route) {
+                                            inclusive = true
+                                        }
+                                    }
+                                }
+                            }
+                            RetryHelper.autoReadOtp.value = ""
+                            viewModel.languageConfigUseCase()
+                        } else {
+                            Log.e("TAG", "OtpVerificationScreen: $message")
+                            snackState.addMessage(
+                                message = message,
+                                isSuccess = false,
+                                isCustomIcon = false
+                            )
+                        }
                     }
+                },
+                modifier = Modifier
+                    .background(Color.Transparent)
+                    .fillMaxWidth()
+                    .height(dimen_48_dp)
+                    .height(dimensionResource(id = R.dimen.height_60dp)),
+                colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(
+                    blueDark
+                ) else ButtonDefaults.buttonColors(
+                    buttonBgColor
+                ),
+                shape = RoundedCornerShape(6.dp),
+                enabled = otpValue.value.length == OTP_LENGTH
+            ) {
+
+                Text(
+                    text = stringResource(R.string.verify),
+                    color = if (otpValue.value.length == OTP_LENGTH) white else blueDark,
+                    fontSize = 16.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 6.dp)
+                )
+
+            }
+
+            AnimatedVisibility(
+                visible = isResendOTPEnable.value,
+                exit = fadeOut(),
+                enter = fadeIn()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_5_dp)
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.resend_otp),
+                        color = if (isResendOTPEnable.value) midiumBlueColor else placeholderGrey,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.SemiBold,
+                        textAlign = TextAlign.Start,
+                        modifier = Modifier
+                            .padding(start = 2.dp)
+                            .clickable(enabled = isResendOTPEnable.value) {
+                                viewModel.resendOtp() { success, message ->
+                                    snackState.addMessage(
+                                        message = context.getString(
+                                            R.string.otp_resend_to_mobile_number_message,
+                                            mobileNumber
+                                        ), isSuccess = true, isCustomIcon = false
+                                    )
+                                }
+                                formattedTime.value = SEC_30_STRING
+                                isResendOTPEnable.value = false
+                            }
+                    )
                 }
             }
         }
-
     }
 
     LaunchedEffect(key1 = mobileNumber) {

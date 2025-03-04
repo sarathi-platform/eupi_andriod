@@ -38,7 +38,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.mediumTextStyle
 import com.patsurvey.nudge.activities.ui.theme.otpBorderColor
-import com.patsurvey.nudge.activities.ui.theme.redDark
+import com.patsurvey.nudge.activities.ui.theme.red
 import com.patsurvey.nudge.activities.ui.theme.textColorDark
 import com.patsurvey.nudge.utils.onlyNumberField
 
@@ -143,7 +143,7 @@ fun OtpCell(
             width = if (isFocus) 2.dp else 1.dp,
             color = when {
                 isFocus -> textColorDark
-                isOtpInputWrong -> redDark
+                isOtpInputWrong -> red
                 else -> otpBorderColor
             },
             shape = MaterialTheme.shapes.small
