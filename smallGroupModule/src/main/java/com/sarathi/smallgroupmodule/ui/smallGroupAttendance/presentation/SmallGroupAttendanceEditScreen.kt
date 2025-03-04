@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -74,7 +75,13 @@ fun SmallGroupAttendanceEditScreen(
         smallGroupAttendanceEditScreenViewModel.onEvent(InitDataEvent.InitDataState)
 
     }
-
+    BackHandler {
+        saveAttendanceData(
+            smallGroupAttendanceEditScreenViewModel,
+            navHostController,
+            isFromBackButton = true
+        )
+    }
     val smallGroupAttendanceList =
         smallGroupAttendanceEditScreenViewModel.smallGroupAttendanceEntityState
 
@@ -92,17 +99,20 @@ fun SmallGroupAttendanceEditScreen(
 
             message =smallGroupAttendanceEditScreenViewModel.stringResource(
                 R.string.delete_attendance_confirmation_msg),
-            positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
+            negativeButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
                 R.string.yes),
-            negativeButtonTitle =  smallGroupAttendanceEditScreenViewModel.stringResource(
+            positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
                 R.string.no),
-            onPositiveButtonClick = {
+            onNegativeButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent)
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navHostController.popBackStack()
             },
-            onNegativeButtonClick = {
+            onPositiveButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                if (smallGroupAttendanceEditScreenViewModel.isFromBackButton.value) {
+                    navHostController.navigateUp()
+                }
             }
         )
 
@@ -111,7 +121,13 @@ fun SmallGroupAttendanceEditScreen(
     ToolBarWithMenuComponent(
         title = smallGroupAttendanceEditScreenViewModel.smallGroupDetails.value.smallGroupName,
         modifier = Modifier,
-        onBackIconClick = { navHostController.popBackStack() },
+        onBackIconClick = {
+            saveAttendanceData(
+                smallGroupAttendanceEditScreenViewModel,
+                navHostController,
+                isFromBackButton = true
+            )
+        },
         onSearchValueChange = {},
         isSearch = true,
         isDataNotAvailable = smallGroupAttendanceEditScreenViewModel.smallGroupDetails.value.smallGroupId == 0,
@@ -132,19 +148,11 @@ fun SmallGroupAttendanceEditScreen(
                             R.string.submit),
                         isActive = true
                     ) {
-                        if (smallGroupAttendanceEditScreenViewModel.selectedItems.value.filter { it.value }
-                                .isEmpty()) {
-                            smallGroupAttendanceEditScreenViewModel.onEvent(
-                                DialogEvents.ShowDialogEvent(
-                                    true
-                                )
-                            )
-                        } else {
-                            smallGroupAttendanceEditScreenViewModel.onEvent(
-                                SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent
-                            )
-                            navHostController.popBackStack()
-                        }
+                        saveAttendanceData(
+                            smallGroupAttendanceEditScreenViewModel,
+                            navHostController,
+                            isFromBackButton = false
+                        )
                     }
                 }
 
@@ -297,4 +305,25 @@ fun SmallGroupAttendanceEditScreen(
             }
         }
     )
+}
+
+
+private fun saveAttendanceData(
+    smallGroupAttendanceEditScreenViewModel: SmallGroupAttendanceEditScreenViewModel,
+    navHostController: NavHostController,
+    isFromBackButton: Boolean
+) {
+    if (smallGroupAttendanceEditScreenViewModel.selectedItems.value.filter { it.value }
+            .isEmpty()) {
+        smallGroupAttendanceEditScreenViewModel.onEvent(
+            DialogEvents.ShowAttendanceDialogEvent(
+                true, isFromBackButton = isFromBackButton
+            )
+        )
+    } else {
+        smallGroupAttendanceEditScreenViewModel.onEvent(
+            SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent
+        )
+        navHostController.popBackStack()
+    }
 }
