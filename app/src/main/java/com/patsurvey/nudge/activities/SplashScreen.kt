@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,32 +13,26 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
-import com.nudge.core.ui.theme.blueDark
-import com.nudge.core.ui.theme.smallerTextStyle
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
+import com.patsurvey.nudge.activities.ui.theme.blueDark
+import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -273,101 +266,3 @@ fun openUserHomeScreen(userType: String, navController: NavController) {
         ex.printStackTrace()
     }
 }
-
-@Composable
-fun SplashScreen1() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                brush = Brush.verticalGradient(
-                    colors = listOf(Color(0xFFFFF3E0), Color(0xFFFFE0B2))
-                )
-            )
-    ) {
-        ConstraintLayout(
-            modifier = Modifier.fillMaxSize()
-        ) {
-            val (logo, circleBox, footerLogos, lokOSIcon, ministryLogo, digitalIndiaLogo) = createRefs()
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_aajeevika_logo),
-                contentDescription = "Aajeevika Logo",
-                modifier = Modifier
-                    .size(100.dp)
-                    .constrainAs(logo) {
-                        top.linkTo(parent.top, margin = 80.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-            )
-
-            Box(
-                modifier = Modifier
-                    .size(300.dp)
-                    .background(Color.White, shape = CircleShape)
-                    .constrainAs(circleBox) {
-                        top.linkTo(logo.bottom, margin = 20.dp)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_sarathi_logo_mini),
-                        contentDescription = "Sarathi Logo",
-                    )
-                    Text("SARATHI", fontSize = 24.sp, fontWeight = FontWeight.Bold)
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_lokos_icon),
-                        contentDescription = "LokOS Logo",
-                    )
-                }
-            }
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .constrainAs(footerLogos) {
-                        bottom.linkTo(parent.bottom, margin = 20.dp)
-                    },
-                horizontalArrangement = Arrangement.SpaceEvenly,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_ministry_logo),
-                    contentDescription = "Ministry Logo"
-                )
-                Canvas(
-                    modifier = Modifier
-                        .height(50.dp)
-                        .width(2.dp)
-                ) {
-                    drawLine(
-                        color = Color.Gray,
-                        start = center.copy(y = 0f),
-                        end = center.copy(y = size.height),
-                        strokeWidth = 2.dp.toPx()
-                    )
-                }
-                Image(
-                    painter = painterResource(id = R.drawable.ic_digital_india_logo),
-                    contentDescription = "Digital India Logo"
-                )
-            }
-        }
-    }
-}
-
-@Preview
-@Composable
-fun PreviewSplashScreen() {
-    MaterialTheme {
-        SplashScreen1()
-    }
-}
-
-
-
-
