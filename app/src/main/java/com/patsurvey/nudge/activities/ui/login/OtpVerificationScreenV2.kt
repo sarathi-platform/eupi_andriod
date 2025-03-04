@@ -172,14 +172,13 @@ fun OtpVerificationScreenV2(
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Text(
-                        text = "Verify OTP",
+                        text = stringResource(R.string.verify_otp),
                         color = blueDark,
                         fontSize = 16.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Center
                     )
-                    //Spacer(modifier = Modifier.height(dimen_6_dp))
                     OtpSentMessage(mobileNumber = viewModel.getUserMobileNumber())
                     Spacer(modifier = Modifier.height(dimen_3_dp))
 
@@ -341,7 +340,7 @@ fun OtpVerificationScreenV2(
                 ) {
 
                     Text(
-                        text = "Verify",
+                        text = stringResource(R.string.verify),
                         color = if (otpValue.value.length == OTP_LENGTH) white else blueDark,
                         fontSize = 16.sp,
                         fontFamily = NotoSans,
@@ -407,7 +406,7 @@ fun OtpVerificationScreenV2(
 fun OtpSentMessage(mobileNumber: String?) {
     val maskedNumber = mobileNumber?.let { maskMobileNumber(it) } ?: BLANK_STRING
     val annotatedText = buildAnnotatedString {
-        append("An OTP has been sent on ")
+        append(stringResource(R.string.an_otp_has_been_sent_on))
         withStyle(style = SpanStyle(color = Color.Blue)) {
             append(maskedNumber)
         }

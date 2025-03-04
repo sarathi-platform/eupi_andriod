@@ -564,4 +564,8 @@
     <string name="sync_started">Sync Started. Please wait…</string>
     <string name="sync_data_history">Sync Data History</string>
 
+    <string name="verify_otp">Verify OTP</string>
+    <string name="an_otp_has_been_sent_on">"An OTP has been sent on "</string>
+    <string name="verify">Verify</string>
+    <string name="mobile_number">Mobile number</string>
 </resources>

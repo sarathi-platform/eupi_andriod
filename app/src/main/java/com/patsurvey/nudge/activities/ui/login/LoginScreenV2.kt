@@ -171,7 +171,7 @@ fun LoginScreenV2(
                 singleLine = true,
                 value = viewModel.mobileNumber.value,
                 placeholder = {
-                    Text(text = "Mobile number", color = midiumGrayColor)
+                    Text(text = stringResource(R.string.mobile_number), color = midiumGrayColor)
                 },
                 textStyle = textStyleMedium.copy(textAlign = TextAlign.Start),
                 onValueChange = {
