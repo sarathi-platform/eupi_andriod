@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_LIVELIHOOD_ID
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
@@ -50,7 +51,6 @@ import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.LivelihoodUiEntity
 import com.sarathi.surveymanager.R
 

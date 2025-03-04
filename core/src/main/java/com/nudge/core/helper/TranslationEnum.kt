@@ -211,6 +211,12 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "select_first_livelihood_for_didi",
             "select_second_livelihood_for_didi"
         )
-    )
+    ),
+    DidiShgVerificationScreen(
+        "DidiShgVerificationScreen", listOf(
+            "submit",
+            "select_shg", "select_didi", "cancel",
+        )
+    ),
 
 }

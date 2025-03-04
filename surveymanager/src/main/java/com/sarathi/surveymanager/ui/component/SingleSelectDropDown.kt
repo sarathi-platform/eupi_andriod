@@ -11,7 +11,7 @@ import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.nudge.core.model.uiModel.ValuesDto
 import com.sarathi.surveymanager.R
 
 

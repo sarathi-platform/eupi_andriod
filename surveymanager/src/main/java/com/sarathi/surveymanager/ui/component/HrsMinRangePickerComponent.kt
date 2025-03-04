@@ -25,6 +25,7 @@ import com.nudge.core.HOURS
 import com.nudge.core.MINUTE
 import com.nudge.core.MONTHS
 import com.nudge.core.YEAR
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -36,7 +37,6 @@ import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.surveymanager.R
 

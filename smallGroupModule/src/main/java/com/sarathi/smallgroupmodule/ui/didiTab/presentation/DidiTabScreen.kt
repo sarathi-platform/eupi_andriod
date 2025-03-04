@@ -43,6 +43,7 @@ import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewCompone
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.smallgroupmodule.R
+import com.sarathi.smallgroupmodule.navigation.navigateToShgVerificationScreen
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
@@ -221,7 +222,14 @@ fun DidiTabScreen(
                                 SubTabs.DidiTab.id -> {
                                     DidiSubTab(
                                         didiTabViewModel = didiTabViewModel,
-                                        didiList = didiList.value
+                                        didiList = didiList.value,
+                                        onShgVerifyClick = {
+                                            navHostController.navigateToShgVerificationScreen(
+                                                it.id,
+                                                it.subjectName,
+                                                it.villageName
+                                            )
+                                        }
                                     )
                                 }
 

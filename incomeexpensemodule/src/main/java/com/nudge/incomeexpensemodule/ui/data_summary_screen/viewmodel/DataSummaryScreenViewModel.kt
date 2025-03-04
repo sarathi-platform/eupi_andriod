@@ -20,6 +20,7 @@ import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -33,7 +34,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchSubjectL
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel

@@ -1,4 +1,4 @@
-package com.nudge.incomeexpensemodule.ui.component
+package com.nudge.core.ui.commonUi.componet_.component
 
 
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -14,8 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.R
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.showCustomToast
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.nudge.core.ui.commonUi.DropDownComponent
 
 @Composable
 fun TypeDropDownComponent(
@@ -33,12 +34,6 @@ fun TypeDropDownComponent(
     val defaultSourceList =
         sources ?: listOf(ValuesDto(id = 1, "Yes"), ValuesDto(id = 2, "No"))
     var expanded by remember { mutableStateOf(false) }
-//    var selectedOptionText by remember(defaultSourceList.size) {
-//        mutableStateOf(
-//            defaultSourceList.find { it.isSelected == true }?.value
-//                ?: hintText
-//        )
-    //   }
 
     var textFieldSize by remember { mutableStateOf(Size.Zero) }
 

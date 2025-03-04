@@ -1,4 +1,4 @@
-package com.sarathi.dataloadingmangement.model.survey.response
+package com.nudge.core.model.uiModel
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName

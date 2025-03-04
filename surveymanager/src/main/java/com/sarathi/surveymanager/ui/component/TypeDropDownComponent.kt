@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.getQuestionNumber
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.theme.defaultCardElevation
@@ -33,7 +34,6 @@ import com.nudge.core.ui.theme.roundedCornerRadiusDefault
 import com.nudge.core.ui.theme.white
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
 @Composable

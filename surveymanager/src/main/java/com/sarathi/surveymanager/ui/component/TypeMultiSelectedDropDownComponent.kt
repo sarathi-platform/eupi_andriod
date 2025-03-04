@@ -14,9 +14,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.toSize
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.showCustomToast
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.surveymanager.R
 
 @Composable

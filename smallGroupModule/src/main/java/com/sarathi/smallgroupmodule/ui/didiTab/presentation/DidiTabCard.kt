@@ -45,6 +45,7 @@ import com.sarathi.smallgroupmodule.ui.theme.verifiedTextColor
 fun DidiTabCard(
     modifier: Modifier = Modifier,
     subjectEntity: SubjectEntity,
+    onShgVerifyClick: (subjectEntity: SubjectEntity) -> Unit,
     onClick: () -> Unit
 ) {
 
@@ -98,7 +99,9 @@ fun DidiTabCard(
                             buttonTitle = "Verify Aadhaar",
                             icon = null,
                             borderColor = eventTextColor
-                        ) { }
+                        ) {
+                            onShgVerifyClick(subjectEntity)
+                        }
                     }
                 }
 

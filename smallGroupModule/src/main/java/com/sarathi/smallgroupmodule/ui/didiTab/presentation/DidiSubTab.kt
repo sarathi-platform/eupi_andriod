@@ -24,7 +24,8 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_100_dp
 fun DidiSubTab(
     modifier: Modifier = Modifier,
     didiTabViewModel: DidiTabViewModel,
-    didiList: List<SubjectEntity>
+    didiList: List<SubjectEntity>,
+    onShgVerifyClick: (subjectEntity: SubjectEntity) -> Unit,
 ) {
 
     if (didiList.isNotEmpty()) {
@@ -50,7 +51,7 @@ fun DidiSubTab(
 
         itemsIndexed(didiList) { index, item ->
 
-            DidiTabCard(subjectEntity = item) {
+            DidiTabCard(subjectEntity = item, onShgVerifyClick = onShgVerifyClick) {
 
             }
         }

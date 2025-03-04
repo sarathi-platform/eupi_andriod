@@ -4,7 +4,7 @@ import androidx.room.TypeConverter
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.nudge.core.model.uiModel.ValuesDto
 import java.lang.reflect.Type
 
 class ValuesDtoConverter {
