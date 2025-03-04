@@ -16,7 +16,7 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
         route = NudgeNavigationGraph.ROOT,
         startDestination = NudgeNavigationGraph.AUTHENTICATION
     ){
-        authNavGraph(navController, prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true))
+        authNavGraph(navController, prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, false))
         composable(route = NudgeNavigationGraph.HOME) {
             HomeNavScreen(prefRepo = prefRepo)
         }

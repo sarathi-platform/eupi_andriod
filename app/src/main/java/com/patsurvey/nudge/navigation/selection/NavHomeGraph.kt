@@ -190,7 +190,7 @@ fun NavHomeGraph(navController: NavHostController, prefRepo: PrefRepo) {
         patNavGraph(navController = navController)
         settingNavGraph(
             navController = navController,
-            prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)
+            prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)
         )
         voEndorsmentNavGraph(navController = navController)
         logoutGraph(navController = navController, prefRepo)
@@ -976,7 +976,7 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
             )
         }
         composable(route = LogoutScreens.LOG_LOGIN_SCREEN.route) {
-            if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)) {
+            if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)) {
                 LoginScreenV2(
                     navController,
                     viewModel = hiltViewModel(),
@@ -996,7 +996,7 @@ fun NavGraphBuilder.logoutGraph(navController: NavHostController,prefRepo: PrefR
                 type = NavType.StringType
             })
         ) {
-            if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)) {
+            if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)) {
                 OtpVerificationScreenV2(
                     navController,
                     viewModel = hiltViewModel(),

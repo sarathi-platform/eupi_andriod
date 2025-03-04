@@ -24,7 +24,7 @@ fun HomeVillageScreen(
             navController.navigate(AuthScreen.AUTH_SETTING_SCREEN.route)
        }
     } else {
-        if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, true)) {
+        if (prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)) {
             LoginScreenV2(
                 navController,
                 viewModel = hiltViewModel(),
