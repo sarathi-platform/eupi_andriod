@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,7 +32,9 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_300_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_250_dp
+import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.navigationmanager.graphs.AuthScreen
@@ -178,13 +181,27 @@ fun SplashScreenV2(
 
 @Composable
 fun NrlmLogo(modifier: Modifier) {
-    Box(modifier = modifier) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_aajeevika_logo),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(137.dp)
-        )
+    Box(modifier = modifier.padding(top = dimen_10_dp)) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = dimen_20_dp),
+            horizontalArrangement = Arrangement.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_aajeevika_logo),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(137.dp)
+            )
+            Spacer(modifier.width(dimen_50_dp))
+            Image(
+                painter = painterResource(id = R.drawable.ic_lokos_logo_only),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(117.dp)
+            )
+        }
     }
 }
 
@@ -192,7 +209,7 @@ fun NrlmLogo(modifier: Modifier) {
 fun AppNameContent(modifier: Modifier) {
     Box(
         modifier = modifier
-            .size(dimen_300_dp)
+            .size(dimen_250_dp)
             .shadow(dimen_8_dp, shape = CircleShape)
             .border(dimen_1_dp, darkYellow, CircleShape)
             .background(Color.White, shape = CircleShape),
@@ -202,10 +219,6 @@ fun AppNameContent(modifier: Modifier) {
             Image(
                 painter = painterResource(id = R.drawable.ic_sarathi_logo_mini),
                 contentDescription = "Sarathi Logo"
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_loks_icon),
-                contentDescription = "LokOS Logo",
             )
         }
     }

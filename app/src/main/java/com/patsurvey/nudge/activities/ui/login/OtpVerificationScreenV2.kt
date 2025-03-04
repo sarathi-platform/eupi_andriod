@@ -160,7 +160,6 @@ fun OtpVerificationScreenV2(
             Box(
                 modifier = modifier
                     .fillMaxWidth()
-                    .padding(top = dimen_20_dp)
                     .height(dimen_48_dp)
             ) {
                 CircularProgressIndicator(
@@ -219,7 +218,6 @@ fun OtpVerificationScreenV2(
                     top.linkTo(spacer2.bottom)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
-                    centerVerticallyTo(parent)
                 }
                 .fillMaxWidth()
                 .padding(horizontal = dimen_16_dp)
