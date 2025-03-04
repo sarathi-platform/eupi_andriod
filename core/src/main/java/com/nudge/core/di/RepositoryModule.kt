@@ -5,11 +5,14 @@ import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
+import com.nudge.core.data.repository.FetchRemoteQueryFromNetworkRepository
+import com.nudge.core.data.repository.FetchRemoteQueryFromNetworkRepositoryImpl
 import com.nudge.core.data.repository.SyncMigrationRepository
 import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
+import com.nudge.core.database.dao.RemoteQueryAuditTrailEntityDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.Module
@@ -57,6 +60,21 @@ class RepositoryModule {
             eventDependencyDao = eventDependencyDao,
             corePrefRepo = corePrefRepo
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesFetchRemoteQueryFromNetworkRepository(
+        coreApiService: CoreApiService,
+        coreSharedPrefs: CoreSharedPrefs,
+        remoteQueryAuditTrailEntityDao: RemoteQueryAuditTrailEntityDao
+    ): FetchRemoteQueryFromNetworkRepository {
+        return FetchRemoteQueryFromNetworkRepositoryImpl(
+            coreApiService = coreApiService,
+            coreSharedPrefs = coreSharedPrefs,
+            remoteQueryAuditTrailEntityDao = remoteQueryAuditTrailEntityDao
+        )
+
     }
 
 }

@@ -4,7 +4,6 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.INPROGRESS
 import com.nudge.core.REMOTE_QUERY_AUDIT_TRAIL_TABLE_NAME
 import com.nudge.core.model.RemoteQueryDto
 
@@ -21,6 +20,7 @@ data class RemoteQueryAuditTrailEntity(
     val appVersion: String,
     val query: String,
     val executionOrder: Int,
+    val level: String,
     val status: String,
     val errorMessage: String = BLANK_STRING,
     val createdDate: Long = System.currentTimeMillis(),
@@ -30,7 +30,8 @@ data class RemoteQueryAuditTrailEntity(
     companion object {
         fun getRemoteQueryAuditTrailEntity(
             remoteQueryDto: RemoteQueryDto,
-            userId: String
+            userId: String,
+            level: String
         ): RemoteQueryAuditTrailEntity {
             return RemoteQueryAuditTrailEntity(
                 userId = userId,
@@ -40,7 +41,8 @@ data class RemoteQueryAuditTrailEntity(
                 operationType = remoteQueryDto.operationType,
                 appVersion = remoteQueryDto.appVersion,
                 query = remoteQueryDto.query,
-                status = INPROGRESS,
+                status = remoteQueryDto.status,
+                level = level,
                 executionOrder = remoteQueryDto.executionOrder,
                 modifiedDate = System.currentTimeMillis()
             )

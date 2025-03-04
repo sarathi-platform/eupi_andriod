@@ -1,8 +1,10 @@
 package com.nudge.core.apiService
 
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CasteModel
 import com.nudge.core.model.request.AppConfigApiRequest
+import com.nudge.core.model.response.FetchRemoteQueryResponse
 import com.nudge.core.model.response.TranslationModel
 import com.nudge.core.model.response.language.LanguageConfigModel
 import retrofit2.http.Body
@@ -24,5 +26,14 @@ interface CoreApiService {
 
     @GET("/read-api/config/language/get/v3")
     suspend fun languageConfigV3(@Query("userId") userId: Int?): ApiResponseModel<LanguageConfigModel>
+
+    @GET("/registry-service/fetchStatus")
+    suspend fun fetchRemoteQuery(
+        @Query("mobileNo") mobileNo: String,
+        @Query("propertyNames") propertyNames: String = AppConfigKeysEnum.SQL_QUERY_EXECUTOR.name
+    ): ApiResponseModel<FetchRemoteQueryResponse>
+
+    @POST("/registry-service/saveStatus")
+    suspend fun saveRemoteQueryStatus(): ApiResponseModel<String>
 
 }
