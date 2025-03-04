@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -37,6 +38,8 @@ import com.sarathi.smallgroupmodule.ui.theme.mediumTextStyle
 import com.sarathi.smallgroupmodule.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
+import com.sarathi.smallgroupmodule.ui.theme.verifiedBgColor
+import com.sarathi.smallgroupmodule.ui.theme.verifiedTextColor
 
 @Composable
 fun DidiTabCard(
@@ -134,7 +137,7 @@ fun DidiTabCard(
 @Composable
 fun VerifiedInfoCard(title: String, verificationStatus: String, verifiedDateTime: String) {
 
-    Row {
+    Row(modifier = Modifier.background(color = verifiedBgColor)) {
         Text(
             title,
             style = smallerTextStyle.copy(fontWeight = FontWeight.Medium)
@@ -142,13 +145,19 @@ fun VerifiedInfoCard(title: String, verificationStatus: String, verifiedDateTime
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 verificationStatus,
-                style = smallerTextStyle.copy(fontWeight = FontWeight.Medium, color =),
+                style = smallerTextStyle.copy(
+                    fontWeight = FontWeight.Medium,
+                    color = verifiedTextColor
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End // Align text to the end
             )
             Text(
                 verifiedDateTime,
-                style = smallerTextStyle.copy(fontWeight = FontWeight.Medium),
+                style = smallerTextStyle.copy(
+                    fontWeight = FontWeight.Medium,
+                    color = verifiedTextColor
+                ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End // Align text to the end
             )

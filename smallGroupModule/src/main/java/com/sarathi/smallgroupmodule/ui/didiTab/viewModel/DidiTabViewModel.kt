@@ -48,6 +48,7 @@ class DidiTabViewModel @Inject constructor(
         mutableStateOf(false)
 
     val isSearchListEmpty = mutableStateOf(false)
+    val isFilterApplied = mutableStateOf(false)
 
     override fun <T> onEvent(event: T) {
         when (event) {

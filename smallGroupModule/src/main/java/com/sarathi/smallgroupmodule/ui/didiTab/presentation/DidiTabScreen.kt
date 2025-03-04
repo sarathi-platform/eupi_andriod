@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.ExperimentalMaterialApi
@@ -184,6 +185,7 @@ fun DidiTabScreen(
                         )
 
                         Column {
+                            Row {}
                             SearchWithFilterViewComponent(
                                 placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
                                     SubTabs.DidiTab.id -> didiTabViewModel.stringResource(
@@ -195,7 +197,9 @@ fun DidiTabScreen(
                                         R.string.search_didi)
 
                                 },
-                                showFilter = false,
+                                filterIconSelected = R.drawable.filter_active_icon,
+                                filterIconUnSelected = R.drawable.filter_icon,
+                                showFilter = TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex) == SubTabs.DidiTab.id,
                                 onFilterSelected = {
 
                                 },
@@ -209,6 +213,8 @@ fun DidiTabScreen(
                                     )
                                 }
                             )
+
+
                             CustomVerticalSpacer()
                             if (didiList.value.isNotEmpty() || didiTabViewModel.filteredSmallGroupList.value.isNotEmpty()) {
                             when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {

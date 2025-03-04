@@ -58,6 +58,8 @@ fun SearchWithFilterViewComponent(
     modifier: Modifier = Modifier,
     filterSelected: Boolean = false,
     showFilter: Boolean = true,
+    filterIconSelected: Int = R.drawable.ic_search_filter_selected,
+    filterIconUnSelected: Int = R.drawable.ic_search_filter_unselected,
     onFilterSelected: (Boolean) -> Unit,
     onSearchValueChange: (String) -> Unit
 ) {
@@ -140,7 +142,9 @@ fun SearchWithFilterViewComponent(
                         modifier = Modifier,
                         startPadding = dimen_20_dp,
                         groupingSelected = filterSelected,
-                        focusManager = focusManager
+                        focusManager = focusManager,
+                        filterIconSelected = filterIconSelected,
+                        filterIconUnSelected = filterIconUnSelected,
                     ) {
                         onFilterSelected(it)
                     }
@@ -157,6 +161,8 @@ fun GroupByIcon(
     size: Pair<Dp, Dp> = Pair(dimen_40_dp, dimen_40_dp),
     groupingSelected: Boolean,
     focusManager: FocusManager,
+    filterIconSelected: Int,
+    filterIconUnSelected: Int,
     onFilterSelected: (Boolean) -> Unit
 ) {
     Spacer(modifier = Modifier.width(startPadding))
@@ -194,8 +200,8 @@ fun GroupByIcon(
             contentAlignment = Alignment.Center
         ) {
             AppImageViewComponent(
-                resource = if (!groupingSelected) R.drawable.ic_search_filter_unselected
-                else R.drawable.ic_search_filter_selected,
+                resource = if (!groupingSelected) filterIconUnSelected
+                else filterIconSelected,
                 modifier = Modifier
                     .background(
                         if (!groupingSelected) Color.White else blueDark
