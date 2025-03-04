@@ -20,5 +20,6 @@ enum class AppConfigKeysEnum {
     EXCLUDE_IN_INCOME_SUMMARY,
     REGENERATE_EVENT_ENABLED,
     APP_UPDATE_CONFIG,
+    SHOW_QUESTION_INDEX,
     V2TheameEnable
 }

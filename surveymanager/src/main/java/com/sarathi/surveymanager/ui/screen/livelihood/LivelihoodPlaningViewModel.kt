@@ -146,6 +146,9 @@ class LivelihoodPlaningViewModel @Inject constructor(
         ioViewModelScope {
             try {
                 taskId?.let {
+                    checkDialogueValidation.value = false
+                    primaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
+                    secondaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
                     subjectId = getTaskUseCase.getTask(it).subjectId
                     val livelihoodList = getLivelihoodListFromDbUseCase.invoke()
                     val subjectLivelihoodMapping =

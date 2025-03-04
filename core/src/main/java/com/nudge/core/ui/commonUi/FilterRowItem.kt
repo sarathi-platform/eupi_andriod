@@ -49,12 +49,12 @@ import com.nudge.core.utils.FileUtils
 @Composable
 fun FilterRowItem(
     modifier: Modifier = Modifier,
-    isSelected: Boolean,
+    selectedItem: FilterUiModel,
     item: FilterUiModel,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val colors = getColorsForFilterItem(isSelected)
+    val colors = getColorsForFilterItem(selectedItem, item)
 
     Column(
         modifier = Modifier
@@ -140,8 +140,11 @@ private fun getIconPainterForFilterItem(context: Context, item: FilterUiModel): 
 }
 
 @Composable
-fun getColorsForFilterItem(isSelected: Boolean): Triple<Color, Color, Color> {
-    return if (isSelected) {
+fun getColorsForFilterItem(
+    selectedItem: FilterUiModel,
+    item: FilterUiModel
+): Triple<Color, Color, Color> {
+    return if (selectedItem.type == item.type) {
         Triple(filterItemSelectedLight, filterItemSelectedDark, filterItemSelectedDark)
     } else {
         Triple(white, uncheckedTrackColor, textColorDark)
