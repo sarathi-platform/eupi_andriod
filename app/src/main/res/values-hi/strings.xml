@@ -543,9 +543,9 @@
     <string name="sync_data_history">डाटा हिस्ट्री को सिंक करें </string>
     <string name="data">डाटा</string>
 
-    <string name="verify_otp">Verify OTP</string>
-    <string name="an_otp_has_been_sent_on">"An OTP has been sent on "</string>
-    <string name="verify">Verify</string>
-    <string name="mobile_number">Mobile number</string>
-    <string name="otp_is_invalid">OTP is invalid</string>
+    <string name="verify_otp">OTP सत्यापित करें</string>
+    <string name="an_otp_has_been_sent_on">इस नंबर पर एक OTP भेजा गया है</string>
+    <string name="verify">सत्यापित करें</string>
+    <string name="mobile_number">मोबाइल नंबर</string>
+    <string name="otp_is_invalid">OTP मान्य नहीं है</string>
 </resources>

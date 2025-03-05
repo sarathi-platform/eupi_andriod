@@ -543,9 +543,9 @@
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
     <string name="data">তথ্য</string>
 
-    <string name="verify_otp">Verify OTP</string>
-    <string name="an_otp_has_been_sent_on">"An OTP has been sent on "</string>
-    <string name="verify">Verify</string>
-    <string name="mobile_number">Mobile number</string>
-    <string name="otp_is_invalid">OTP is invalid</string>
+    <string name="verify_otp">OTP প্ৰমাণিত কৰক</string>
+    <string name="an_otp_has_been_sent_on">নম্বৰত এটা OTP প্ৰেৰণ কৰা হৈছে</string>
+    <string name="verify">সত্যাপন কৰক</string>
+    <string name="mobile_number">ম\'বাইল নম্বৰ</string>
+    <string name="otp_is_invalid">OTP বৈধ নহয়</string>
 </resources>
