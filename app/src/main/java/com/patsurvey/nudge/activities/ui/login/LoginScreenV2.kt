@@ -53,7 +53,6 @@ import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_28_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_48_dp
-import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.textStyleMedium
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -109,7 +108,7 @@ fun LoginScreenV2(
         )
         SarathiLogoTextViewV2(
             modifier = Modifier.constrainAs(logo) {
-                top.linkTo(parent.top, margin = dimen_50_dp)
+                top.linkTo(parent.top)
             }
         )
         AnimatedVisibility(
@@ -138,7 +137,7 @@ fun LoginScreenV2(
         }
         Spacer(
             modifier = Modifier
-                .height(dimen_20_dp)
+                .height(dimen_60_dp)
                 .constrainAs(spacer) {
                     top.linkTo(logo.bottom)
                     centerHorizontallyTo(parent)
@@ -147,9 +146,10 @@ fun LoginScreenV2(
         Box(
             modifier = Modifier
                 .constrainAs(inputField) {
-                    top.linkTo(spacer.bottom)
+                    top.linkTo(parent.top)
                     start.linkTo(parent.start)
                     end.linkTo(parent.end)
+                    bottom.linkTo(parent.bottom)
                 }
                 .height(dimen_60_dp)
                 .padding(horizontal = dimen_16_dp)

@@ -53,12 +53,12 @@ import androidx.navigation.NavController
 import com.nudge.core.maskMobileNumber
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_28_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
 import com.nudge.core.value
@@ -154,13 +154,13 @@ fun OtpVerificationScreenV2(
                 top.linkTo(logo.bottom)
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
-                centerVerticallyTo(parent)
             }
         ) {
             Box(
                 modifier = modifier
                     .fillMaxWidth()
                     .height(dimen_48_dp)
+                    .padding(vertical = dimen_10_dp)
             ) {
                 CircularProgressIndicator(
                     color = blueDark, modifier = Modifier
@@ -171,7 +171,7 @@ fun OtpVerificationScreenV2(
         }
         Spacer(
             modifier = Modifier
-                .height(dimen_20_dp)
+                .height(dimen_72_dp)
                 .constrainAs(spacer) {
                     top.linkTo(logo.bottom)
                     centerHorizontallyTo(parent)

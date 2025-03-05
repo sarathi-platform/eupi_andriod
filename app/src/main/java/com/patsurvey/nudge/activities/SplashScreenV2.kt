@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -32,10 +31,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_200_dp
 import com.nudge.core.ui.theme.dimen_20_dp
-import com.nudge.core.ui.theme.dimen_250_dp
-import com.nudge.core.ui.theme.dimen_50_dp
-import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.patsurvey.nudge.R
@@ -152,16 +149,17 @@ fun SplashScreenV2(
         )
         NrlmLogo(modifier = Modifier.constrainAs(nrlmContent) {
             top.linkTo(parent.top)
-            bottom.linkTo(appNameContent.top)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         })
 
-        AppNameContent(modifier = Modifier.constrainAs(appNameContent) {
-            top.linkTo(nrlmContent.bottom, margin = 20.dp)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        })
+        AppNameContent(modifier = Modifier
+            .constrainAs(appNameContent) {
+                top.linkTo(parent.top)
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            })
 
         if (showLoader) {
             Loader(modifier = Modifier.constrainAs(loader) {
@@ -181,25 +179,27 @@ fun SplashScreenV2(
 
 @Composable
 fun NrlmLogo(modifier: Modifier) {
-    Box(modifier = modifier.padding(top = dimen_10_dp)) {
+    Box {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimen_20_dp),
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_aajeevika_logo),
+                painter = painterResource(id = R.drawable.ic_loks_aajeevika_logo),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(137.dp)
+                modifier = Modifier.size(97.dp)
             )
-            Spacer(modifier.width(dimen_50_dp))
+            DividerLine(modifier = Modifier.padding(horizontal = 40.dp))
             Image(
                 painter = painterResource(id = R.drawable.ic_lokos_logo_only),
                 contentDescription = null,
                 contentScale = ContentScale.Fit,
-                modifier = Modifier.size(117.dp)
+                modifier = Modifier.size(67.dp)
+
             )
         }
     }
@@ -209,8 +209,8 @@ fun NrlmLogo(modifier: Modifier) {
 fun AppNameContent(modifier: Modifier) {
     Box(
         modifier = modifier
-            .size(dimen_250_dp)
-            .shadow(dimen_8_dp, shape = CircleShape)
+            .size(dimen_200_dp)
+            .shadow(16.dp, shape = CircleShape)
             .border(dimen_1_dp, darkYellow, CircleShape)
             .background(Color.White, shape = CircleShape),
         contentAlignment = Alignment.Center
@@ -269,9 +269,9 @@ fun BottomContent(modifier: Modifier) {
 }
 
 @Composable
-fun DividerLine() {
+fun DividerLine(modifier: Modifier = Modifier) {
     Canvas(
-        modifier = Modifier
+        modifier = modifier
             .height(50.dp)
             .width(2.dp)
     ) {
