@@ -39,10 +39,12 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.nudge.core.onlyNumberField
@@ -58,6 +60,7 @@ import com.nudge.core.ui.theme.textStyleMedium
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
+import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
 import com.patsurvey.nudge.activities.ui.theme.midiumBlueColor
@@ -97,7 +100,7 @@ fun LoginScreenV2(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        val (backgroundImage, logo, loader, inputField, button, spacer, spacer2) = createRefs()
+        val (backgroundImage, logo, loader, inputField, button, spacer, otpSentLabel, spacer2) = createRefs()
         Image(
             painter = painterResource(id = R.drawable.lokos_bg),
             contentDescription = "Background Image",
@@ -194,11 +197,26 @@ fun LoginScreenV2(
                 ),
             )
         }
+        Text(
+            text = stringResource(id = R.string.otp_will_be_sent_to_this_number),
+            color = blueDark,
+            fontSize = 16.sp,
+            fontFamily = NotoSans,
+            fontWeight = FontWeight.SemiBold,
+            textAlign = TextAlign.Start,
+            modifier = Modifier
+                .constrainAs(otpSentLabel) {
+                    start.linkTo(parent.start)
+                    top.linkTo(inputField.bottom)
+
+                }
+                .padding(vertical = dimensionResource(id = R.dimen.dp_6), horizontal = dimen_16_dp)
+        )
         Spacer(
             modifier = Modifier
                 .height(dimen_20_dp)
                 .constrainAs(spacer2) {
-                    top.linkTo(inputField.bottom)
+                    top.linkTo(otpSentLabel.bottom)
                     centerHorizontallyTo(parent)
                 }
         )

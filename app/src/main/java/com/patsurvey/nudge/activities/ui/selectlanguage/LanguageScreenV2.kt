@@ -26,8 +26,8 @@ import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
+import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.mediumRankColor
-import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 
@@ -92,8 +92,8 @@ fun LanguageScreenV2(
                         SarathiLogoTextViewV2()
                         Text(
                             text = stringResource(id = R.string.choose_language),
-                            color = textColorBlueLight,
-                            fontSize = 18.sp,
+                            color = blueDark,
+                            fontSize = 16.sp,
                             fontFamily = NotoSans,
                             fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_20))
