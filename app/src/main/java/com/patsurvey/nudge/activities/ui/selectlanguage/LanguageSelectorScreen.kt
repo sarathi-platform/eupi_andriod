@@ -1,10 +1,8 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,7 +22,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -32,24 +29,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
-import com.google.accompanist.permissions.ExperimentalPermissionsApi
-import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.KOKBOROK_LANGUAGE_CODE
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.graphs.HomeScreens
+import com.nudge.navigationmanager.graphs.LogoutScreens
+import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -60,7 +55,6 @@ import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
-import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -79,9 +73,6 @@ fun LanguageScreen(
 ) {
     val context = LocalContext.current
     HandleNetworkError(viewModel, context)
-    if (pageFrom == ARG_FROM_HOME) {
-        RequestPermissions()
-    }
 
     HandleBackPress(pageFrom, viewModel, navController, context)
     Scaffold(
@@ -156,38 +147,6 @@ fun HandleNetworkError(viewModel: LanguageViewModel, context: Context) {
     }
 }
 
-@OptIn(ExperimentalPermissionsApi::class)
-@Composable
-fun RequestPermissions() {
-    val permissionList = mutableListOf(
-        Manifest.permission.ACCESS_FINE_LOCATION,
-        Manifest.permission.ACCESS_COARSE_LOCATION,
-        Manifest.permission.CAMERA,
-        Manifest.permission.WRITE_EXTERNAL_STORAGE,
-        Manifest.permission.READ_EXTERNAL_STORAGE
-    )
-
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-        permissionList.add(Manifest.permission.POST_NOTIFICATIONS)
-    }
-
-    val permissionsState = rememberMultiplePermissionsState(
-        permissions = permissionList
-    )
-
-    val lifecycleOwner = LocalLifecycleOwner.current
-    DisposableEffect(lifecycleOwner) {
-        val observer = LifecycleEventObserver { _, event ->
-            if (event == Lifecycle.Event.ON_START) {
-                permissionsState.launchMultiplePermissionRequest()
-            }
-        }
-        lifecycleOwner.lifecycle.addObserver(observer)
-        onDispose {
-            lifecycleOwner.lifecycle.removeObserver(observer)
-        }
-    }
-}
 
 @Composable
 fun HandleBackPress(
@@ -275,9 +234,53 @@ fun ContinueButton(
                 if (viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
                     navController.popBackStack(AuthScreen.AUTH_SETTING_SCREEN.route, false)
                 } else {
-                    if (pageFrom.equals(ARG_FROM_HOME, true))
-                        navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
-                    else {
+                    if (pageFrom.equals(ARG_FROM_HOME, true)) {
+                        if (viewModel.getUserType() == UPCM_USER) {
+                            when {
+                                isCurrentRoute(navController, NudgeNavigationGraph.HOME) -> {
+                                    navigateToScreen(
+                                        navController,
+                                        LogoutScreens.LOG_DATA_LOADING_SCREEN.route,
+                                        AuthScreen.START_SCREEN.route
+                                    )
+                                }
+
+                                isCurrentRoute(
+                                    navController,
+                                    NudgeNavigationGraph.HOME_SUB_GRAPH
+                                ) -> {
+                                    navController.navigate(
+                                        HomeScreens.PROGRESS_SEL_SCREEN.route
+                                    )
+                                }
+
+                                else -> {
+                                    navController.popBackStack()
+                                    navController.navigate(
+                                        NudgeNavigationGraph.HOME
+                                    )
+                                }
+                            }
+                        } else {
+                            when {
+                                isCurrentRoute(navController, NudgeNavigationGraph.HOME) -> {
+                                    navigateToScreen(
+                                        navController,
+                                        LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route,
+                                        AuthScreen.START_SCREEN.route
+                                    )
+                                }
+
+                                else -> {
+                                    navigateToScreen(
+                                        navController,
+                                        AuthScreen.VILLAGE_SELECTION_SCREEN.route,
+                                        AuthScreen.START_SCREEN.route
+                                    )
+                                }
+                            }
+                        }
+                    } else {
                         viewModel.languageRepository.prefRepo.savePref(PREF_OPEN_FROM_HOME, false)
                         navController.popBackStack(SettingScreens.SETTING_SCREEN.route, false)
                     }
@@ -306,6 +309,26 @@ fun ContinueButton(
         )
     }
 }
+
+private fun isCurrentRoute(navController: NavController, route: String): Boolean {
+    return navController.graph.route?.equals(route, true) == true
+}
+
+private fun navigateToScreen(
+    navController: NavController,
+    route: String,
+    popUpRoute: String? = null
+) {
+    navController.navigate(route) {
+        launchSingleTop = true
+        popUpRoute?.let {
+            popUpTo(it) {
+                inclusive = true
+            }
+        }
+    }
+}
+
 
 @Composable
 fun LanguageItem(

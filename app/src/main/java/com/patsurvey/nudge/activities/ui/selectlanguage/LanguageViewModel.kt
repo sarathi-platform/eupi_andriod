@@ -7,10 +7,14 @@ import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.nudge.core.database.entities.language.LanguageEntity
+import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
+import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -21,7 +25,10 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-    val languageRepository: LanguageRepository
+    val languageRepository: LanguageRepository,
+    val prefs: PrefRepo,
+    private val languageConfigUseCase: LanguageConfigUseCase,
+    private val fetchUserDetailUseCase: FetchUserDetailUseCase,
 ) : BaseViewModel() {
 
 
@@ -37,13 +44,12 @@ class LanguageViewModel @Inject constructor(
     fun fetchLanguageList() {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             try {
-                val list = languageRepository.getAllLanguages()
-                if (list.isNullOrEmpty()) {
-                    _languageList.value = listOf(
-                        getDefaultLanguage()
-                    )
-                } else {
-                    _languageList.value = list
+                fetchUserDetailsAndLanguageConfig { userDetail, languageConfig ->
+                    val languages = languageRepository.getAllLanguages()
+                    _languageList.value = when {
+                        userDetail && languageConfig && languages.isNotEmpty() -> languages
+                        else -> listOf(getDefaultLanguage())
+                    }
                 }
             } catch (ex: Exception) {
                 NudgeLogger.e("LanguageViewModel", "fetchLanguageList: ", ex)
@@ -82,4 +88,22 @@ class LanguageViewModel @Inject constructor(
             localName = DEFAULT_LANGUAGE_LOCAL_NAME
         )
     }
+
+    fun getUserType(): String? {
+        prefs.getPageOpenFromOTPScreen()
+        return prefs.getLoggedInUserType() ?: CRP_USER_TYPE
+    }
+
+    private fun fetchUserDetailsAndLanguageConfig(onResult: (Boolean, Boolean) -> Unit) {
+        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
+            try {
+                val userDetail = fetchUserDetailUseCase.invoke()
+                val languageConfig = languageConfigUseCase.invoke()
+                onResult(userDetail, languageConfig)
+            } catch (e: Exception) {
+                onResult(false, false)
+            }
+        }
+    }
+
 }

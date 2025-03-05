@@ -2,9 +2,6 @@ package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
-import com.nudge.core.usecase.AnalyticsEventUseCase
-import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
-import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -25,19 +22,14 @@ import javax.inject.Inject
 
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
-    private val otpVerificationRepository: OtpVerificationRepository,
-    private val languageConfigUseCase: LanguageConfigUseCase
+    private val otpVerificationRepository: OtpVerificationRepository
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
     val showLoader = mutableStateOf(false)
     private val _villageList= MutableStateFlow<List<VillageEntity>?>(emptyList())
     val villageList=_villageList.asStateFlow()
-    fun languageConfigUseCase() {
-        CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            languageConfigUseCase.invoke()
-        }
-    }
+
     fun validateOtp(onOtpResponse: (userType: String, success: Boolean, message: String) -> Unit) {
         showLoader.value = true
         val otpNum = if (otpNumber.value == "") RetryHelper.autoReadOtp.value else otpNumber.value
