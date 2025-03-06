@@ -7,11 +7,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -20,7 +23,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -30,11 +35,15 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
+import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ModelBottomSheetDescriptionContentComponent
+import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.textColorDark
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -120,10 +129,37 @@ fun DidiTabScreen(
     }
 
     val didiList = didiTabViewModel.filteredDidiList
+    val customBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties()
+    val scaffoldState =
+        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
 
     val tabs = listOf(SubTabs.DidiTab, SubTabs.SmallGroupTab)
+    /**
+     *Not required as no bottom UI present for this screen
+     **/
+    BottomSheetScaffoldComponent(
+        bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
+        defaultValue = BLANK_STRING,
+        headerTitle = "Filter",
+        bottomSheetContentItemList = listOf("SHG Verified", "SHG Not Verified", ""),
+        selectedIndex = 0,
 
-    ToolBarWithMenuComponent(
+        onBottomSheetItemSelected = {
+            //  viewModel.onEvent(TaskScreenEvent.OnFilterSelected(it))
+        }
+    ) {
+        ModelBottomSheetDescriptionContentComponent(
+            sheetState = scaffoldState,
+            sheetElevation = dimen_20_dp,
+            sheetBackgroundColor = Color.White,
+            sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
+            sheetContent = {
+
+            }
+
+        )
+        {
+            ToolBarWithMenuComponent(
         title = didiTabViewModel.stringResource(
             DataLoadingRes.string.app_name),
         dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value)
@@ -245,7 +281,8 @@ fun DidiTabScreen(
             }
         }
     )
-
+        }
+    }
 }
 
 @Composable

@@ -87,6 +87,7 @@ dependencies {
     implementation("androidx.activity:activity-compose:1.8.0")
     implementation("androidx.compose.ui:ui:$compose_version")
     implementation("androidx.compose.ui:ui-tooling-preview:$compose_version")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
 
     implementation("androidx.navigation:navigation-fragment-ktx:2.5.3")
     implementation("androidx.navigation:navigation-ui-ktx:2.5.3")

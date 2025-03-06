@@ -1,4 +1,4 @@
-package com.sarathi.surveymanager.ui.description_component.presentation
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.shape.RoundedCornerShape
