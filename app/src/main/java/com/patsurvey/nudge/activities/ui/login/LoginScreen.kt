@@ -85,6 +85,7 @@ fun LoginScreen(
         (context as? Activity)?.finish()
     }
     RequestPermissions()
+
     if (networkErrorMessage.isNotEmpty()) {
         snackState.addMessage(
             message = networkErrorMessage,

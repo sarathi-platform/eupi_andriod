@@ -413,7 +413,7 @@ fun SettingScreen(
                                 }
 
                                 5 -> {
-                                    navController.navigate(route = "$LANGUAGE_SCREEN_ROUTE_NAME/" + ARG_FROM_SETTING)
+                                    navController.navigate(route = "$LANGUAGE_SCREEN_ROUTE_NAME/$ARG_FROM_SETTING")
                                 }
 
                                 6 -> {
