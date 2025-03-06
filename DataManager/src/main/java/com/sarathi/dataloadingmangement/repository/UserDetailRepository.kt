@@ -48,15 +48,12 @@ class UserDetailRepository @Inject constructor(
         userDetailsResponse.email?.let { sharedPrefs.setUserEmail(it) }
         userDetailsResponse.roleName?.let { sharedPrefs.setUserRole(it) }
         userDetailsResponse.typeName?.let { sharedPrefs.setUserType(it) }
-        userDetailsResponse.referenceId.let {
-            sharedPrefs.setStateId(
-                userDetailsResponse.referenceId.first().stateId ?: -1
-            )
-        }
-        userDetailsResponse.referenceId.let {
-            sharedPrefs.setStateCode(
-                userDetailsResponse.referenceId.first().stateCode ?: BLANK_STRING
-            )
+        if (userDetailsResponse.referenceId?.isNotEmpty() == true) {
+            userDetailsResponse.referenceId.let {
+                sharedPrefs.setStateId(
+                    userDetailsResponse.referenceId.first()?.stateId ?: -1
+                )
+            }
         }
         userDetailsResponse.federationDetail?.let {
             sharedPrefs.savePref(PREF_STATE_NAME, it.stateName ?: BLANK_STRING)

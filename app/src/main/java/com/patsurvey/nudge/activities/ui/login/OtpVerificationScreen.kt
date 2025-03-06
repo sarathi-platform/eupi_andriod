@@ -45,7 +45,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.nudge.navigationmanager.graphs.AuthScreen
+import com.nudge.navigationmanager.routes.AUTH_LANGUAGE_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -58,6 +58,7 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -256,12 +257,11 @@ fun OtpVerificationScreen(
             Button(
                 onClick = {
                     viewModel.validateOtp { userType, success, message ->
-
                         if (success) {
                             if (userType != UPCM_USER) {
                                 viewModel.savePageFromOTPScreen()
                             }
-                            navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                            navController.navigate(route = "$AUTH_LANGUAGE_SCREEN_ROUTE_NAME/$ARG_FROM_HOME")
                             RetryHelper.autoReadOtp.value = ""
                         } else {
                             Log.e("TAG", "OtpVerificationScreen: $message")

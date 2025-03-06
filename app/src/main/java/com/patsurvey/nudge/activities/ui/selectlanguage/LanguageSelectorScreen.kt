@@ -1,7 +1,6 @@
 package com.patsurvey.nudge.activities.ui.selectlanguage
 
 import android.annotation.SuppressLint
-import android.app.Activity
 import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
@@ -156,15 +155,7 @@ fun HandleBackPress(
     context: Context
 ) {
     BackHandler {
-        if (pageFrom == ARG_FROM_HOME) {
-            if (viewModel.languageRepository.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
-                navController.popBackStack()
-            } else {
-                (context as? Activity)?.finish()
-            }
-        } else {
-            navController.popBackStack()
-        }
+        navController.popBackStack()
     }
 }
 

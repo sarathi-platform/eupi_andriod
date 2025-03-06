@@ -84,6 +84,7 @@ import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.nudge.navigationmanager.routes.LANGUAGE_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -112,6 +113,7 @@ import com.patsurvey.nudge.customviews.CustomSnackBarViewPosition
 import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.intefaces.NetworkCallbackListener
 import com.patsurvey.nudge.model.dataModel.SettingOptionModel
+import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.ButtonNegative
 import com.patsurvey.nudge.utils.ButtonPositive
@@ -411,7 +413,7 @@ fun SettingScreen(
                                 }
 
                                 5 -> {
-                                    navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                                    navController.navigate(route = "$LANGUAGE_SCREEN_ROUTE_NAME/" + ARG_FROM_SETTING)
                                 }
 
                                 6 -> {
