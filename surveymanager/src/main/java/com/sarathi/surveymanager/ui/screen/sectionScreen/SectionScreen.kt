@@ -55,6 +55,7 @@ import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ModelBottomSheetDescriptionContentComponent
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.rememberCustomButtonVisibilityState
 import com.nudge.core.ui.theme.blueDark
@@ -79,7 +80,6 @@ import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.surveymanager.R
 import com.sarathi.surveymanager.ui.component.ComplexSearchComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
-import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.viewmodels.surveyScreen.SectionScreenViewModel
 import getColorForComponent

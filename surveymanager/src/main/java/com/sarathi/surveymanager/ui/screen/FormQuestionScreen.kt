@@ -46,6 +46,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.ModelBottomSheetDescriptionContentComponent
 import com.nudge.core.ui.commonUi.SubmitButtonBottomUi
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.theme.blueDark
@@ -89,7 +90,6 @@ import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
 import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
-import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.utils.DescriptionContentState
 import com.sarathi.surveymanager.utils.getMaxInputLength
 import kotlinx.coroutines.CoroutineScope

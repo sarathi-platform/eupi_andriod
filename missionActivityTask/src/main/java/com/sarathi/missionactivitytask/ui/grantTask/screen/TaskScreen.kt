@@ -105,7 +105,7 @@ import com.sarathi.missionactivitytask.utils.event.SearchEvent
 import com.sarathi.missionactivitytask.utils.event.TaskScreenEvent
 import com.sarathi.surveymanager.ui.component.ButtonPositive
 import com.sarathi.surveymanager.ui.component.ShowCustomDialog
-import com.sarathi.surveymanager.ui.description_component.presentation.ModelBottomSheetDescriptionContentComponent
+import com.nudge.core.ui.commonUi.ModelBottomSheetDescriptionContentComponent
 import com.sarathi.surveymanager.ui.htmltext.HtmlText
 import kotlinx.coroutines.launch
 import com.nudge.core.R as CoreRes
