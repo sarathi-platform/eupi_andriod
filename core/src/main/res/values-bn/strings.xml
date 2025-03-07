@@ -80,4 +80,5 @@
     <string name="str_download_complete">Application download complete.</string>
     <string name="click_here_to_install">Click here to install.</string>
     <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="missions_filter_label_suffix">মিশন</string>
 </resources>

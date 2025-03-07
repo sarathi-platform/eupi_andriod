@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -158,6 +159,14 @@ fun BaseSurveyScreen(
         viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
+
+    DisposableEffect(key1 = true) {
+        onDispose {
+            viewModel.clearQuestionList()
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+        }
+    }
+
     ToolBarWithMenuComponent(
         title = toolbarTitle,
         modifier = Modifier.fillMaxSize(),
@@ -281,6 +290,10 @@ fun QuestionUiContent(
             ActivityTypeEnum.SURVEY.name,
             ignoreCase = true
         )
+        val isQuestionNumberVisible = grantType.equals(
+            ActivityTypeEnum.BASIC.name,
+            ignoreCase = true
+        ) && viewModel.isRemoteShowQuestionIndex()
         when (question.type) {
             QuestionType.InputNumber.name,
             QuestionType.TextField.name,
@@ -308,6 +321,7 @@ fun QuestionUiContent(
                     ),
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isEditable = !viewModel.isActivityCompleted.value,
                     defaultValue = question.options?.firstOrNull()?.selectedValue ?: BLANK_STRING,
                     optionsItem = question.options?.firstOrNull(),
@@ -344,6 +358,7 @@ fun QuestionUiContent(
                     title = question.questionDisplay,
                     isEditable = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
                             viewModel = viewModel,
@@ -364,6 +379,7 @@ fun QuestionUiContent(
             QuestionType.MultiImage.name -> {
                 AddImageComponent(
                     contents = question.contentEntities,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths = commaSeparatedStringToList(
                         question.options?.firstOrNull()?.selectedValue
@@ -394,6 +410,8 @@ fun QuestionUiContent(
             }
             QuestionType.SingleImage.name -> {
                 SingleImageComponent(
+                    isQuestionNumberVisible = isQuestionNumberVisible,
+                    questionIndex = index,
                     content = question.contentEntities,
                     fileNamePrefix = viewModel.getPrefixFileName(question),
                     filePaths =
@@ -416,6 +434,7 @@ fun QuestionUiContent(
                     questionIndex = index,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     title = question.questionDisplay,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isMandatory = question.isMandatory,
                     showQuestionInCard = showCardView,
                     sources = getOptionsValueDto(question.options ?: listOf()),
@@ -447,6 +466,7 @@ fun QuestionUiContent(
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     optionStateMap = viewModel.getOptionStateMapForMutliSelectDropDownQuestion(
                         question.questionId
                     ),
@@ -493,6 +513,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     isQuestionTypeToggle = false,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
@@ -523,6 +544,7 @@ fun QuestionUiContent(
                     maxCustomHeight = maxHeight,
                     optionUiModelList = question.options.value(),
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     optionStateMap = viewModel.optionStateMap,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     navigateToMediaPlayerScreen = { contentList ->
@@ -565,6 +587,7 @@ fun QuestionUiContent(
                     isRequiredField = question.isMandatory,
                     maxCustomHeight = maxHeight,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     optionUiModelList = question.options.value(),
                     navigateToMediaPlayerScreen = { contentList ->
@@ -589,10 +612,12 @@ fun QuestionUiContent(
                 IncrementDecrementCounterList(
                     content = question.contentEntities,
                     title = question.questionDisplay,
+                    questionIndex = index,
                     optionList = question.options,
                     isMandatory = question.isMandatory,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     editNotAllowedMsg = stringResource(R.string.edit_disable_message),
                     navigateToMediaPlayerScreen = { contentList ->
                         handleContentClick(
@@ -615,9 +640,11 @@ fun QuestionUiContent(
 
             QuestionType.InputHrsMinutes.name, QuestionType.InputYrsMonths.name -> {
                 HrsMinRangePickerComponent(
+                    questionIndex = index,
                     content = question.contentEntities,
                     isMandatory = question.isMandatory,
                     showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
                     title = question.questionDisplay,
                     isEditAllowed = !viewModel.isActivityCompleted.value,
                     typePicker = question.type,
@@ -701,6 +728,7 @@ fun FormQuestionUiContent(
     grantType: String,
     index: Int,
     onClick: () -> Unit,
+    isQuestionNumberVisible: Boolean = false,
     onAnswerSelect: (QuestionUiModel) -> Unit,
     onViewSummaryClicked: (QuestionUiModel) -> Unit,
     showEditErrorToast: (context: Context, editErrorType: String) -> Unit,
@@ -724,7 +752,7 @@ fun FormQuestionUiContent(
                     QuestionComponent(
                         title = viewModel.surveyConfig[question.formId]?.get(SurveyConfigCardSlots.FORM_QUESTION_CARD_TITLE.name)
                             ?.firstOrNull()?.value.value(),
-                        questionNumber = getQuestionNumber(index),
+                        questionNumber = getQuestionNumber(isQuestionNumberVisible, index),
                         isRequiredField = question.isMandatory
                     )
 

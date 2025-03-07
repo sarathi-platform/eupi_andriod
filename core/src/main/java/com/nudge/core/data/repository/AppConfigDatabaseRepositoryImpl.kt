@@ -9,6 +9,7 @@ import com.nudge.core.IS_APP_NEED_UPDATE
 import com.nudge.core.IS_IN_APP_UPDATE
 import com.nudge.core.LATEST_VERSION_CODE
 import com.nudge.core.MINIMUM_VERSION_CODE
+import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_OPTION_ENABLE
 import com.nudge.core.database.dao.ApiConfigDao
@@ -76,6 +77,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
             coreSharedPrefs.savePref(
                 AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name,
                 data[AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name].toBoolean()
+            )
+        }
+        if (data.containsKey(AppConfigKeysEnum.SHOW_QUESTION_INDEX.name)) {
+            coreSharedPrefs.savePref(
+                REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE,
+                data[AppConfigKeysEnum.SHOW_QUESTION_INDEX.name].toBoolean()
             )
         }
         // TODO Uncomment code after navigation is fixed.

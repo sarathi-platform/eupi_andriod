@@ -47,7 +47,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.theme.GreyLight
@@ -84,6 +83,7 @@ fun GridTypeComponent(
     questionIndex: Int,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     isEditAllowed: Boolean = true,
     isQuestionDisplay: Boolean = true,
@@ -151,9 +151,10 @@ fun GridTypeComponent(
                                         isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                         onDetailIconClicked = { onDetailIconClicked() },
                                         title = questionDisplay,
-                                        questionNumber = if (showCardView) getQuestionNumber(
+                                        questionNumber = getQuestionNumber(
+                                            isQuestionNumberVisible,
                                             questionIndex
-                                        ) else BLANK_STRING,
+                                        ),
                                         isRequiredField = isRequiredField
                                     )
                                 }
