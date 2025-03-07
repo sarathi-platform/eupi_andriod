@@ -37,6 +37,7 @@ import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -1501,6 +1502,29 @@ fun setKeyboardToPan(context: Activity) {
 
 fun setKeyboardToReadjust(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+}
+
+val syncStatusParamMap = mapOf(
+    EventSyncStatus.OPEN.eventSyncStatus to AnalyticsEventsParam.OPEN_EVENT_COUNT.eventParam,
+    EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus to AnalyticsEventsParam.PRODUCER_IN_PROGRESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus to AnalyticsEventsParam.PRODUCER_SUCCESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.PRODUCER_FAILED.eventSyncStatus to AnalyticsEventsParam.PRODUCER_FAILED_EVENT_COUNT.eventParam,
+    EventSyncStatus.CONSUMER_IN_PROGRESS.eventSyncStatus to AnalyticsEventsParam.CONSUMER_IN_PROGRESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus to AnalyticsEventsParam.CONSUMER_SUCCESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.CONSUMER_FAILED.eventSyncStatus to AnalyticsEventsParam.CONSUMER_FAILED_EVENT_COUNT.eventParam,
+    EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus to AnalyticsEventsParam.IMAGE_NOT_EXIST_EVENT_COUNT.eventParam,
+    EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus to AnalyticsEventsParam.BLOB_UPLOAD_FAILED_EVENT_COUNT.eventParam
+)
+
+fun Date.toLong(timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Long {
+    val parser = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.ENGLISH)
+    parser.timeZone = timeZone
+    return parser.parse(parser.format(this))!!.time
+}
+
+fun List<Events>.getEventCountsByStatus(): Map<String, Int> {
+    return this.groupingBy { it.status }
+        .eachCount()
 }
 
 @Composable

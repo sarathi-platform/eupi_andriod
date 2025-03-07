@@ -97,6 +97,7 @@ fun SplashScreen(
                 viewModel.fetchAppConfigForPropertiesWithAppUpdate {
                     (context as MainActivity).validateAppVersionAndCheckUpdate()
                 }
+                viewModel.checkAndSendSyncProgress()
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
