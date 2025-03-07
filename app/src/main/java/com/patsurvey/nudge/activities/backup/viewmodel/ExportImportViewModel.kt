@@ -32,10 +32,7 @@ import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
-import com.nudge.core.utils.AESHelper
-import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -260,11 +257,13 @@ class ExportImportViewModel @Inject constructor(
 
 
     fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
-    fun fetchAppConfig() {
+    fun fetchAppConfig(onApiSuccess: () -> Unit) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
-            onEvent(LoaderEvent.UpdateLoaderState(false))
+            fetchAppConfigFromNetworkUseCase.getAppConfigurations {
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+                onApiSuccess()
+            }
         }
     }
 }

@@ -64,16 +64,15 @@ fun SplashScreen(
                 "SplashScreen",
                 "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true"
             )
+            (context as MainActivity).validateAppVersionAndCheckUpdate()
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true")
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
                 viewModel.showLoader.value = true
                 delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value = false
-                openUserHomeScreen(
-                    userType = viewModel.getUserType() ?: CRP_USER_TYPE,
-                    navController = navController
-                )
+                viewModel.showLoader.value=false
+                openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
@@ -99,16 +98,16 @@ fun SplashScreen(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
-                viewModel.fetchAppConfigForProperties()
+
+                viewModel.fetchAppConfigForPropertiesWithAppUpdate {
+                    (context as MainActivity).validateAppVersionAndCheckUpdate()
+                }
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
-                    openUserHomeScreen(
-                        userType = viewModel.getUserType() ?: CRP_USER_TYPE,
-                        navController = navController
-                    )
+                    openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
                     /*
                     NudgeLogger.d(
                         "SplashScreen",
@@ -127,10 +126,7 @@ fun SplashScreen(
                         }
                     }*/
                 } else {
-                    NudgeLogger.d(
-                        "SplashScreen",
-                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false"
-                    )
+                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
                     navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
                 }
             }
