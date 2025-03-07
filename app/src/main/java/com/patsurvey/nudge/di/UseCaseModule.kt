@@ -12,6 +12,7 @@ import com.nrlm.baselinesurvey.ui.mission_summary_screen.domain.usecase.UpdateMi
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.BaselineV1CheckRepository
+import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -506,12 +507,14 @@ object UseCaseModule {
     @Singleton
     fun providesSyncEventProgressRepository(
         coreSharedPrefs: CoreSharedPrefs,
+        appConfigDao: ApiConfigDao,
         eventsDao: EventsDao,
         eventStatusDao: EventStatusDao,
         analyticsManager: AnalyticsManager
     ): SyncEventProgressRepository {
         return SyncEventProgressRepositoryImpl(
             prefRepo = coreSharedPrefs,
+            appConfigDao = appConfigDao,
             eventsDao = eventsDao,
             eventStatusDao = eventStatusDao,
             analyticsManager = analyticsManager

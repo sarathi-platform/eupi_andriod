@@ -33,9 +33,11 @@ class SyncEventProgressUseCase @Inject constructor(
             imageEventParamMap
         )
 
-        val deletedEventCount = syncEventProgressRepository.deleteSyncedEventForUser()
+        if (syncEventProgressRepository.isDeleteEventAllowed()) {
+            val deletedEventCount = syncEventProgressRepository.deleteSyncedEventForUser()
 
-        syncEventProgressRepository.sendAnalyticsEventForDeletedEventCount(deletedEventCount)
+            syncEventProgressRepository.sendAnalyticsEventForDeletedEventCount(deletedEventCount)
+        }
     }
 
     private fun getImageEventParamMap(imageEvents: List<Events>): MutableMap<String, Int> {

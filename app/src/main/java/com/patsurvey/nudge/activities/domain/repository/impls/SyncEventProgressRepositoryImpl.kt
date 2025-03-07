@@ -1,12 +1,14 @@
 package com.patsurvey.nudge.activities.domain.repository.impls
 
-import com.nudge.core.TWO_WEEK_DURATION_RANGE
+import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.entities.Events
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -15,6 +17,7 @@ import javax.inject.Inject
 
 class SyncEventProgressRepositoryImpl @Inject constructor(
     private val prefRepo: CoreSharedPrefs,
+    private val appConfigDao: ApiConfigDao,
     private val eventsDao: EventsDao,
     private val eventStatusDao: EventStatusDao,
     private val analyticsManager: AnalyticsManager
@@ -42,7 +45,8 @@ class SyncEventProgressRepositoryImpl @Inject constructor(
     }
 
     override suspend fun deleteSyncedEventForUser(): Int {
-        val thresholdDate = getDayPriorCurrentTimeMillis(TWO_WEEK_DURATION_RANGE)
+
+        val thresholdDate = getThresholdDate()
         val deletedEventIds = eventsDao.deleteOlderEventsAndReturnEventId(
             prefRepo.getMobileNo(),
             thresholdDate
@@ -68,6 +72,21 @@ class SyncEventProgressRepositoryImpl @Inject constructor(
             AnalyticsEvents.OLD_DELETE_EVENT_COUNT.eventName,
             mapOf(AnalyticsEventsParam.TOTAL_DELETED_EVENT_COUNT.eventParam to deletedEventCount)
         )
+    }
+
+    override suspend fun getThresholdDate(): Long {
+        val sourceDuration = appConfigDao.getConfig(
+            AppConfigKeysEnum.DELETE_OLD_EVENT_THRESHOLD.name,
+            prefRepo.getUniqueUserIdentifier()
+        )?.value?.toLong()
+        return getDayPriorCurrentTimeMillis(sourceDuration ?: DEFAULT_DATE_RANGE_DURATION)
+    }
+
+    override suspend fun isDeleteEventAllowed(): Boolean {
+        return appConfigDao.getConfig(
+            AppConfigKeysEnum.DELETE_OLD_EVENT_THRESHOLD.name,
+            prefRepo.getUniqueUserIdentifier()
+        )?.value?.toBoolean() ?: false
     }
 
 }

@@ -15,4 +15,8 @@ interface SyncEventProgressRepository {
 
     suspend fun sendAnalyticsEventForDeletedEventCount(deletedEventCount: Int)
 
+    suspend fun getThresholdDate(): Long
+
+    suspend fun isDeleteEventAllowed(): Boolean
+
 }
