@@ -2,14 +2,17 @@ package com.sarathi.dataloadingmangement.enums
 
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.INFLOW
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.OUTFLOW
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum.OUTFLOW_INFLOW
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.AMOUNT
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ADULT_ASSET
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.TYPE_OF_CHILD_ASSET
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum.TYPE_OF_PRODUCT
 
 enum class LivelihoodEventTypeDataCaptureMapping(
     val livelihoodEventDataCaptureTypes: List<LivelihoodEventDataCaptureTypeEnum>,
-    val assetJournalEntryFlowType: EntryFlowTypeEnum? = null,
+    var assetJournalEntryFlowType: EntryFlowTypeEnum? = null,
     val moneyJournalEntryFlowType: EntryFlowTypeEnum? = null
 ) {
 
@@ -39,7 +42,15 @@ enum class LivelihoodEventTypeDataCaptureMapping(
     ),
 
     Income(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = INFLOW),
-    Expense(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = OUTFLOW);
+    Expense(livelihoodEventDataCaptureTypes = listOf(AMOUNT), moneyJournalEntryFlowType = OUTFLOW),
+    AssetTransition(
+        livelihoodEventDataCaptureTypes = listOf(
+            TYPE_OF_ADULT_ASSET,
+            TYPE_OF_CHILD_ASSET,
+            COUNT_OF_ASSET
+        ),
+        assetJournalEntryFlowType = OUTFLOW_INFLOW
+    );
 
     companion object {
 
@@ -53,6 +64,7 @@ enum class LivelihoodEventTypeDataCaptureMapping(
                 ProductSale.name -> return ProductSale
                 Income.name -> return Income
                 Expense.name -> return Expense
+                AssetTransition.name -> return AssetTransition
 
             }
             return Expense

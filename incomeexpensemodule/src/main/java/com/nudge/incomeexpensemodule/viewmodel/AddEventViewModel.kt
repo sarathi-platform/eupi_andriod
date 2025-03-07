@@ -1,6 +1,7 @@
 package com.nudge.incomeexpensemodule.viewmodel
 
 import android.text.TextUtils
+import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -12,6 +13,7 @@ import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.json
 import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -27,7 +29,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLive
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetSubjectLivelihoodMappingFromUseCase
 import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
@@ -82,6 +86,7 @@ class AddEventViewModel @Inject constructor(
     var eventType: String = ""
     var selectedLivelihoodId = mutableStateOf(-1)
     var selectedAssetTypeId = mutableStateOf(-1)
+    var selectedChildAssetTypeId = mutableStateOf(-1)
     var selectedProductId = mutableStateOf(-1)
     var selectedEventId = mutableStateOf(-1)
     var assetCount = mutableStateOf("")
@@ -328,43 +333,24 @@ class AddEventViewModel @Inject constructor(
 
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
-            val createdDateTime = getCurrentTimeInMillis()
-            val modifiedDate = getCurrentTimeInMillis()
-            val mTransactionId =
-                if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
-                    .toString()
-            val livelihoodScreenData = LivelihoodEventScreenData(
+
+            createAndAddEvent(
+                transactionId = transactionId,
                 subjectId = subjectId,
-                amount = amount.value.toIntOrNull() ?: 0,
-                assetCount = assetCount.value.toIntOrNull() ?: 0,
-                assetType = selectedAssetTypeId.value,
-                date = selectedDateInLong,
-                livelihoodId = selectedLivelihoodId.value,
-                eventId = selectedEventId.value,
-                productId = selectedProductId.value,
-                selectedEvent = event,
-                transactionId = mTransactionId,
-                eventValue = livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName
-                    ?: BLANK_STRING,
-                livelihoodValue = livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName
-                    ?: BLANK_STRING,
-                assetTypeValue = livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName
-                    ?: BLANK_STRING,
-                productValue = livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName
-                    ?: BLANK_STRING
-            )
-            saveLivelihoodEventUseCase.addOrEditEvent(
-                particular = getParticulars(),
-                createdDate = createdDateTime,
-                eventData = livelihoodScreenData,
-                modifiedDate = modifiedDate
-            )
-            writeLivelihoodEventUseCase.writeLivelihoodEvent(
-                particular = getParticulars(),
-                eventData = livelihoodScreenData,
-                createdDateTime = createdDateTime,
-                modifiedDate = modifiedDate
-            )
+                event = event,
+                selectedAssetId = selectedAssetTypeId.value,
+
+                )
+            if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+                createAndAddEvent(
+                    transactionId = transactionId,
+                    subjectId = subjectId,
+                    event = event,
+                    selectedAssetId = selectedChildAssetTypeId.value,
+                    isChildEvent = true
+                )
+            }
+
             withContext(mainDispatcher)
             {
                 onComplete()
@@ -373,15 +359,76 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
+    private suspend fun createAndAddEvent(
+        transactionId: String,
+        subjectId: Int,
+        event: LivelihoodEventTypeDataCaptureMapping,
+        selectedAssetId: Int,
+        isChildEvent: Boolean = false
+    ) {
+        if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+            event.assetJournalEntryFlowType =
+                if (isChildEvent) EntryFlowTypeEnum.INFLOW else EntryFlowTypeEnum.OUTFLOW
+        }
+        val createdDateTime = getCurrentTimeInMillis()
+        val modifiedDate = getCurrentTimeInMillis()
+        val mTransactionId =
+            if (transactionId != BLANK_STRING) transactionId else UUID.randomUUID()
+                .toString()
+        val livelihoodScreenData = LivelihoodEventScreenData(
+            subjectId = subjectId,
+            amount = amount.value.toIntOrNull() ?: 0,
+            assetCount = assetCount.value.toIntOrNull() ?: 0,
+            assetType = selectedAssetId,
+            date = selectedDateInLong,
+            livelihoodId = selectedLivelihoodId.value,
+            eventId = selectedEventId.value,
+            productId = selectedProductId.value,
+            selectedEvent = event,
+            transactionId = mTransactionId,
+            eventValue = livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName
+                ?: BLANK_STRING,
+            livelihoodValue = livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName
+                ?: BLANK_STRING,
+            assetTypeValue = livelihoodAssetDropdownValue.find { it.id == selectedAssetId }?.originalName
+                ?: BLANK_STRING,
+            productValue = livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName
+                ?: BLANK_STRING
+        )
+        Log.d("TAG", "createAndAddEvent Details 1: ${livelihoodScreenData.json()} ")
+
+        saveLivelihoodEventUseCase.addOrEditEvent(
+            particular = getParticulars(),
+            createdDate = createdDateTime,
+            eventData = livelihoodScreenData,
+            modifiedDate = modifiedDate
+        )
+        writeLivelihoodEventUseCase.writeLivelihoodEvent(
+            particular = getParticulars(),
+            eventData = livelihoodScreenData,
+            createdDateTime = createdDateTime,
+            modifiedDate = modifiedDate
+        )
+    }
+
     private fun getParticulars(): String {
 
         var particulars =
             "Livelihood=${livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName}|"
         particulars +=
             "Event=${_livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName}|"
-        if (selectedAssetTypeId.value != -1) {
-            particulars += "AssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName}|"
+        if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+            if (selectedAssetTypeId.value != -1 && selectedChildAssetTypeId.value != -1) {
+                particulars += "ChildAssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedChildAssetTypeId.value }?.originalName}|" +
+                        "AdultAssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName}|"
+            }
+        } else {
+            if (selectedAssetTypeId.value != -1) {
+                particulars += "AssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName}|"
+            }
+
         }
+
         if (selectedProductId.value != -1) {
             particulars += "Product=${_livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName}|"
         }

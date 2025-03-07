@@ -8,5 +8,6 @@ enum class AddEventFieldEnum {
     ASSET_TYPE,
     ASSET_COUNT,
     DATE,
-
+    ADULT_ASSET_TYPE,
+    CHILD_ASSET_TYPE
 }

@@ -26,10 +26,12 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             modifiedDateTime = modifiedDate
         )
 
-        assetJournalRepository.softDeleteAssetJournalEvent(
-            eventData.transactionId,
-            eventData.subjectId
-        )
+        if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+            assetJournalRepository.softDeleteAssetJournalEvent(
+                eventData.transactionId,
+                eventData.subjectId
+            )
+        }
         moneyJournalRepo.deleteMoneyJournalTransaction(
             transactionId = eventData.transactionId,
             eventData.subjectId

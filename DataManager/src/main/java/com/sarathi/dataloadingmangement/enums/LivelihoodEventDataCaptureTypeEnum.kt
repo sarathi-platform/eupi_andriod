@@ -9,6 +9,8 @@ enum class LivelihoodEventDataCaptureTypeEnum(val dataEntryJournals: DataEntryJo
     TYPE_OF_ASSET(dataEntryJournals = AssetJournalEntry),
     COUNT_OF_ASSET(dataEntryJournals = AssetJournalEntry),
     AMOUNT(dataEntryJournals = MoneyJournalEntry),
-    TYPE_OF_PRODUCT(dataEntryJournals = LivelihoodDataEntry);
+    TYPE_OF_PRODUCT(dataEntryJournals = LivelihoodDataEntry),
+    TYPE_OF_ADULT_ASSET(dataEntryJournals = AssetJournalEntry),
+    TYPE_OF_CHILD_ASSET(dataEntryJournals = AssetJournalEntry);
 
 }
