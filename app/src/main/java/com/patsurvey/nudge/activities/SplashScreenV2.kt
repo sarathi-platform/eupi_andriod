@@ -70,6 +70,7 @@ fun SplashScreenV2(
                 "SplashScreen",
                 "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true"
             )
+            (context as MainActivity).validateAppVersionAndCheckUpdate()
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
@@ -105,7 +106,9 @@ fun SplashScreenV2(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
-                viewModel.fetchAppConfigForProperties()
+                viewModel.fetchAppConfigForPropertiesWithAppUpdate {
+                    (context as MainActivity).validateAppVersionAndCheckUpdate()
+                }
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>

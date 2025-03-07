@@ -151,6 +151,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                             .padding(0.dp)
                             .background(blueDark),
                     ) {
+                        mViewModel.setV2TheameEnable()
                         ConstraintLayout() {
                             val (networkBanner, mainContent) = createRefs()
                             if (mViewModel.isLoggedIn.value) {

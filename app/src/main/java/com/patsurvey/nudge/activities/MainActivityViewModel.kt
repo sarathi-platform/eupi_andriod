@@ -7,6 +7,7 @@ import com.google.android.play.core.install.model.AppUpdateType
 import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SyncAlertType
 import com.nudge.core.model.EventLimitAlertUiModel
 import com.nudge.core.notifications.NotificationHandler
@@ -145,6 +146,13 @@ class MainActivityViewModel @Inject constructor(
         return EventLimitAlertUiModel.getHardEventLimitAlertUiModel(
             alertTitle = title,
             alertMessage = message
+        )
+    }
+
+    fun setV2TheameEnable() {
+        coreSharedPrefs.savePref(
+            AppConfigKeysEnum.V2TheameEnable.name,
+            true
         )
     }
 }
