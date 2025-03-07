@@ -544,23 +544,45 @@ class AddEventViewModel @Inject constructor(
         transactionId: String,
         onValidationResult: (Boolean, String) -> Unit
     ) {
-        if (validation != null) {
-            val expressionResult = validationUseCase.invoke(
-                validationExpression = validation.condition,
-                validationRegex = validation.regex,
-                subjectId = subjectId,
-                selectedAsset = selectedAssetType,
-                selectedLivelihood = selectedLivelihood,
-                assetCount = assetCount.value,
-                amount = amount.value,
-                message = validation.message,
-                transactionId = transactionId
-            )
-            onValidationResult(expressionResult.first, expressionResult.second)
-        } else {
+        if (validation == null) {
             onValidationResult(true, BLANK_STRING)
-
+            return
         }
+        val expressionResult = validationUseCase.invoke(
+            validationExpression = validation.condition,
+            validationRegex = validation.regex,
+            subjectId = subjectId,
+            selectedAsset = selectedAssetType,
+            selectedLivelihood = selectedLivelihood,
+            assetCount = assetCount.value,
+            amount = amount.value,
+            message = validation.message,
+            transactionId = transactionId
+        )
+        validation.conditionalMessage?.let { conditionalMessages ->
+            conditionalMessages.forEach { conditionalMessage ->
+                val conditionalMessageExpressionResult = validationUseCase.invoke(
+                    validationExpression = conditionalMessage.condition,
+                    validationRegex = validation.regex,
+                    subjectId = subjectId,
+                    selectedAsset = selectedAssetType,
+                    selectedLivelihood = selectedLivelihood,
+                    assetCount = assetCount.value,
+                    amount = amount.value,
+                    message = conditionalMessage.languageList?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.message
+                        ?: BLANK_STRING,
+                    transactionId = transactionId
+                )
+                if (conditionalMessageExpressionResult.first) {
+                    onValidationResult(
+                        expressionResult.first,
+                        conditionalMessageExpressionResult.second
+                    )
+                    return
+                }
+            }
+
+        } ?: onValidationResult(expressionResult.first, expressionResult.second)
     }
 
     fun updateFieldValidationMessageAndMap(key: String, value: Pair<Boolean, String>) {

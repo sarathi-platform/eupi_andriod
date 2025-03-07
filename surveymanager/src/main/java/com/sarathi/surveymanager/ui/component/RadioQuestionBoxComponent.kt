@@ -35,7 +35,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.getQuestionNumber
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
@@ -68,6 +67,7 @@ fun RadioQuestionBoxComponent(
     selectedOptionIndex: Int = -1,
     maxCustomHeight: Dp,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     isEditAllowed: Boolean = true,
     isQuestionTypeToggle: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
@@ -145,9 +145,10 @@ fun RadioQuestionBoxComponent(
                                     isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                                     onDetailIconClicked = { onDetailIconClicked() },
                                     title = questionDisplay,
-                                    questionNumber = if (showCardView) getQuestionNumber(
+                                    questionNumber = getQuestionNumber(
+                                        isQuestionNumberVisible,
                                         questionIndex
-                                    ) else BLANK_STRING,
+                                    ),
                                     isRequiredField = isRequiredField
                                 )
                             }
@@ -234,6 +235,7 @@ fun ToggleQuestionBoxComponent(
     optionUiModelList: List<OptionsUiModel>,
     selectedOptionIndex: Int = -1,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     maxCustomHeight: Dp,
     isEditAllowed: Boolean = true,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
@@ -252,6 +254,7 @@ fun ToggleQuestionBoxComponent(
         selectedOptionIndex = selectedOptionIndex,
         isQuestionTypeToggle = true,
         showCardView = showCardView,
+        isQuestionNumberVisible = isQuestionNumberVisible,
         optionUiModelList = optionUiModelList,
         isEditAllowed = isEditAllowed,
         onAnswerSelection = onAnswerSelection,
