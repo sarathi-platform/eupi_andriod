@@ -21,7 +21,6 @@ import com.nudge.navigationmanager.graphs.LogoutScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
 import com.nudge.navigationmanager.utils.NavigationParams
-import com.patsurvey.nudge.activities.SplashScreen
 import com.patsurvey.nudge.activities.SplashScreenV2
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
@@ -52,18 +51,10 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController, v2TheameEnabl
     ) {
 
         composable(route = AuthScreen.START_SCREEN.route) {
-            if (v2TheameEnable) {
-                SplashScreenV2(
-                    navController = navController, modifier = Modifier.fillMaxSize(),
-                    hiltViewModel()
-                )
-            } else {
-                SplashScreen(
-                    navController = navController, modifier = Modifier.fillMaxSize(),
-                    hiltViewModel()
-                )
-            }
-
+            SplashScreenV2(
+                navController = navController, modifier = Modifier.fillMaxSize(),
+                hiltViewModel()
+            )
         }
         composable(
             route = AuthScreen.LANGUAGE_SCREEN.route
