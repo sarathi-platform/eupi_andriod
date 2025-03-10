@@ -2,6 +2,8 @@ package com.patsurvey.nudge.activities.ui.splash
 
 
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.base.BaseViewModel
@@ -24,7 +26,8 @@ import javax.inject.Inject
 class ConfigViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    val languageConfigUseCase: LanguageConfigUseCase
+    val languageConfigUseCase: LanguageConfigUseCase,
+    val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
     fun isLoggedIn(): Boolean {
@@ -133,4 +136,8 @@ class ConfigViewModel @Inject constructor(
             }
         }
     }
+    fun isV2TheameEnable(): Boolean {
+        return coreSharedPrefs.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)
+    }
+
 }

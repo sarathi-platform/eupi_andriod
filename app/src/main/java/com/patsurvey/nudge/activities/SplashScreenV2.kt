@@ -17,118 +17,30 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.navigation.NavController
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_200_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.grayColor
-import com.nudge.navigationmanager.graphs.AuthScreen
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.darkGray
 import com.patsurvey.nudge.activities.ui.theme.darkYellow
-import com.patsurvey.nudge.utils.BLANK_STRING
-import com.patsurvey.nudge.utils.CRP_USER_TYPE
-import com.patsurvey.nudge.utils.NudgeLogger
-import com.patsurvey.nudge.utils.ONE_SECOND
-import com.patsurvey.nudge.utils.SPLASH_SCREEN_DURATION
-import com.patsurvey.nudge.utils.showCustomToast
-import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreenV2(
-    navController: NavController,
-    modifier: Modifier = Modifier,
-    viewModel: ConfigViewModel
+    showLoader: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    val context = LocalContext.current
-    val networkErrorMessage = viewModel.networkErrorMessage.value
-    if (networkErrorMessage.isNotEmpty()) {
-        showCustomToast(context, networkErrorMessage)
-        viewModel.networkErrorMessage.value = BLANK_STRING
-    }
-    val isLoggedIn = viewModel.isLoggedIn()/*false*/
-
-    LaunchedEffect(key1 = true) {
-        if (!(context as MainActivity).isOnline.value) {
-
-
-            NudgeLogger.d(
-                "SplashScreen",
-                "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true"
-            )
-            (context as MainActivity).validateAppVersionAndCheckUpdate()
-            if (isLoggedIn) {
-                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
-                delay(ONE_SECOND)
-                viewModel.showLoader.value = true
-                delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value = false
-                openUserHomeScreen(
-                    userType = viewModel.getUserType() ?: CRP_USER_TYPE,
-                    navController = navController
-                )
-            } else {
-                NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
-                delay(ONE_SECOND)
-                viewModel.showLoader.value = true
-                viewModel.checkAndAddLanguage()
-                delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value = false
-                navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
-            }
-        } else {
-            NudgeLogger.d(
-                "SplashScreen",
-                "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = false"
-            )
-            delay(ONE_SECOND)
-            viewModel.showLoader.value = true
-            NudgeLogger.d(
-                "SplashScreen",
-                "LaunchedEffect(key1 = true) -> fetchLanguageDetails before"
-            )
-            viewModel.fetchLanguageDetails() {
-                NudgeLogger.d(
-                    "SplashScreen",
-                    "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
-                )
-                viewModel.fetchAppConfigForPropertiesWithAppUpdate {
-                    (context as MainActivity).validateAppVersionAndCheckUpdate()
-                }
-                viewModel.showLoader.value = false
-                if (it.isNotEmpty()) {
-                    (context as MainActivity).quesImageList = it as MutableList<String>
-                }
-                if (isLoggedIn) {
-                    openUserHomeScreen(
-                        userType = viewModel.getUserType() ?: CRP_USER_TYPE,
-                        navController = navController
-                    )
-                } else {
-                    NudgeLogger.d(
-                        "SplashScreen",
-                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false"
-                    )
-                    navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
-                }
-            }
-        }
-    }
-    val showLoader = viewModel.showLoader.value
     ConstraintLayout(
         modifier = Modifier
             .fillMaxSize()
