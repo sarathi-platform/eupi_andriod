@@ -13,31 +13,9 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(
-        propertiesName: List<String> = AppConfigKeysEnum.values().map { it.name }
-    ): Boolean {
-        try {
-            val apiResponse = apiConfigNetworkRepository.getAppConfigFromNetwork(propertiesName)
-            if (apiResponse.status.equals(SUCCESS, true)) {
-                apiResponse.data?.let {
-                    apiConfigDatabaseRepository.saveAppConfig(apiResponse.data)
-                }
-                return true
-            } else {
-                return false
-            }
-
-        } catch (apiException: ApiException) {
-            throw apiException
-        } catch (ex: Exception) {
-            throw ex
-        }
-    }
-
-
-    suspend fun getAppConfigurations(
         propertiesName: List<String> = AppConfigKeysEnum.values().map { it.name },
-        onApiSuccess: () -> Unit
-    ) {
+        onApiSuccess: () -> Unit = {}
+    ): Boolean {
         try {
             val apiResponse = apiConfigNetworkRepository.getAppConfigFromNetwork(propertiesName)
             if (apiResponse.status.equals(SUCCESS, true)) {
@@ -45,6 +23,9 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
                     apiConfigDatabaseRepository.saveAppConfig(apiResponse.data)
                     onApiSuccess()
                 }
+                return true
+            } else {
+                return false
             }
 
         } catch (apiException: ApiException) {

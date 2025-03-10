@@ -94,7 +94,7 @@ fun SplashScreen(
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
 
-                viewModel.fetchAppConfigForPropertiesWithAppUpdate {
+                viewModel.fetchAppConfigForProperties {
                     (context as MainActivity).validateAppVersionAndCheckUpdate()
                 }
                 viewModel.checkAndSendSyncProgress()

@@ -123,9 +123,11 @@ class ConfigViewModel @Inject constructor(
         return configRepository.getLoggedInUserType()
     }
 
-    fun fetchAppConfigForProperties() {
+    fun fetchAppConfigForProperties(onApiSuccess: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
+            fetchAppConfigFromNetworkUseCase.invoke {
+                onApiSuccess()
+            }
         }
     }
 
@@ -133,14 +135,6 @@ class ConfigViewModel @Inject constructor(
         if (isLoggedIn()) {
             viewModelScope.launch(CoreDispatchers.ioDispatcher) {
                 syncEventProgressUseCase.invoke()
-            }
-        }
-    }
-
-    fun fetchAppConfigForPropertiesWithAppUpdate(onApiSuccess: () -> Unit) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.getAppConfigurations {
-                onApiSuccess()
             }
         }
     }
