@@ -45,8 +45,10 @@ class OtpVerificationViewModel @Inject constructor(
                     otpVerificationRepository.saveLoggedInUserType(
                         userType = it.typeName ?: BLANK_STRING
                     )
+                    otpVerificationRepository.saveLoggedInUserId(
+                        userType = it.userId ?: BLANK_STRING
+                    )
                     otpVerificationRepository.setIsUserBPC(it.typeName ?: BLANK_STRING)
-                    fetchUserDetailUseCase.invoke()
                     languageConfigUseCase.invoke()
                     showLoader.value = false
                     getLastSyncDateTimeFromServer()
