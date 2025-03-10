@@ -1501,3 +1501,6 @@ fun setKeyboardToPan(context: Activity) {
 fun setKeyboardToReadjust(context: Activity) {
     context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
 }
+fun isAllowedCharacterInput(value: String?): Boolean {
+    return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
+}

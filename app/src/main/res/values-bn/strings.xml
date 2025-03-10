@@ -538,6 +538,7 @@
     <string name="sync_started">সিঙ্ক শুরু হয়েছে। অনুগ্রহ করে অপেক্ষা করুন।…</string>
     <string name="sync_data_history">ডেটা সিঙ্ক ইতিহাস দেখুন</string>
     <string name="data">ডেটা</string>
+    <string name="no_village_found">No Village Found</string>
 
 
 </resources>

@@ -381,7 +381,7 @@ fun VillageSelectionScreen(
                                             verticalArrangement = Arrangement.Center,
                                         ) {
                                             Text(
-                                                text = "No Village Found",
+                                                text = stringResource(R.string.no_village_found),
                                                 modifier = Modifier.fillMaxWidth(),
                                                 textAlign = TextAlign.Center,
                                                 style = defaultTextStyle,

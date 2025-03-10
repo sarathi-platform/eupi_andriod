@@ -559,5 +559,6 @@
     <string name="sync_started">Sync chenkha. Kisi sa naising di…</string>
     <string name="sync_data_history">Sync data ni Laibuma</string>
     <string name="data">Sijakrwnai</string>
+    <string name="no_village_found">No Village Found</string>
 
 </resources>
