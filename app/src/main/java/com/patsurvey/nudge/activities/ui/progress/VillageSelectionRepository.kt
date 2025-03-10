@@ -8,6 +8,7 @@ import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.google.gson.JsonSyntaxException
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.analytics.AnalyticsManager
@@ -21,6 +22,7 @@ import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
+import com.patsurvey.nudge.activities.video.VideoItem
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.BpcSummaryEntity
@@ -141,6 +143,8 @@ import com.patsurvey.nudge.utils.stringToDouble
 import com.patsurvey.nudge.utils.toWeightageRatio
 import com.patsurvey.nudge.utils.updateLastSyncTime
 import com.patsurvey.nudge.utils.videoList
+import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -3759,43 +3763,109 @@ class VillageSelectionRepository @Inject constructor(
             }
         }
     }
+    private fun createContentResponseToTrainingVideoEntity(
+        context: Context,
+        id: Int,
+        contentResponse: ContentResponse
+    ): TrainingVideoEntity {
+        return TrainingVideoEntity(
+            id = id,
+            title = contentResponse.title ?: BLANK_STRING,
+            description = contentResponse.description ?: BLANK_STRING,
+            url = contentResponse.contentValue ?: BLANK_STRING,
+            thumbUrl = contentResponse.thumbUrl ?: BLANK_STRING,
+            isDownload = if (getVideoPath(
+                    context, id, fileType = FileType.VIDEO
+                ).exists()
+            ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+        )
+    }
+
+    private fun createTrainingVideoEntity(
+        context: Context,
+        id: Int,
+        videoItem: VideoItem
+    ): TrainingVideoEntity {
+        return TrainingVideoEntity(
+            id = videoItem.id,
+            title = videoItem.title ?: BLANK_STRING,
+            description = videoItem.description ?: BLANK_STRING,
+            url = videoItem.url ?: BLANK_STRING,
+            thumbUrl = videoItem.thumbUrl ?: BLANK_STRING,
+            isDownload = if (getVideoPath(
+                    context, videoItem.id, fileType = FileType.VIDEO
+                ).exists()
+            ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+        )
+    }
+
+    private fun handleExistingVideos(context: Context) {
+        val trainingVideos = trainingVideoDao.getVideoList()
+        trainingVideoDao.deleteTrainingData()
+        if (trainingVideos.isEmpty()) {
+            videoList.forEach {
+                val trainingVideoEntity = createTrainingVideoEntity(context, it.id, it)
+                trainingVideoDao.insert(trainingVideoEntity)
+            }
+        } else {
+            trainingVideos.forEach { existingVideo ->
+                val videoIsDownloaded = getDownloadStatus(context, existingVideo.id)
+                if (existingVideo.isDownload != videoIsDownloaded) {
+                    val updatedEntity = existingVideo.copy(isDownload = videoIsDownloaded)
+                    trainingVideoDao.insert(updatedEntity)
+                }
+            }
+        }
+    }
+
+    private fun getDownloadStatus(context: Context, videoId: Int): Int {
+        return if (getVideoPath(context, videoId, fileType = FileType.VIDEO).exists()) {
+            DownloadStatus.DOWNLOADED.value
+        } else {
+            DownloadStatus.UNAVAILABLE.value
+        }
+    }
 
     fun saveVideosToDb(context: Context) {
         repoJob = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val trainingVideos = trainingVideoDao.getVideoList()
-            if (trainingVideos.isEmpty()) {
-                videoList.forEach {
-                    val trainingVideoEntity = TrainingVideoEntity(
-                        id = it.id,
-                        title = it.title,
-                        description = it.description,
-                        url = it.url,
-                        thumbUrl = it.thumbUrl,
-                        isDownload = if (getVideoPath(
-                                context, it.id, fileType = FileType.VIDEO
-                            ).exists()
-                        ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
+
+            try {
+                val languageList = languageConfigUseCase.getAllLanguage()
+                val contentRequestList = languageList.map {
+                    ContentRequest(
+                        languageCode = it.langCode ?: DEFAULT_LANGUAGE_CODE,
+                        contentKey = "training videos"
                     )
-                    trainingVideoDao.insert(trainingVideoEntity)
                 }
-            } else {
-                trainingVideos.forEach {
-                    val videoIsDownloaded = if (getVideoPath(
-                            context, it.id, fileType = FileType.VIDEO
-                        ).exists()
-                    ) DownloadStatus.DOWNLOADED.value else DownloadStatus.UNAVAILABLE.value
-                    if (it.isDownload != videoIsDownloaded) {
-                        val trainingVideoEntity = TrainingVideoEntity(
-                            id = it.id,
-                            title = it.title,
-                            description = it.description,
-                            url = it.url,
-                            thumbUrl = it.thumbUrl,
-                            isDownload = videoIsDownloaded
-                        )
-                        trainingVideoDao.insert(trainingVideoEntity)
+                NudgeLogger.d(
+                    "VillageSelectionRepository",
+                    "fetch training data  request -> content_request = ${contentRequestList}"
+                )
+                val response = apiService.fetchContentData(contentRequestList)
+                NudgeLogger.d(
+                    "VillageSelectionRepository", "get training data " +
+                            "response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
+                )
+                if (response.status.equals(SUCCESS, true)) {
+                    response.data?.let {
+                        trainingVideoDao.deleteTrainingData()
+                        it.forEachIndexed { index, contentResponse ->
+                            val trainingVideoEntity = createContentResponseToTrainingVideoEntity(
+                                context,
+                                index + 1,
+                                contentResponse
+                            )
+                            trainingVideoDao.insert(trainingVideoEntity)
+                        }
                     }
+                } else {
+                    handleExistingVideos(context)
                 }
+            } catch (ex: Exception) {
+                NudgeLogger.d(
+                    "VillageSelectionRepository",
+                    "fetch training api failed "
+                )
             }
         }
     }
