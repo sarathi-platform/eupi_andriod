@@ -38,7 +38,10 @@ data class TrainingVideoEntity(
     @SerializedName("isDownload")
     @Expose
     @ColumnInfo(name = "isDownload")
-    var isDownload: Int
+    var isDownload: Int,
+    @SerializedName("languageCode")
+    @Expose
+    val languageCode: String?
 ) {
 
 }

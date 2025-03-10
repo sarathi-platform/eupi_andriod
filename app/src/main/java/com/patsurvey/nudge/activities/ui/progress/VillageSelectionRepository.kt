@@ -3774,6 +3774,7 @@ class VillageSelectionRepository @Inject constructor(
             description = contentResponse.description ?: BLANK_STRING,
             url = contentResponse.contentValue ?: BLANK_STRING,
             thumbUrl = contentResponse.thumbUrl ?: BLANK_STRING,
+            languageCode = contentResponse.languageCode ?: DEFAULT_LANGUAGE_CODE,
             isDownload = if (getVideoPath(
                     context, id, fileType = FileType.VIDEO
                 ).exists()
@@ -3792,6 +3793,7 @@ class VillageSelectionRepository @Inject constructor(
             description = videoItem.description ?: BLANK_STRING,
             url = videoItem.url ?: BLANK_STRING,
             thumbUrl = videoItem.thumbUrl ?: BLANK_STRING,
+            languageCode = videoItem.languageCode,
             isDownload = if (getVideoPath(
                     context, videoItem.id, fileType = FileType.VIDEO
                 ).exists()

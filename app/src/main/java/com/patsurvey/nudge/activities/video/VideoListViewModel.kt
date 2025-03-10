@@ -7,6 +7,7 @@ import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -61,7 +62,9 @@ class VideoListViewModel @Inject constructor(
 
     fun getVideoList(context: MainActivity) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            val mTrainingVideos = trainingVideoDao.getVideoList()
+            val mTrainingVideos = trainingVideoDao.getVideoLanguageList(
+                prefRepo.getAppLanguage() ?: DEFAULT_LANGUAGE_CODE
+            )
             _trainingVideos.emit(mTrainingVideos)
             context.downloader?.init(mTrainingVideos)
             filterdList = trainingVideos.value

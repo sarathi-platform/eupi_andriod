@@ -19,6 +19,9 @@ interface TrainingVideoDao {
     @Query("SELECT * from $TRAINING_VIDEO_TABLE")
     fun getVideoList(): List<TrainingVideoEntity>
 
+    @Query("SELECT * from $TRAINING_VIDEO_TABLE where languageCode=:languageId")
+    fun getVideoLanguageList(languageId: String): List<TrainingVideoEntity>
+
     @Query("SELECT * from $TRAINING_VIDEO_TABLE where id = :id")
     fun getVideo(id: Int) : TrainingVideoEntity
 

@@ -1012,6 +1012,7 @@ class VillageSelectionViewModel @Inject constructor(
             title = contentResponse.title ?: BLANK_STRING,
             description = contentResponse.description ?: BLANK_STRING,
             url = contentResponse.contentValue ?: BLANK_STRING,
+            languageCode = contentResponse.languageCode ?: DEFAULT_LANGUAGE_CODE,
             thumbUrl = contentResponse.thumbUrl ?: BLANK_STRING,
             isDownload = if (com.patsurvey.nudge.utils.getVideoPath(
                     context, id, fileType = FileType.VIDEO
@@ -1031,6 +1032,7 @@ class VillageSelectionViewModel @Inject constructor(
                     description = it.description ?: BLANK_STRING,
                     url = it.url ?: BLANK_STRING,
                     thumbUrl = it.thumbUrl ?: BLANK_STRING,
+                    languageCode = it.languageCode,
                     isDownload = if (com.patsurvey.nudge.utils.getVideoPath(
                             context, it.id, fileType = FileType.VIDEO
                         ).exists()

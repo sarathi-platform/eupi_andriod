@@ -27,7 +27,8 @@ object DatabaseModule {
                 NudgeDatabase.MIGRATION_1_2,
                 NudgeDatabase.MIGRATION_2_3,
                 NudgeDatabase.MIGRATION_3_4,
-                NudgeDatabase.MIGRATION_4_5
+                NudgeDatabase.MIGRATION_4_5,
+                NudgeDatabase.MIGRATION_5_6
             )
             .addCallback(NudgeDatabase.NudgeDatabaseCallback())
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)

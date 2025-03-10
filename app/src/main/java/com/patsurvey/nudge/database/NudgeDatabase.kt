@@ -64,6 +64,9 @@ abstract class NudgeDatabase : RoomDatabase() {
         private const val ALTER_VILLAGE_TABLE_WITH_ACTIVE_COLUMN =
             "ALTER TABLE 'village_table' ADD COLUMN 'isActive' INTEGER DEFAULT 1 NOT NULL"
 
+        private const val ALTER_TRAINING_TABLE_WITH_LANGUAGE_CODE_COLUMN =
+            "ALTER TABLE 'training_video_table' ADD COLUMN 'languageCode' TEXT"
+
         // CREATE MIGRATION OBJECT FOR MIGRATION 1 to 2.
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
@@ -91,6 +94,12 @@ abstract class NudgeDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 NudgeLogger.d("NudgeDatabase", "MIGRATION_4_5")
                 migration(db, listOf(DROP_LANGUAGE_TABLE))
+            }
+        }
+        val MIGRATION_5_6 = object : Migration(5, 6) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                NudgeLogger.d("NudgeDatabase", "MIGRATION_5_6")
+                migration(db, listOf(ALTER_TRAINING_TABLE_WITH_LANGUAGE_CODE_COLUMN))
             }
         }
 

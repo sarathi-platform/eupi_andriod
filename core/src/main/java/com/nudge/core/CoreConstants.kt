@@ -34,7 +34,7 @@ const val EVENTS_BACKUP_COLLECTION = "EventsBackUp"
 
 // Increase DB Version everytime any change is made to any table or a new table is added.
 const val NUDGE_DATABASE = "NudgeDatabase"
-const val NUDGE_DATABASE_VERSION = 5
+const val NUDGE_DATABASE_VERSION = 6
 const val NUDGE_GRANT_DATABASE = "NudgeGrantDatabase"
 
 const val SELECTION_MISSION = "Selection"

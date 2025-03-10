@@ -5,5 +5,6 @@ data class VideoItem(
     val title: String,
     val description: String,
     val url: String,
-    val thumbUrl: String
+    val thumbUrl: String,
+    val languageCode: String
 )
