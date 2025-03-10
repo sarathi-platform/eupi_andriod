@@ -155,7 +155,6 @@ import com.sarathi.dataloadingmangement.repository.ISurveyRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
-import com.sarathi.dataloadingmangement.repository.IUserDetailRepository
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopEventWriterRepository
@@ -1781,20 +1780,5 @@ class DataLoadingModule {
         translationHelper: TranslationHelper
     ): MissionFilterUtils {
         return MissionFilterUtils(coreSharedPrefs, livelihoodListFromDbUseCase, translationHelper)
-    }
-
-
-    @Singleton
-    @Provides
-    fun provideIUserDetailRepository(
-        sharedPrefs: CoreSharedPrefs,
-        apiInterface: DataLoadingApiService,
-        languageDao: LanguageListDao
-    ): IUserDetailRepository {
-        return UserDetailRepository(
-            sharedPrefs = sharedPrefs,
-            apiInterface = apiInterface,
-            languageDao = languageDao
-        )
     }
 }

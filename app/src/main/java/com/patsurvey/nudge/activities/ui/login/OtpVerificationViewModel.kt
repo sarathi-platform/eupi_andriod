@@ -12,7 +12,6 @@ import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
-import com.sarathi.dataloadingmangement.domain.use_case.FetchUserDetailUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -25,8 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
-    private val languageConfigUseCase: LanguageConfigUseCase,
-    private val fetchUserDetailUseCase: FetchUserDetailUseCase,
+    private val languageConfigUseCase: LanguageConfigUseCase
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
