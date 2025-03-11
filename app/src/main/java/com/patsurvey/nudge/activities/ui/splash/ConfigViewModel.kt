@@ -123,9 +123,11 @@ class ConfigViewModel @Inject constructor(
         return configRepository.getLoggedInUserType()
     }
 
-    fun fetchAppConfigForProperties() {
+    fun fetchAppConfigForProperties(onApiSuccess: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
+            fetchAppConfigFromNetworkUseCase.invoke {
+                onApiSuccess()
+            }
         }
     }
 

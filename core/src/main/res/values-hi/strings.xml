@@ -73,8 +73,8 @@
     <string name="search_label">Search</string>
     <string name="exclude_in_calculation_message">*This expense is not included in the total calculation.</string>
     <string name="contact_to_admin_id_missing">पहुँच संबंधी समस्या. कृपया सहायता के लिए बीपीसी अथवा डीपीसी  से संपर्क करें।</string>
-    <string name="str_download_complete">Application download complete.</string>
-    <string name="str_restart">Application Restarting..</string>
-    <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="str_download_complete">एप्लिकेशन डाउनलोड पूरा हुआ</string>
+    <string name="click_here_to_install">इंस्टॉल करने के लिए यहां क्लिक करें</string>
+    <string name="str_app_update_fail">आवेदन अपडेट विफल</string>
     <string name="missions_filter_label_suffix">Missions</string>
 </resources>
