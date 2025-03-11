@@ -61,6 +61,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ui.theme.defaultTextStyle
+import com.nrlm.baselinesurvey.ui.theme.dimen_100_dp
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -355,6 +357,29 @@ fun BpcVillageSelectionScreen(
                                 }
                             }
                             item { Spacer(modifier = Modifier.height(80.dp)) }
+                            item {
+                                if (villages.isEmpty()) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(top = dimen_100_dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center,
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.no_village_found),
+                                                modifier = Modifier.fillMaxWidth(),
+                                                textAlign = TextAlign.Center,
+                                                style = defaultTextStyle,
+                                                color = textColorDark
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
 //                    }
                         CustomSnackBarShow(
