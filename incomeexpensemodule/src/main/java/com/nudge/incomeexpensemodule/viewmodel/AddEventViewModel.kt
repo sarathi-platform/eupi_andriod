@@ -401,7 +401,8 @@ class AddEventViewModel @Inject constructor(
             particular = getParticulars(),
             createdDate = createdDateTime,
             eventData = livelihoodScreenData,
-            modifiedDate = modifiedDate
+            modifiedDate = modifiedDate,
+            isEventNeedToSaveInSubjectEventMapping = !isChildEvent
         )
         writeLivelihoodEventUseCase.writeLivelihoodEvent(
             particular = getParticulars(),

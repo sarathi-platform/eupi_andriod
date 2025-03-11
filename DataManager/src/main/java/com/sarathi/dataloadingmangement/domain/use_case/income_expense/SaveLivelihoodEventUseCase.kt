@@ -17,14 +17,16 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         eventData: LivelihoodEventScreenData,
         particular: String,
         createdDate: Long,
-        modifiedDate: Long
+        modifiedDate: Long,
+        isEventNeedToSaveInSubjectEventMapping: Boolean = true
     ) {
-
-        subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
-            eventData,
-            currentDateTime = createdDate,
-            modifiedDateTime = modifiedDate
-        )
+        if (isEventNeedToSaveInSubjectEventMapping) {
+            subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
+                eventData,
+                currentDateTime = createdDate,
+                modifiedDateTime = modifiedDate
+            )
+        }
 
         if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
             assetJournalRepository.softDeleteAssetJournalEvent(
