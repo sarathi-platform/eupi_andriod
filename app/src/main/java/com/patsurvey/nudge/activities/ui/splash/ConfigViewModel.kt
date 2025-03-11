@@ -30,7 +30,7 @@ class ConfigViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     val languageConfigUseCase: LanguageConfigUseCase,
-    val syncEventProgressUseCase: SyncEventProgressUseCase
+    val syncEventProgressUseCase: SyncEventProgressUseCase,
     val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
