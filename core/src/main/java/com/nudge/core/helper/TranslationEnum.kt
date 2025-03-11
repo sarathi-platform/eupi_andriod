@@ -100,13 +100,15 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "no",
             "search_didi",
             "all",
-            "attendance_already_marked"
+            "attendance_already_marked", "attendance_submitted_msg"
         )
     ),
 
     SmallGroupAttendanceEditScreen(
         "SmallGroupAttendanceEditScreen", listOf(
-            "confirmation_alert_dialog_title", "delete_attendance_confirmation_msg",
+            "confirmation_alert_dialog_title",
+            "do_you_want_mark_all_absent",
+            "attendance_submitted_msg",
             "yes", "no", "submit", "data_change_not_allow", "ok", "all"
         )
     ),
@@ -115,7 +117,7 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
         "SmallGroupAttendanceHistoryScreen",
         listOf(
             "confirmation_alert_dialog_title",
-            "do_you_want_mark_all_absent",
+            "delete_attendance_confirmation_msg",
             "yes",
             "no",
             "take_attendance_button_text",

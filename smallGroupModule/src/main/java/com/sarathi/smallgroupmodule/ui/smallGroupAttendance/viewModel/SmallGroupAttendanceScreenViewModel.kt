@@ -279,4 +279,19 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.SmallGroupAttendanceScreen
     }
+
+    fun isAttendanceAllowedForDate(result: (Boolean) -> Unit) {
+        ioViewModelScope {
+            try {
+                val isAttendanceAllowedForDate = checkIsAttendanceAllowedForDate()
+                withContext(mainDispatcher) {
+                    result(isAttendanceAllowedForDate)
+                }
+            } catch (ex: Exception) {
+                withContext(mainDispatcher) {
+                    result(true)
+                }
+            }
+        }
+    }
 }

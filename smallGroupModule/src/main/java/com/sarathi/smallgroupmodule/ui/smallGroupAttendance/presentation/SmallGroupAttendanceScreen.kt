@@ -138,21 +138,30 @@ fun SmallGroupAttendanceScreen(
             message = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.do_you_want_mark_all_absent
             ),
-            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.yes
             ),
-            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.no
             ),
-            onNegativeButtonClick = {
+            onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
-                    smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+                    smallGroupAttendanceScreenViewModel.onEvent(
+                        DialogEvents.ShowAttendanceDialogEvent(
+                            false,
+                            smallGroupAttendanceScreenViewModel.isFromBackButton.value
+                        )
+                    )
                     if (it) {
                         smallGroupAttendanceScreenViewModel.onEvent(
                             LoaderEvent.UpdateLoaderState(
                                 false
                             )
+                        )
+                        showCustomToast(
+                            context,
+                            smallGroupAttendanceScreenViewModel.getString(R.string.attendance_submitted_msg)
                         )
                         navHostController.navigateToHistoryScreenFromAttendance(smallGroupId)
                     } else {
@@ -175,8 +184,13 @@ fun SmallGroupAttendanceScreen(
                 })
 
             },
-            onPositiveButtonClick = {
-                smallGroupAttendanceScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
+            onNegativeButtonClick = {
+                smallGroupAttendanceScreenViewModel.onEvent(
+                    DialogEvents.ShowAttendanceDialogEvent(
+                        false,
+                        smallGroupAttendanceScreenViewModel.isFromBackButton.value
+                    )
+                )
                 if (smallGroupAttendanceScreenViewModel.isFromBackButton.value) {
                     navHostController.navigateUp()
                 }
@@ -411,11 +425,26 @@ private fun saveAttendanceData(
 ) {
     if (smallGroupAttendanceScreenViewModel.selectedItems.value.filter { it.value }
             .isEmpty()) {
-        smallGroupAttendanceScreenViewModel.onEvent(
-            DialogEvents.ShowAttendanceDialogEvent(
-                true, isFromBackButton = isFromBackButton
-            )
-        )
+        smallGroupAttendanceScreenViewModel.isAttendanceAllowedForDate { isAllowed ->
+            if (isAllowed) {
+                smallGroupAttendanceScreenViewModel.onEvent(
+                    DialogEvents.ShowAttendanceDialogEvent(
+                        true, isFromBackButton = isFromBackButton
+                    )
+                )
+            } else {
+                showCustomToast(
+                    context = context,
+                    msg = smallGroupAttendanceScreenViewModel.stringResource(
+                        R.string.attendance_already_marked,
+                        smallGroupAttendanceScreenViewModel.selectedDate.value.getDate()
+                    )
+                )
+                if (isFromBackButton) {
+                    navHostController.navigateUp()
+                }
+            }
+        }
     } else {
         smallGroupAttendanceScreenViewModel.onEvent(
             LoaderEvent.UpdateLoaderState(
@@ -429,6 +458,10 @@ private fun saveAttendanceData(
                         LoaderEvent.UpdateLoaderState(
                             false
                         )
+                    )
+                    showCustomToast(
+                        context,
+                        smallGroupAttendanceScreenViewModel.getString(R.string.attendance_submitted_msg)
                     )
                     navHostController.navigateToHistoryScreenFromAttendance(
                         smallGroupId

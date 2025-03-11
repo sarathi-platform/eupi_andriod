@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.smallGroupAttendance.presentation
 
+import android.content.Context
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -28,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavHostController
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.nudge.core.ui.events.DialogEvents
@@ -77,6 +79,7 @@ fun SmallGroupAttendanceEditScreen(
     }
     BackHandler {
         saveAttendanceData(
+            context,
             smallGroupAttendanceEditScreenViewModel,
             navHostController,
             isFromBackButton = true
@@ -98,17 +101,22 @@ fun SmallGroupAttendanceEditScreen(
                 R.string.confirmation_alert_dialog_title),
 
             message =smallGroupAttendanceEditScreenViewModel.stringResource(
-                R.string.delete_attendance_confirmation_msg),
-            negativeButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
-                R.string.yes),
+                R.string.do_you_want_mark_all_absent
+            ),
             positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
+                R.string.yes),
+            negativeButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
                 R.string.no),
-            onNegativeButtonClick = {
+            onPositiveButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent)
+                showCustomToast(
+                    context,
+                    smallGroupAttendanceEditScreenViewModel.getString(R.string.attendance_submitted_msg)
+                )
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navHostController.popBackStack()
             },
-            onPositiveButtonClick = {
+            onNegativeButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 if (smallGroupAttendanceEditScreenViewModel.isFromBackButton.value) {
                     navHostController.navigateUp()
@@ -123,6 +131,7 @@ fun SmallGroupAttendanceEditScreen(
         modifier = Modifier,
         onBackIconClick = {
             saveAttendanceData(
+                context,
                 smallGroupAttendanceEditScreenViewModel,
                 navHostController,
                 isFromBackButton = true
@@ -149,6 +158,7 @@ fun SmallGroupAttendanceEditScreen(
                         isActive = true
                     ) {
                         saveAttendanceData(
+                            context,
                             smallGroupAttendanceEditScreenViewModel,
                             navHostController,
                             isFromBackButton = false
@@ -309,6 +319,7 @@ fun SmallGroupAttendanceEditScreen(
 
 
 private fun saveAttendanceData(
+    context: Context,
     smallGroupAttendanceEditScreenViewModel: SmallGroupAttendanceEditScreenViewModel,
     navHostController: NavHostController,
     isFromBackButton: Boolean
@@ -323,6 +334,10 @@ private fun saveAttendanceData(
     } else {
         smallGroupAttendanceEditScreenViewModel.onEvent(
             SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent
+        )
+        showCustomToast(
+            context,
+            "Attendance has been submitted"
         )
         navHostController.popBackStack()
     }
