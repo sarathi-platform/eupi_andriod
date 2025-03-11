@@ -8,8 +8,10 @@ import com.nudge.core.DEFAULT_LANGUAGE_LOCAL_NAME
 import com.nudge.core.DEFAULT_LANGUAGE_NAME
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.patsurvey.nudge.base.BaseViewModel
+import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
+import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LanguageViewModel @Inject constructor(
-    val languageRepository: LanguageRepository
+    val languageRepository: LanguageRepository,
+    val prefs: PrefRepo,
 ) : BaseViewModel() {
 
 
@@ -82,4 +85,10 @@ class LanguageViewModel @Inject constructor(
             localName = DEFAULT_LANGUAGE_LOCAL_NAME
         )
     }
+
+    fun getUserType(): String? {
+        prefs.getPageOpenFromOTPScreen()
+        return prefs.getLoggedInUserType() ?: CRP_USER_TYPE
+    }
+
 }

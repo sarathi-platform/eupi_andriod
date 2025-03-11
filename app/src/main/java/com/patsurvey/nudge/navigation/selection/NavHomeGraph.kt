@@ -94,6 +94,7 @@ import com.patsurvey.nudge.utils.ARG_FROM_VO_ENDORSEMENT_SCREEN
 import com.patsurvey.nudge.utils.ARG_IMAGE_PATH
 import com.patsurvey.nudge.utils.ARG_IS_STEP_COMPLETE
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.ARG_PAT_SUCCESS_MESSAGE
 import com.patsurvey.nudge.utils.ARG_QUESTION_INDEX
 import com.patsurvey.nudge.utils.ARG_SECTION_TYPE
@@ -717,20 +718,24 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController, v2TheameEn
             )
         }
 
-        composable(route = SettingScreens.LANGUAGE_SCREEN.route) {
+        composable(route = SettingScreens.LANGUAGE_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM) {
+                type = NavType.StringType
+            })) {
             if (v2TheameEnable) {
                 LanguageScreenV2(
                     navController = navController,
                     viewModel = hiltViewModel(),
                     modifier = Modifier.fillMaxSize(),
-                    pageFrom = ARG_FROM_SETTING
+                    pageFrom = it.arguments?.getString(ARG_PAGE_FROM) ?: BLANK_STRING
+
                 )
             } else {
                 LanguageScreen(
                     navController = navController,
                     viewModel = hiltViewModel(),
                     modifier = Modifier.fillMaxSize(),
-                    pageFrom = ARG_FROM_SETTING
+                    pageFrom = it.arguments?.getString(ARG_PAGE_FROM) ?: BLANK_STRING
                 )
             }
         }

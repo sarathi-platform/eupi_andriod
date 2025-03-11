@@ -33,6 +33,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -86,7 +87,7 @@ fun SplashScreen(
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value = false
-                navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
             }
         } else {
             NudgeLogger.d(
@@ -104,10 +105,8 @@ fun SplashScreen(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
-
-                viewModel.fetchAppConfigForPropertiesWithAppUpdate {
-                    (context as MainActivity).validateAppVersionAndCheckUpdate()
-                }
+                viewModel.fetchAppConfigForProperties()
+                viewModel.checkAndSendSyncProgress()
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
@@ -139,7 +138,7 @@ fun SplashScreen(
                         "SplashScreen",
                         "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false"
                     )
-                    navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                    navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
                 }
             }
         }
