@@ -138,13 +138,13 @@ fun SmallGroupAttendanceScreen(
             message = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.do_you_want_mark_all_absent
             ),
-            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.yes
             ),
-            negativeButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
+            positiveButtonTitle = smallGroupAttendanceScreenViewModel.stringResource(
                 R.string.no
             ),
-            onPositiveButtonClick = {
+            onNegativeButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
                 smallGroupAttendanceScreenViewModel.onEvent(SmallGroupAttendanceEvent.SubmitAttendanceForDateEvent {
                     smallGroupAttendanceScreenViewModel.onEvent(
@@ -184,7 +184,7 @@ fun SmallGroupAttendanceScreen(
                 })
 
             },
-            onNegativeButtonClick = {
+            onPositiveButtonClick = {
                 smallGroupAttendanceScreenViewModel.onEvent(
                     DialogEvents.ShowAttendanceDialogEvent(
                         false,

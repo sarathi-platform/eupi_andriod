@@ -103,11 +103,11 @@ fun SmallGroupAttendanceEditScreen(
             message =smallGroupAttendanceEditScreenViewModel.stringResource(
                 R.string.do_you_want_mark_all_absent
             ),
-            positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
-                R.string.yes),
             negativeButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
+                R.string.yes),
+            positiveButtonTitle = smallGroupAttendanceEditScreenViewModel.stringResource(
                 R.string.no),
-            onPositiveButtonClick = {
+            onNegativeButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(SmallGroupAttendanceEvent.UpdateAttendanceForDateEvent)
                 showCustomToast(
                     context,
@@ -116,7 +116,7 @@ fun SmallGroupAttendanceEditScreen(
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 navHostController.popBackStack()
             },
-            onNegativeButtonClick = {
+            onPositiveButtonClick = {
                 smallGroupAttendanceEditScreenViewModel.onEvent(DialogEvents.ShowDialogEvent(false))
                 if (smallGroupAttendanceEditScreenViewModel.isFromBackButton.value) {
                     navHostController.navigateUp()
@@ -337,7 +337,7 @@ private fun saveAttendanceData(
         )
         showCustomToast(
             context,
-            "Attendance has been submitted"
+            smallGroupAttendanceEditScreenViewModel.getString(R.string.attendance_submitted_msg)
         )
         navHostController.popBackStack()
     }
