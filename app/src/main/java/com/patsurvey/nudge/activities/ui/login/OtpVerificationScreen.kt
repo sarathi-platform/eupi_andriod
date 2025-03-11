@@ -45,10 +45,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.nudge.navigationmanager.graphs.AuthScreen
-import com.nudge.navigationmanager.graphs.HomeScreens
-import com.nudge.navigationmanager.graphs.LogoutScreens
-import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.routes.AUTH_LANGUAGE_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -61,6 +58,7 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextView
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -88,7 +86,7 @@ fun OtpVerificationScreen(
         mutableStateOf(true)
     }
     val networkErrorMessage = viewModel.networkErrorMessage.value
-    if(networkErrorMessage.isNotEmpty()){
+    if (networkErrorMessage.isNotEmpty()) {
         snackState.addMessage(
             message = networkErrorMessage,
             isSuccess = false,
@@ -99,9 +97,9 @@ fun OtpVerificationScreen(
     val isResendOTPEnable = remember { mutableStateOf(false) }
 
     val context = LocalContext.current
-    LaunchedEffect(key1 = true){
-        otpValue.value= BLANK_STRING
-        viewModel.otpNumber.value= BLANK_STRING
+    LaunchedEffect(key1 = true) {
+        otpValue.value = BLANK_STRING
+        viewModel.otpNumber.value = BLANK_STRING
     }
 
     Box(
@@ -117,15 +115,25 @@ fun OtpVerificationScreen(
     ) {
         SarathiLogoTextView()
 
-        AnimatedVisibility(visible = viewModel.showLoader.value, exit = fadeOut(), enter = fadeIn(), modifier = Modifier.align(
-            Alignment.Center)) {
-            Box(modifier = Modifier
-                .size(28.dp)
-                .padding(top = 30.dp)
-                .align(Alignment.Center)) {
-                CircularProgressIndicator(color = blueDark, modifier = Modifier
+        AnimatedVisibility(
+            visible = viewModel.showLoader.value,
+            exit = fadeOut(),
+            enter = fadeIn(),
+            modifier = Modifier.align(
+                Alignment.Center
+            )
+        ) {
+            Box(
+                modifier = Modifier
                     .size(28.dp)
-                    .align(Alignment.Center))
+                    .padding(top = 30.dp)
+                    .align(Alignment.Center)
+            ) {
+                CircularProgressIndicator(
+                    color = blueDark, modifier = Modifier
+                        .size(28.dp)
+                        .align(Alignment.Center)
+                )
             }
         }
 
@@ -160,7 +168,11 @@ fun OtpVerificationScreen(
                     viewModel.otpNumber.value = otpValue.value
                 })
             }
-            AnimatedVisibility(visible = !isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+            AnimatedVisibility(
+                visible = !isResendOTPEnable.value,
+                exit = fadeOut(),
+                enter = fadeIn()
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier.fillMaxWidth(),
@@ -170,8 +182,9 @@ fun OtpVerificationScreen(
                         object : CountDownTimer(OTP_RESEND_DURATION, 1000) {
                             @SuppressLint("SimpleDateFormat")
                             override fun onTick(millisUntilFinished: Long) {
-                                val dateTimeFormat= SimpleDateFormat("00:ss")
-                                formattedTime.value=dateTimeFormat.format(Date(millisUntilFinished))
+                                val dateTimeFormat = SimpleDateFormat("00:ss")
+                                formattedTime.value =
+                                    dateTimeFormat.format(Date(millisUntilFinished))
 
                             }
 
@@ -205,7 +218,11 @@ fun OtpVerificationScreen(
                 }
             }
 
-            AnimatedVisibility(visible = isResendOTPEnable.value, exit = fadeOut(), enter = fadeIn()) {
+            AnimatedVisibility(
+                visible = isResendOTPEnable.value,
+                exit = fadeOut(),
+                enter = fadeIn()
+            ) {
                 Row(
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier.fillMaxWidth()
@@ -240,57 +257,13 @@ fun OtpVerificationScreen(
             Button(
                 onClick = {
                     viewModel.validateOtp { userType, success, message ->
-
-                        if (success){
-                            if (userType == UPCM_USER) {
-                                if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME,
-                                        true
-                                    ) == true
-                                ) {
-                                    navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
-                                        launchSingleTop = true
-                                        popUpTo(AuthScreen.START_SCREEN.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                } else if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME_SUB_GRAPH,
-                                        true
-                                    ) == true
-                                ) {
-                                    navController.navigate(
-                                        HomeScreens.PROGRESS_SEL_SCREEN.route
-                                    )
-                                } else {
-                                    navController.popBackStack()
-                                    navController.navigate(
-                                        NudgeNavigationGraph.HOME
-                                    )
-                                }
-                            }else{
+                        if (success) {
+                            if (userType != UPCM_USER) {
                                 viewModel.savePageFromOTPScreen()
-                                if (navController.graph.route?.equals(NudgeNavigationGraph.HOME, true) == true) {
-                                    navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-                                        launchSingleTop = true
-                                        popUpTo(AuthScreen.START_SCREEN.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                } else {
-                                    navController.navigate(route = AuthScreen.VILLAGE_SELECTION_SCREEN
-                                        .route) {
-                                        launchSingleTop = true
-                                        popUpTo(AuthScreen.START_SCREEN.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
                             }
+                            navController.navigate(route = "$AUTH_LANGUAGE_SCREEN_ROUTE_NAME/$ARG_FROM_HOME")
                             RetryHelper.autoReadOtp.value = ""
-                            viewModel.languageConfigUseCase()
-                        }
-                        else {
+                        } else {
                             Log.e("TAG", "OtpVerificationScreen: $message")
                             snackState.addMessage(
                                 message = message,
@@ -304,7 +277,9 @@ fun OtpVerificationScreen(
                     .background(Color.Transparent)
                     .fillMaxWidth()
                     .height(dimensionResource(id = R.dimen.height_60dp)),
-                colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(
+                colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(
+                    blueDark
+                ) else ButtonDefaults.buttonColors(
                     buttonBgColor
                 ),
                 shape = RoundedCornerShape(6.dp),
@@ -327,9 +302,11 @@ fun OtpVerificationScreen(
         }
     }
 
-    LaunchedEffect(key1 = mobileNumber){
-        snackState.addMessage(message=context.getString(R.string.otp_send_to_mobile_number_message,mobileNumber),
-            isSuccess = true, isCustomIcon = false)
+    LaunchedEffect(key1 = mobileNumber) {
+        snackState.addMessage(
+            message = context.getString(R.string.otp_send_to_mobile_number_message, mobileNumber),
+            isSuccess = true, isCustomIcon = false
+        )
     }
 
     CustomSnackBarShow(state = snackState)

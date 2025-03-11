@@ -222,7 +222,8 @@ sealed class HomeScreens(val route: String) {
 
 sealed class SettingScreens(val route: String) {
     object SETTING_SCREEN : SettingScreens(route = SETTING_ROUTE_NAME)
-    object LANGUAGE_SCREEN : SettingScreens(route = LANGUAGE_SCREEN_ROUTE_NAME)
+    object LANGUAGE_SCREEN :
+        SettingScreens(route = "$LANGUAGE_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_PAGE_FROM.value}}")
     object BUG_LOGGING_SCREEN : SettingScreens(route = BUG_LOGGING_ROUTE_NAME)
     object VIDEO_LIST_SCREEN : SettingScreens(route = VIDEO_SCREEN_ROUTE_NAME)
     object VIDEO_PLAYER_SCREEN : SettingScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_VIDEO_ID.value}}")
@@ -254,7 +255,8 @@ sealed class LogoutScreens(val route: String){
 
 sealed class AuthScreen(val route: String) {
     object START_SCREEN : AuthScreen(route = AUTH_START_SCREEN_ROUTE_NAME)
-    object LANGUAGE_SCREEN : AuthScreen(route = AUTH_LANGUAGE_SCREEN_ROUTE_NAME)
+    object LANGUAGE_SCREEN :
+        AuthScreen(route = "$AUTH_LANGUAGE_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_PAGE_FROM.value}}")
     object BUG_LOGGING_SCREEN : AuthScreen(route = AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME)
     object LOGIN : AuthScreen(route = AUTH_LOGIN_SCREEN_ROUTE_NAME)
     object VILLAGE_SELECTION_SCREEN : AuthScreen(route = AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME)

@@ -4,6 +4,7 @@ import com.google.gson.Gson
 import com.nudge.core.LAST_SYNC_TIME
 import com.nudge.core.model.response.LastSyncResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_USER_NAME
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -37,6 +38,10 @@ class OtpVerificationRepository @Inject constructor(
 
     fun saveLoggedInUserType(userType:String){
         prefRepo.savePref(PREF_KEY_TYPE_NAME,userType)
+    }
+
+    fun saveLoggedInUserId(userType: String) {
+        prefRepo.savePref(PREF_KEY_USER_NAME, userType)
     }
 
     fun setIsUserBPC(typeName: String) {
