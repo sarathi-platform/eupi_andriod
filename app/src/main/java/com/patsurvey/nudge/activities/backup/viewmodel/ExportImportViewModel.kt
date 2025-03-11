@@ -260,7 +260,7 @@ class ExportImportViewModel @Inject constructor(
     fun fetchAppConfig(onApiSuccess: () -> Unit) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.getAppConfigurations {
+            fetchAppConfigFromNetworkUseCase.invoke {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 onApiSuccess()
             }

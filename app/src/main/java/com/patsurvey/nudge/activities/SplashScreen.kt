@@ -59,17 +59,8 @@ fun SplashScreen(
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
-
-
-            NudgeLogger.d(
-                "SplashScreen",
-                "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true"
-            )
             (context as MainActivity).validateAppVersionAndCheckUpdate()
-            NudgeLogger.d(
-                "SplashScreen",
-                "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true"
-            )
+            NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true")
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
@@ -105,7 +96,10 @@ fun SplashScreen(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
-                viewModel.fetchAppConfigForProperties()
+
+                viewModel.fetchAppConfigForProperties {
+                    (context as MainActivity).validateAppVersionAndCheckUpdate()
+                }
                 viewModel.checkAndSendSyncProgress()
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
