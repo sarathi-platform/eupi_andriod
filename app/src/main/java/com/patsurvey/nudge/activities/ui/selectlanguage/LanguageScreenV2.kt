@@ -41,9 +41,6 @@ fun LanguageScreenV2(
 ) {
     val context = LocalContext.current
     HandleNetworkError(viewModel, context)
-    if (pageFrom == ARG_FROM_HOME) {
-        RequestPermissions()
-    }
 
     HandleBackPress(pageFrom, viewModel, navController, context)
     Scaffold(

@@ -84,7 +84,7 @@ fun LoginScreenV2(
 
     val focusManager = LocalFocusManager.current
     var isFocused by remember { mutableStateOf(false) }
-
+    RequestPermissions()
     setKeyboardToReadjust(activity)
     val networkErrorMessage = viewModel.networkErrorMessage.value
     BackHandler {
@@ -276,3 +276,4 @@ fun LoginScreenV2(
     }
     CustomSnackBarShow(state = snackState)
 }
+

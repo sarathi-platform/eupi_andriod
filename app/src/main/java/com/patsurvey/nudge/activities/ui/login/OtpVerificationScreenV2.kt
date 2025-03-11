@@ -62,10 +62,7 @@ import com.nudge.core.ui.theme.dimen_72_dp
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
 import com.nudge.core.value
-import com.nudge.navigationmanager.graphs.AuthScreen
-import com.nudge.navigationmanager.graphs.HomeScreens
-import com.nudge.navigationmanager.graphs.LogoutScreens
-import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.routes.AUTH_LANGUAGE_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -78,6 +75,7 @@ import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
 import com.patsurvey.nudge.customviews.rememberSnackBarState
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.OTP_LENGTH
 import com.patsurvey.nudge.utils.OTP_RESEND_DURATION
@@ -86,7 +84,7 @@ import com.patsurvey.nudge.utils.UPCM_USER
 import java.text.SimpleDateFormat
 import java.util.Date
 
-@SuppressLint("UnrememberedMutableState")
+@SuppressLint("UnrememberedMutableState", "StringFormatMatches")
 @Composable
 fun OtpVerificationScreenV2(
     navController: NavController,
@@ -324,61 +322,12 @@ fun OtpVerificationScreenV2(
             Button(
                 onClick = {
                     viewModel.validateOtp { userType, success, message ->
-                        isOtpInputWrong = !success
                         if (success) {
-                            if (userType == UPCM_USER) {
-                                if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME,
-                                        true
-                                    ) == true
-                                ) {
-                                    navController.navigate(route = LogoutScreens.LOG_DATA_LOADING_SCREEN.route) {
-                                        launchSingleTop = true
-                                        popUpTo(AuthScreen.START_SCREEN.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                } else if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME_SUB_GRAPH,
-                                        true
-                                    ) == true
-                                ) {
-                                    navController.navigate(
-                                        HomeScreens.PROGRESS_SEL_SCREEN.route
-                                    )
-                                } else {
-                                    navController.popBackStack()
-                                    navController.navigate(
-                                        NudgeNavigationGraph.HOME
-                                    )
-                                }
-                            } else {
+                            if (userType != UPCM_USER) {
                                 viewModel.savePageFromOTPScreen()
-                                if (navController.graph.route?.equals(
-                                        NudgeNavigationGraph.HOME,
-                                        true
-                                    ) == true
-                                ) {
-                                    navController.navigate(route = LogoutScreens.LOG_VILLAGE_SELECTION_SCREEN.route) {
-                                        launchSingleTop = true
-                                        popUpTo(AuthScreen.START_SCREEN.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                } else {
-                                    navController.navigate(
-                                        route = AuthScreen.VILLAGE_SELECTION_SCREEN
-                                            .route
-                                    ) {
-                                        launchSingleTop = true
-                                        popUpTo(AuthScreen.START_SCREEN.route) {
-                                            inclusive = true
-                                        }
-                                    }
-                                }
                             }
+                            navController.navigate(route = "$AUTH_LANGUAGE_SCREEN_ROUTE_NAME/$ARG_FROM_HOME")
                             RetryHelper.autoReadOtp.value = ""
-                            viewModel.languageConfigUseCase()
                         } else {
                             Log.e("TAG", "OtpVerificationScreen: $message")
                             snackState.addMessage(

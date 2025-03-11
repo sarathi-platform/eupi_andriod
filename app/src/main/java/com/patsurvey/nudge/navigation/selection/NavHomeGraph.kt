@@ -68,7 +68,6 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreenV2
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreenV2
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
-import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreenV2
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
@@ -722,22 +721,12 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController, v2TheameEn
             arguments = listOf(navArgument(ARG_PAGE_FROM) {
                 type = NavType.StringType
             })) {
-            if (v2TheameEnable) {
-                LanguageScreenV2(
-                    navController = navController,
-                    viewModel = hiltViewModel(),
-                    modifier = Modifier.fillMaxSize(),
-                    pageFrom = it.arguments?.getString(ARG_PAGE_FROM) ?: BLANK_STRING
-
-                )
-            } else {
-                LanguageScreen(
-                    navController = navController,
-                    viewModel = hiltViewModel(),
-                    modifier = Modifier.fillMaxSize(),
-                    pageFrom = it.arguments?.getString(ARG_PAGE_FROM) ?: BLANK_STRING
-                )
-            }
+            LanguageScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = it.arguments?.getString(ARG_PAGE_FROM) ?: BLANK_STRING
+            )
         }
         
         composable(route = SettingScreens.VIDEO_LIST_SCREEN.route) {
