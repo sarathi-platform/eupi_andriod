@@ -8,7 +8,7 @@
         <item quantity="other">Small Group</item>
     </plurals>
     <string name="delete_attendance_confirmation_msg">
-    You want to delete small group attendance?
+    Are you sure you want to delete the attendance for this date?
     </string>
     <string name="confirmation_alert_dialog_title">
         Are you sure!
@@ -77,5 +77,6 @@ Do you want to mark all absent</string>
         <item quantity="other">Search Didi</item>
     </plurals>
     <string name="attendance_already_marked">Attendance already marked for the date: %1$d </string>
+    <string name="attendance_submitted_msg">Attendance has been submitted</string>
 
 </resources>

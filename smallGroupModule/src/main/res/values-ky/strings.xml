@@ -10,10 +10,9 @@
 
 Chikon Bodol</item>
         </plurals>
-        <plurals name="delete_attendance_confirmation_msg">
-            <item quantity="one">Nwng kubui de small group ni bwmwng dakhokma no tan na muchung?</item>
-            <item quantity="other">Nwng kubui de small group ni bwmwng dakhokma no tan na muchung?</item>
-        </plurals>
+    <string name="delete_attendance_confirmation_msg">
+            Nwng kubui de small group ni bwmwng dakhokma no tan na muchung?
+        </string>
         <plurals name="confirmation_alert_dialog_title">
             <item quantity="one">"Kubui da? "</item>
             <item quantity="other">"Kubui da? "</item>
@@ -70,8 +69,9 @@ Chikon Bodol</item>
             <item quantity="other">Ok</item>
         </plurals>
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\n If the date is incorrect, then please delete the entry and enter new attendance."</string>
+    <string name="attendance_submitted_msg">Attendance has been submitted</string>
 
-        <plurals name="submit">
+    <plurals name="submit">
             <item quantity="one">Submit</item>
             <item quantity="other">Submit</item>
         </plurals>

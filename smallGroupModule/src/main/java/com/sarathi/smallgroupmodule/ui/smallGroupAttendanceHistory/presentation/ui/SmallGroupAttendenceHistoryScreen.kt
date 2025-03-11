@@ -173,7 +173,7 @@ fun SmallGroupAttendanceHistoryScreen(
                 R.string.confirmation_alert_dialog_title
             ),
             message = smallGroupAttendanceHistoryViewModel.stringResource(
-                R.string.do_you_want_mark_all_absent
+                R.string.delete_attendance_confirmation_msg
             ),
             positiveButtonTitle = smallGroupAttendanceHistoryViewModel.stringResource(
                 R.string.yes
