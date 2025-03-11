@@ -547,6 +547,7 @@
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
     <string name="data">তথ্য</string>
     <string name="invalid_url">অবৈধ URL</string>
+    <string name="no_village_found">No Village Found</string>
 
     <string name="verify_otp">OTP প্ৰমাণিত কৰক</string>
     <string name="an_otp_has_been_sent_on">নম্বৰত এটা OTP প্ৰেৰণ কৰা হৈছে</string>

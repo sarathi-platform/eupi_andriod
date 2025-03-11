@@ -553,4 +553,5 @@
     <string name="mobile_number">मोबाइल नंबर</string>
     <string name="otp_is_invalid">OTP मान्य नहीं है</string>
     <string name="invalid_url">अमान्य URL</string>
+    <string name="no_village_found">No Village Found</string>
 </resources>
