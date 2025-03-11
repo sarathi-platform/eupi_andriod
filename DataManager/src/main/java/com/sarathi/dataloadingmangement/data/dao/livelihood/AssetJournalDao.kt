@@ -158,4 +158,12 @@ interface AssetJournalDao {
         transactionFlow: String,
         transactionId: String
     ): Int?
+
+    @Query("Select * from asset_journal_table where userId=:userId and transactionId=:transactionId and subjectId=:subjectId and status=1")
+    suspend fun getAssetJournalListForTransaction(
+        userId: String,
+        transactionId: String,
+        subjectId: Int
+    ): List<AssetJournalEntity>
+
 }

@@ -178,4 +178,16 @@ class AssetJournalRepositoryImpl @Inject constructor(
 
     }
 
+    override suspend fun getAssetJournalListForTransaction(
+        transactionId: String,
+        subjectId: Int
+    ): List<AssetJournalEntity> {
+        return assetJournalDao.getAssetJournalListForTransaction(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            transactionId = transactionId,
+            subjectId = subjectId
+        )
+    }
+
+
 }

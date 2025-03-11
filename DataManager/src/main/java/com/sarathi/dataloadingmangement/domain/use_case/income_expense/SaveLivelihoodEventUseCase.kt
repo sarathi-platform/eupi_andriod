@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
+import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IMoneyJournalRepository
@@ -18,7 +19,8 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         particular: String,
         createdDate: Long,
         modifiedDate: Long,
-        isEventNeedToSaveInSubjectEventMapping: Boolean = true
+        isEventNeedToSaveInSubjectEventMapping: Boolean = true,
+        isEventEdit: Boolean = false
     ) {
         if (isEventNeedToSaveInSubjectEventMapping) {
             subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
@@ -28,7 +30,7 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             )
         }
 
-        if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+        if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name && isEventEdit) {
             assetJournalRepository.softDeleteAssetJournalEvent(
                 eventData.transactionId,
                 eventData.subjectId
@@ -76,6 +78,13 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         selectedEvent.moneyJournalEntryFlowType?.let {
             moneyJournalRepo.deleteMoneyJournalTransaction(transactionId, subjectId)
         }
+    }
+
+    suspend fun fetchAssetJournalList(
+        transactionId: String,
+        subjectId: Int
+    ): List<AssetJournalEntity>? {
+        return assetJournalRepository.getAssetJournalListForTransaction(transactionId, subjectId)
     }
 
 

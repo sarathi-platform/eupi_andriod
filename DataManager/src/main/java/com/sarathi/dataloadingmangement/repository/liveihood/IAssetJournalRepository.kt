@@ -32,4 +32,9 @@ interface IAssetJournalRepository {
     suspend fun getTotalAssetCount(
         livelihoodId: Int, subjectId: Int, assetId: Int, transactionId: String
     ): Int
+
+    suspend fun getAssetJournalListForTransaction(
+        transactionId: String,
+        subjectId: Int
+    ): List<AssetJournalEntity>?
 }

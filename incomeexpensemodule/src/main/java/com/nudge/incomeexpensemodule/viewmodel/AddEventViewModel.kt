@@ -19,6 +19,8 @@ import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.INFLOW
+import com.sarathi.dataloadingmangement.OUTFLOW
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
@@ -143,6 +145,18 @@ class AddEventViewModel @Inject constructor(
                 amount.value = savedEvent.amount.toString()
                 selectedAssetTypeId.value = savedEvent.assetType
                 assetCount.value = savedEvent.assetCount.toString()
+
+                if (savedEvent.selectedEvent.name == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+                    val assetList = saveLivelihoodEventUseCase.fetchAssetJournalList(
+                        subjectId = subjectId,
+                        transactionId = transactionId
+                    )
+                    selectedAssetTypeId.value =
+                        assetList?.find { it.transactionFlow == INFLOW }?.assetId ?: -1
+                    selectedChildAssetTypeId.value =
+                        assetList?.find { it.transactionFlow == OUTFLOW }?.assetId ?: -1
+                }
+
                 getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
                     questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
                 }
@@ -368,7 +382,7 @@ class AddEventViewModel @Inject constructor(
     ) {
         if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
             event.assetJournalEntryFlowType =
-                if (isChildEvent) EntryFlowTypeEnum.INFLOW else EntryFlowTypeEnum.OUTFLOW
+                if (isChildEvent) EntryFlowTypeEnum.OUTFLOW else EntryFlowTypeEnum.INFLOW
         }
         val createdDateTime = getCurrentTimeInMillis()
         val modifiedDate = getCurrentTimeInMillis()
