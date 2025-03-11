@@ -8,10 +8,9 @@
             <item quantity="one">Small Group</item>
             <item quantity="other">Small Group</item>
         </plurals>
-        <plurals name="delete_attendance_confirmation_msg">
-            <item quantity="one">You want to delete small group attendance?</item>
-            <item quantity="other">You want to delete small group attendance?</item>
-        </plurals>
+    <string name="delete_attendance_confirmation_msg">
+            क्या आप वाकई इस तिथि की उपस्थिति हटाना चाहते हैं?
+        </string>
         <plurals name="confirmation_alert_dialog_title">
             <item quantity="one">Are you sure!</item>
             <item quantity="other">Are you sure!</item>
@@ -69,8 +68,9 @@
             <item quantity="other">Ok</item>
         </plurals>
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\n If the date is incorrect, then please delete the entry and enter new attendance."</string>
+    <string name="attendance_submitted_msg">Attendance has been submitted</string>
 
-        <plurals name="submit">
+    <plurals name="submit">
             <item quantity="one">Submit</item>
             <item quantity="other">Submit</item>
         </plurals>

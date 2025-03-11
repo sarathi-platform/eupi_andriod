@@ -10,10 +10,9 @@
         <item quantity="other">फिसा हान्जानि</item>
     </plurals>
 
-    <plurals name="delete_attendance_confirmation_msg">
-        <item quantity="one">नोंथाङा रोखा नामा दि नोंथाङा फिसा हानजानि नुजाथिनायखौ खोमोरनो लुबैदों?</item>
-        <item quantity="other">नोंथाङा रोखा नामा दि नोंथाङा फिसा हानजानि नुजाथिनायखौ खोमोरनो लुबैदों?</item>
-    </plurals>
+    <string name="delete_attendance_confirmation_msg">
+        नोंथाङा रोखा नामा दि नोंथाङा बे खालारनि नुजाथिनायखौ खोमोरनो लुबैदों?
+    </string>
 
     <plurals name="confirmation_alert_dialog_title">
         <item quantity="one">"नों थार नामा? "</item>
@@ -76,6 +75,7 @@
     </plurals>
 
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\n If the date is incorrect, then please delete the entry and enter new attendance."</string>
+    <string name="attendance_submitted_msg">Attendance has been submitted</string>
 
     <plurals name="submit">
         <item quantity="one">गथाय</item>

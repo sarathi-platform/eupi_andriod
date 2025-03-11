@@ -28,6 +28,7 @@ import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -1524,6 +1525,12 @@ fun Date.toLong(timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Long {
 fun List<Events>.getEventCountsByStatus(): Map<String, Int> {
     return this.groupingBy { it.status }
         .eachCount()
+}
+
+@Composable
+fun Context.redirectToLink(link: String?) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    this.startActivity(intent)
 }
 fun isAllowedCharacterInput(value: String?): Boolean {
     return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
