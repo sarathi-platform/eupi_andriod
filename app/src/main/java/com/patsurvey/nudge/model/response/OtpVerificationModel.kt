@@ -6,9 +6,12 @@ import com.google.gson.annotations.SerializedName
 data class OtpVerificationModel(
     @SerializedName("token")
     @Expose
-    val token:String,
+    val token: String,
 
     @SerializedName("typeName")
     @Expose
-    val typeName: String?
+    val typeName: String?,
+    @SerializedName("userId")
+    @Expose
+    val userId: String?
 )

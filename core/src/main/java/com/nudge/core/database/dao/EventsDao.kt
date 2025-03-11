@@ -16,6 +16,7 @@ import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.datamodel.RequestIdCountModel
 import com.nudge.core.model.response.SyncEventResponse
 import com.nudge.core.toDate
+import com.nudge.core.toLong
 import com.nudge.core.utils.SyncType
 import java.util.Date
 
@@ -239,4 +240,34 @@ interface EventsDao {
 
     @Query("SELECT id FROM $EventsTable WHERE status !=:status and mobile_number =:mobileNo")
     fun getAllEventsForConsumerStatus(mobileNo: String, status: String): List<String>
+
+    @Query("SELECT * FROM $EventsTable WHERE mobile_number =:mobileNumber and status = :status")
+    fun getAllSyncedEventsForUser(
+        mobileNumber: String,
+        status: String = EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus
+    ): List<Events>
+
+    @Query("DELETE FROM $EventsTable WHERE mobile_number = :mobileNumber AND eventId in (:eventIds)")
+    fun deleteEventsForIds(mobileNumber: String, eventIds: List<String>)
+
+    @Transaction
+    fun deleteOlderEventsAndReturnEventId(mobileNumber: String, thresholdDate: Long): List<String> {
+        val eventIds = ArrayList<String>()
+        val events = getAllSyncedEventsForUser(mobileNumber)
+
+        if (events.isNotEmpty()) {
+            events
+                .filter { it.modified_date.toLong() < thresholdDate }
+                .forEach { event ->
+                    eventIds.add(event.id)
+                }
+        }
+
+        if (eventIds.isNotEmpty()) {
+            deleteEventsForIds(mobileNumber, eventIds)
+            return eventIds
+        }
+
+        return emptyList()
+    }
 }
