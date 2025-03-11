@@ -547,4 +547,5 @@
     <string name="sync_data_history">डाटा हिस्ट्री को सिंक करें </string>
     <string name="data">डाटा</string>
     <string name="invalid_url">अमान्य URL</string>
+    <string name="no_village_found">No Village Found</string>
 </resources>

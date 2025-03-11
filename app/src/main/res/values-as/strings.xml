@@ -547,6 +547,7 @@
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
     <string name="data">তথ্য</string>
     <string name="invalid_url">অবৈধ URL</string>
+    <string name="no_village_found">No Village Found</string>
 
 
 </resources>

@@ -569,5 +569,6 @@
     <string name="sync_started">Sync Started. Please wait…</string>
     <string name="sync_data_history">Sync Data History</string>
     <string name="invalid_url">Invalid URL</string>
+    <string name="no_village_found">No Village Found</string>
 
 </resources>

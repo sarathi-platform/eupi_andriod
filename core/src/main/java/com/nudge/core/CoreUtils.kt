@@ -1532,3 +1532,6 @@ fun Context.redirectToLink(link: String?) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
     this.startActivity(intent)
 }
+fun isAllowedCharacterInput(value: String?): Boolean {
+    return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
+}

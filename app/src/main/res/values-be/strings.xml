@@ -525,5 +525,6 @@
     <string name="sync_data_history">Sync Data History</string>
     <string name="data">खारि</string>
     <string name="invalid_url">नंखाय URL</string>
+    <string name="no_village_found">No Village Found</string>
 
 </resources>
