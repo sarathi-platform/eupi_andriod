@@ -20,7 +20,7 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         createdDate: Long,
         modifiedDate: Long,
         isEventNeedToSaveInSubjectEventMapping: Boolean = true,
-        isEventEdit: Boolean = false
+        isEventNeedToDelete: Boolean = false
     ) {
         if (isEventNeedToSaveInSubjectEventMapping) {
             subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
@@ -30,7 +30,10 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             )
         }
 
-        if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name && isEventEdit) {
+        if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name
+            || isEventNeedToDelete
+        ) {
+
             assetJournalRepository.softDeleteAssetJournalEvent(
                 eventData.transactionId,
                 eventData.subjectId

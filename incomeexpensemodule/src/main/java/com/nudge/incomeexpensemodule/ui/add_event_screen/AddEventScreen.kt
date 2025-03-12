@@ -83,6 +83,7 @@ fun AddEventScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.showDeleteButton.value = showDeleteButton
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
     }
     BackHandler {

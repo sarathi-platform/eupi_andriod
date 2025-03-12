@@ -1,7 +1,6 @@
 package com.nudge.incomeexpensemodule.viewmodel
 
 import android.text.TextUtils
-import android.util.Log
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateMapOf
@@ -13,7 +12,6 @@ import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDate
 import com.nudge.core.helper.TranslationEnum
-import com.nudge.core.json
 import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
@@ -66,6 +64,7 @@ class AddEventViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val showDeleteDialog = mutableStateOf(false)
+    val showDeleteButton = mutableStateOf(false)
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownValue
 
@@ -353,15 +352,15 @@ class AddEventViewModel @Inject constructor(
                 subjectId = subjectId,
                 event = event,
                 selectedAssetId = selectedAssetTypeId.value,
-
-                )
+                isEventNeedToDelete = showDeleteButton.value
+            )
             if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
                 createAndAddEvent(
                     transactionId = transactionId,
                     subjectId = subjectId,
                     event = event,
                     selectedAssetId = selectedChildAssetTypeId.value,
-                    isChildEvent = true
+                    isChildEvent = true,
                 )
             }
 
@@ -378,7 +377,8 @@ class AddEventViewModel @Inject constructor(
         subjectId: Int,
         event: LivelihoodEventTypeDataCaptureMapping,
         selectedAssetId: Int,
-        isChildEvent: Boolean = false
+        isChildEvent: Boolean = false,
+        isEventNeedToDelete: Boolean = false
     ) {
         if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
             event.assetJournalEntryFlowType =
@@ -409,14 +409,14 @@ class AddEventViewModel @Inject constructor(
             productValue = livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName
                 ?: BLANK_STRING
         )
-        Log.d("TAG", "createAndAddEvent Details 1: ${livelihoodScreenData.json()} ")
 
         saveLivelihoodEventUseCase.addOrEditEvent(
             particular = getParticulars(),
             createdDate = createdDateTime,
             eventData = livelihoodScreenData,
             modifiedDate = modifiedDate,
-            isEventNeedToSaveInSubjectEventMapping = !isChildEvent
+            isEventNeedToSaveInSubjectEventMapping = !isChildEvent,
+            isEventNeedToDelete = (!isChildEvent && isEventNeedToDelete)
         )
         writeLivelihoodEventUseCase.writeLivelihoodEvent(
             particular = getParticulars(),
