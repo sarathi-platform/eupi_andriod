@@ -64,7 +64,7 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     val allSelected = mutableStateOf(false)
 
     val alertDialogState: MutableState<DialogState> = mutableStateOf(DialogState())
-
+    val isFromBackButton = mutableStateOf(false)
     var markedDatesList: List<Long> = emptyList()
 
     override fun <T> onEvent(event: T) {
@@ -74,8 +74,9 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
                 setTranslationConfig()
             }
 
-            is DialogEvents.ShowDialogEvent -> {
+            is DialogEvents.ShowAttendanceDialogEvent -> {
                 alertDialogState.value = alertDialogState.value.copy(event.showDialog)
+                isFromBackButton.value = event.isFromBackButton
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -277,5 +278,20 @@ class SmallGroupAttendanceScreenViewModel @Inject constructor(
     }
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.SmallGroupAttendanceScreen
+    }
+
+    fun isAttendanceAllowedForDate(result: (Boolean) -> Unit) {
+        ioViewModelScope {
+            try {
+                val isAttendanceAllowedForDate = checkIsAttendanceAllowedForDate()
+                withContext(mainDispatcher) {
+                    result(isAttendanceAllowedForDate)
+                }
+            } catch (ex: Exception) {
+                withContext(mainDispatcher) {
+                    result(true)
+                }
+            }
+        }
     }
 }

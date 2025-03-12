@@ -184,6 +184,10 @@
     <string name="mark_as_completed">Kdew ba la dep</string>
     <string name="village_text">Ka shnong</string>
     <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">Are you sure you want to continue? You wont be able to make changes to this section once it\'s completed</string>
+    <string name="app_update_cancel">Cancel</string>
+    <string name="app_update">Update</string>
+    <string name="update_available">Update Available</string>
+    <string name="version_available_message">A new version of app is available. Update the app to continue.</string>
     <string name="vo_name">Ka kyrteng VO</string>
     <string name="total">Baroh</string>
     <string name="participation_date_wealth_ranking">Ka Tarik</string>
@@ -564,5 +568,7 @@
     <string name="sync_only_images">Sync Only Images</string>
     <string name="sync_started">Sync Started. Please wait…</string>
     <string name="sync_data_history">Sync Data History</string>
+    <string name="invalid_url">Invalid URL</string>
+    <string name="no_village_found">No Village Found</string>
 
 </resources>

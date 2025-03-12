@@ -35,6 +35,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.nudge.core.isAllowedCharacterInput
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.CustomOutlineTextField
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
@@ -108,8 +109,11 @@ fun SearchWithFilterView(
                 CustomOutlineTextField(
                     value = searchString,
                     onValueChange = {
-                        searchString = it
-                        onSearchValueChange(it)
+                        if (isAllowedCharacterInput(it)) {
+                            searchString = it
+                            onSearchValueChange(it)
+                        }
+
                     },
                             placeholder = {
                         Text(

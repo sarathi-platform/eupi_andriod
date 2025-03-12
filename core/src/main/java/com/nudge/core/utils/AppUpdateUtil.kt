@@ -14,6 +14,7 @@ import com.google.android.play.core.ktx.isFlexibleUpdateAllowed
 import com.google.android.play.core.ktx.isImmediateUpdateAllowed
 import com.nudge.core.APP_UPDATE_REQUEST_CODE
 import com.nudge.core.R
+import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.CoreAppDetails
 
 const val APP_UPDATE_TAG = "AppUpdateDetails"
@@ -73,56 +74,83 @@ private fun Activity.requestAppUpdate(
 
 fun Activity.setupAppUpdateListeners(
     appUpdateManager: AppUpdateManager,
-    updateType: Int
+    updateType: Int,
+    translationHelper: TranslationHelper
 ) {
 
 
     when (updateType) {
-        AppUpdateType.FLEXIBLE -> setupFlexibleUpdateSuccessListener(appUpdateManager)
+        AppUpdateType.FLEXIBLE -> setupFlexibleUpdateSuccessListener(
+            appUpdateManager,
+            translationHelper
+        )
         AppUpdateType.IMMEDIATE -> setupImmediateUpdateSuccessListener(appUpdateManager)
     }
 
     if (updateType == AppUpdateType.FLEXIBLE) {
-        appUpdateManager.registerListener(getInstallStateUpdateListener(appUpdateManager))
+        appUpdateManager.registerListener(
+            getInstallStateUpdateListener(
+                appUpdateManager,
+                translationHelper
+            )
+        )
     }
 }
 
 private fun Activity.setupImmediateUpdateSuccessListener(appUpdateManager: AppUpdateManager) {
     appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
-        if (appUpdateInfo.updateAvailability() == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS) {
+        if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
             requestAppUpdate(appUpdateManager, appUpdateInfo, AppUpdateType.IMMEDIATE)
         }
     }
 }
 
-private fun Activity.setupFlexibleUpdateSuccessListener(appUpdateManager: AppUpdateManager) {
+private fun Activity.setupFlexibleUpdateSuccessListener(
+    appUpdateManager: AppUpdateManager,
+    translationHelper: TranslationHelper
+) {
     appUpdateManager.appUpdateInfo.addOnSuccessListener { appUpdateInfo ->
         if (appUpdateInfo.installStatus() == InstallStatus.DOWNLOADED) {
-            showInstallSnackBar(appUpdateManager)
+            showInstallSnackBar(appUpdateManager, translationHelper)
         }
     }
 }
 
-fun Activity.unregisterAppUpdateListeners(appUpdateManager: AppUpdateManager, updateType: Int) {
+fun Activity.unregisterAppUpdateListeners(
+    appUpdateManager: AppUpdateManager,
+    updateType: Int,
+    translationHelper: TranslationHelper
+) {
     if (updateType == AppUpdateType.FLEXIBLE) {
-        appUpdateManager.unregisterListener(getInstallStateUpdateListener(appUpdateManager))
+        appUpdateManager.unregisterListener(
+            getInstallStateUpdateListener(
+                appUpdateManager,
+                translationHelper
+            )
+        )
     }
 }
 
-private fun Activity.getInstallStateUpdateListener(appUpdateManager: AppUpdateManager) =
+private fun Activity.getInstallStateUpdateListener(
+    appUpdateManager: AppUpdateManager,
+    translationHelper: TranslationHelper
+) =
     InstallStateUpdatedListener {
         if (it.installStatus() == InstallStatus.DOWNLOADED) {
-            this.showInstallSnackBar(appUpdateManager)
+            this.showInstallSnackBar(appUpdateManager, translationHelper)
         }
     }
 
-fun Activity.showInstallSnackBar(appUpdateManager: AppUpdateManager) {
+fun Activity.showInstallSnackBar(
+    appUpdateManager: AppUpdateManager,
+    translationHelper: TranslationHelper
+) {
     Snackbar.make(
         findViewById(android.R.id.content),
-        getString(R.string.str_download_complete),
+        translationHelper.getString(R.string.str_download_complete),
         Snackbar.LENGTH_INDEFINITE
     ).apply {
-        setAction(getString(R.string.str_restart)) {
+        setAction(translationHelper.getString(R.string.click_here_to_install)) {
             appUpdateManager.completeUpdate()
         }
         show()
