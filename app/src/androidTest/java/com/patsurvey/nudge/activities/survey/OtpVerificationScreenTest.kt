@@ -1,15 +1,11 @@
 package com.patsurvey.nudge.activities.survey
 
 import androidx.activity.ComponentActivity
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.assertHasClickAction
 import androidx.compose.ui.test.junit4.createAndroidComposeRule
 import androidx.compose.ui.test.onNodeWithText
-import androidx.navigation.compose.rememberNavController
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationRepository
-import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationViewModel
-import com.patsurvey.nudge.activities.ui.theme.Nudge_Theme
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.request.OtpRequest
@@ -22,12 +18,10 @@ import com.patsurvey.nudge.utils.SUCCESS
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import kotlinx.coroutines.test.runBlockingTest
-import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
-import org.mockito.MockitoAnnotations
 
 class OtpVerificationScreenTest {
     @get:Rule
@@ -77,7 +71,7 @@ class OtpVerificationScreenTest {
         val expectedResponse: ApiResponseModel<OtpVerificationModel> = ApiResponseModel(
             SUCCESS,
             "SUCCESS",
-            OtpVerificationModel("token", typeName = "Community Resource Person")
+            OtpVerificationModel("token", typeName = "Community Resource Person", userId = "122")
         )
 
         Mockito.`when`(apiInterface.validateOtp(mockRequestBody)).thenReturn(expectedResponse)
