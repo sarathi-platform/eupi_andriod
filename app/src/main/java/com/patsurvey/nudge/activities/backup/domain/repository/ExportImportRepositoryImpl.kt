@@ -134,6 +134,6 @@ class ExportImportRepositoryImpl @Inject constructor(
     }
 
     override fun isRegenerateAllowed(): Boolean {
-        return coreSharedPrefs.getPref(AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name, false)
+        return !coreSharedPrefs.getPref(AppConfigKeysEnum.REGENERATE_EVENT_ENABLED.name, false)
     }
 }

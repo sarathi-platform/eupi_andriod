@@ -32,10 +32,7 @@ import com.nudge.core.moduleNameAccToLoggedInUser
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
-import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
-import com.nudge.core.utils.AESHelper
-import com.nudge.core.value
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -237,7 +234,7 @@ class ExportImportViewModel @Inject constructor(
             try {
                 if (loggedInUserType.value == UPCM_USER) {
 
-                    eventWriterHelperImpl.regenerateAllEvent(appContext = mAppContext)
+                    // eventWriterHelperImpl.regenerateAllEvent(appContext = mAppContext)
                     regenerateGrantEventUsecase.invoke()
                 } else {
                     settingRepository.regenerateAllEvent(coreSharedPrefs = coreSharedPrefs)
