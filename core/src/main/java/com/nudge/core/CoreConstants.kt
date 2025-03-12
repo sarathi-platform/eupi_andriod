@@ -279,3 +279,5 @@ const val INVALID_OPERATION_MESSAGE = "Invalid operationType:"
 
 const val LOGGING_TYPE_DEBUG: String = "DEBUG"
 const val LOGGING_TYPE_EXCEPTION: String = "EXCEPTION"
+
+const val REMOTE_QUERY_CONFIG_EXECUTION_LEVEL_GLOBAL = "GLOBAL"

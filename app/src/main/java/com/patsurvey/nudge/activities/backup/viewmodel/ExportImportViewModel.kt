@@ -33,6 +33,7 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.usecase.FetchRemoteQueryFromNetworkUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -57,7 +58,8 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    private val remoteQueryExecutionUseCase: RemoteQueryExecutionUseCase
+    private val remoteQueryExecutionUseCase: RemoteQueryExecutionUseCase,
+    private val fetchRemoteQueryFromNetworkUseCase: FetchRemoteQueryFromNetworkUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -263,6 +265,7 @@ class ExportImportViewModel @Inject constructor(
         onEvent(LoaderEvent.UpdateLoaderState(true))
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke()
+            fetchRemoteQueryFromNetworkUseCase.invoke()
             onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
