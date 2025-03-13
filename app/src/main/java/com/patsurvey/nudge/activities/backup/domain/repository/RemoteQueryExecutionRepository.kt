@@ -2,48 +2,42 @@ package com.patsurvey.nudge.activities.backup.domain.repository
 
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteStatement
-import com.nudge.core.model.RemoteQueryDto
+import com.nudge.core.database.entities.RemoteQueryAuditTrailEntity
 
 interface RemoteQueryExecutionRepository {
 
     fun checkIfQueryIsValid(query: String, isUserIdCheckRequired: Boolean = true): Boolean
 
-    suspend fun getRemoteQuery(): List<RemoteQueryDto?>
+    suspend fun getRemoteQuery(): List<RemoteQueryAuditTrailEntity>
 
-    suspend fun executeQuery(remoteQueryDto: RemoteQueryDto)
+    suspend fun executeQuery(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity)
 
     suspend fun getSQLiteStatement(
         database: RoomDatabase,
-        remoteQueryDto: RemoteQueryDto,
-        auditTrailRowId: Long,
-        userId: String
+        remoteQueryAuditTrail: RemoteQueryAuditTrailEntity
     ): SupportSQLiteStatement?
 
     suspend fun executeInsertState(
-        auditTrailRowId: Int,
-        userId: String,
-        remoteQueryDto: RemoteQueryDto,
+        remoteQueryAuditTrail: RemoteQueryAuditTrailEntity,
         supportSQLiteStatement: SupportSQLiteStatement
     ): Long
 
     suspend fun executeUpdateDeleteStatement(
-        auditTrailRowId: Int,
-        userId: String,
-        remoteQueryDto: RemoteQueryDto,
+        remoteQueryAuditTrail: RemoteQueryAuditTrailEntity,
         supportSQLiteStatement: SupportSQLiteStatement
     ): Int
 
     fun getCleanQuery(query: String): String
 
-    fun isUserIdCheckNotRequired(remoteQueryDto: RemoteQueryDto): Boolean
+    fun isUserIdCheckNotRequired(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean
 
-    fun getDatabaseForQueryExecution(remoteQueryDto: RemoteQueryDto): RoomDatabase?
+    fun getDatabaseForQueryExecution(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): RoomDatabase?
 
-    fun isDatabaseVersionValidForExecution(remoteQueryDto: RemoteQueryDto): Boolean
+    fun isDatabaseVersionValidForExecution(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean
 
-    fun runAppVersionCheck(remoteQueryDto: RemoteQueryDto): Boolean
+    fun runAppVersionCheck(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean
 
-    suspend fun isQueryAlreadyExecuted(remoteQueryDto: RemoteQueryDto): Boolean
+    suspend fun isQueryAlreadyExecuted(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean
 
 
     fun logEvent(loggingType: String, status: String, msg: String, exception: Exception?)

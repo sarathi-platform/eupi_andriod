@@ -2,6 +2,7 @@ package com.nudge.core.model
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class RemoteQueryDto(
     @SerializedName("appVersion")
@@ -24,7 +25,7 @@ data class RemoteQueryDto(
     val query: String,
     @SerializedName("queryStatus")
     @Expose
-    val queryStatus: String,
+    val queryStatus: String? = BLANK_STRING,
     @SerializedName("tableName")
     @Expose
     val tableName: String

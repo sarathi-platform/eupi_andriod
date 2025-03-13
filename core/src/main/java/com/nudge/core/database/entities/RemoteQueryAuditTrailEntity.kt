@@ -22,6 +22,7 @@ data class RemoteQueryAuditTrailEntity(
     val executionOrder: Int,
     val level: String,
     val status: String,
+    val propertyValueId: Int,
     val errorMessage: String = BLANK_STRING,
     val createdDate: Long = System.currentTimeMillis(),
     val modifiedDate: Long
@@ -31,7 +32,8 @@ data class RemoteQueryAuditTrailEntity(
         fun getRemoteQueryAuditTrailEntity(
             remoteQueryDto: RemoteQueryDto,
             userId: String,
-            level: String
+            level: String,
+            propertyValueId: Int
         ): RemoteQueryAuditTrailEntity {
             return RemoteQueryAuditTrailEntity(
                 userId = userId,
@@ -41,10 +43,11 @@ data class RemoteQueryAuditTrailEntity(
                 operationType = remoteQueryDto.operationType,
                 appVersion = remoteQueryDto.appVersion,
                 query = remoteQueryDto.query,
-                status = remoteQueryDto.status,
+                status = remoteQueryDto.queryStatus ?: BLANK_STRING,
                 level = level,
                 executionOrder = remoteQueryDto.executionOrder,
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                propertyValueId = propertyValueId
             )
         }
     }

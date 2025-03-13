@@ -173,7 +173,6 @@ fun ExportImportScreen(
                             viewModel.fetchAppConfig()
                             viewModel.showConfirmationDialog.value = false
                             viewModel.appConfigDataAnalytic()
-                            viewModel.checkAndRunRemoteQueryExecution()
                         } else {
                             showCustomToast(
                                 context,

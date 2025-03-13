@@ -12,9 +12,10 @@ interface RemoteQueryAuditTrailEntityDao {
     @Insert
     suspend fun insertRemoteQueryAuditTrailEntity(remoteQueryAuditTrailEntity: RemoteQueryAuditTrailEntity): Long
 
-    @Query("UPDATE remote_query_edit_trail_table SET status = :status, errorMessage = :errorMessage, modifiedDate = :modifiedDate  WHERE userId = :userId and id = :id")
+    @Query("UPDATE remote_query_edit_trail_table SET status = :status, errorMessage = :errorMessage, modifiedDate = :modifiedDate  WHERE userId = :userId and propertyValueId = :propertyValueId and id=:id")
     suspend fun updateRemoteQueryAuditTrailEntityStatus(
         id: Int,
+        propertyValueId: Int,
         status: String,
         errorMessage: String = BLANK_STRING,
         userId: String,
@@ -31,5 +32,8 @@ interface RemoteQueryAuditTrailEntityDao {
         appVersion: String,
         query: String
     ): RemoteQueryAuditTrailEntity?
+
+    @Query("SELECT * FROM remote_query_edit_trail_table WHERE userId = :userId  ")
+    fun getRemoteQueries(userId: String): List<RemoteQueryAuditTrailEntity>
 
 }

@@ -3,7 +3,8 @@ package com.nudge.core.di
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
-import com.nudge.core.data.repository.FetchRemoteQueryFromNetworkRepository
+import com.nudge.core.data.repository.RemoteQueryAuditTrailRepository
+import com.nudge.core.data.repository.RemoteQueryNetworkRepositoryImpl
 import com.nudge.core.data.repository.SyncMigrationRepository
 import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
@@ -60,10 +61,12 @@ class UsecaseModule {
     @Provides
     @Singleton
     fun providesFetchRemoteQueryFromNetworkUseCase(
-        fetchRemoteQueryFromNetworkRepository: FetchRemoteQueryFromNetworkRepository
+        remoteQueryNetworkRepository: RemoteQueryNetworkRepositoryImpl,
+        remoteQueryAuditTrailRepository: RemoteQueryAuditTrailRepository
     ): FetchRemoteQueryFromNetworkUseCase {
         return FetchRemoteQueryFromNetworkUseCase(
-            fetchRemoteQueryFromNetworkRepository
+            remoteQueryNetworkRepository = remoteQueryNetworkRepository,
+            remoteQueryAuditTrailRepository = remoteQueryAuditTrailRepository
         )
     }
 }

@@ -5,8 +5,10 @@ import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
-import com.nudge.core.data.repository.FetchRemoteQueryFromNetworkRepository
-import com.nudge.core.data.repository.FetchRemoteQueryFromNetworkRepositoryImpl
+import com.nudge.core.data.repository.RemoteQueryAuditTrailRepository
+import com.nudge.core.data.repository.RemoteQueryAuditTrailRepositoryImpl
+import com.nudge.core.data.repository.RemoteQueryNetworkRepository
+import com.nudge.core.data.repository.RemoteQueryNetworkRepositoryImpl
 import com.nudge.core.data.repository.SyncMigrationRepository
 import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
@@ -67,14 +69,24 @@ class RepositoryModule {
     fun providesFetchRemoteQueryFromNetworkRepository(
         coreApiService: CoreApiService,
         coreSharedPrefs: CoreSharedPrefs,
-        remoteQueryAuditTrailEntityDao: RemoteQueryAuditTrailEntityDao
-    ): FetchRemoteQueryFromNetworkRepository {
-        return FetchRemoteQueryFromNetworkRepositoryImpl(
+    ): RemoteQueryNetworkRepository {
+        return RemoteQueryNetworkRepositoryImpl(
             coreApiService = coreApiService,
             coreSharedPrefs = coreSharedPrefs,
-            remoteQueryAuditTrailEntityDao = remoteQueryAuditTrailEntityDao
         )
 
     }
 
+    @Provides
+    @Singleton
+    fun providesRemoteQueryAuditRepository(
+        remoteQueryAuditTrailEntityDao: RemoteQueryAuditTrailEntityDao,
+        coreSharedPrefs: CoreSharedPrefs,
+    ): RemoteQueryAuditTrailRepository {
+        return RemoteQueryAuditTrailRepositoryImpl(
+            remoteQueryAuditTrailEntityDao = remoteQueryAuditTrailEntityDao,
+            coreSharedPrefs = coreSharedPrefs,
+        )
+
+    }
 }

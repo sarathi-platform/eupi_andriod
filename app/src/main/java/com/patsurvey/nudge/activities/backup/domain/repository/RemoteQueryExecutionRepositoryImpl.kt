@@ -1,10 +1,8 @@
 package com.patsurvey.nudge.activities.backup.domain.repository
 
 import android.database.sqlite.SQLiteException
-import android.text.TextUtils
 import androidx.room.RoomDatabase
 import androidx.sqlite.db.SupportSQLiteStatement
-import com.google.gson.JsonSyntaxException
 import com.nrlm.baselinesurvey.database.NudgeBaselineDatabase
 import com.nudge.core.CASTE_TABLE
 import com.nudge.core.FAILED
@@ -21,9 +19,6 @@ import com.nudge.core.database.CoreDatabase
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.RemoteQueryAuditTrailEntityDao
 import com.nudge.core.database.entities.RemoteQueryAuditTrailEntity
-import com.nudge.core.enums.AppConfigKeysEnum
-import com.nudge.core.fromJson
-import com.nudge.core.model.RemoteQueryDto
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
@@ -77,32 +72,12 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         return true
     }
 
-    override suspend fun getRemoteQuery(): List<RemoteQueryDto?> {
+    override suspend fun getRemoteQuery(): List<RemoteQueryAuditTrailEntity> {
         try {
-            val config = appConfigDao.getConfig(
-                AppConfigKeysEnum.SQL_QUERY_EXECUTOR.name,
-                coreSharedPrefs.getUniqueUserIdentifier()
-            )?.value
-
+            val config =
+                remoteQueryAuditTrailEntityDao.getRemoteQueries(userId = coreSharedPrefs.getUserId())
             CoreLogger.d(tag = TAG, msg = "getRemoteQuery -> config: $config")
-//            Test Query for execution
-//            TODO Delete before merge after testing with BE integration.
-//            val config =
-//                "{\"databaseName\": \"NudgeGrantDatabase\",\"dbVersion\": 7,\"tableName\": \"mission_configs_table\",\"query\": \"UPDATE mission_configs_table SET missionName = 'Livelihood Planning New' where userId = 'Ultra Poor change maker (UPCM)_9862345078' and missionId = 6;\",\n" +
-//                        "  \"operationType\": \"UPDATE\",\"appVersion\": \"134\"}"
-
-            if (TextUtils.isEmpty(config))
-                return emptyList()
-
-            return config.fromJson<List<RemoteQueryDto>>() ?: emptyList()
-        } catch (ex: JsonSyntaxException) {
-            logEvent(
-                LOGGING_TYPE_EXCEPTION,
-                FAILED,
-                "getRemoteQuery -> JsonSyntaxException ex: ${ex.message}",
-                ex
-            )
-            return emptyList()
+            return config
         } catch (ex: Exception) {
             logEvent(
                 LOGGING_TYPE_EXCEPTION,
@@ -115,80 +90,74 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
 
     }
 
-    override suspend fun executeQuery(remoteQueryDto: RemoteQueryDto) {
-        if (remoteQueryDto.status != OPEN) {
+    override suspend fun executeQuery(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity) {
+        if (remoteQueryAuditTrail.status != OPEN) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
-                remoteQueryDto.status,
+                remoteQueryAuditTrail.status,
                 msg = "executeQuery: failed as query was already executed",
                 exception = null
             )
             return
         }
 
-        val isAppVersionValid = runAppVersionCheck(remoteQueryDto)
+        val isAppVersionValid = runAppVersionCheck(remoteQueryAuditTrail)
 
         if (!isAppVersionValid) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
-                "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryDto.appVersion} -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+                "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryAuditTrail.appVersion} -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}",
                 null
             )
             return
         }
 
-        if (!isDatabaseVersionValidForExecution(remoteQueryDto)) {
+        if (!isDatabaseVersionValidForExecution(remoteQueryAuditTrail)) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
                 "executeQuery failed due to invalid Database version, required: ${
-                    DatabaseEnum.getDbVersion(remoteQueryDto.databaseName)
-                }, found: ${remoteQueryDto.dbVersion} -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}," +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+                    DatabaseEnum.getDbVersion(remoteQueryAuditTrail.databaseName)
+                }, found: ${remoteQueryAuditTrail.dbVersion} -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}," +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}",
                 null
             )
             return
         }
 
-        if (isQueryAlreadyExecuted(remoteQueryDto)) {
+        if (isQueryAlreadyExecuted(remoteQueryAuditTrail)) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
-                "executeQuery failed due to query already executed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}," +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}",
+                "executeQuery failed due to query already executed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryAuditTrail.databaseName}," +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}",
                 null
             )
             return
         }
 
-        getDatabaseForQueryExecution(remoteQueryDto)?.let { database ->
+        getDatabaseForQueryExecution(remoteQueryAuditTrail)?.let { database ->
 
             val userId = coreSharedPrefs.getUniqueUserIdentifier()
-
-            val auditTrailRowId = remoteQueryAuditTrailEntityDao.insertRemoteQueryAuditTrailEntity(
-                RemoteQueryAuditTrailEntity.getRemoteQueryAuditTrailEntity(remoteQueryDto, userId)
-            )
-
             val supportSQLiteStatement: SupportSQLiteStatement? =
-                getSQLiteStatement(database, remoteQueryDto, auditTrailRowId, userId)
+                getSQLiteStatement(database, remoteQueryAuditTrail)
 
-            when (remoteQueryDto.operationType) {
+            when (remoteQueryAuditTrail.operationType) {
                 DatabaseOperationEnum.INSERT.name -> {
                     try {
                         supportSQLiteStatement?.let {
                             executeInsertState(
-                                auditTrailRowId.toInt(),
-                                userId,
-                                remoteQueryDto,
+                                remoteQueryAuditTrail,
                                 it
                             )
                         }
                     } catch (ex: Exception) {
                         remoteQueryAuditTrailEntityDao
                             .updateRemoteQueryAuditTrailEntityStatus(
-                                auditTrailRowId.toInt(),
+                                id = remoteQueryAuditTrail.id,
+                                propertyValueId = remoteQueryAuditTrail.propertyValueId,
                                 status = FAILED,
                                 errorMessage = ex.message.value(),
                                 userId = userId
@@ -196,8 +165,8 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                         logEvent(
                             LOGGING_TYPE_EXCEPTION,
                             FAILED,
-                            "executeQuery failed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
-                                    "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                            "executeQuery failed -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                                    "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query} \nexception: ${ex.message}",
                             ex
                         )
                     }
@@ -208,15 +177,14 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                     try {
                         supportSQLiteStatement?.let {
                             executeUpdateDeleteStatement(
-                                auditTrailRowId.toInt(),
-                                userId,
-                                remoteQueryDto,
+                                remoteQueryAuditTrail,
                                 it
                             )
                         }
                     } catch (ex: Exception) {
                         remoteQueryAuditTrailEntityDao.updateRemoteQueryAuditTrailEntityStatus(
-                            auditTrailRowId.toInt(),
+                            propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                            id = remoteQueryAuditTrail.id,
                             status = FAILED,
                             errorMessage = ex.message.value(),
                             userId = userId
@@ -224,8 +192,8 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                         logEvent(
                             LOGGING_TYPE_EXCEPTION,
                             FAILED,
-                            "executeQuery failed due to exception -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
-                                    "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                            "executeQuery failed due to exception -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                                    "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query} \nexception: ${ex.message}",
                             ex
                         )
                     }
@@ -233,9 +201,10 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
 
                 else -> {
                     remoteQueryAuditTrailEntityDao.updateRemoteQueryAuditTrailEntityStatus(
-                        auditTrailRowId.toInt(),
+                        propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                        id = remoteQueryAuditTrail.id,
                         status = OPEN,
-                        errorMessage = "$INVALID_OPERATION_MESSAGE ${remoteQueryDto.operationType}",
+                        errorMessage = "$INVALID_OPERATION_MESSAGE ${remoteQueryAuditTrail.operationType}",
                         userId = userId
                     )
                     return@let
@@ -246,25 +215,24 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
 
     override suspend fun getSQLiteStatement(
         database: RoomDatabase,
-        remoteQueryDto: RemoteQueryDto,
-        auditTrailRowId: Long,
-        userId: String
+        remoteQueryAuditTrail: RemoteQueryAuditTrailEntity,
     ): SupportSQLiteStatement? {
         return try {
-            database.compileStatement(getCleanQuery(remoteQueryDto.query))
+            database.compileStatement(getCleanQuery(remoteQueryAuditTrail.query))
         } catch (ex: SQLiteException) {
             remoteQueryAuditTrailEntityDao
                 .updateRemoteQueryAuditTrailEntityStatus(
-                    auditTrailRowId.toInt(),
+                    id = remoteQueryAuditTrail.id,
+                    propertyValueId = remoteQueryAuditTrail.propertyValueId,
                     status = FAILED,
                     errorMessage = ex.message.value(),
-                    userId = userId
+                    userId = remoteQueryAuditTrail.userId
                 )
             logEvent(
                 LOGGING_TYPE_EXCEPTION,
                 FAILED,
-                msg = "executeQuery failed due to SQLiteException -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                msg = "executeQuery failed due to SQLiteException -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query} \nexception: ${ex.message}",
                 ex
             )
 
@@ -272,16 +240,17 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         } catch (ex: Exception) {
             remoteQueryAuditTrailEntityDao
                 .updateRemoteQueryAuditTrailEntityStatus(
-                    auditTrailRowId.toInt(),
+                    propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                    id = remoteQueryAuditTrail.id,
                     status = FAILED,
                     errorMessage = ex.message.value(),
-                    userId = userId
+                    userId = remoteQueryAuditTrail.userId
                 )
             logEvent(
                 LOGGING_TYPE_EXCEPTION,
                 FAILED,
-                msg = "executeQuery failed due to Exception -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query} \nexception: ${ex.message}",
+                msg = "executeQuery failed due to Exception -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query} \nexception: ${ex.message}",
                 ex
             )
 
@@ -290,24 +259,23 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun executeInsertState(
-        auditTrailRowId: Int,
-        userId: String,
-        remoteQueryDto: RemoteQueryDto,
+        remoteQueryAuditTrail: RemoteQueryAuditTrailEntity,
         supportSQLiteStatement: SupportSQLiteStatement
     ): Long {
         try {
             val rowId = supportSQLiteStatement.executeInsert()
             remoteQueryAuditTrailEntityDao.updateRemoteQueryAuditTrailEntityStatus(
-                auditTrailRowId,
+                id = remoteQueryAuditTrail.id,
+                propertyValueId = remoteQueryAuditTrail.propertyValueId,
                 status = SUCCESS,
-                userId = userId
+                userId = remoteQueryAuditTrail.userId
             )
             //TODO add code to update query status in locally and remotely here
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 SUCCESS,
-                msg = "executeInsertState success -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}, rowId: $rowId",
+                msg = "executeInsertState success -> operation: ${DatabaseOperationEnum.INSERT.name}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}, rowId: $rowId",
                 null
             )
             return rowId
@@ -317,24 +285,23 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun executeUpdateDeleteStatement(
-        auditTrailRowId: Int,
-        userId: String,
-        remoteQueryDto: RemoteQueryDto,
+        remoteQueryAuditTrail: RemoteQueryAuditTrailEntity,
         supportSQLiteStatement: SupportSQLiteStatement
     ): Int {
         try {
             val affectedRowCount = supportSQLiteStatement.executeUpdateDelete()
             remoteQueryAuditTrailEntityDao.updateRemoteQueryAuditTrailEntityStatus(
-                auditTrailRowId,
+                id = remoteQueryAuditTrail.id,
+                propertyValueId = remoteQueryAuditTrail.propertyValueId,
                 status = SUCCESS,
-                userId = userId
+                userId = remoteQueryAuditTrail.userId
             )
             //TODO add code to update query status in locally and remotely here
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 SUCCESS,
-                msg = "executeUpdateDeleteStatement success -> operation: ${remoteQueryDto.operationType}, database: ${remoteQueryDto.databaseName}, " +
-                        "table: ${remoteQueryDto.tableName}, query: ${remoteQueryDto.query}, affectedRowCount: $affectedRowCount",
+                msg = "executeUpdateDeleteStatement success -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                        "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}, affectedRowCount: $affectedRowCount",
                 null
             )
             return affectedRowCount
@@ -347,12 +314,12 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         return query.trim()
     }
 
-    override fun isUserIdCheckNotRequired(remoteQueryDto: RemoteQueryDto): Boolean {
-        return !TABLE_NOT_REQUIRE_USER_ID.contains(remoteQueryDto.tableName)
+    override fun isUserIdCheckNotRequired(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean {
+        return !TABLE_NOT_REQUIRE_USER_ID.contains(remoteQueryAuditTrail.tableName)
     }
 
-    override fun getDatabaseForQueryExecution(remoteQueryDto: RemoteQueryDto): RoomDatabase? {
-        return when (remoteQueryDto.databaseName) {
+    override fun getDatabaseForQueryExecution(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): RoomDatabase? {
+        return when (remoteQueryAuditTrail.databaseName) {
             DatabaseEnum.NudgeDatabase.databaseName -> nudgeDatabase
             DatabaseEnum.NudgeBaselineDatabase.databaseName -> nudgeBaselineDatabase
             DatabaseEnum.NudgeGrantDatabase.databaseName -> nudgeGrantDatabase
@@ -362,7 +329,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun isDatabaseVersionValidForExecution(remoteQueryDto: RemoteQueryDto): Boolean {
+    override fun isDatabaseVersionValidForExecution(remoteQueryDto: RemoteQueryAuditTrailEntity): Boolean {
         return when (remoteQueryDto.databaseName) {
             DatabaseEnum.NudgeDatabase.databaseName -> remoteQueryDto.dbVersion == DatabaseEnum.NudgeDatabase.dbVersion
             DatabaseEnum.NudgeBaselineDatabase.databaseName -> remoteQueryDto.dbVersion == DatabaseEnum.NudgeBaselineDatabase.dbVersion
@@ -373,18 +340,19 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         }
     }
 
-    override fun runAppVersionCheck(remoteQueryDto: RemoteQueryDto): Boolean {
-        return remoteQueryDto.appVersion == BuildConfig.VERSION_CODE.toString()
+    override fun runAppVersionCheck(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean {
+        return remoteQueryAuditTrail.appVersion == BuildConfig.VERSION_CODE.toString()
     }
 
-    override suspend fun isQueryAlreadyExecuted(remoteQueryDto: RemoteQueryDto): Boolean {
+    override suspend fun isQueryAlreadyExecuted(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity): Boolean {
         remoteQueryAuditTrailEntityDao.isQueryAlreadyExecuted(
-            coreSharedPrefs.getUniqueUserIdentifier(), databaseName = remoteQueryDto.databaseName,
-            dbVersion = remoteQueryDto.dbVersion,
-            tableName = remoteQueryDto.tableName,
-            operationType = remoteQueryDto.operationType,
-            appVersion = remoteQueryDto.appVersion,
-            query = remoteQueryDto.query
+            coreSharedPrefs.getUniqueUserIdentifier(),
+            databaseName = remoteQueryAuditTrail.databaseName,
+            dbVersion = remoteQueryAuditTrail.dbVersion,
+            tableName = remoteQueryAuditTrail.tableName,
+            operationType = remoteQueryAuditTrail.operationType,
+            appVersion = remoteQueryAuditTrail.appVersion,
+            query = remoteQueryAuditTrail.query
         )?.let {
             return it.status == SUCCESS
         } ?: return false

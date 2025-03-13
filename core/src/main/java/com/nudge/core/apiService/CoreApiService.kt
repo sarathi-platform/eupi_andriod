@@ -3,6 +3,7 @@ package com.nudge.core.apiService
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CasteModel
 import com.nudge.core.model.request.AppConfigApiRequest
+import com.nudge.core.model.request.RemoteSqlQueryApiRequest
 import com.nudge.core.model.response.RemoteSqlQueryApiResponseItem
 import com.nudge.core.model.response.TranslationModel
 import com.nudge.core.model.response.language.LanguageConfigModel
@@ -29,8 +30,12 @@ interface CoreApiService {
     @GET("/registry-service/fetchStatus")
     suspend fun fetchRemoteSqlQueryConfig(
         @Query("propertyName") propertyName: String,
-        @Query("userId") userId: String,
-        @Query("stateId") stateId: String
-    ): ApiResponseModel<RemoteSqlQueryApiResponseItem>
+        @Query("userId") userId: Int,
+        @Query("stateId") stateId: Int
+    ): ApiResponseModel<List<RemoteSqlQueryApiResponseItem>>
+
+    @POST("/registry-service/saveStatus")
+    suspend fun saveRemoteSqlQueryStatus(@Body apiRequest: List<RemoteSqlQueryApiRequest>): ApiResponseModel<String>
+
 
 }

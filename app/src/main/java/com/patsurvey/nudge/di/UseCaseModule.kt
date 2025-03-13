@@ -26,6 +26,7 @@ import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
+import com.nudge.core.usecase.SaveRemoteQueryStatusToNetworkUseCase
 import com.nudge.syncmanager.database.SyncManagerDatabase
 import com.nudge.syncmanager.domain.repository.SyncApiRepository
 import com.nudge.syncmanager.domain.repository.SyncApiRepositoryImpl
@@ -499,10 +500,12 @@ object UseCaseModule {
     @Provides
     @Singleton
     fun providesRemoteQueryExecutionUseCase(
-        remoteQueryExecutionRepository: RemoteQueryExecutionRepository
+        remoteQueryExecutionRepository: RemoteQueryExecutionRepository,
+        remoteSaveRemoteQueryStatusToNetworkUseCase: SaveRemoteQueryStatusToNetworkUseCase
     ): RemoteQueryExecutionUseCase {
         return RemoteQueryExecutionUseCase(
-            remoteQueryExecutionRepository
+            remoteQueryExecutionRepository,
+            remoteSaveRemoteQueryStatusToNetworkUseCase
         )
     }
 
