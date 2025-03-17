@@ -559,5 +559,11 @@
     <string name="sync_started">Sync chenkha. Kisi sa naising di…</string>
     <string name="sync_data_history">Sync data ni Laibuma</string>
     <string name="data">Sijakrwnai</string>
+    <string name="app_update_cancel">Cancel</string>
+    <string name="app_update">Update</string>
+    <string name="update_available">Update Available</string>
+    <string name="version_available_message">A new version of app is available. Update the app to continue.</string>
+    <string name="invalid_url">Invalid URL</string>
+    <string name="no_village_found">No Village Found</string>
 
 </resources>

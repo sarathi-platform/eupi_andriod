@@ -14,6 +14,7 @@ import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.database.CoreDatabase
 import com.nudge.core.database.dao.ApiConfigDao
+import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -57,8 +58,11 @@ import com.patsurvey.nudge.activities.backup.domain.use_case.RemoteQueryExecutio
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityEventHelperUseCase
 import com.patsurvey.nudge.activities.backup.domain.use_case.ReopenActivityUseCase
 import com.patsurvey.nudge.activities.domain.repository.impls.CheckEventLimitThresholdRepositoryImpl
+import com.patsurvey.nudge.activities.domain.repository.impls.SyncEventProgressRepositoryImpl
 import com.patsurvey.nudge.activities.domain.repository.interfaces.CheckEventLimitThresholdRepository
+import com.patsurvey.nudge.activities.domain.repository.interfaces.SyncEventProgressRepository
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
+import com.patsurvey.nudge.activities.domain.useCase.SyncEventProgressUseCase
 import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepository
 import com.patsurvey.nudge.activities.forms.domain.repository.SettingFormsRepositoryImpl
 import com.patsurvey.nudge.activities.forms.domain.usecase.SettingFormsUseCase
@@ -494,6 +498,34 @@ object UseCaseModule {
             repository,
             getUserDetailsUseCase = GetUserDetailsUseCase(settingBSRepository),
             getAllPoorDidiForVillageUseCase = GetAllPoorDidiForVillageUseCase(settingBSRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSyncEventProgressUseCase(
+        syncEventProgressRepository: SyncEventProgressRepository
+    ): SyncEventProgressUseCase {
+        return SyncEventProgressUseCase(
+            syncEventProgressRepository = syncEventProgressRepository
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesSyncEventProgressRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        appConfigDao: ApiConfigDao,
+        eventsDao: EventsDao,
+        eventStatusDao: EventStatusDao,
+        analyticsManager: AnalyticsManager
+    ): SyncEventProgressRepository {
+        return SyncEventProgressRepositoryImpl(
+            prefRepo = coreSharedPrefs,
+            appConfigDao = appConfigDao,
+            eventsDao = eventsDao,
+            eventStatusDao = eventStatusDao,
+            analyticsManager = analyticsManager
         )
     }
 

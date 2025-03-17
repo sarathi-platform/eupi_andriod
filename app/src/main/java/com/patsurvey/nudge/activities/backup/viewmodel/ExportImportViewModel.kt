@@ -152,17 +152,14 @@ class ExportImportViewModel @Inject constructor(
             onExportSuccess(it)
         }
     }
-
-    fun loadServerDataAnalytic() {
+    fun loadServerDataAnalytic(){
         analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOAD_SERVER_DATA.eventName)
     }
-
-    fun appConfigDataAnalytic() {
+    fun appConfigDataAnalytic(){
         analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.APP_CONFIG_LOG_FILE.eventName)
 
     }
-
-    fun exportDataAnalytic() {
+    fun exportDataAnalytic(){
         analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.IMPORT_DATA.eventName)
     }
 
@@ -264,10 +261,12 @@ class ExportImportViewModel @Inject constructor(
 
 
     fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
-    fun fetchAppConfig() {
+    fun fetchAppConfig(onApiSuccess: () -> Unit) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
+            fetchAppConfigFromNetworkUseCase.invoke{
+                onApiSuccess()
+            }
             fetchRemoteQueryFromNetworkUseCase.invoke()
             checkAndRunRemoteQueryExecution()
             onEvent(LoaderEvent.UpdateLoaderState(false))

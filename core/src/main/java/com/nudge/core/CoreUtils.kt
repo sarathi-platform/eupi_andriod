@@ -1,6 +1,7 @@
 package com.nudge.core
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.ContentValues
@@ -23,9 +24,11 @@ import android.provider.Settings
 import android.text.TextUtils
 import android.util.Base64
 import android.util.Log
+import android.view.WindowManager
 import android.webkit.MimeTypeMap
 import android.widget.Toast
 import androidx.annotation.RequiresApi
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.content.FileProvider
@@ -34,6 +37,7 @@ import androidx.core.text.isDigitsOnly
 import com.facebook.network.connectionclass.ConnectionQuality
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.compression.ZipManager
 import com.nudge.core.database.entities.EventDependencyEntity
 import com.nudge.core.database.entities.Events
@@ -1268,9 +1272,10 @@ fun onlyNumberField(value: String): Boolean {
     return false
 }
 
-fun getQuestionNumber(questionIndex: Int): String {
-//    return "${questionIndex + 1}. "
-    return BLANK_STRING // TODO remove this line and uncomment the above once correct question number logic is figured out
+fun getQuestionNumber(isQuestionNumberVisible: Boolean = false, questionIndex: Int): String {
+    return if (isQuestionNumberVisible) {
+        "${questionIndex + 1}. "
+    } else BLANK_STRING
 }
 
 fun String.stringToInt(): Int {
@@ -1489,4 +1494,44 @@ inline fun <reified T> String?.fromJson(): T? {
     if (this == null) return null // Handle null safely
     val type = object : TypeToken<T>() {}.type
     return Gson().fromJson(this, type)
+}
+
+fun setKeyboardToPan(context: Activity) {
+    context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN)
+}
+
+fun setKeyboardToReadjust(context: Activity) {
+    context.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
+}
+
+val syncStatusParamMap = mapOf(
+    EventSyncStatus.OPEN.eventSyncStatus to AnalyticsEventsParam.OPEN_EVENT_COUNT.eventParam,
+    EventSyncStatus.PRODUCER_IN_PROGRESS.eventSyncStatus to AnalyticsEventsParam.PRODUCER_IN_PROGRESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.PRODUCER_SUCCESS.eventSyncStatus to AnalyticsEventsParam.PRODUCER_SUCCESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.PRODUCER_FAILED.eventSyncStatus to AnalyticsEventsParam.PRODUCER_FAILED_EVENT_COUNT.eventParam,
+    EventSyncStatus.CONSUMER_IN_PROGRESS.eventSyncStatus to AnalyticsEventsParam.CONSUMER_IN_PROGRESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.CONSUMER_SUCCESS.eventSyncStatus to AnalyticsEventsParam.CONSUMER_SUCCESS_EVENT_COUNT.eventParam,
+    EventSyncStatus.CONSUMER_FAILED.eventSyncStatus to AnalyticsEventsParam.CONSUMER_FAILED_EVENT_COUNT.eventParam,
+    EventSyncStatus.IMAGE_NOT_EXIST.eventSyncStatus to AnalyticsEventsParam.IMAGE_NOT_EXIST_EVENT_COUNT.eventParam,
+    EventSyncStatus.BLOB_UPLOAD_FAILED.eventSyncStatus to AnalyticsEventsParam.BLOB_UPLOAD_FAILED_EVENT_COUNT.eventParam
+)
+
+fun Date.toLong(timeZone: TimeZone = TimeZone.getTimeZone("UTC")): Long {
+    val parser = SimpleDateFormat("HH:mm:ss dd/MM/yyyy", Locale.ENGLISH)
+    parser.timeZone = timeZone
+    return parser.parse(parser.format(this))!!.time
+}
+
+fun List<Events>.getEventCountsByStatus(): Map<String, Int> {
+    return this.groupingBy { it.status }
+        .eachCount()
+}
+
+@Composable
+fun Context.redirectToLink(link: String?) {
+    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+    this.startActivity(intent)
+}
+fun isAllowedCharacterInput(value: String?): Boolean {
+    return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
 }

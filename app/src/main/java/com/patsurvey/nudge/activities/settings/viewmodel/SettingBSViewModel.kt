@@ -19,6 +19,8 @@ import com.nrlm.baselinesurvey.ui.splash.presentaion.LoaderEvent
 import com.nrlm.baselinesurvey.utils.BaselineCore
 import com.nrlm.baselinesurvey.utils.states.LoaderState
 import com.nudge.core.CoreDispatchers
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
+import com.nudge.core.DEFAULT_LANGUAGE_ID
 import com.nudge.core.IMAGE
 import com.nudge.core.LOCAL_BACKUP_EXTENSION
 import com.nudge.core.NUDGE_DATABASE
@@ -53,6 +55,7 @@ import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.domain.use_case.SettingBSUserCase
 import com.patsurvey.nudge.activities.ui.progress.domain.useCase.SelectionVillageUseCase
+import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
@@ -86,6 +89,7 @@ class SettingBSViewModel @Inject constructor(
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
     val selectionVillageUseCase: SelectionVillageUseCase,
+    val languageRepository: LanguageRepository
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
@@ -194,7 +198,7 @@ class SettingBSViewModel @Inject constructor(
         )
 
         isSyncEnable.value = settingBSUserCase.getUserDetailsUseCase.isSyncEnable()
-        _optionList.value=list
+        _optionList.value = list
         fetchEventCount()
     }
 
@@ -206,6 +210,8 @@ class SettingBSViewModel @Inject constructor(
 
     fun performLogout(context: Context, onLogout: (Boolean) -> Unit) {
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
+            languageRepository.prefRepo.saveAppLanguageId(DEFAULT_LANGUAGE_ID)
+            languageRepository.prefRepo.saveAppLanguage(DEFAULT_LANGUAGE_CODE)
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
             delay(2000)
             analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
@@ -575,18 +581,18 @@ class SettingBSViewModel @Inject constructor(
 
 
     private fun cancelSyncUploadWorker() {
-                workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
-                CoreLogger.d(
-                    CoreAppDetails.getApplicationContext(),
-                    "SettingBSViewModel",
-                    "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
-                )
+        workManager.cancelAllWorkByTag(SYNC_WORKER_TAG)
+        CoreLogger.d(
+            CoreAppDetails.getApplicationContext(),
+            "SettingBSViewModel",
+            "CancelSyncUploadWorker :: Worker Cancelled with TAG : $SYNC_WORKER_TAG"
+        )
     }
 
     fun syncWorkerRunning(): Boolean {
         val workInfo = workManager.getWorkInfosByTag(SYNC_WORKER_TAG)
-            workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) } ?.let {
-                return it.state == WorkInfo.State.RUNNING
-           }?:return false
+        workInfo.get().find { it.tags.contains(SYNC_WORKER_TAG) }?.let {
+            return it.state == WorkInfo.State.RUNNING
+        } ?: return false
     }
 }

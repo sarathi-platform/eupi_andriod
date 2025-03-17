@@ -64,6 +64,7 @@ import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.toSafeInt
 import com.nudge.core.ui.commonUi.BasicCardView
+import com.nudge.core.ui.commonUi.ShowDidiImageDialog
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
 import com.nudge.core.ui.theme.brownDark
@@ -342,7 +343,8 @@ fun DisbursementFormSummaryScreen(
 private fun MakeDisburesementRow(
     translationHelper: TranslationHelper,
     disbursementFormSummaryUiModel: DisbursementFormSummaryUiModel,
-    imageUri: Uri?
+    imageUri: Uri?,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     val context = LocalContext.current
     val showDialog = remember { mutableStateOf(false) }
@@ -363,7 +365,15 @@ private fun MakeDisburesementRow(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (imageUri != null && imageUri != Uri.EMPTY) {
-                CircularImageViewComponent(modifier = Modifier, imageUri) {}
+                CircularImageViewComponent(modifier = Modifier, imageUri) {
+                    onImageClicked(
+                        Triple(
+                            true,
+                            disbursementFormSummaryUiModel.subjectName,
+                            imageUri
+                        )
+                    )
+                }
             } else if (disbursementFormSummaryUiModel.subjectName != BLANK_STRING) {
                 Box(
                     modifier = Modifier
@@ -576,6 +586,19 @@ fun HistorySummaryCard(
     viewmodel: DisbursementFormSummaryScreenViewModel?,
 ) {
 
+    if (viewmodel?.isDidiImageDialogVisible?.value?.first == true
+        && (viewmodel.isDidiImageDialogVisible.value.third ?: Uri.EMPTY) != null
+        && (viewmodel.isDidiImageDialogVisible.value.third ?: Uri.EMPTY) != Uri.EMPTY
+    ) {
+        ShowDidiImageDialog(
+            didiName = viewmodel.isDidiImageDialogVisible.value.second ?: BLANK_STRING,
+            imagePath = viewmodel.isDidiImageDialogVisible.value.third ?: Uri.EMPTY
+        ) {
+            viewmodel?.let {
+                it.isDidiImageDialogVisible.value = Triple(false, BLANK_STRING, Uri.EMPTY)
+            }
+        }
+    }
 
     BoxWithConstraints(
         modifier = modifier
@@ -610,7 +633,9 @@ fun HistorySummaryCard(
                                 modifier = modifier,
                                 disburesementtoryState = disburesement,
                                 viewmodel?.getFilePathUri(disburesement.didiImage)
-                            )
+                            ) { path ->
+                                viewmodel.isDidiImageDialogVisible.value = path
+                            }
                         }
                     }
                 }
@@ -625,12 +650,14 @@ fun FormSummaryCardItem(
     translationHelper: TranslationHelper,
     modifier: Modifier,
     disburesementtoryState: DisbursementFormSummaryUiModel,
-    imageUri: Uri?
+    imageUri: Uri?,
+    onImageClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     MakeDisburesementRow(
         translationHelper = translationHelper,
         disbursementFormSummaryUiModel = disburesementtoryState,
-        imageUri
+        imageUri,
+        onImageClicked = onImageClicked
     )
 
 }

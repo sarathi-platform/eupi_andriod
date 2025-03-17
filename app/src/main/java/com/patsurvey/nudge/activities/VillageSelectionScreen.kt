@@ -60,6 +60,8 @@ import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import androidx.navigation.NavController
+import com.nudge.core.ui.theme.defaultTextStyle
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -91,7 +93,6 @@ import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.StepStatus
 import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -366,6 +367,30 @@ fun VillageSelectionScreen(
                                 }
                             }
                             item { Spacer(modifier = Modifier.height(50.dp)) }
+
+                            item {
+                                if (villages.isEmpty()) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(top = dimen_100_dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Column(
+                                            horizontalAlignment = Alignment.CenterHorizontally,
+                                            verticalArrangement = Arrangement.Center,
+                                        ) {
+                                            Text(
+                                                text = stringResource(R.string.no_village_found),
+                                                modifier = Modifier.fillMaxWidth(),
+                                                textAlign = TextAlign.Center,
+                                                style = defaultTextStyle,
+                                                color = textColorDark
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                         CustomSnackBarShow(
                             state = snackState,

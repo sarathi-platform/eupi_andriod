@@ -160,9 +160,11 @@ fun NavGraphBuilder.MatNavigation(
                 missionId = it.arguments?.getInt(
                     ARG_MISSION_ID
                 ) ?: 0,
-                missionName = it.arguments?.getString(
-                    ARG_MISSION_NAME
-                ) ?: BLANK_STRING,
+                missionName = addSlashInString(
+                    it.arguments?.getString(
+                        ARG_MISSION_NAME
+                    ) ?: BLANK_STRING
+                ),
                 isMissionCompleted = it.arguments?.getBoolean(
                     ARG_MISSION_COMPLETED
                 ) ?: false,
@@ -197,9 +199,11 @@ fun NavGraphBuilder.MatNavigation(
                 activityId = it.arguments?.getInt(
                     ARG_ACTIVITY_ID
                 ) ?: 0,
-                activityName = it.arguments?.getString(
+                activityName = addSlashInString(
+                    it.arguments?.getString(
                     ARG_ACTIVITY_NAME
-                ) ?: BLANK_STRING,
+                    ) ?: BLANK_STRING
+                ),
                 programId = it.arguments?.getInt(
                     ARG_PROGRAM_ID
                 ) ?: 0,
@@ -231,9 +235,11 @@ fun NavGraphBuilder.MatNavigation(
                 activityId = it.arguments?.getInt(
                     ARG_ACTIVITY_ID
                 ) ?: 0,
-                activityName = it.arguments?.getString(
+              activityName = addSlashInString(
+                  it.arguments?.getString(
                     ARG_ACTIVITY_NAME
-                ) ?: BLANK_STRING,
+                  ) ?: BLANK_STRING
+              ),
               programId = it.arguments?.getInt(
                   ARG_PROGRAM_ID
               ) ?: 0,
@@ -266,9 +272,11 @@ fun NavGraphBuilder.MatNavigation(
                 activityId = it.arguments?.getInt(
                     ARG_ACTIVITY_ID
                 ) ?: 0,
-                activityName = it.arguments?.getString(
+                activityName = addSlashInString(
+                    it.arguments?.getString(
                     ARG_ACTIVITY_NAME
-                ) ?: BLANK_STRING,
+                    ) ?: BLANK_STRING
+                ),
                 programId = it.arguments?.getInt(
                     ARG_PROGRAM_ID
                 ) ?: 0,
@@ -941,9 +949,7 @@ fun NavGraphBuilder.MatNavigation(
                 }
                 )
         ) {
-            val formattedActivityName=  (it.arguments?.getString(
-                ARG_ACTIVITY_NAME
-            ) ?: BLANK_STRING).replace(CLEAN_ROUTE_DELIMITER,FORWARD_SLASH_DELIMITER)
+
             ActivitySelectTaskScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
@@ -953,7 +959,11 @@ fun NavGraphBuilder.MatNavigation(
                 activityId = it.arguments?.getInt(
                     ARG_ACTIVITY_ID
                 ) ?: 0,
-                activityName = formattedActivityName,
+                activityName = addSlashInString(
+                    it.arguments?.getString(
+                        ARG_ACTIVITY_NAME
+                    ) ?: BLANK_STRING
+                ),
                 onSettingClick = onSettingIconClick,
                 programId = it.arguments?.getInt(ARG_PROGRAM_ID).value()
             )
@@ -1376,7 +1386,13 @@ fun navigateToActivityScreen(
     isMissionCompleted: Boolean,
     programId: Int
 ) {
-    navController.navigate("$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/$missionName/$isMissionCompleted/$programId")
+    navController.navigate(
+        "$ACTIVITY_SCREEN_SCREEN_ROUTE_NAME/$missionId/${
+            removeSlashFromString(
+                missionName
+            )
+        }/$isMissionCompleted/$programId"
+    )
 }
 
 fun navigateToAddImageScreen(
@@ -1398,7 +1414,13 @@ fun navigateToGrantTaskScreen(
     activityName: String,
     programId: Int,
 ) {
-    navController.navigate("$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    navController.navigate(
+        "$GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/${
+            removeSlashFromString(
+                activityName
+            )
+        }/$programId"
+    )
 }
 fun navigateToLivelihoodTaskScreen(
     navController: NavController,
@@ -1407,7 +1429,13 @@ fun navigateToLivelihoodTaskScreen(
     activityName: String,
     programId: Int
 ) {
-    navController.navigate("$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    navController.navigate(
+        "$LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME/$missionId/$activityId/${
+            removeSlashFromString(
+                activityName
+            )
+        }/$programId"
+    )
 }
 
 fun navigateToSurveyTaskScreen(
@@ -1417,7 +1445,13 @@ fun navigateToSurveyTaskScreen(
     activityName: String,
     programId: Int
 ) {
-    navController.navigate("$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/$activityName/$programId")
+    navController.navigate(
+        "$SURVEY_TASK_SCREEN_ROUTE_NAME/$missionId/$activityId/${
+            removeSlashFromString(
+                activityName
+            )
+        }/$programId"
+    )
 }
 
 fun navigateToActivitySelectTaskScreen(
@@ -1427,10 +1461,13 @@ fun navigateToActivitySelectTaskScreen(
     activityName: String,
     programId: Int,
 ) {
-
-    val formattedActivityName =
-        activityName.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
-    navController.navigate("$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/$formattedActivityName/$programId")
+    navController.navigate(
+        "$ACTIVITY_SELECT_SCREEN_ROUTE_NAME/$missionId/$activityId/${
+            removeSlashFromString(
+                activityName
+            )
+        }/$programId"
+    )
 }
 
 fun navigateToFormQuestionScreen(
@@ -1474,4 +1511,9 @@ fun navigateToComplexSearchScreen(
     navController.navigate("$COMPLEX_SEARCH_SCREEN_ROUTE_NAME/$surveyId/$sectionId/$taskId/$activityConfigId/$fromScreen/$subjectType/$activityType")
 }
 
+private fun removeSlashFromString(name: String) =
+    name.replace(FORWARD_SLASH_DELIMITER, CLEAN_ROUTE_DELIMITER)
+
+private fun addSlashInString(name: String) =
+    name.replace(CLEAN_ROUTE_DELIMITER, FORWARD_SLASH_DELIMITER)
 

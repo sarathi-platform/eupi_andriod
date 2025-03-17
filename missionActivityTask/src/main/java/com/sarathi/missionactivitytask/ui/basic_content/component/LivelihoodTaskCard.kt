@@ -59,6 +59,7 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.unmatchedOrangeColor
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
@@ -87,6 +88,7 @@ fun LivelihoodTaskCard(
     isShowSecondaryStatusIcon: Boolean = false,
     secondaryStatusIcon: Int = R.drawable.ic_green_file,
     onNotAvailable: () -> Unit,
+    onImageIconClicked: (Triple<Boolean, String, Uri>) -> Unit
 ) {
     val taskMarkedNotAvailable = remember(status?.value) {
         mutableStateOf(status?.value == StatusEnum.NOT_AVAILABLE.name)
@@ -121,7 +123,7 @@ fun LivelihoodTaskCard(
             ) {
                 if (imagePath != null) {
                     CircularImageViewComponent(modifier = Modifier, imagePath = imagePath) {
-
+                        onImageIconClicked(Triple(true, title?.value.value(), imagePath))
                     }
                 } else if (title?.value != BLANK_STRING) {
                     Box(

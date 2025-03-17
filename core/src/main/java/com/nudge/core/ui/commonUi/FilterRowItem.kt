@@ -10,6 +10,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
@@ -48,12 +49,12 @@ import com.nudge.core.utils.FileUtils
 @Composable
 fun FilterRowItem(
     modifier: Modifier = Modifier,
-    isSelected: Boolean,
+    selectedItem: FilterUiModel,
     item: FilterUiModel,
     onClick: () -> Unit
 ) {
     val context = LocalContext.current
-    val colors = getColorsForFilterItem(isSelected)
+    val colors = getColorsForFilterItem(selectedItem, item)
 
     Column(
         modifier = Modifier
@@ -86,8 +87,9 @@ fun FilterRowItem(
                         contentDescription = "filter icon",
                         contentScale = ContentScale.Inside,
                         modifier = Modifier
-                            .align(Alignment.Center)
+                            .aspectRatio(0.7f)
                             .size(dimen_50_dp)
+                            .align(Alignment.Center)
                     )
                 }
             }
@@ -138,8 +140,11 @@ private fun getIconPainterForFilterItem(context: Context, item: FilterUiModel): 
 }
 
 @Composable
-fun getColorsForFilterItem(isSelected: Boolean): Triple<Color, Color, Color> {
-    return if (isSelected) {
+fun getColorsForFilterItem(
+    selectedItem: FilterUiModel,
+    item: FilterUiModel
+): Triple<Color, Color, Color> {
+    return if (selectedItem.type == item.type) {
         Triple(filterItemSelectedLight, filterItemSelectedDark, filterItemSelectedDark)
     } else {
         Triple(white, uncheckedTrackColor, textColorDark)

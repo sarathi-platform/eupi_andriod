@@ -25,6 +25,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihood
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -33,6 +34,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -194,6 +196,7 @@ class MissionScreenViewModel @Inject constructor(
             _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
             checkAndUpdateDefaultTabAndCount()
             missionFilterUtils.createMissionFilters(missionList.value)
+            delay(500)
             onEvent(
                 CommonEvents.OnFilterUiModelSelected(
                     missionFilterUtils.getSelectedMissionFilterValue()
@@ -215,47 +218,6 @@ class MissionScreenViewModel @Inject constructor(
         TabsCore.setSubTabIndex(TabsEnum.MissionTab.tabIndex, newSubTabIndex)
         updateCountMap()
     }
-    /*private suspend fun createMissionFilters() {
-        val filterList = ArrayList<FilterUiModel>()
-        missionFilterList.clear()
-        val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
-            .filter { livelihood -> // filtering livelihood that user's have mapped mission
-                missionList.value.any() {
-                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
-                }
-            }
-
-        filterList.add(
-            FilterUiModel.getAllFilter(
-                filterValue = ALL_MISSION_FILTER_VALUE,
-                filterLabel = translationHelper.getString(R.string.all_missions_filter_label),
-                imageFileName = null
-            )
-        )
-        filterList.add(
-            FilterUiModel.getGeneralFilter(
-                filterValue = GENERAL_MISSION_FILTER_VALUE,
-                filterLabel = translationHelper.getString(R.string.general_missions_filter_label),
-                imageFileName = null
-            )
-        )
-
-        with(livelihoods.distinctBy { it.programLivelihoodId }) {
-            iterator().forEach {
-                filterList.add(
-                    FilterUiModel(
-                        type = FilterType.OTHER(it.type),
-                        filterValue = it.name,
-                        filterLabel = it.name,
-                        imageFileName = getFileNameFromURL(it.image.value())
-                    )
-                )
-            }
-        }
-        withContext(Dispatchers.IO) {
-            missionFilterList.addAll(filterList.distinctBy { it.filterValue })
-        }
-    }*/
 
     private suspend fun updateCountMap() {
         countMap.put(
@@ -352,9 +314,9 @@ class MissionScreenViewModel @Inject constructor(
 
         if (missionFilterUtils.getSelectedMissionFilterValue().type != FilterType.ALL && missionFilterUtils.getSelectedMissionFilterValue().type != FilterType.GENERAL) {
             val livelihoodType =
-                missionFilterUtils.selectedMissionFilter.value?.filterLabel
-//                (missionFilterUtils.getSelectedMissionFilterValue().type as FilterType.OTHER).filterValue.toString()
-            filterLabel = "$livelihoodType Missions"
+                missionFilterUtils.getSelectedMissionFilterValue().filterLabel
+            filterLabel =
+                "$livelihoodType ${translationHelper.getString(R.string.missions_filter_label_suffix)}"
         }
 
         filterLabel = "$filterLabel $filterValueCount"
