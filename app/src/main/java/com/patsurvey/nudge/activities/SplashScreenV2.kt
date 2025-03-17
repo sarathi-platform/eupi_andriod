@@ -26,11 +26,11 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_300_dp
-import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.grayColor
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.darkYellow
+import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
 
 @Composable
 fun SplashScreenV2(
@@ -90,29 +90,7 @@ fun SplashScreenV2(
 
 @Composable
 fun NrlmLogo(modifier: Modifier) {
-    Box {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = dimen_30_dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_loks_aajeevika_logo),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(97.dp)
-            )
-            Image(
-                painter = painterResource(id = R.drawable.ic_lokos_logo_only),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(67.dp)
-
-            )
-        }
-    }
+    SarathiLogoTextViewV2(showMiddleImage = false)
 }
 
 @Composable

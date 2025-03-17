@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,7 +21,7 @@ import com.patsurvey.nudge.R
 
 @Preview
 @Composable
-fun SarathiLogoTextViewV2(modifier: Modifier = Modifier) {
+fun SarathiLogoTextViewV2(modifier: Modifier = Modifier, showMiddleImage: Boolean = true) {
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -39,11 +40,16 @@ fun SarathiLogoTextViewV2(modifier: Modifier = Modifier) {
                 contentDescription = null,
                 modifier = Modifier
             )
-            Image(
-                painter = painterResource(id = R.drawable.sarathi_logo_full),
-                contentDescription = null,
-                modifier = Modifier.size(97.dp),
-            )
+            if (showMiddleImage) {
+                Image(
+                    painter = painterResource(id = R.drawable.sarathi_logo_full),
+                    contentDescription = null,
+                    modifier = Modifier.size(97.dp),
+                )
+            } else {
+                Spacer(modifier = Modifier.size(97.dp))
+            }
+
             Image(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(57.dp),

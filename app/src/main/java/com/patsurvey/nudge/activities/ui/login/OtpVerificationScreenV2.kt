@@ -51,6 +51,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nudge.core.maskMobileNumber
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
@@ -209,7 +210,9 @@ fun OtpVerificationScreenV2(
                 enter = fadeIn()
             ) {
                 Row(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = dimen_18_dp),
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
 
