@@ -1,9 +1,11 @@
 package com.nudge.core.database.entities
 
+import android.text.TextUtils
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.OPEN
 import com.nudge.core.REMOTE_QUERY_AUDIT_TRAIL_TABLE_NAME
 import com.nudge.core.model.RemoteQueryDto
 
@@ -43,7 +45,8 @@ data class RemoteQueryAuditTrailEntity(
                 operationType = remoteQueryDto.operationType,
                 appVersion = remoteQueryDto.appVersion,
                 query = remoteQueryDto.query,
-                status = remoteQueryDto.queryStatus ?: BLANK_STRING,
+                status = (if (TextUtils.isEmpty(remoteQueryDto.queryStatus)) OPEN else remoteQueryDto.queryStatus)
+                    ?: OPEN,
                 level = level,
                 executionOrder = remoteQueryDto.executionOrder,
                 modifiedDate = System.currentTimeMillis(),

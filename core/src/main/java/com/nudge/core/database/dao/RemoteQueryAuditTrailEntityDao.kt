@@ -33,7 +33,7 @@ interface RemoteQueryAuditTrailEntityDao {
         query: String
     ): RemoteQueryAuditTrailEntity?
 
-    @Query("SELECT * FROM remote_query_edit_trail_table WHERE userId = :userId  ")
+    @Query("SELECT * FROM remote_query_edit_trail_table WHERE userId = :userId")
     fun getRemoteQueries(userId: String): List<RemoteQueryAuditTrailEntity>
 
 }

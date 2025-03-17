@@ -75,7 +75,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
     override suspend fun getRemoteQuery(): List<RemoteQueryAuditTrailEntity> {
         try {
             val config =
-                remoteQueryAuditTrailEntityDao.getRemoteQueries(userId = coreSharedPrefs.getUserId())
+                remoteQueryAuditTrailEntityDao.getRemoteQueries(userId = coreSharedPrefs.getUniqueUserIdentifier())
             CoreLogger.d(tag = TAG, msg = "getRemoteQuery -> config: $config")
             return config
         } catch (ex: Exception) {
@@ -91,43 +91,70 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
     }
 
     override suspend fun executeQuery(remoteQueryAuditTrail: RemoteQueryAuditTrailEntity) {
-        if (remoteQueryAuditTrail.status != OPEN) {
+        if (remoteQueryAuditTrail.status != SUCCESS) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 remoteQueryAuditTrail.status,
-                msg = "executeQuery: failed as query was already executed",
+                msg = "executeQuery: query was already executed",
                 exception = null
             )
+            remoteQueryAuditTrailEntityDao
+                .updateRemoteQueryAuditTrailEntityStatus(
+                    id = remoteQueryAuditTrail.id,
+                    propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                    status = SUCCESS,
+                    errorMessage = "query already executed",
+                    userId = coreSharedPrefs.getUniqueUserIdentifier()
+                )
             return
         }
 
         val isAppVersionValid = runAppVersionCheck(remoteQueryAuditTrail)
 
         if (!isAppVersionValid) {
+            val errorMsg =
+                "failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryAuditTrail.appVersion}"
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
-                "executeQuery failed due to invalid AppVersion required: ${BuildConfig.VERSION_CODE}, found: ${remoteQueryAuditTrail.appVersion} -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}, " +
+                "executeQuery $errorMsg -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}, " +
                         "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}",
                 null
             )
+            remoteQueryAuditTrailEntityDao
+                .updateRemoteQueryAuditTrailEntityStatus(
+                    id = remoteQueryAuditTrail.id,
+                    propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                    status = FAILED,
+                    errorMessage = errorMsg,
+                    userId = coreSharedPrefs.getUniqueUserIdentifier()
+                )
             return
         }
 
         if (!isDatabaseVersionValidForExecution(remoteQueryAuditTrail)) {
+            val errorMsg = "failed due to invalid Database version, required: ${
+                DatabaseEnum.getDbVersion(remoteQueryAuditTrail.databaseName)
+            }, found: ${remoteQueryAuditTrail.dbVersion}"
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
-                "executeQuery failed due to invalid Database version, required: ${
-                    DatabaseEnum.getDbVersion(remoteQueryAuditTrail.databaseName)
-                }, found: ${remoteQueryAuditTrail.dbVersion} -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}," +
+                "executeQuery $errorMsg -> operation: ${remoteQueryAuditTrail.operationType}, database: ${remoteQueryAuditTrail.databaseName}," +
                         "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}",
                 null
             )
+            remoteQueryAuditTrailEntityDao
+                .updateRemoteQueryAuditTrailEntityStatus(
+                    id = remoteQueryAuditTrail.id,
+                    propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                    status = FAILED,
+                    errorMessage = errorMsg,
+                    userId = coreSharedPrefs.getUniqueUserIdentifier()
+                )
             return
         }
 
-        if (isQueryAlreadyExecuted(remoteQueryAuditTrail)) {
+        /*if (isQueryAlreadyExecuted(remoteQueryAuditTrail)) {
             logEvent(
                 LOGGING_TYPE_DEBUG,
                 FAILED,
@@ -135,8 +162,16 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
                         "table: ${remoteQueryAuditTrail.tableName}, query: ${remoteQueryAuditTrail.query}",
                 null
             )
+            remoteQueryAuditTrailEntityDao
+                .updateRemoteQueryAuditTrailEntityStatus(
+                    id = remoteQueryAuditTrail.id,
+                    propertyValueId = remoteQueryAuditTrail.propertyValueId,
+                    status = FAILED,
+                    errorMessage = "failed due to query already executed",
+                    userId = coreSharedPrefs.getUniqueUserIdentifier()
+                )
             return
-        }
+        }*/
 
         getDatabaseForQueryExecution(remoteQueryAuditTrail)?.let { database ->
 
@@ -388,4 +423,7 @@ class RemoteQueryExecutionRepositoryImpl @Inject constructor(
         }
     }
 
+    override fun getUserId(): Int {
+        return coreSharedPrefs.getUserId().toInt()
+    }
 }

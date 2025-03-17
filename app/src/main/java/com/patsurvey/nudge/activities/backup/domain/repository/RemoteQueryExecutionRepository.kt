@@ -42,4 +42,6 @@ interface RemoteQueryExecutionRepository {
 
     fun logEvent(loggingType: String, status: String, msg: String, exception: Exception?)
 
+    fun getUserId(): Int
+
 }
