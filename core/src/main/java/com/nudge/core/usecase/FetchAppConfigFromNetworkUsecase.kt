@@ -13,14 +13,15 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
 ) {
 
     suspend operator fun invoke(
-        propertiesName: List<String> = AppConfigKeysEnum.values().filter { it.shouldFetch }
-            .map { it.name }
+        propertiesName: List<String> = AppConfigKeysEnum.values().map { it.name },
+        onApiSuccess: suspend () -> Unit = {}
     ): Boolean {
         try {
             val apiResponse = apiConfigNetworkRepository.getAppConfigFromNetwork(propertiesName)
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let {
                     apiConfigDatabaseRepository.saveAppConfig(apiResponse.data)
+                    onApiSuccess()
                 }
                 return true
             } else {

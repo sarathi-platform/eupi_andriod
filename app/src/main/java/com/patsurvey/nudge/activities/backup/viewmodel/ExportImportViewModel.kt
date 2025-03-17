@@ -261,20 +261,20 @@ class ExportImportViewModel @Inject constructor(
 
 
     fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+
     fun fetchAppConfig(onApiSuccess: () -> Unit) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke{
+            fetchAppConfigFromNetworkUseCase.invoke {
+                fetchRemoteQueryFromNetworkUseCase.invoke()
+                checkAndRunRemoteQueryExecution()
+                onEvent(LoaderEvent.UpdateLoaderState(false))
                 onApiSuccess()
             }
-            fetchRemoteQueryFromNetworkUseCase.invoke()
-            checkAndRunRemoteQueryExecution()
-            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
 
     private suspend fun checkAndRunRemoteQueryExecution() {
         remoteQueryExecutionUseCase.invoke()
-
     }
 }
