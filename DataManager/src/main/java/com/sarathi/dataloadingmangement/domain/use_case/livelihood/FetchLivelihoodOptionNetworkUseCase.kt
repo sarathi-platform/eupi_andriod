@@ -2,9 +2,11 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.network.SUBPATH_FETCH_LIVELIHOOD_OPTION
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepository
 import javax.inject.Inject
 
@@ -15,8 +17,14 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
 ) {
 
     private suspend fun getSubjectLivelihoodMapping (activityId: Int): Boolean {
+        val startTime = System.currentTimeMillis()
+
         val apiResponse = repository.getLivelihoodOptionNetwork(
             activityId = activityId,
+        )
+        CoreLogger.d(
+            tag = "LazyLoadAnalysis",
+            msg = "getSubjectLivelihoodMapping :$SUBPATH_FETCH_LIVELIHOOD_OPTION/activityId=${activityId}  : ${System.currentTimeMillis() - startTime}"
         )
         if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
                 SUCCESS,
@@ -41,9 +49,19 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     }
                 }
                 repository.saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntities)
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "save getSubjectLivelihoodMapping : ${System.currentTimeMillis() - startTime}"
+                )
+
                 return true
             }
         } else {
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "save getSubjectLivelihoodMapping : ${System.currentTimeMillis() - startTime}"
+            )
+
             return true
         }
         return false

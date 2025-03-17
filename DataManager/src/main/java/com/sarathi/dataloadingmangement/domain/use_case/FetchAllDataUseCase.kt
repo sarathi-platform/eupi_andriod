@@ -35,8 +35,6 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
-
-
     suspend fun invoke(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true

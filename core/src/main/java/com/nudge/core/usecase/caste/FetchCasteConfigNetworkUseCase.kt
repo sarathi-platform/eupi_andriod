@@ -25,6 +25,7 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
 ) {
     suspend operator fun invoke() {
         try {
+            val startTime = System.currentTimeMillis()
             if (!isNeedToCallApi(SUBPATH_GET_CASTE_LIST)) {
                 return
             }
@@ -33,6 +34,11 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
             insertApiStatus(SUBPATH_GET_CASTE_LIST)
             val casteApiResponse =
                 casteConfigRepositoryImpl.getCasteConfigFromNetwork()
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "FetchCasteConfigNetworkUseCase :$SUBPATH_GET_CASTE_LIST  : ${System.currentTimeMillis() - startTime}"
+            )
+
             if (casteApiResponse.status.equals(SUCCESS, true)) {
                 if (casteApiResponse.data != null) {
                     casteConfigRepositoryImpl.deleteCasteTable()
@@ -61,6 +67,11 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                 )
             }
             coreSharedPrefs.savePref("caste_list", casteList.json())
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "FetchCasteConfigNetworkUseCase: ${System.currentTimeMillis() - startTime}"
+            )
+
 
         } catch (apiException: ApiException) {
             updateApiStatus(

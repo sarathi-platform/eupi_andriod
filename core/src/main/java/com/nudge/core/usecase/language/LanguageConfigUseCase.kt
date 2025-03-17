@@ -6,19 +6,33 @@ import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.language.LanguageConfigModel
 import com.nudge.core.network.ApiException
+import com.nudge.core.utils.CoreLogger
 import javax.inject.Inject
 
 class LanguageConfigUseCase @Inject constructor(private val languageRepositoryImpl: FetchLanguageRepositoryImpl) {
     suspend fun invoke(): Boolean {
         try {
+            val startTime = System.currentTimeMillis()
             val apiResponse = languageRepositoryImpl.getLanguageV3FromNetwork()
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "LanguageConfigUseCase :/read-api/config/language/get/v3 : ${System.currentTimeMillis() - startTime}"
+            )
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let {
                     languageRepositoryImpl.deleteLanguageDataFromDB()
                     languageRepositoryImpl.saveLanguageDataToDB(it.languageList)
                 }
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "LanguageConfigUseCase: ${System.currentTimeMillis() - startTime}"
+                )
                 return true
             } else {
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "LanguageConfigUseCase: ${System.currentTimeMillis() - startTime}"
+                )
                 return false
             }
 

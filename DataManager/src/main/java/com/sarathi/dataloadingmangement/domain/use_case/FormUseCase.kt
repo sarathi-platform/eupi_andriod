@@ -2,10 +2,12 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
 import com.nudge.core.preference.CoreSharedPrefs
+import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_FORM_DETAILS
 import com.sarathi.dataloadingmangement.network.request.FormDetailRequest
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import javax.inject.Inject
@@ -16,11 +18,17 @@ class FormUseCase @Inject constructor(
     private val downloaderManager: DownloaderManager
 ) {
     private suspend fun getFormDetailFromApi(formDetailRequest: FormDetailRequest): Boolean {
+        val startTime = System.currentTimeMillis()
         val apiResponse = repository.getFromDetailFromNetwork(
             activityId = formDetailRequest.activityId,
             surveyId = formDetailRequest.surveyId,
             fromType = formDetailRequest.formType
         )
+        CoreLogger.d(
+            tag = "LazyLoadAnalysis",
+            msg = "getFormDetailFromApi :$SUBPATH_GET_FORM_DETAILS/activityId=${formDetailRequest.activityId}/surveyId=${formDetailRequest.surveyId}  : ${System.currentTimeMillis() - startTime}"
+        )
+
         if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
                 SUCCESS,
                 true
@@ -37,11 +45,26 @@ class FormUseCase @Inject constructor(
                     )
                 }
                 repository.saveAllFormDetails(formEntities)
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "savegetFormDetailFromApi :$SUBPATH_GET_FORM_DETAILS/activityId=${formDetailRequest.activityId}/surveyId=${formDetailRequest.surveyId}  : ${System.currentTimeMillis() - startTime}"
+                )
+
                 return true
             }
         } else {
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "savegetFormDetailFromApi :$SUBPATH_GET_FORM_DETAILS/activityId=${formDetailRequest.activityId}/surveyId=${formDetailRequest.surveyId}  : ${System.currentTimeMillis() - startTime}"
+            )
+
             return true
         }
+        CoreLogger.d(
+            tag = "LazyLoadAnalysis",
+            msg = "savegetFormDetailFromApi :$SUBPATH_GET_FORM_DETAILS/activityId=${formDetailRequest.activityId}/surveyId=${formDetailRequest.surveyId}  : ${System.currentTimeMillis() - startTime}"
+        )
+
         return false
     }
 

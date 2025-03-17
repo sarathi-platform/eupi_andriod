@@ -5,6 +5,7 @@ import com.nudge.core.SUCCESS
 import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.utils.CoreLogger
 import javax.inject.Inject
 
 class FetchAppConfigFromNetworkUseCase @Inject constructor(
@@ -17,14 +18,29 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
         onApiSuccess: () -> Unit = {}
     ): Boolean {
         try {
+            val startTime = System.currentTimeMillis()
+
             val apiResponse = apiConfigNetworkRepository.getAppConfigFromNetwork(propertiesName)
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "FetchAppConfigFromNetworkUseCase :/registry-service/property  : ${System.currentTimeMillis() - startTime}"
+            )
+
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let {
                     apiConfigDatabaseRepository.saveAppConfig(apiResponse.data)
                     onApiSuccess()
                 }
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "FetchAppConfigFromNetworkUseCase : ${System.currentTimeMillis() - startTime}"
+                )
                 return true
             } else {
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "FetchAppConfigFromNetworkUseCase : ${System.currentTimeMillis() - startTime}"
+                )
                 return false
             }
 

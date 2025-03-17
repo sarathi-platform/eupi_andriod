@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.network.ApiException
+import com.sarathi.dataloadingmangement.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import javax.inject.Inject
 
@@ -19,6 +20,7 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
 ) {
     suspend operator fun invoke(missionId: Int): Boolean {
         try {
+
             activityConfigDao.getSurveyIds(missionId, sharedPrefs.getUniqueUserIdentifier())
                 .forEach { surveyId ->
                 callSurveyApi(
@@ -52,15 +54,41 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     private fun getReferenceId() = sharedPrefs.getPref(PREF_STATE_ID, 31)
 
     private suspend fun callSurveyApi(surveyRequest: SurveyRequest): Boolean {
+        val startTime = System.currentTimeMillis()
+
         val apiResponse = repository.fetchSurveyFromNetwork(surveyRequest)
+        CoreLogger.d(
+            tag = "LazyLoadAnalysis",
+            msg = "callSurveyApi :$SUBPATH_FETCH_SURVEY_FROM_NETWORK/${surveyRequest.surveyId}/:  ${System.currentTimeMillis() - startTime}"
+        )
+
         if (apiResponse.status.equals(SUCCESS_CODE, true)) {
             apiResponse.data?.let { surveyApiResponse ->
                 repository.saveSurveyToDb(surveyApiResponse)
+                CoreLogger.d(
+                    tag = "LazyLoadAnalysis",
+                    msg = "callSurveyApi : ${System.currentTimeMillis() - startTime}"
+                )
+
                 return true
             }
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "callSurveyApi : ${System.currentTimeMillis() - startTime}"
+            )
+
         } else {
+            CoreLogger.d(
+                tag = "LazyLoadAnalysis",
+                msg = "callSurveyApi : ${System.currentTimeMillis() - startTime}"
+            )
+
             return true
         }
+        CoreLogger.d(
+            tag = "LazyLoadAnalysis",
+            msg = "callSurveyApi : ${System.currentTimeMillis() - startTime}"
+        )
         return false
     }
 }
