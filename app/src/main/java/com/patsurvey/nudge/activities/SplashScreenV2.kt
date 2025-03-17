@@ -1,6 +1,5 @@
 package com.patsurvey.nudge.activities
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,14 +12,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -28,12 +25,11 @@ import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
-import com.nudge.core.ui.theme.dimen_200_dp
-import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_300_dp
+import com.nudge.core.ui.theme.dimen_30_dp
 import com.nudge.core.ui.theme.grayColor
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.darkGray
 import com.patsurvey.nudge.activities.ui.theme.darkYellow
 
 @Composable
@@ -98,8 +94,8 @@ fun NrlmLogo(modifier: Modifier) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = dimen_20_dp),
-            horizontalArrangement = Arrangement.Center,
+                .padding(horizontal = dimen_30_dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -108,7 +104,6 @@ fun NrlmLogo(modifier: Modifier) {
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(97.dp)
             )
-            DividerLine(modifier = Modifier.padding(horizontal = 40.dp))
             Image(
                 painter = painterResource(id = R.drawable.ic_lokos_logo_only),
                 contentDescription = null,
@@ -124,7 +119,7 @@ fun NrlmLogo(modifier: Modifier) {
 fun AppNameContent(modifier: Modifier) {
     Box(
         modifier = modifier
-            .size(dimen_200_dp)
+            .size(dimen_300_dp)
             .shadow(16.dp, shape = CircleShape)
             .border(dimen_1_dp, darkYellow, CircleShape)
             .background(Color.White, shape = CircleShape),
@@ -132,7 +127,7 @@ fun AppNameContent(modifier: Modifier) {
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
-                painter = painterResource(id = R.drawable.ic_sarathi_logo_mini),
+                painter = painterResource(id = R.drawable.sarathi_logo_full),
                 contentDescription = "Sarathi Logo"
             )
         }
@@ -169,32 +164,14 @@ fun BottomContent(modifier: Modifier) {
                 painter = painterResource(id = R.drawable.ministry_logo),
                 contentDescription = "Ministry Logo"
             )
-            DividerLine()
             Image(
                 painter = painterResource(id = R.drawable.ic_digital_india_logo),
                 contentDescription = "Digital India Logo"
             )
-            DividerLine()
             Image(
                 painter = painterResource(id = R.drawable.nudge_logo),
                 contentDescription = "nudge Logo"
             )
         }
-    }
-}
-
-@Composable
-fun DividerLine(modifier: Modifier = Modifier) {
-    Canvas(
-        modifier = modifier
-            .height(50.dp)
-            .width(2.dp)
-    ) {
-        drawLine(
-            color = darkGray,
-            start = Offset(size.width / 2, 0f),
-            end = Offset(size.width / 2, size.height),
-            strokeWidth = 2.dp.toPx()
-        )
     }
 }

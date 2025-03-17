@@ -48,17 +48,11 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
 import com.nudge.core.maskMobileNumber
 import com.nudge.core.ui.theme.dimen_10_dp
-import com.nudge.core.ui.theme.dimen_16_dp
-import com.nudge.core.ui.theme.dimen_28_dp
 import com.nudge.core.ui.theme.dimen_3_dp
-import com.nudge.core.ui.theme.dimen_48_dp
-import com.nudge.core.ui.theme.dimen_50_dp
-import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_72_dp
+import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
 import com.nudge.core.value
@@ -67,10 +61,8 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.activities.ui.theme.NotoSans
 import com.patsurvey.nudge.activities.ui.theme.blueDark
-import com.patsurvey.nudge.activities.ui.theme.blueDarkColor
 import com.patsurvey.nudge.activities.ui.theme.buttonBgColor
 import com.patsurvey.nudge.activities.ui.theme.midiumBlueColor
-import com.patsurvey.nudge.activities.ui.theme.placeholderGrey
 import com.patsurvey.nudge.activities.ui.theme.white
 import com.patsurvey.nudge.customviews.CustomSnackBarShow
 import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
@@ -125,102 +117,70 @@ fun OtpVerificationScreenV2(
         isOtpInputWrong = false
     }
 
-    ConstraintLayout(
+    Box(
         modifier = Modifier
+            .background(color = Color.White)
             .fillMaxSize()
+            .then(modifier)
+
     ) {
-        val (backgroundImage, logo, loader, otpBoxLable, otpBox, button, spacer, spacer2) = createRefs()
         Image(
             painter = painterResource(id = R.drawable.lokos_bg),
             contentDescription = "Background Image",
             contentScale = ContentScale.Crop,
             modifier = Modifier
                 .fillMaxSize()
-                .constrainAs(backgroundImage) { centerTo(parent) }
         )
-        SarathiLogoTextViewV2(
-            modifier = Modifier.constrainAs(logo) {
-                top.linkTo(parent.top, margin = dimen_50_dp)
-            }
-        )
+        SarathiLogoTextViewV2()
 
         AnimatedVisibility(
             visible = viewModel.showLoader.value,
             exit = fadeOut(),
             enter = fadeIn(),
-            modifier = Modifier.constrainAs(loader) {
-                top.linkTo(logo.bottom)
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-            }
+            modifier = Modifier.align(
+                Alignment.Center
+            )
         ) {
             Box(
-                modifier = modifier
-                    .fillMaxWidth()
-                    .height(dimen_48_dp)
-                    .padding(vertical = dimen_10_dp)
+                modifier = Modifier
+                    .size(28.dp)
+                    .padding(top = 30.dp)
+                    .align(Alignment.Center)
             ) {
                 CircularProgressIndicator(
                     color = blueDark, modifier = Modifier
-                        .size(dimen_28_dp)
+                        .size(28.dp)
                         .align(Alignment.Center)
                 )
             }
         }
-        Spacer(
-            modifier = Modifier
-                .height(dimen_72_dp)
-                .constrainAs(spacer) {
-                    top.linkTo(logo.bottom)
-                    centerHorizontallyTo(parent)
-                }
-        )
 
         Column(
             modifier = Modifier
-                .constrainAs(otpBoxLable) {
-                    top.linkTo(spacer.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                    centerHorizontallyTo(parent)
-                }
-                .fillMaxWidth(),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .align(Alignment.BottomCenter)
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_16dp),
+                    vertical = dimensionResource(id = R.dimen.padding_32dp)
+                )
         ) {
-            Text(
-                text = stringResource(R.string.verify_otp),
-                color = blueDark,
-                fontSize = 16.sp,
-                fontFamily = NotoSans,
-                fontWeight = FontWeight.SemiBold,
-                textAlign = TextAlign.Center
-            )
-            OtpSentMessage(mobileNumber = viewModel.getUserMobileNumber())
-            Spacer(modifier = Modifier.height(dimen_3_dp))
-
-        }
-
-        Spacer(
-            modifier = Modifier
-                .height(dimen_10_dp)
-                .constrainAs(spacer2) {
-                    top.linkTo(otpBoxLable.bottom)
-                    centerHorizontallyTo(parent)
-                }
-        )
-
-        Column(
-            modifier = Modifier
-                .constrainAs(otpBox) {
-                    top.linkTo(spacer2.bottom)
-                    start.linkTo(parent.start)
-                    end.linkTo(parent.end)
-                }
-                .fillMaxWidth()
-                .padding(horizontal = dimen_16_dp)
-
-        ) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(R.string.verify_otp),
+                    color = blueDark,
+                    fontSize = 16.sp,
+                    fontFamily = NotoSans,
+                    fontWeight = FontWeight.SemiBold,
+                    textAlign = TextAlign.Center
+                )
+                OtpSentMessage(mobileNumber = viewModel.getUserMobileNumber())
+                Spacer(modifier = Modifier.height(dimen_3_dp))
+            }
+            Spacer(modifier = Modifier.height(6.dp))
             val currentShape = MaterialTheme.shapes.copy(small = RoundedCornerShape(8))
             val typography = MaterialTheme.typography.copy(
                 h4 = TextStyle(
@@ -234,7 +194,6 @@ fun OtpVerificationScreenV2(
                 colors = currentColor,
                 typography = typography
             ) {
-
                 OtpInputField(
                     isOtpInputWrong = isOtpInputWrong.value(),
                     otpLength = 6,
@@ -245,40 +204,14 @@ fun OtpVerificationScreenV2(
                     })
             }
             AnimatedVisibility(
-                visible = isOtpInputWrong.value(),
-                exit = fadeOut(),
-                enter = fadeIn()
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = dimen_5_dp),
-
-                    ) {
-                    Text(
-                        text = stringResource(R.string.otp_is_invalid),
-                        color = red,
-                        style = quesOptionTextStyle,
-                        textAlign = TextAlign.Start,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 2.dp)
-                            .background(Color.Transparent)
-                    )
-                }
-            }
-
-            AnimatedVisibility(
                 visible = !isResendOTPEnable.value,
                 exit = fadeOut(),
                 enter = fadeIn()
             ) {
                 Row(
-                    horizontalArrangement = Arrangement.Start,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = dimen_10_dp),
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
 
                     ) {
                     val countDownTimer =
@@ -308,9 +241,34 @@ fun OtpVerificationScreenV2(
                             id = R.string.expiry_login_verify_otp,
                             formattedTime.value
                         ),
-                        color = blueDarkColor,
-                        style = quesOptionTextStyle,
+                        color = midiumBlueColor,
+                        fontSize = 14.sp,
+                        fontFamily = NotoSans,
+                        fontWeight = FontWeight.Normal,
                         textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 2.dp)
+                            .background(Color.Transparent)
+                    )
+                }
+            }
+
+            AnimatedVisibility(
+                visible = isOtpInputWrong.value(),
+                exit = fadeOut(),
+                enter = fadeIn()
+            ) {
+                Row(
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+
+                    Text(
+                        text = stringResource(R.string.otp_is_invalid),
+                        color = red,
+                        style = quesOptionTextStyle,
+                        textAlign = TextAlign.Start,
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(start = 2.dp)
@@ -322,6 +280,7 @@ fun OtpVerificationScreenV2(
             Button(
                 onClick = {
                     viewModel.validateOtp { userType, success, message ->
+                        isOtpInputWrong = !success
                         if (success) {
                             if (userType != UPCM_USER) {
                                 viewModel.savePageFromOTPScreen()
@@ -341,7 +300,6 @@ fun OtpVerificationScreenV2(
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
-                    .height(dimen_48_dp)
                     .height(dimensionResource(id = R.dimen.height_60dp)),
                 colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(
                     blueDark
@@ -353,9 +311,9 @@ fun OtpVerificationScreenV2(
             ) {
 
                 Text(
-                    text = stringResource(R.string.verify),
+                    text = stringResource(id = R.string.verify),
                     color = if (otpValue.value.length == OTP_LENGTH) white else blueDark,
-                    fontSize = 16.sp,
+                    fontSize = 18.sp,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
@@ -372,14 +330,16 @@ fun OtpVerificationScreenV2(
                 enter = fadeIn()
             ) {
                 Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = dimen_5_dp)
+                        .padding(vertical = dimen_10_dp)
                 ) {
+
                     Text(
                         text = stringResource(id = R.string.resend_otp),
-                        color = if (isResendOTPEnable.value) midiumBlueColor else placeholderGrey,
+                        color = if (isResendOTPEnable.value) midiumBlueColor else grayColor,
                         fontSize = 14.sp,
                         fontFamily = NotoSans,
                         fontWeight = FontWeight.SemiBold,
@@ -410,8 +370,15 @@ fun OtpVerificationScreenV2(
             isSuccess = true, isCustomIcon = false
         )
     }
-
-    CustomSnackBarShow(state = snackState)
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CustomSnackBarShow(
+            modifier = Modifier.padding(vertical = 100.dp),
+            state = snackState
+        )
+    }
 }
 
 @Composable

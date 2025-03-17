@@ -14,9 +14,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
 import com.patsurvey.nudge.R
-import com.patsurvey.nudge.activities.DividerLine
 
 @Preview
 @Composable
@@ -24,14 +24,14 @@ fun SarathiLogoTextViewV2(modifier: Modifier = Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(vertical = dimen_20_dp)
+            .padding(vertical = dimen_20_dp, horizontal = dimen_16_dp)
     ) {
 
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = dimen_20_dp),
-            horizontalArrangement = Arrangement.Center,
+            horizontalArrangement = Arrangement.SpaceBetween, // Equal spacing between items
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
@@ -39,13 +39,11 @@ fun SarathiLogoTextViewV2(modifier: Modifier = Modifier) {
                 contentDescription = null,
                 modifier = Modifier
             )
-            DividerLine(modifier = Modifier.padding(horizontal = 20.dp))
             Image(
                 painter = painterResource(id = R.drawable.sarathi_logo_full),
                 contentDescription = null,
-                modifier = Modifier.size(57.dp),
+                modifier = Modifier.size(97.dp),
             )
-            DividerLine(modifier = Modifier.padding(horizontal = 20.dp))
             Image(
                 contentScale = ContentScale.Fit,
                 modifier = Modifier.size(57.dp),
