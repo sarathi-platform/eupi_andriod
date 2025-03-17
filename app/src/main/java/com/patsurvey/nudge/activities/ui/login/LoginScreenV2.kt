@@ -131,13 +131,19 @@ fun LoginScreenV2(
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
+                .padding(
+                    horizontal = dimensionResource(id = R.dimen.padding_16dp),
+                    vertical = dimensionResource(
+                        id = R.dimen.padding_32dp
+                    )
+                )
+
         ) {
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_6)))
             Row(
                 verticalAlignment = Alignment.CenterVertically, modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimensionResource(id = R.dimen.padding_16dp))
-                    .height(dimensionResource(id = R.dimen.dp_65))
+                    .height(dimensionResource(id = R.dimen.dp_50))
                     .border(
                         width = dimen_2_dp, color = when {
                             isFocused -> midiumBlueColor
@@ -193,7 +199,6 @@ fun LoginScreenV2(
                 modifier = Modifier
                     .padding(
                         vertical = dimensionResource(id = R.dimen.dp_6),
-                        horizontal = dimensionResource(id = R.dimen.padding_16dp)
                     )
             )
             Spacer(modifier = Modifier.height(dimensionResource(id = R.dimen.dp_20)))
@@ -230,13 +235,7 @@ fun LoginScreenV2(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(
-                        start = dimensionResource(id = R.dimen.padding_16dp),
-                        end = dimensionResource(id = R.dimen.padding_16dp),
-                        bottom = dimensionResource(
-                            id = R.dimen.padding_32dp
-                        )
-                    )
+                    .height(dimensionResource(id = R.dimen.dp_50))
                     .background(Color.Transparent),
                 colors = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
                     ButtonDefaults.buttonColors(blueDark) else ButtonDefaults.buttonColors(

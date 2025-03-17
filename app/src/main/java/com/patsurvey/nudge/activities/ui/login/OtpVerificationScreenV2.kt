@@ -300,7 +300,7 @@ fun OtpVerificationScreenV2(
                 modifier = Modifier
                     .background(Color.Transparent)
                     .fillMaxWidth()
-                    .height(dimensionResource(id = R.dimen.height_60dp)),
+                    .height(dimensionResource(id = R.dimen.dp_50)),
                 colors = if (otpValue.value.length == OTP_LENGTH) ButtonDefaults.buttonColors(
                     blueDark
                 ) else ButtonDefaults.buttonColors(
