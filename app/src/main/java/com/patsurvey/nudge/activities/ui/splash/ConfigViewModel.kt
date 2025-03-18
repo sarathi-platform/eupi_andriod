@@ -134,13 +134,6 @@ class ConfigViewModel @Inject constructor(
         }
     }
 
-    fun fetchAppConfigForPropertiesWithAppUpdate(onApiSuccess: () -> Unit) {
-        job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.getAppConfigurations {
-                onApiSuccess()
-            }
-        }
-    }
     fun isV2TheameEnable(): Boolean {
         return coreSharedPrefs.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)
     }
