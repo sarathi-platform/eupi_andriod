@@ -32,8 +32,7 @@ object NudgeLogger {
 
     fun d(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
-            LogWriter.log(Level.FINE.intValue(), tag, msg)
-            Log.d(tag, msg)
+            if (DEBUG) Log.d(tag, msg)
         }
     }
 

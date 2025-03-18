@@ -33,7 +33,7 @@ object BaselineLogger {
     fun d(tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             BSLogWriter.log(Level.FINE.intValue(), tag, msg)
-            Log.d(tag, msg)
+            if (DEBUG) Log.d(tag, msg)
         }
     }
 

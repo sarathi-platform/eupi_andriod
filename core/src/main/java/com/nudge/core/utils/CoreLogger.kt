@@ -32,7 +32,7 @@ object CoreLogger {
     fun d(context: Context = CoreAppDetails.getApplicationContext(), tag: String, msg: String) {
         CoroutineScope(Dispatchers.IO).launch {
             LogWriter.log(context, Level.FINE.intValue(), tag, msg)
-            Log.d(tag, msg)
+            if (DEBUG) Log.d(tag, msg)
         }
     }
 
