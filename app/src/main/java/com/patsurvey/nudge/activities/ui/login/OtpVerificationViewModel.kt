@@ -2,6 +2,7 @@ package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
-    private val languageConfigUseCase: LanguageConfigUseCase
+    private val languageConfigUseCase: LanguageConfigUseCase,
+    private val prefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
@@ -104,5 +106,8 @@ class OtpVerificationViewModel @Inject constructor(
                 }
             }
         }
+    }
+    fun getUserMobileNumber(): String? {
+        return prefs.getMobileNo() ?: BLANK_STRING
     }
 }

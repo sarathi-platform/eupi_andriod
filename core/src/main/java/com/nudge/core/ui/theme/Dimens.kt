@@ -25,6 +25,7 @@ val dimen_14_dp = 14.dp
 val dimen_15_dp = 15.dp
 val dimen_16_dp = 16.dp
 val dimen_18_dp = 18.dp
+val dimen_19_dp = 19.dp
 val dimen_20_dp = 20.dp
 val dimen_22_dp = 22.dp
 val dimen_24_dp = 24.dp
@@ -33,6 +34,7 @@ val dimen_28_dp = 28.dp
 val dimen_30_dp = 30.dp
 val dimen_35_dp = 35.dp
 val dimen_40_dp = 40.dp
+val dimen_41_dp = 41.dp
 val dimen_45_dp = 45.dp
 val dimen_48_dp = 48.dp
 val dimen_44_dp = 44.dp
@@ -42,6 +44,7 @@ val dimen_50_dp = 50.dp
 val dimen_60_dp = 60.dp
 val dimen_64_dp = 64.dp
 val dimen_72_dp = 72.dp
+val dimen_71_dp = 71.dp
 val dimen_75_dp = 75.dp
 val dimen_80_dp = 80.dp
 
@@ -64,6 +67,8 @@ val weight_60_percent = 0.6f
 val weight_80_percent = 0.8f
 val weight_100_percent = 1f
 val text_size_13 = 13.sp
+val text_size_16 = 16.sp
+val text_size_18 = 18.sp
 val alpha_6 = 0.6F
 
 
