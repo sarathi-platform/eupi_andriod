@@ -234,7 +234,7 @@ class ExportImportViewModel @Inject constructor(
             try {
                 if (loggedInUserType.value == UPCM_USER) {
 
-                    // eventWriterHelperImpl.regenerateAllEvent(appContext = mAppContext)
+                    eventWriterHelperImpl.regenerateAllEvent(appContext = mAppContext)
                     regenerateGrantEventUsecase.invoke()
                 } else {
                     settingRepository.regenerateAllEvent(coreSharedPrefs = coreSharedPrefs)
