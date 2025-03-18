@@ -41,12 +41,15 @@ data class OptionsUiModel(
 
     var selectedValueId: Int = 0,
 
-    @SerializedName("optionImage", alternate = arrayOf("m")) var optionImage: String = BLANK_STRING,
+    @SerializedName(
+        "optionImage",
+        alternate = arrayOf("m")
+    ) var optionImage: String? = BLANK_STRING,
     @SerializedName(
         "conditions", alternate = arrayOf("n")
     ) @TypeConverters(ConditionsDtoConvertor::class) val conditions: List<ConditionsDto?>? = emptyList(),
 
-    @SerializedName("contentEntities", alternate = arrayOf("0")) @TypeConverters(
+    @SerializedName("contentEntities", alternate = arrayOf("o")) @TypeConverters(
         ContentListConverter::class
     ) val contentEntities: List<ContentList> = listOf()
 )
