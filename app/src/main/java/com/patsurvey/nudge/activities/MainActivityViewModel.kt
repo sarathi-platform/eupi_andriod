@@ -3,8 +3,11 @@ package com.patsurvey.nudge.activities
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
+import com.google.android.play.core.install.model.AppUpdateType
 import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
+import com.nudge.core.database.dao.CasteListDao
 import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SyncAlertType
 import com.nudge.core.model.EventLimitAlertUiModel
 import com.nudge.core.notifications.NotificationHandler
@@ -12,7 +15,6 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
-import com.nudge.core.database.dao.CasteListDao
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.AnswerDao
@@ -60,6 +62,11 @@ class MainActivityViewModel @Inject constructor(
 ): BaseViewModel() {
     val isLoggedIn = mutableStateOf(false)
     val isOnline = connectionMonitor.isConnected.asLiveData()
+    val isInAppUpdate = mutableStateOf(false)
+    val appUpdateType = mutableStateOf(AppUpdateType.IMMEDIATE)
+    val showUpdateDialog = mutableStateOf(false)
+    val isAppLinkOpen = mutableStateOf(false)
+
 
     init {
         prefRepo.saveBuildEnvironment(BuildConfig.FLAVOR.uppercase(Locale.ENGLISH))
@@ -139,6 +146,13 @@ class MainActivityViewModel @Inject constructor(
         return EventLimitAlertUiModel.getHardEventLimitAlertUiModel(
             alertTitle = title,
             alertMessage = message
+        )
+    }
+
+    fun setV2TheameEnable() {
+        coreSharedPrefs.savePref(
+            AppConfigKeysEnum.V2TheameEnable.name,
+            true
         )
     }
 }

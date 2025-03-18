@@ -52,6 +52,7 @@ class SmallGroupAttendanceEditScreenViewModel @Inject constructor(
 
 
     val allSelected = mutableStateOf(false)
+    val isFromBackButton = mutableStateOf(false)
 
     val alertDialogState: MutableState<DialogState> = mutableStateOf(DialogState())
 
@@ -69,8 +70,9 @@ class SmallGroupAttendanceEditScreenViewModel @Inject constructor(
                 setTranslationConfig()
             }
 
-            is DialogEvents.ShowDialogEvent -> {
+            is DialogEvents.ShowAttendanceDialogEvent -> {
                 alertDialogState.value = alertDialogState.value.copy(event.showDialog)
+                isFromBackButton.value = event.isFromBackButton
             }
 
             is SmallGroupAttendanceEvent.LoadSmallGroupAttendanceForGroupForDateEvent -> {

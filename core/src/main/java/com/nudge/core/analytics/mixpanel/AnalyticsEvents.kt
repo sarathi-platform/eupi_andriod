@@ -24,6 +24,9 @@ enum class AnalyticsEvents(val eventName: String) {
     EXPORT_LOG_FILE("export_log_file"),
     APP_CONFIG_LOG_FILE("app_config_log_file"),
     CATCHED_EXCEPTION("catch_exception"),
+    DATA_SYNC_EVENT_PROGRESS("data_sync_event_progress"),
+    IMAGE_SYNC_EVENT_PROGRESS("image_sync_event_progress"),
+    OLD_DELETE_EVENT_COUNT("old_event_delete_count"),
 }
 
 
@@ -45,7 +48,20 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     FAILED_EVENT_ID_LIST("failed_event_id_list"),
     EXCEPTION_MESSAGE("exception_message"),
     STACK_TRACE("stack_trace"),
-    EXCEPTION("exception")
+    EXCEPTION("exception"),
+
+    OPEN_EVENT_COUNT("open_event_count"),
+    PRODUCER_IN_PROGRESS_EVENT_COUNT("producer_in_progress_event_count"),
+    PRODUCER_SUCCESS_EVENT_COUNT("producer_success_event_count"),
+    PRODUCER_FAILED_EVENT_COUNT("producer_failed_event_count"),
+    CONSUMER_IN_PROGRESS_EVENT_COUNT("consumer_in_progress_event_count"),
+    CONSUMER_SUCCESS_EVENT_COUNT("consumer_success_event_count"),
+    CONSUMER_FAILED_EVENT_COUNT("consumer_failed_event_count"),
+    IMAGE_NOT_EXIST_EVENT_COUNT("image_not_exists_event_count"),
+    BLOB_UPLOAD_FAILED_EVENT_COUNT("blob_upload_failed_event_count"),
+    TOTAL_EVENT_COUNT("total_event_count"),
+
+    TOTAL_DELETED_EVENT_COUNT("total_deleted_event_count")
 
 }
 

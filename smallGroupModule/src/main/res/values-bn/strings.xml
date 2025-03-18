@@ -10,10 +10,9 @@
         <item quantity="other">
 ছোট গ্রুপ</item>
     </plurals>
-    <plurals name="delete_attendance_confirmation_msg">
-        <item quantity="one">আপনি কি নিশ্চিত হয়ে ছোট গ্রুপ উপস্থিতি  ডিলিট  করতে চান?</item>
-        <item quantity="other">আপনি কি নিশ্চিত হয়ে ছোট গ্রুপ উপস্থিতি  ডিলিট  করতে চান?</item>
-    </plurals>
+    <string name="delete_attendance_confirmation_msg">
+        আপনি কি এই তারিখের অ্যাটেনডেন্স মুছে ফেলতে চান?
+    </string>
     <plurals name="confirmation_alert_dialog_title">
         <item quantity="one">"তুমি কি নিশ্চিত? "</item>
         <item quantity="other">"তুমি কি নিশ্চিত? "</item>
@@ -69,6 +68,7 @@
         <item quantity="other">"ঠিক "</item>
     </plurals>
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\n If the date is incorrect, then please delete the entry and enter new attendance."</string>
+    <string name="attendance_submitted_msg">Attendance has been submitted</string>
 
     <plurals name="submit">
         <item quantity="one">জমা দিন</item>

@@ -75,8 +75,8 @@
     <string name="complete_survey">Complete Survey</string>
     <string name="exclude_in_calculation_message">*এই ব্যয়টো মুঠ গণনাত অন্তৰ্ভুক্ত কৰা হোৱা নাই।</string>
     <string name="contact_to_admin_id_missing">প্ৰৱেশাধিকাৰৰ সমস্যা চিনাক্ত কৰা হৈছে। অনুগ্ৰহ কৰি সহায়ৰ বাবে বিপিচিৰ সৈতে যোগাযোগ কৰক।</string>
-    <string name="str_download_complete">Application download complete.</string>
-    <string name="str_restart">Application Restarting..</string>
-    <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="str_download_complete">আবেদন ডাউনলোড সম্পূৰ্ণ</string>
+    <string name="click_here_to_install">ইনষ্টল কৰিবলৈ ইয়াত ক্লিক কৰক</string>
+    <string name="str_app_update_fail">এপ্লিকেচন আপডেইট বিফল</string>
     <string name="missions_filter_label_suffix">অভিযানসমূহ</string>
 </resources>

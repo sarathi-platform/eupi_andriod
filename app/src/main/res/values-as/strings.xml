@@ -67,6 +67,10 @@
     <string name="village_text">গাওঁ</string>
     <string name="select_date">তাৰিখ নিৰ্ব্বাচন কৰক</string>
     <string name="are_you_sure_you_want_to_continue_you_wont_be_able_to_make_changes_to_this_section_once_it_s_completed">আপুনি অব্যাহত ৰাখিব বিচাৰে বুলি নিশ্চিতনে? এইশাখাটো সম্পূৰ্ণ হোৱাৰ পিছত আপুনি ইয়াক পৰিৱৰ্তন কৰিবলৈ সক্ষম নহ\'ব।</string>
+    <string name="app_update_cancel">বাতিল কৰক</string>
+    <string name="app_update">নবীকৰণ</string>
+    <string name="update_available">আপডেট উপলব্ধ</string>
+    <string name="version_available_message">এপটোৰ নতুন সংস্কৰণ উপলব্ধ। আগবাঢ়ি যাবলৈ এপটো আপডেট কৰক।</string>
     <string name="vo_name">VOৰ নাম</string>
     <string name="total">মুঠ</string>
     <string name="participation_date_wealth_ranking">তাৰিখ</string>
@@ -542,6 +546,12 @@
     <string name="sync_started">চিংক আৰম্ভ হৈছে। অনুগ্ৰহ কৰি ৰওক।…</string>
     <string name="sync_data_history">তথ্য ইতিহাস চিংক কৰক</string>
     <string name="data">তথ্য</string>
+    <string name="invalid_url">অবৈধ URL</string>
+    <string name="no_village_found">No Village Found</string>
 
-
+    <string name="verify_otp">OTP প্ৰমাণিত কৰক</string>
+    <string name="an_otp_has_been_sent_on">নম্বৰত এটা OTP প্ৰেৰণ কৰা হৈছে</string>
+    <string name="verify">সত্যাপন কৰক</string>
+    <string name="mobile_number">ম\'বাইল নম্বৰ</string>
+    <string name="otp_is_invalid">OTP বৈধ নহয়</string>
 </resources>

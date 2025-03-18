@@ -1,10 +1,13 @@
 package com.nudge.core.data.repository
 
 import android.util.Base64
+import com.nudge.core.APP_REDIRECT_LINK
 import com.nudge.core.APP_UPDATE_IMMEDIATE
 import com.nudge.core.APP_UPDATE_TYPE
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.IS_APP_NEED_UPDATE
+import com.nudge.core.IS_IN_APP_UPDATE
+import com.nudge.core.LATEST_VERSION_CODE
 import com.nudge.core.MINIMUM_VERSION_CODE
 import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
 import com.nudge.core.REMOTE_CONFIG_SYNC_ENABLE
@@ -106,6 +109,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 data[AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name].toBoolean()
             )
         }
+        if (data.containsKey(AppConfigKeysEnum.V2TheameEnable.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.V2TheameEnable.name,
+                data[AppConfigKeysEnum.V2TheameEnable.name].toBoolean()
+            )
+        }
         if (data.containsKey(AppConfigKeysEnum.APP_UPDATE_CONFIG.name)) {
             data[AppConfigKeysEnum.APP_UPDATE_CONFIG.name]?.let {
                 val configModel = it.fromJson<AppUpdateConfigModel?>()
@@ -121,6 +130,21 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                     coreSharedPrefs.savePref(
                         APP_UPDATE_TYPE,
                         appUpdateConfig.updateType ?: APP_UPDATE_IMMEDIATE
+                    )
+
+                    coreSharedPrefs.savePref(
+                        IS_IN_APP_UPDATE,
+                        appUpdateConfig.isInAppUpdate ?: false
+                    )
+
+                    coreSharedPrefs.savePref(
+                        APP_REDIRECT_LINK,
+                        appUpdateConfig.redirectLink ?: BLANK_STRING
+                    )
+
+                    coreSharedPrefs.savePref(
+                        LATEST_VERSION_CODE,
+                        appUpdateConfig.latestVersionCode ?: 0
                     )
                 }
             }

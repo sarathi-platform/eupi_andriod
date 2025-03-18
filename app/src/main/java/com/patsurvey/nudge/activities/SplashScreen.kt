@@ -23,9 +23,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ui.theme.dimen_12_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_137_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_93_dp
+import com.nudge.core.ui.theme.dimen_14_dp
+import com.nudge.core.ui.theme.dimen_19_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_28_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -33,6 +43,7 @@ import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
+import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -50,24 +61,26 @@ fun SplashScreen(
 ) {
     val context = LocalContext.current
     val networkErrorMessage = viewModel.networkErrorMessage.value
-    if(networkErrorMessage.isNotEmpty()){
-        showCustomToast(context,networkErrorMessage)
+    if (networkErrorMessage.isNotEmpty()) {
+        showCustomToast(context, networkErrorMessage)
         viewModel.networkErrorMessage.value = BLANK_STRING
     }
     val isLoggedIn = viewModel.isLoggedIn()/*false*/
 
     LaunchedEffect(key1 = true) {
         if (!(context as MainActivity).isOnline.value) {
-
-
+            (context as MainActivity).validateAppVersionAndCheckUpdate()
             NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> !(context as MainActivity).isOnline.value = true")
             if (isLoggedIn) {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = true")
                 delay(ONE_SECOND)
                 viewModel.showLoader.value = true
                 delay(SPLASH_SCREEN_DURATION)
-                viewModel.showLoader.value=false
-                openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
+                viewModel.showLoader.value = false
+                openUserHomeScreen(
+                    userType = viewModel.getUserType() ?: CRP_USER_TYPE,
+                    navController = navController
+                )
             } else {
                 NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> isLoggedIn = false")
                 delay(ONE_SECOND)
@@ -75,7 +88,7 @@ fun SplashScreen(
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value = false
-                navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
             }
         } else {
             NudgeLogger.d(
@@ -93,13 +106,20 @@ fun SplashScreen(
                     "SplashScreen",
                     "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> it: $it"
                 )
-                viewModel.fetchAppConfigForProperties()
+
+                viewModel.fetchAppConfigForProperties {
+                    (context as MainActivity).validateAppVersionAndCheckUpdate()
+                }
+                viewModel.checkAndSendSyncProgress()
                 viewModel.showLoader.value = false
                 if (it.isNotEmpty()) {
                     (context as MainActivity).quesImageList = it as MutableList<String>
                 }
                 if (isLoggedIn) {
-                    openUserHomeScreen(userType = viewModel.getUserType()?: CRP_USER_TYPE,navController=navController)
+                    openUserHomeScreen(
+                        userType = viewModel.getUserType() ?: CRP_USER_TYPE,
+                        navController = navController
+                    )
                     /*
                     NudgeLogger.d(
                         "SplashScreen",
@@ -118,121 +138,131 @@ fun SplashScreen(
                         }
                     }*/
                 } else {
-                    NudgeLogger.d("SplashScreen", "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false")
-                    navController.navigate(AuthScreen.LANGUAGE_SCREEN.route)
+                    NudgeLogger.d(
+                        "SplashScreen",
+                        "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false"
+                    )
+                    navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
                 }
             }
         }
     }
+    if (!viewModel.isV2TheameEnable()) {
+        ConstraintLayout(
+            modifier = Modifier
+                .background(color = Color.White)
+                .fillMaxSize()
+                .padding(horizontal = dimen_16_dp)
+                .padding(bottom = dimen_32_dp, top = dimen_20_dp)
+                .then(modifier)
+        ) {
 
-    ConstraintLayout(
-        modifier = Modifier
-            .background(color = Color.White)
-            .fillMaxSize()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 32.dp, top = 20.dp)
-            .then(modifier)
-    ) {
+            val (bottomContent, appNameContent, nrlmContent, loader) = createRefs()
 
-        val (bottomContent, appNameContent, nrlmContent,loader) = createRefs()
-
-        Box(modifier = Modifier.constrainAs(nrlmContent) {
-            top.linkTo(parent.top)
-            bottom.linkTo(appNameContent.top)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }) {
-            Image(
-                painter = painterResource(id = R.drawable.nrlm_logo),
-                contentDescription = null,
-                contentScale = ContentScale.Fit,
-                modifier = Modifier.size(137.dp)
-            )
-        }
-
-        Box(modifier = Modifier.constrainAs(appNameContent) {
-            top.linkTo(parent.top)
-            bottom.linkTo(bottomContent.top)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Image(painter = painterResource(id = R.drawable.sarathi_logo_full), contentDescription = "Sarathi Logo")
-            }
-        }
-        if(viewModel.showLoader.value){
-            Box(
-                modifier = Modifier
-                    .constrainAs(loader) {
-                        top.linkTo(appNameContent.bottom)
-                        start.linkTo(parent.start)
-                        end.linkTo(parent.end)
-                    }
-                    .fillMaxWidth()
-                    .padding(top = 20.dp)
-                    .height(48.dp)
-            ) {
-                CircularProgressIndicator(
-                    color = blueDark,
-                    modifier = Modifier
-                        .size(28.dp)
-                        .align(Alignment.Center)
+            Box(modifier = Modifier.constrainAs(nrlmContent) {
+                top.linkTo(parent.top)
+                bottom.linkTo(appNameContent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }) {
+                Image(
+                    painter = painterResource(id = R.drawable.nrlm_logo),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(dimen_137_dp)
                 )
             }
-        }
-        Box(modifier = Modifier.constrainAs(bottomContent) {
-            bottom.linkTo(parent.bottom)
-            start.linkTo(parent.start)
-            end.linkTo(parent.end)
-        }) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(
-                        Alignment.BottomCenter
-                    )
-            ) {
-                Text(text = "Designed By", style = smallerTextStyle, color = blueDark)
-                Spacer(modifier = Modifier.height(12.dp))
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center,
-                    modifier = Modifier
-                        .fillMaxWidth()
 
-                ) {
+            Box(modifier = Modifier.constrainAs(appNameContent) {
+                top.linkTo(parent.top)
+                bottom.linkTo(bottomContent.top)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
                     Image(
-                        painter = painterResource(id = R.drawable.nudge_logo),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(93.dp, 19.dp)
-                    )
-                    Spacer(modifier = Modifier.width(14.dp))
-                    Image(
-                        painter = painterResource(id = R.drawable.ttn_logo),
-                        contentDescription = null,
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.size(40.dp, 19.dp)
+                        painter = painterResource(id = R.drawable.sarathi_logo_full),
+                        contentDescription = "Sarathi Logo"
                     )
                 }
             }
+            if (viewModel.showLoader.value) {
+                Box(
+                    modifier = Modifier
+                        .constrainAs(loader) {
+                            top.linkTo(appNameContent.bottom)
+                            start.linkTo(parent.start)
+                            end.linkTo(parent.end)
+                        }
+                        .fillMaxWidth()
+                        .padding(top = dimen_20_dp)
+                        .height(dimen_48_dp)
+                ) {
+                    CircularProgressIndicator(
+                        color = blueDark,
+                        modifier = Modifier
+                            .size(dimen_28_dp)
+                            .align(Alignment.Center)
+                    )
+                }
+            }
+            Box(modifier = Modifier.constrainAs(bottomContent) {
+                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+            }) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(
+                            Alignment.BottomCenter
+                        )
+                ) {
+                    Text(text = "Designed By", style = smallerTextStyle, color = blueDark)
+                    Spacer(modifier = Modifier.height(dimen_12_dp))
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+
+                    ) {
+                        Image(
+                            painter = painterResource(id = R.drawable.nudge_logo),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(dimen_93_dp, dimen_19_dp)
+                        )
+                        Spacer(modifier = Modifier.width(dimen_14_dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ttn_logo),
+                            contentDescription = null,
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(dimen_40_dp, dimen_19_dp)
+                        )
+                    }
+                }
+            }
         }
+    } else {
+        SplashScreenV2(viewModel.showLoader.value)
     }
+
 
 }
 
-fun openUserHomeScreen(userType:String,navController: NavController) {
+fun openUserHomeScreen(userType: String, navController: NavController) {
     try {
-        if (userType==UPCM_USER) {
-            if(navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true){
+        if (userType == UPCM_USER) {
+            if (navController.graph.route?.equals(NudgeNavigationGraph.HOME) == true) {
                 navController.navigate(route = HomeScreens.DATA_LOADING_SCREEN.route) {
                     launchSingleTop = true
                     popUpTo(AuthScreen.START_SCREEN.route) {
                         inclusive = true
                     }
                 }
-            }else{
+            } else {
                 navController.popBackStack()
                 navController.navigate(
                     NudgeNavigationGraph.HOME
@@ -251,3 +281,5 @@ fun openUserHomeScreen(userType:String,navController: NavController) {
         ex.printStackTrace()
     }
 }
+
+

@@ -32,16 +32,18 @@ import com.patsurvey.nudge.activities.settings.presentation.SettingBSScreen
 import com.patsurvey.nudge.activities.sync.history.presentation.SyncHistoryScreen
 import com.patsurvey.nudge.activities.sync.home.presentation.SyncHomeScreen
 import com.patsurvey.nudge.activities.ui.login.LoginScreen
+import com.patsurvey.nudge.activities.ui.login.LoginScreenV2
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
+import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreenV2
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
-import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
+import com.patsurvey.nudge.utils.ARG_PAGE_FROM
 import com.patsurvey.nudge.utils.ARG_VIDEO_ID
 import com.patsurvey.nudge.utils.BLANK_STRING
 
-fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
+fun NavGraphBuilder.authNavGraph(navController: NavHostController, v2TheameEnable: Boolean) {
     navigation(
         route = NudgeNavigationGraph.AUTHENTICATION,
         startDestination = AuthScreen.START_SCREEN.route
@@ -54,14 +56,18 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
             )
         }
         composable(
-            route = AuthScreen.LANGUAGE_SCREEN.route
+            route = AuthScreen.LANGUAGE_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM) {
+                type = NavType.StringType
+            })
         ) {
             LanguageScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),
-                pageFrom = ARG_FROM_HOME
+                pageFrom = it.arguments?.getString(ARG_PAGE_FROM).toString()
             )
+
         }
         composable(
             route = AuthScreen.BUG_LOGGING_SCREEN.route
@@ -72,11 +78,19 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
         }
 
         composable(route = AuthScreen.LOGIN.route) {
-            LoginScreen(
-                navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize()
-            )
+            if (v2TheameEnable) {
+                LoginScreenV2(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                LoginScreen(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize()
+                )
+            }
         }
         composable(
             route = AuthScreen.OTP_VERIFICATION.route,
@@ -84,12 +98,22 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController) {
                 type = NavType.StringType
             })
         ) {
-            OtpVerificationScreen(
-                navController,
-                viewModel = hiltViewModel(),
-                modifier = Modifier.fillMaxSize(),
-                it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
-            )
+            if (v2TheameEnable) {
+                OtpVerificationScreenV2(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize(),
+                    it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
+                )
+            } else {
+                OtpVerificationScreen(
+                    navController,
+                    viewModel = hiltViewModel(),
+                    modifier = Modifier.fillMaxSize(),
+                    it.arguments?.getString(ARG_MOBILE_NUMBER).toString()
+                )
+            }
+
         }
 
         composable(route = AuthScreen.VILLAGE_SELECTION_SCREEN.route) {

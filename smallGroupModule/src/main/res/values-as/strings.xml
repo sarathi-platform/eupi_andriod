@@ -8,10 +8,9 @@
         <item quantity="one">সৰু গোটসমূহ</item>
         <item quantity="other">সৰু গোটসমূহ</item>
     </plurals>
-    <plurals name="delete_attendance_confirmation_msg">
-        <item quantity="one">আপুনি সৰু গোটৰ উপস্থিতি মচি পেলাব বিচাৰে বুলি নিশ্চিতনে?</item>
-        <item quantity="other">আপুনি সৰু গোটৰ উপস্থিতি মচি পেলাব বিচাৰে বুলি নিশ্চিতনে?</item>
-    </plurals>
+    <string name="delete_attendance_confirmation_msg">
+        আপুনি নিশ্চিতনে যে আপুনি এই তাৰিখৰ উপস্থিতি বিলোপ কৰিব বিচাৰে?
+    </string>
     <plurals name="confirmation_alert_dialog_title">
         <item quantity="one">আপুনি নিশ্চিত নে?</item>
         <item quantity="other">আপুনি নিশ্চিত নে?</item>
@@ -68,6 +67,7 @@
         <item quantity="other">"হ'ব "</item>
     </plurals>
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\n If the date is incorrect, then please delete the entry and enter new attendance."</string>
+    <string name="attendance_submitted_msg">Attendance has been submitted</string>
     <plurals name="submit">
         <item quantity="one">দাখিল কৰক</item>
         <item quantity="other">দাখিল কৰক</item>
