@@ -9,14 +9,18 @@ import androidx.navigation.NavController
 import com.nrlm.baselinesurvey.model.datamodel.CommonSettingScreenConfig
 import com.nrlm.baselinesurvey.ui.common_components.common_setting.CommonSettingScreen
 import com.nrlm.baselinesurvey.utils.showCustomToast
+import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.nudge.navigationmanager.graphs.SettingScreens
+import com.nudge.navigationmanager.routes.LANGUAGE_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.R
+import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.settings.domain.SettingTagEnum
 import com.patsurvey.nudge.activities.settings.viewmodel.SettingBSViewModel
+import com.patsurvey.nudge.utils.ARG_FROM_SETTING
 import com.patsurvey.nudge.utils.PageFrom
 import com.patsurvey.nudge.utils.showCustomDialog
 import java.util.Locale
@@ -60,6 +64,7 @@ fun SettingBSScreen(
                     viewModel.showLoader.value = true
                     viewModel.performLogout(context) {
                         if (it) {
+                            (context as MainActivity).setLanguage(DEFAULT_LANGUAGE_CODE)
                             if (viewModel.prefRepo.settingOpenFrom() == PageFrom.VILLAGE_PAGE.ordinal) {
                                 navController.navigate(AuthScreen.LOGIN.route)
                             } else {
@@ -99,7 +104,7 @@ fun SettingBSScreen(
                 when (option.tag) {
                     SettingTagEnum.LANGUAGE.name -> {
                         viewModel.saveLanguagePageFrom()
-                        navController.navigate(SettingScreens.LANGUAGE_SCREEN.route)
+                        navController.navigate(route = "$LANGUAGE_SCREEN_ROUTE_NAME/$ARG_FROM_SETTING")
                     }
 
                     SettingTagEnum.PROFILE.name -> {

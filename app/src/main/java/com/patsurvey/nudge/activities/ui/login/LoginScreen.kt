@@ -1,7 +1,9 @@
 package com.patsurvey.nudge.activities.ui.login
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -26,11 +28,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
@@ -41,7 +45,11 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.nudge.core.setKeyboardToReadjust
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
@@ -72,11 +80,13 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
 
     setKeyboardToReadjust(activity)
-   val networkErrorMessage = viewModel.networkErrorMessage.value
+    val networkErrorMessage = viewModel.networkErrorMessage.value
     BackHandler {
         (context as? Activity)?.finish()
     }
-    if(networkErrorMessage.isNotEmpty()){
+    RequestPermissions()
+
+    if (networkErrorMessage.isNotEmpty()) {
         snackState.addMessage(
             message = networkErrorMessage,
             isSuccess = false,
@@ -168,7 +178,7 @@ fun LoginScreen(
                         textAlign = TextAlign.Start
                     ),
                     onValueChange = {
-                        if(onlyNumberField(it.text)) {
+                        if (onlyNumberField(it.text)) {
                             if (it.text.length <= MOBILE_NUMBER_LENGTH)
                                 viewModel.mobileNumber.value = it
                         }
@@ -213,9 +223,13 @@ fun LoginScreen(
                     } else {
                         viewModel.generateOtp { success, message ->
                             if (success) {
-                                if(navController.graph.route?.equals(NudgeNavigationGraph.HOME,true) == true){
+                                if (navController.graph.route?.equals(
+                                        NudgeNavigationGraph.HOME,
+                                        true
+                                    ) == true
+                                ) {
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
-                                }else
+                                } else
                                     navController.navigate(route = "otp_verification_screen/" + viewModel.mobileNumber.value.text)
                             } else {
                                 snackState.addMessage(
@@ -257,4 +271,37 @@ fun LoginScreen(
 
     }
     CustomSnackBarShow(state = snackState)
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun RequestPermissions() {
+    val permissionList = mutableListOf(
+        Manifest.permission.ACCESS_FINE_LOCATION,
+        Manifest.permission.ACCESS_COARSE_LOCATION,
+        Manifest.permission.CAMERA,
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE
+    )
+
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        permissionList.add(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = permissionList
+    )
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_START) {
+                permissionsState.launchMultiplePermissionRequest()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
 }

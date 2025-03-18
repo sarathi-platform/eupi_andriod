@@ -26,6 +26,7 @@ fun TypeMultiSelectedDropDownComponent(
     isMandatory: Boolean = false,
     isEditAllowed: Boolean = true,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     maxCustomHeight: Dp,
     content: List<ContentList?>? = listOf(),
     isFromTypeQuestion: Boolean = false,
@@ -58,6 +59,7 @@ fun TypeMultiSelectedDropDownComponent(
         selectedItems = selectedItems,
         maxCustomHeight = maxCustomHeight,
         showCardView = showCardView,
+        isQuestionNumberVisible = isQuestionNumberVisible,
         enabledOptions = optionStateMap,
         onDetailIconClicked = { onDetailIconClicked() },
         navigateToMediaPlayerScreen = { contentList ->

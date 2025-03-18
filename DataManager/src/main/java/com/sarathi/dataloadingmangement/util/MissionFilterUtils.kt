@@ -13,13 +13,12 @@ import com.nudge.core.getFileNameFromURL
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.model.updateTranslations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.InfoUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 class MissionFilterUtils @Inject constructor(
@@ -51,15 +50,21 @@ class MissionFilterUtils @Inject constructor(
         val livelihoods = getLivelihoodListFromDbUseCase.getLivelihoodListForFilterUi()
             .filter { livelihood -> // filtering livelihood that user's have mapped mission
                 missionList.any() {
-                    it.livelihoodType?.lowercase() == livelihood.type.lowercase()
+                    it.programLivelihoodReferenceId?.contains(livelihood.programLivelihoodId) == true
                 }
             }
 
         filterList.add(
-            ALL_MISSION_FILTER
+            ALL_MISSION_FILTER.updateTranslations(
+                translationHelper,
+                R.string.all_missions_filter_label
+            )
         )
         filterList.add(
-            DEFAULT_MISSION_FILTER
+            DEFAULT_MISSION_FILTER.updateTranslations(
+                translationHelper,
+                R.string.general_missions_filter_label
+            )
         )
 
         with(livelihoods.distinctBy { it.programLivelihoodId }) {
@@ -74,9 +79,17 @@ class MissionFilterUtils @Inject constructor(
                 )
             }
         }
-        withContext(Dispatchers.IO) {
-            missionFilterList.addAll(filterList.distinctBy { it.filterValue })
-        }
+
+        missionFilterList.addAll(filterList.distinctBy { it.filterValue })
+
+        updateSelectedLivelihoodFilterLabelOnInit()
+
+    }
+
+    private fun updateSelectedLivelihoodFilterLabelOnInit() {
+        val selectedFilter = getSelectedMissionFilterValue()
+        setSelectedMissionFilterValue((missionFilterList.find { it.type == selectedFilter.type }
+            ?: DEFAULT_MISSION_FILTER))
     }
 
     fun getMissionFiltersList(): SnapshotStateList<FilterUiModel> {

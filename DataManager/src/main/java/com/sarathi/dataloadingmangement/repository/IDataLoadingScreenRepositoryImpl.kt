@@ -85,7 +85,7 @@ class IDataLoadingScreenRepositoryImpl @Inject constructor(
         coreSharedPrefs.savePref(PREF_KEY_PROFILE_IMAGE, userDetails.profileImage ?: "")
         coreSharedPrefs.savePref(PREF_KEY_ROLE_NAME, userDetails.roleName ?: "")
         coreSharedPrefs.savePref(PREF_KEY_TYPE_NAME, userDetails.typeName ?: "")
-        coreSharedPrefs.savePref(PREF_STATE_ID, userDetails.referenceId.first().stateId ?: -1)
+        coreSharedPrefs.savePref(PREF_STATE_ID, userDetails.referenceId?.first()?.stateId ?: -1)
         coreSharedPrefs.savePref(
             PREF_DISTRICT_NAME,
             userDetails.federationDetail?.districtName ?: BLANK_STRING

@@ -84,6 +84,7 @@ fun MultiSelectSelectDropDown(
     hint: String = stringResource(R.string.select),
     expanded: Boolean = false,
     showCardView: Boolean = false,
+    isQuestionNumberVisible: Boolean = false,
     enabledOptions: Map<Int, Boolean?> = mapOf(),
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     onExpandedChange: (Boolean) -> Unit,
@@ -139,7 +140,7 @@ fun MultiSelectSelectDropDown(
                     QuestionComponent(
                         isFromTypeQuestionInfoIconVisible = isFromTypeQuestion && content?.isNotEmpty() == true,
                         title = title,
-                        questionNumber = if (showCardView) getQuestionNumber(questionIndex) else BLANK_STRING,
+                        questionNumber = getQuestionNumber(isQuestionNumberVisible, questionIndex),
                         isRequiredField = isMandatory,
                         onDetailIconClicked = { onDetailIconClicked() }
                     )

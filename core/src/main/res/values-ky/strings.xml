@@ -69,6 +69,7 @@
     <string name="exclude_in_calculation_message">*Oh swbaimung bebak rang lekhamung bisingo rwjakya.</string>
     <string name="contact_to_admin_id_missing">Jwngjal nukjak kha access khlai nani. BPC bai kwrwngdi chubachu mana bangwi</string>
     <string name="str_download_complete">Application download complete.</string>
-    <string name="str_restart">Application Restarting..</string>
+    <string name="click_here_to_install">Click here to install.</string>
     <string name="str_app_update_fail">Application Update fail.</string>
+    <string name="missions_filter_label_suffix">Missions</string>
 </resources>

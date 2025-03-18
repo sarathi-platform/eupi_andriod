@@ -2,8 +2,11 @@ package com.patsurvey.nudge.activities.ui.splash
 
 
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.viewModelScope
+import com.nudge.core.CoreDispatchers
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
+import com.patsurvey.nudge.activities.domain.useCase.SyncEventProgressUseCase
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
@@ -24,7 +27,8 @@ import javax.inject.Inject
 class ConfigViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    val languageConfigUseCase: LanguageConfigUseCase
+    val languageConfigUseCase: LanguageConfigUseCase,
+    val syncEventProgressUseCase: SyncEventProgressUseCase
 ) : BaseViewModel() {
 
     fun isLoggedIn(): Boolean {
@@ -34,6 +38,7 @@ class ConfigViewModel @Inject constructor(
     fun getUserType(): String? {
         return configRepository.getUserType()
     }
+
     val showLoader = mutableStateOf(false)
 
     fun fetchLanguageDetails(callBack: (imageList: List<String>) -> Unit) {
@@ -45,35 +50,35 @@ class ConfigViewModel @Inject constructor(
                     "fetchLanguageDetails -> apiInterface.configDetails()"
                 )
                 val response = languageConfigUseCase.fetchLanguageAPI()
-                    NudgeLogger.d(
-                        "ConfigViewModel",
-                        "fetchLanguageDetails -> response status = ${response?.status}, message = ${response?.message}, data = ${response?.data.toString()}"
-                    )
+                NudgeLogger.d(
+                    "ConfigViewModel",
+                    "fetchLanguageDetails -> response status = ${response?.status}, message = ${response?.message}, data = ${response?.data.toString()}"
+                )
                 if (response?.status.equals(SUCCESS, true)) {
                     response?.data?.let {
-                            it.languageList.forEach { language ->
-                                NudgeLogger.d("ConfigViewModel", "$language")
-                            }
-                            NudgeLogger.d(
-                                "ConfigViewModel",
-                                "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before"
-                            )
-                            configRepository.insertAllLanguages(it)
-                            NudgeLogger.d(
-                                "ConfigViewModel",
-                                "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after"
-                            )
-                            delay(SPLASH_SCREEN_DURATION)
-                            withContext(Dispatchers.Main) {
-                                callBack(it.image_profile_link)
-                            }
+                        it.languageList.forEach { language ->
+                            NudgeLogger.d("ConfigViewModel", "$language")
                         }
-                } else if (response?.status.equals(FAIL, true)) {
-                        configRepository.addDefaultLanguage()
+                        NudgeLogger.d(
+                            "ConfigViewModel",
+                            "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) before"
+                        )
+                        configRepository.insertAllLanguages(it)
+                        NudgeLogger.d(
+                            "ConfigViewModel",
+                            "fetchLanguageDetails -> languageListDao.insertAll(it.languageList) after"
+                        )
+                        delay(SPLASH_SCREEN_DURATION)
                         withContext(Dispatchers.Main) {
-                            callBack(listOf())
+                            callBack(it.image_profile_link)
                         }
                     }
+                } else if (response?.status.equals(FAIL, true)) {
+                    configRepository.addDefaultLanguage()
+                    withContext(Dispatchers.Main) {
+                        callBack(listOf())
+                    }
+                }
 
             } catch (ex: Exception) {
                 onCatchError(ex, ApiType.LANGUAGE_API)
@@ -86,22 +91,19 @@ class ConfigViewModel @Inject constructor(
     }
 
 
-
     override fun onServerError(error: ErrorModel?) {
-        networkErrorMessage.value= error?.message.toString()
+        networkErrorMessage.value = error?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             configRepository.onServerError(error)
         }
     }
 
     override fun onServerError(errorModel: ErrorModelWithApi?) {
-        networkErrorMessage.value= errorModel?.message.toString()
+        networkErrorMessage.value = errorModel?.message.toString()
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             configRepository.onServerError(errorModel)
         }
     }
-
-
 
 
     fun checkAndAddLanguage() {
@@ -120,9 +122,20 @@ class ConfigViewModel @Inject constructor(
     fun getLoggedInUserType(): String {
         return configRepository.getLoggedInUserType()
     }
-    fun fetchAppConfigForProperties() {
+
+    fun fetchAppConfigForProperties(onApiSuccess: () -> Unit) {
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-            fetchAppConfigFromNetworkUseCase.invoke()
+            fetchAppConfigFromNetworkUseCase.invoke {
+                onApiSuccess()
+            }
+        }
+    }
+
+    fun checkAndSendSyncProgress() {
+        if (isLoggedIn()) {
+            viewModelScope.launch(CoreDispatchers.ioDispatcher) {
+                syncEventProgressUseCase.invoke()
+            }
         }
     }
 }

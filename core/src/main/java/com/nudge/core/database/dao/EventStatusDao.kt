@@ -23,4 +23,7 @@ interface EventStatusDao {
 
     @Query("SELECT * FROM $EVENT_STATUS_TABLE_NAME WHERE mobileNumber =:mobileNumber GROUP BY createdDate")
     fun getAllEventStatusForUser(mobileNumber:String):List<EventStatusEntity>
+
+    @Query("DELETE FROM $EVENT_STATUS_TABLE_NAME WHERE mobileNumber = :mobileNumber and clientId = (:eventIds)")
+    fun deleteEventStatusEntity(mobileNumber: String, eventIds: List<String>)
 }

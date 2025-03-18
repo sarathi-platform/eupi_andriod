@@ -8,7 +8,6 @@ import android.content.res.Resources
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -34,12 +33,16 @@ import com.google.android.gms.auth.api.phone.SmsRetriever
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
+import com.nudge.core.APP_REDIRECT_LINK
 import com.nudge.core.APP_UPDATE_IMMEDIATE
 import com.nudge.core.APP_UPDATE_REQUEST_CODE
 import com.nudge.core.APP_UPDATE_TYPE
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.CoreObserverInterface
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.IS_APP_NEED_UPDATE
+import com.nudge.core.IS_IN_APP_UPDATE
+import com.nudge.core.LATEST_VERSION_CODE
 import com.nudge.core.MINIMUM_VERSION_CODE
 import com.nudge.core.enums.SyncAlertType
 import com.nudge.core.helper.ProvideTranslationHelper
@@ -47,6 +50,7 @@ import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.notifications.NotificationHandler
+import com.nudge.core.redirectToLink
 import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.events.DialogEvents
@@ -64,11 +68,13 @@ import com.patsurvey.nudge.customviews.rememberSnackBarState
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.download.AndroidDownloader
 import com.patsurvey.nudge.navigation.RootNavigationGraph
+import com.patsurvey.nudge.navigation.selection.finishActivity
 import com.patsurvey.nudge.smsread.SmsBroadcastReceiver
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.QUESTION_IMAGE_LINK_KEY
 import com.patsurvey.nudge.utils.SENDER_NUMBER
+import com.patsurvey.nudge.utils.showCustomDialog
 import com.patsurvey.nudge.utils.showCustomToast
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.Locale
@@ -98,7 +104,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     val connectionSpeed = mutableStateOf(0)
     val isBackFromSummary = mutableStateOf(false)
     val isFilterApplied = mutableStateOf(false)
-    val appUpdateType = mutableStateOf(AppUpdateType.IMMEDIATE)
+
 
     var downloader: AndroidDownloader? = null
     var quesImageList = mutableListOf<String>()
@@ -122,7 +128,6 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
             )
         )
         appUpdateManager = AppUpdateManagerFactory.create(this)
-        validateAppVersionAndCheckUpdate()
 
         CoreObserverManager.addObserver(this)
         setContent {
@@ -240,6 +245,40 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                         )
                     }
 
+                    if (mViewModel.showUpdateDialog.value) {
+                        showCustomDialog(
+                            title = translationHelper.getString(R.string.update_available),
+                            message = translationHelper.getString(R.string.version_available_message),
+                            negativeButtonTitle = translationHelper.getString(R.string.app_update_cancel),
+                            positiveButtonTitle = translationHelper.getString(R.string.app_update),
+                            onNegativeButtonClick = {
+                                if (mViewModel.appUpdateType.value == AppUpdateType.IMMEDIATE)
+                                    finishActivity()
+
+                                mViewModel.showUpdateDialog.value = false
+                                mViewModel.isAppLinkOpen.value = false
+                            },
+                            onPositiveButtonClick = {
+                                mViewModel.isAppLinkOpen.value = true
+                                mViewModel.showUpdateDialog.value = false
+                            }
+                        )
+
+                    }
+
+                    if (mViewModel.isAppLinkOpen.value) {
+                        sharedPrefs.getPref(APP_REDIRECT_LINK, BLANK_STRING)?.let { url ->
+                            if (url.isNotEmpty()) {
+                                localContext.redirectToLink(url)
+                            } else {
+                                showCustomToast(
+                                    localContext,
+                                    translationHelper.getString(R.string.invalid_url)
+                                )
+                            }
+                        }
+                    }
+
                     if (mViewModel.showHardEventLimitAlert.value.showDialog) {
                         val alertModel = mViewModel.showHardLimitAlert(
                             title = localContext.getString(R.string.alert_dialog_title_text),
@@ -296,28 +335,38 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
 
     }
 
-    private fun validateAppVersionAndCheckUpdate() {
-        appUpdateType.value = getAppUpdateType(
+    fun validateAppVersionAndCheckUpdate() {
+        mViewModel.appUpdateType.value = getAppUpdateType(
             sharedPrefs.getPref(APP_UPDATE_TYPE, APP_UPDATE_IMMEDIATE)
                 ?: APP_UPDATE_IMMEDIATE
         )
         val currentAppVersion = BuildConfig.VERSION_CODE
         val minAppVersion = sharedPrefs.getPref(MINIMUM_VERSION_CODE, currentAppVersion)
+        mViewModel.isInAppUpdate.value = sharedPrefs.getPref(IS_IN_APP_UPDATE, false)
         if (sharedPrefs.getPref(IS_APP_NEED_UPDATE, false)) {
             CoreLogger.d(
                 CoreAppDetails.getApplicationContext(),
                 "validateAppVersion",
                 "UpdateDetails : CurrVersion: $currentAppVersion" +
                         ":minAppVersion : $minAppVersion" +
-                        ":appUpdateType: ${appUpdateType.value}"
+                        ":appUpdateType: ${mViewModel.appUpdateType.value}" +
+                        ":isInAppUpdate: ${mViewModel.isInAppUpdate.value}" +
+                        ":showUpdateDialog: ${mViewModel.showUpdateDialog.value}"
             )
             if (currentAppVersion < minAppVersion) {
-                appUpdateType.value = AppUpdateType.IMMEDIATE
+                mViewModel.appUpdateType.value = AppUpdateType.IMMEDIATE
             }
-            checkForAppUpdates(
-                appUpdateManager = appUpdateManager,
-                appUpdateType = appUpdateType.value
-            )
+            mViewModel.showUpdateDialog.value = false
+            if (currentAppVersion < sharedPrefs.getPref(LATEST_VERSION_CODE, currentAppVersion)) {
+                if (mViewModel.isInAppUpdate.value) {
+                    checkForAppUpdates(
+                        appUpdateManager = appUpdateManager,
+                        appUpdateType = mViewModel.appUpdateType.value
+                    )
+                } else {
+                    mViewModel.showUpdateDialog.value = true
+                }
+            }
         }
 
     }
@@ -361,8 +410,10 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 getOtpFromMessage(message)
             }
         } else if (requestCode == APP_UPDATE_REQUEST_CODE && resultCode != RESULT_OK) {
-            Toast.makeText(this, getString(R.string.str_app_update_fail), Toast.LENGTH_SHORT).show()
-
+            if (mViewModel.appUpdateType.value == AppUpdateType.IMMEDIATE) {
+                finishActivity()
+            }
+            showCustomToast(this, translationHelper.getString(R.string.str_app_update_fail))
         }
 
     }
@@ -388,6 +439,7 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     override fun onStart() {
         super.onStart()
         registerBroadcastReceiver(this)
+        validateAppVersionAndCheckUpdate()
     }
 
     override fun onStop() {
@@ -407,7 +459,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
         CoreObserverManager.removeObserver(this)
         RetryHelper.cleanUp()
         super.onDestroy()
-        unregisterAppUpdateListeners(appUpdateManager, appUpdateType.value)
+        unregisterAppUpdateListeners(
+            appUpdateManager = appUpdateManager,
+            updateType = mViewModel.appUpdateType.value,
+            translationHelper = translationHelper
+        )
     }
 
     override fun attachBaseContext(newBase: Context?) {
@@ -427,7 +483,11 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
     override fun onResume() {
         localizationDelegate.onResume(applicationContext)
         super.onResume()
-        setupAppUpdateListeners(appUpdateManager, appUpdateType.value)
+        setupAppUpdateListeners(
+            appUpdateManager = appUpdateManager,
+            updateType = mViewModel.appUpdateType.value,
+            translationHelper = translationHelper
+        )
     }
 
     override fun getApplicationContext(): Context {
