@@ -21,11 +21,16 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_20_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
+import com.nudge.core.ui.theme.dimen_28_dp
 import com.nudge.core.ui.theme.dimen_300_dp
+import com.nudge.core.ui.theme.dimen_41_dp
+import com.nudge.core.ui.theme.dimen_48_dp
+import com.nudge.core.ui.theme.dimen_71_dp
 import com.nudge.core.ui.theme.grayColor
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.theme.blueDark
@@ -98,7 +103,7 @@ fun AppNameContent(modifier: Modifier) {
     Box(
         modifier = modifier
             .size(dimen_300_dp)
-            .shadow(16.dp, shape = CircleShape)
+            .shadow(dimen_16_dp, shape = CircleShape)
             .border(dimen_1_dp, darkYellow, CircleShape)
             .background(Color.White, shape = CircleShape),
         contentAlignment = Alignment.Center
@@ -117,13 +122,13 @@ fun Loader(modifier: Modifier) {
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .padding(top = 20.dp)
-            .height(48.dp)
+            .padding(top = dimen_20_dp)
+            .height(dimen_48_dp)
     ) {
         CircularProgressIndicator(
             color = blueDark,
             modifier = Modifier
-                .size(28.dp)
+                .size(dimen_28_dp)
                 .align(Alignment.Center)
         )
     }
@@ -138,7 +143,7 @@ fun BottomContent(modifier: Modifier) {
             verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
-                modifier = Modifier.size(height = 41.dp, width = 71.dp),
+                modifier = Modifier.size(height = dimen_41_dp, width = dimen_71_dp),
                 painter = painterResource(id = R.drawable.ministry_logo),
                 contentDescription = "Ministry Logo"
             )

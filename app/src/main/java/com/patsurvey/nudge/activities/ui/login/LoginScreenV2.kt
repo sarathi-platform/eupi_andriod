@@ -46,11 +46,13 @@ import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nudge.core.setKeyboardToReadjust
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.textStyleMedium
+import com.nudge.core.ui.theme.text_size_16
+import com.nudge.core.ui.theme.text_size_18
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.MainActivity
@@ -192,7 +194,7 @@ fun LoginScreenV2(
             Text(
                 text = stringResource(id = R.string.otp_will_be_sent_to_this_number),
                 color = blueDark,
-                fontSize = 16.sp,
+                fontSize = text_size_16,
                 fontFamily = NotoSans,
                 fontWeight = FontWeight.SemiBold,
                 textAlign = TextAlign.Start,
@@ -249,7 +251,7 @@ fun LoginScreenV2(
                     text = stringResource(id = R.string.next),
                     color = if (viewModel.mobileNumber.value.text.length == MOBILE_NUMBER_LENGTH)
                         Color.White else blueDark,
-                    fontSize = 18.sp,
+                    fontSize = text_size_18,
                     fontFamily = NotoSans,
                     fontWeight = FontWeight.SemiBold,
                     textAlign = TextAlign.Center,
@@ -268,7 +270,7 @@ fun LoginScreenV2(
         contentAlignment = Alignment.Center
     ) {
         CustomSnackBarShow(
-            modifier = Modifier.padding(vertical = 100.dp),
+            modifier = Modifier.padding(vertical = dimen_100_dp),
             state = snackState
         )
     }

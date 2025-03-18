@@ -50,9 +50,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.nudge.core.maskMobileNumber
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_18_dp
+import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.quesOptionTextStyle
 import com.nudge.core.ui.theme.red
@@ -251,7 +254,7 @@ fun OtpVerificationScreenV2(
                         textAlign = TextAlign.Center,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 2.dp)
+                            .padding(start = dimen_2_dp)
                             .background(Color.Transparent)
                     )
                 }
@@ -274,7 +277,7 @@ fun OtpVerificationScreenV2(
                         textAlign = TextAlign.Start,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 2.dp)
+                            .padding(start = dimen_2_dp)
                             .background(Color.Transparent)
                     )
                 }
@@ -309,7 +312,7 @@ fun OtpVerificationScreenV2(
                 ) else ButtonDefaults.buttonColors(
                     buttonBgColor
                 ),
-                shape = RoundedCornerShape(6.dp),
+                shape = RoundedCornerShape(dimen_6_dp),
                 enabled = otpValue.value.length == OTP_LENGTH
             ) {
 
@@ -322,7 +325,7 @@ fun OtpVerificationScreenV2(
                     textAlign = TextAlign.Center,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 6.dp)
+                        .padding(vertical = dimen_6_dp)
                 )
 
             }
@@ -348,7 +351,7 @@ fun OtpVerificationScreenV2(
                         fontWeight = FontWeight.SemiBold,
                         textAlign = TextAlign.Start,
                         modifier = Modifier
-                            .padding(start = 2.dp)
+                            .padding(start = dimen_2_dp)
                             .clickable(enabled = isResendOTPEnable.value) {
                                 viewModel.resendOtp() { success, message ->
                                     snackState.addMessage(
@@ -378,7 +381,7 @@ fun OtpVerificationScreenV2(
         contentAlignment = Alignment.Center
     ) {
         CustomSnackBarShow(
-            modifier = Modifier.padding(vertical = 100.dp),
+            modifier = Modifier.padding(vertical = dimen_100_dp),
             state = snackState
         )
     }

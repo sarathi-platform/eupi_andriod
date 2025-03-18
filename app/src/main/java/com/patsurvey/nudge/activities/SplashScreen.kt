@@ -23,9 +23,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.navigation.NavController
+import com.nrlm.baselinesurvey.ui.theme.dimen_12_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_137_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_16_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
+import com.nrlm.baselinesurvey.ui.theme.dimen_93_dp
+import com.nudge.core.ui.theme.dimen_14_dp
+import com.nudge.core.ui.theme.dimen_19_dp
+import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_28_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
@@ -142,8 +152,8 @@ fun SplashScreen(
             modifier = Modifier
                 .background(color = Color.White)
                 .fillMaxSize()
-                .padding(horizontal = 16.dp)
-                .padding(bottom = 32.dp, top = 20.dp)
+                .padding(horizontal = dimen_16_dp)
+                .padding(bottom = dimen_32_dp, top = dimen_20_dp)
                 .then(modifier)
         ) {
 
@@ -159,7 +169,7 @@ fun SplashScreen(
                     painter = painterResource(id = R.drawable.nrlm_logo),
                     contentDescription = null,
                     contentScale = ContentScale.Fit,
-                    modifier = Modifier.size(137.dp)
+                    modifier = Modifier.size(dimen_137_dp)
                 )
             }
 
@@ -185,13 +195,13 @@ fun SplashScreen(
                             end.linkTo(parent.end)
                         }
                         .fillMaxWidth()
-                        .padding(top = 20.dp)
-                        .height(48.dp)
+                        .padding(top = dimen_20_dp)
+                        .height(dimen_48_dp)
                 ) {
                     CircularProgressIndicator(
                         color = blueDark,
                         modifier = Modifier
-                            .size(28.dp)
+                            .size(dimen_28_dp)
                             .align(Alignment.Center)
                     )
                 }
@@ -210,7 +220,7 @@ fun SplashScreen(
                         )
                 ) {
                     Text(text = "Designed By", style = smallerTextStyle, color = blueDark)
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(dimen_12_dp))
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.Center,
@@ -222,14 +232,14 @@ fun SplashScreen(
                             painter = painterResource(id = R.drawable.nudge_logo),
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(93.dp, 19.dp)
+                            modifier = Modifier.size(dimen_93_dp, dimen_19_dp)
                         )
-                        Spacer(modifier = Modifier.width(14.dp))
+                        Spacer(modifier = Modifier.width(dimen_14_dp))
                         Image(
                             painter = painterResource(id = R.drawable.ttn_logo),
                             contentDescription = null,
                             contentScale = ContentScale.Fit,
-                            modifier = Modifier.size(40.dp, 19.dp)
+                            modifier = Modifier.size(dimen_40_dp, dimen_19_dp)
                         )
                     }
                 }
