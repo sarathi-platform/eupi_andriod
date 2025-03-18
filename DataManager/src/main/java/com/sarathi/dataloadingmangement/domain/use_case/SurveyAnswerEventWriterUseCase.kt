@@ -52,7 +52,6 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             grantType,
             taskId
         )
-        if (!isFromRegenerate) {
             writeEventInFile(
                 saveAnswerMoneyJournalEventDto,
                 EventName.MONEY_JOURNAL_EVENT,
@@ -65,7 +64,7 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
                 questionUiModels,
                 isFromRegenerate
             )
-        }
+
         questionUiModels.forEach { questionUiModel ->
             saveSurveyAnswerEvent(
                 questionUiModel,

@@ -9,12 +9,8 @@ import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
 
 data class OptionsUiModel(
-    @SerializedName("sectionId", alternate = arrayOf("a"))
-
-    var sectionId: Int = 0,
-    @SerializedName("surveyId", alternate = arrayOf("b"))
-
-    val surveyId: Int,
+    @SerializedName("sectionId", alternate = arrayOf("a")) var sectionId: Int = 0,
+    @SerializedName("surveyId", alternate = arrayOf("b")) val surveyId: Int,
     @SerializedName("questionId", alternate = arrayOf("c"))
 
     var questionId: Int? = 0,
@@ -33,10 +29,8 @@ data class OptionsUiModel(
 
     var optionType: String? = BLANK_STRING,
 
-    @SerializedName("order", alternate = arrayOf("h"))
-    val order: Int = 0,
-    @SerializedName("isSelected", alternate = arrayOf("i"))
-    var isSelected: Boolean? = false,
+    @SerializedName("order", alternate = arrayOf("h")) val order: Int = 0,
+    @SerializedName("isSelected", alternate = arrayOf("i")) var isSelected: Boolean? = false,
     @SerializedName("selectedValue", alternate = arrayOf("j"))
 
     var selectedValue: String? = BLANK_STRING,
@@ -46,15 +40,13 @@ data class OptionsUiModel(
     @SerializedName("selectedValueId", alternate = arrayOf("l"))
 
     var selectedValueId: Int = 0,
-    //var optionImage: String = BLANK_STRING,
-    @SerializedName("conditions", alternate = arrayOf("m"))
 
-    @TypeConverters(ConditionsDtoConvertor::class)
+    @SerializedName("optionImage", alternate = arrayOf("m")) var optionImage: String = BLANK_STRING,
+    @SerializedName(
+        "conditions", alternate = arrayOf("n")
+    ) @TypeConverters(ConditionsDtoConvertor::class) val conditions: List<ConditionsDto?>? = emptyList(),
 
-    val conditions: List<ConditionsDto?>? = emptyList(),
-
-    @SerializedName("contentEntities", alternate = arrayOf("n"))
-
-    @TypeConverters(ContentListConverter::class)
-    val contentEntities: List<ContentList> = listOf()
+    @SerializedName("contentEntities", alternate = arrayOf("0")) @TypeConverters(
+        ContentListConverter::class
+    ) val contentEntities: List<ContentList> = listOf()
 )
