@@ -377,6 +377,7 @@ fun AddEventScreen(
                             isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.CHILD_ASSET_TYPE.name]?.first == false,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedChildAssetTypeId.value = selectedValue.id
+                                viewModel.selectedAssetTypeId.value = -1
                                 resetAmountAssetType(viewModel)
 
                                 viewModel.validateForm(

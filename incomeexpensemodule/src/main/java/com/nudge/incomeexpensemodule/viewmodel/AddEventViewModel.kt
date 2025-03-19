@@ -348,6 +348,7 @@ class AddEventViewModel @Inject constructor(
         amount.value = BLANK_STRING
 
         _livelihoodAssetDropdownValue.clear()
+        _livelihoodChildAssetDropdownValue.clear()
         _livelihoodProductDropdownValue.clear()
 
     }
@@ -594,7 +595,7 @@ class AddEventViewModel @Inject constructor(
                     selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
                         ?: selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
-                if (selectedAssetTypeId.value != -1) {
+                if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null && eventType != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
                     validation =
                         selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
                     validateExpression(
@@ -603,8 +604,7 @@ class AddEventViewModel @Inject constructor(
                         selectedAssetType = selectedAssetType,
                         selectedLivelihood = selectedLivelihood,
                         transactionId = transactionId,
-                        onValidationResult = onValidationResult,
-                        selectedChildAssetType = assetTypeList.find { it.id == selectedChildAssetTypeId.value }
+                        onValidationResult = onValidationResult
                     )
 
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
@@ -619,6 +619,16 @@ class AddEventViewModel @Inject constructor(
                         selectedLivelihood = selectedLivelihood,
                         transactionId = transactionId,
                         onValidationResult = onValidationResult
+                    )
+                } else if (selectedAssetTypeId.value != -1 && eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+                    validateExpression(
+                        validation = validation,
+                        subjectId = subjectId,
+                        selectedAssetType = selectedAssetType,
+                        selectedLivelihood = selectedLivelihood,
+                        transactionId = transactionId,
+                        onValidationResult = onValidationResult,
+                        selectedChildAssetType = assetTypeList.find { it.id == selectedChildAssetTypeId.value }
                     )
                 } else {
                     validateExpression(
