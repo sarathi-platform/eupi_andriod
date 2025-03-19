@@ -371,9 +371,9 @@ fun AddEventScreen(
                             title = viewModel.stringResource(
                                 R.string.type_of_child_asset
                             ),
-                            selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedChildAssetTypeId.value }?.value,
+                            selectedValue = viewModel.livelihoodChildAssetDropdownValue.find { it.id == viewModel.selectedChildAssetTypeId.value }?.value,
                             isMandatory = true,
-                            sources = viewModel.livelihoodAssetDropdownValue,
+                            sources = viewModel.livelihoodChildAssetDropdownValue,
                             isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.CHILD_ASSET_TYPE.name]?.first == false,
                             onAnswerSelection = { selectedValue ->
                                 viewModel.selectedChildAssetTypeId.value = selectedValue.id
@@ -382,7 +382,8 @@ fun AddEventScreen(
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.CHILD_ASSET_TYPE.name,
-                                    transactionId = transactionId
+                                    transactionId = transactionId,
+                                    isChildTransition = true
                                 ) { isValid, message ->
                                     viewModel.updateAssetVisibility(isValid)
                                     viewModel.updateFieldValidationMessageAndMap(

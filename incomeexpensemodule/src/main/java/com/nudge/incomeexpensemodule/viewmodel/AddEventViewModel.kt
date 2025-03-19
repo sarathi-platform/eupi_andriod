@@ -75,6 +75,10 @@ class AddEventViewModel @Inject constructor(
     private val _livelihoodAssetDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodAssetDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodAssetDropdownValue
 
+    private val _livelihoodChildAssetDropdownValue = mutableStateListOf<ValuesDto>()
+    val livelihoodChildAssetDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodChildAssetDropdownValue
+
+
     private val _livelihoodProductDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodProductDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodProductDropdownValue
 
@@ -145,6 +149,12 @@ class AddEventViewModel @Inject constructor(
                 selectedAssetTypeId.value = savedEvent.assetType
                 assetCount.value = savedEvent.assetCount.toString()
 
+
+                getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
+                    questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
+                }
+                fetEventValues()
+                fetchAssestProductValues()
                 if (savedEvent.selectedEvent.name == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
                     val assetList = saveLivelihoodEventUseCase.fetchAssetJournalList(
                         subjectId = subjectId,
@@ -156,11 +166,6 @@ class AddEventViewModel @Inject constructor(
                         assetList?.find { it.transactionFlow == OUTFLOW }?.assetId ?: -1
                 }
 
-                getLivelihoodEventFromName(eventType).livelihoodEventDataCaptureTypes.forEach {
-                    questionVisibilityMap[it] = questionVisibilityMap.containsKey(it)
-                }
-                fetEventValues()
-                fetchAssestProductValues()
             }
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
@@ -208,6 +213,7 @@ class AddEventViewModel @Inject constructor(
             selectedLivelihoodId.value = livelihoodId
             _livelihoodEventDropdownValue.clear()
             _livelihoodAssetDropdownValue.clear()
+            _livelihoodChildAssetDropdownValue.clear()
             _livelihoodProductDropdownValue.clear()
             fetEventValues()
             fetchAssestProductValues()
@@ -229,15 +235,45 @@ class AddEventViewModel @Inject constructor(
         )
         _livelihoodAssetDropdownValue.clear()
         _livelihoodAssetDropdownValue.addAll(
-            assetTypeList.map {
-                ValuesDto(
-                    it.id,
-                    it.name,
-                    it.id == selectedAssetTypeId.value,
-                    originalName = it.originalName
-                )
+            if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+                assetTypeList.filter {
+                    !it.type.lowercase().contains("kid")
+                }.map {
+                    ValuesDto(
+                        it.id,
+                        it.name,
+                        it.id == selectedAssetTypeId.value,
+                        originalName = it.originalName
+                    )
+                }
+            } else {
+                assetTypeList.map {
+                    ValuesDto(
+                        it.id,
+                        it.name,
+                        it.id == selectedAssetTypeId.value,
+                        originalName = it.originalName
+                    )
+                }
             }
+
         )
+        if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+            _livelihoodChildAssetDropdownValue.clear()
+            _livelihoodChildAssetDropdownValue.addAll(
+                assetTypeList.filter {
+                    it.type.lowercase().contains("kid")
+                }.map {
+                    ValuesDto(
+                        it.id,
+                        it.name,
+                        it.id == selectedChildAssetTypeId.value,
+                        originalName = it.originalName
+                    )
+                }
+            )
+        }
+
         producTypeList = fetchProductUseCase.invoke(selectedLivelihoodId.value)
         _livelihoodProductDropdownValue.addAll(producTypeList.map {
             ValuesDto(
@@ -330,7 +366,7 @@ class AddEventViewModel @Inject constructor(
     fun updateAssetVisibility(isValid: Boolean) {
         val livelihoodDataCaptureTypes = getLivelihoodEventFromName(eventType)
             .livelihoodEventDataCaptureTypes
-            .filterNot { it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET }
+            .filterNot { it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ASSET || it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_CHILD_ASSET || it == LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ADULT_ASSET }
         isDateOfEventVisible.value = isValid
         livelihoodDataCaptureTypes.forEach { captureType ->
             questionVisibilityMap[captureType] = if (isValid) {
@@ -455,12 +491,14 @@ class AddEventViewModel @Inject constructor(
         subjectId: Int,
         fieldName: String,
         transactionId: String,
+        isChildTransition: Boolean = false,
         onValidationComplete: (Boolean, String) -> Unit
     ) {
         validationExpressionEvalutor(
             subjectId,
             fieldName,
-            transactionId = transactionId
+            transactionId = transactionId,
+            isChildTransition = isChildTransition
         ) { isValid, message ->
             // Pass the result back through the callback
             // Update submit button state based on validation result
@@ -538,13 +576,15 @@ class AddEventViewModel @Inject constructor(
         subjectId: Int,
         fieldName: String,
         transactionId: String,
+        isChildTransition: Boolean = false,
         onValidationResult: (Boolean, String) -> Unit
     ) {
         ioViewModelScope {
             val selectedLivelihood =
                 livelihoodList.find { it.programLivelihoodId == selectedLivelihoodId.value }
             val selectedEvent = eventList.find { it.id == selectedEventId.value }
-            val selectedAssetType = assetTypeList.find { it.id == selectedAssetTypeId.value }
+            val selectedAssetType =
+                assetTypeList.find { it.id == if (isChildTransition) selectedChildAssetTypeId.value else selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
             val selectedValidations =
                 selectedLivelihood?.validations?.filter { it.eventName == selectedEvent?.originalName }
@@ -554,16 +594,17 @@ class AddEventViewModel @Inject constructor(
                     selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
                         ?: selectedValidations.first().validation.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
-                if (selectedAssetTypeId.value != -1 && selectedValidations.find { it.assetType == selectedAssetType?.type } != null) {
+                if (selectedAssetTypeId.value != -1) {
                     validation =
                         selectedValidations.find { it.assetType == selectedAssetType?.type }?.validation?.find { it.field == fieldName && it.languageCode == coreSharedPrefs.getAppLanguage() }
                     validateExpression(
-                        validation,
-                        subjectId,
-                        selectedAssetType,
-                        selectedLivelihood,
-                        transactionId,
-                        onValidationResult
+                        validation = validation,
+                        subjectId = subjectId,
+                        selectedAssetType = selectedAssetType,
+                        selectedLivelihood = selectedLivelihood,
+                        transactionId = transactionId,
+                        onValidationResult = onValidationResult,
+                        selectedChildAssetType = assetTypeList.find { it.id == selectedChildAssetTypeId.value }
                     )
 
                 } else if (selectedProductId.value != -1 && selectedValidations.find { it.productType == selectedProduct?.type } != null) {
@@ -572,21 +613,22 @@ class AddEventViewModel @Inject constructor(
                             ?: selectedValidations.find { it.productType == selectedProduct?.type }?.validation?.find { it.field == fieldName && it.languageCode == DEFAULT_LANGUAGE_CODE }
 
                     validateExpression(
-                        validation,
-                        subjectId,
-                        selectedAssetType,
-                        selectedLivelihood,
-                        transactionId,
-                        onValidationResult
+                        validation = validation,
+                        subjectId = subjectId,
+                        selectedAssetType = selectedAssetType,
+                        selectedLivelihood = selectedLivelihood,
+                        transactionId = transactionId,
+                        onValidationResult = onValidationResult
                     )
                 } else {
                     validateExpression(
-                        validation,
-                        subjectId,
-                        selectedAssetType,
-                        selectedLivelihood,
-                        transactionId,
-                        onValidationResult
+                        validation = validation,
+                        subjectId = subjectId,
+                        selectedAssetType = selectedAssetType,
+                        selectedLivelihood = selectedLivelihood,
+                        transactionId = transactionId,
+                        onValidationResult = onValidationResult,
+                        selectedChildAssetType = assetTypeList.find { it.id == selectedChildAssetTypeId.value }
                     )
                 }
 
@@ -602,6 +644,7 @@ class AddEventViewModel @Inject constructor(
         validation: Validation?,
         subjectId: Int,
         selectedAssetType: ProductAssetUiModel?,
+        selectedChildAssetType: ProductAssetUiModel? = null,
         selectedLivelihood: LivelihoodModel,
         transactionId: String,
         onValidationResult: (Boolean, String) -> Unit
@@ -619,7 +662,9 @@ class AddEventViewModel @Inject constructor(
             assetCount = assetCount.value,
             amount = amount.value,
             message = validation.message,
-            transactionId = transactionId
+            transactionId = transactionId,
+            selectedChildAsset = selectedChildAssetType,
+            assetExpression = validation.expression
         )
         validation.conditionalMessage?.let { conditionalMessages ->
             conditionalMessages.forEach { conditionalMessage ->
@@ -633,7 +678,9 @@ class AddEventViewModel @Inject constructor(
                     amount = amount.value,
                     message = conditionalMessage.languageList?.find { it.languageCode == coreSharedPrefs.getAppLanguage() }?.message
                         ?: BLANK_STRING,
-                    transactionId = transactionId
+                    transactionId = transactionId,
+                    selectedChildAsset = selectedChildAssetType,
+                    assetExpression = validation.expression
                 )
                 if (conditionalMessageExpressionResult.first) {
                     onValidationResult(

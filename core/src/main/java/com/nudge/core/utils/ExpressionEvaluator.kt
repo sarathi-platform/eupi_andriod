@@ -1,6 +1,7 @@
 package com.nudge.core.utils
 
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.EXPRESSION_STRING_COMPARISON
 import com.nudge.core.toSafeInt
 import com.nudge.core.value
 import java.util.Stack
@@ -17,16 +18,33 @@ object ExpressionEvaluator {
     fun evaluateExpression(
         expression: String,
         validationString: String,
-        validationRegex: String?
+        validationRegex: String?,
+        assetExpression: String?
     ): Boolean {
 
-        return if (isStringExpression(expression))
-            evaluateStringExpressions(expression, validationString, validationRegex)
-        else
+        return if (isStringExpression(expression)) {
+            if (assetExpression?.isNotEmpty() == true && assetExpression == EXPRESSION_STRING_COMPARISON)
+                compareStringExpressions(expression)
+            else evaluateStringExpressions(expression, validationString, validationRegex)
+        } else
             evaluateNonStringExpressions(expression, validationString, validationRegex)
 
     }
 
+    /**
+     * Add code to compare assetType for AssetTransition
+     */
+    private fun compareStringExpressions(expression: String): Boolean {
+        val cleanExpression = getCleanExpression(expression)
+        if (cleanExpression.contains("==")) {
+            val (left, right) = expression.split("==").map { it.trim() }
+            return left == right
+        } else if (cleanExpression.contains("!=")) {
+            val (left, right) = expression.split("!=").map { it.trim() }
+            return left != right
+        }
+        return false
+    }
     private fun evaluateStringExpressions(
         expression: String,
         validationString: String,

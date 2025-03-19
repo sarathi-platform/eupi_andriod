@@ -26,10 +26,12 @@ class LivelihoodEventValidationUseCase @Inject constructor(
         selectedLivelihood: LivelihoodModel,
         subjectId: Int,
         selectedAsset: ProductAssetUiModel?,
+        selectedChildAsset: ProductAssetUiModel?,
         assetCount: String,
         amount: String,
         message: String,
-        transactionId: String
+        transactionId: String,
+        assetExpression: String?
     ): Pair<Boolean, String> {
         if (!TextUtils.isEmpty(validationExpression) || !(TextUtils.isEmpty(message))) {
             var map = HashMap<String, String>()
@@ -59,26 +61,28 @@ class LivelihoodEventValidationUseCase @Inject constructor(
 
             map.forEach {
                 fetchMapValues(
-                    it,
-                    selectedLivelihood,
-                    map,
-                    subjectId,
-                    transactionId,
-                    selectedAsset,
-                    assetCount,
-                    amount
+                    it = it,
+                    selectedLivelihood = selectedLivelihood,
+                    map = map,
+                    subjectId = subjectId,
+                    transactionId = transactionId,
+                    selectedAsset = selectedAsset,
+                    assetCount = assetCount,
+                    amount = amount,
+                    selectedChildAsset = selectedChildAsset
                 )
             }
             msgmap.forEach {
                 fetchMapValues(
-                    it,
-                    selectedLivelihood,
-                    msgmap,
-                    subjectId,
-                    transactionId,
-                    selectedAsset,
-                    assetCount,
-                    amount
+                    it = it,
+                    selectedLivelihood = selectedLivelihood,
+                    map = msgmap,
+                    subjectId = subjectId,
+                    transactionId = transactionId,
+                    selectedAsset = selectedAsset,
+                    assetCount = assetCount,
+                    amount = amount,
+                    selectedChildAsset = selectedChildAsset
                 )
             }
             var completeExpression = validationExpression
@@ -95,7 +99,8 @@ class LivelihoodEventValidationUseCase @Inject constructor(
                 if (completeExpression?.isNotEmpty() == true) ExpressionEvaluator.evaluateExpression(
                     expression = completeExpression ?: BLANK_STRING,
                     validationString = BLANK_STRING,
-                    validationRegex = validationRegex
+                    validationRegex = validationRegex,
+                    assetExpression = assetExpression
 
                 ) else true,
                 validationMessage
@@ -112,6 +117,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
         subjectId: Int,
         transactionId: String,
         selectedAsset: ProductAssetUiModel?,
+        selectedChildAsset: ProductAssetUiModel?,
         assetCount: String,
         amount: String
     ) {
@@ -164,6 +170,24 @@ class LivelihoodEventValidationUseCase @Inject constructor(
                         assetId = selectedAsset?.id ?: -1,
                         transactionId = transactionId
                     ).toString()
+
+                selectedChildAsset?.let { childAsset ->
+                    map[it.key] =
+                        assetJournalRepository.getTotalAssetCount(
+                            livelihoodId = selectedLivelihood.programLivelihoodId,
+                            subjectId = subjectId,
+                            assetId = childAsset.id ?: -1,
+                            transactionId = transactionId
+                        ).toString()
+                }
+            }
+
+            it.key == ValidationExpressionEnum.TO_SELECTED_ASSET_TYPE.originalValue -> {
+                map[it.key] = selectedAsset?.type?.split("_")?.get(0).toString()
+            }
+
+            it.key == ValidationExpressionEnum.FROM_SELECTED_ASSET_TYPE.originalValue -> {
+                map[it.key] = selectedChildAsset?.type?.split("_")?.get(0).toString()
             }
 
         }
