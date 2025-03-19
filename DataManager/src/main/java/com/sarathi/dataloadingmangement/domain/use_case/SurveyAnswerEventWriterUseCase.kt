@@ -52,14 +52,19 @@ class SurveyAnswerEventWriterUseCase @Inject constructor(
             grantType,
             taskId
         )
-        writeEventInFile(
-            saveAnswerMoneyJournalEventDto,
-            EventName.MONEY_JOURNAL_EVENT,
-            questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
-            listOf(),
-            isFromRegenerate = isFromRegenerate
-        )
-        saveFormResponseEvent(saveAnswerMoneyJournalEventDto, questionUiModels, isFromRegenerate)
+            writeEventInFile(
+                saveAnswerMoneyJournalEventDto,
+                EventName.MONEY_JOURNAL_EVENT,
+                questionUiModels.firstOrNull()?.surveyName ?: BLANK_STRING,
+                listOf(),
+                isFromRegenerate = isFromRegenerate
+            )
+            saveFormResponseEvent(
+                saveAnswerMoneyJournalEventDto,
+                questionUiModels,
+                isFromRegenerate
+            )
+
         questionUiModels.forEach { questionUiModel ->
             saveSurveyAnswerEvent(
                 questionUiModel,
