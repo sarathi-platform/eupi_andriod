@@ -24,7 +24,7 @@ class LoginViewModel @Inject constructor(
         showLoader.value = true
         job = CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
-        val response = loginRepository.generateOtp(mobileNumber.value.text)
+            val response = loginRepository.generateOtp(mobileNumber.value.text)
             if (response.status.equals(SUCCESS, true)) {
                 withContext(Dispatchers.Main) {
                     loginRepository.saveMobileNumber(mobileNumber.value.text)
