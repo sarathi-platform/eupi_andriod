@@ -801,9 +801,12 @@ private fun EventHeader(
         Modifier
             .fillMaxWidth()
             .padding(bottom = dimen_5_dp),
-        horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Row {
+        Row(
+            modifier = Modifier
+                .weight(.7f)
+                .padding(end = dimen_8_dp)
+        ) {
             TextWithPaddingEnd(
                 text = viewModel.stringResource(R.string.event),
                 style = getTextColor(smallTextStyle, color = eventTextColor)
@@ -815,6 +818,7 @@ private fun EventHeader(
             )
         }
         StrikethroughText(
+            modifier = Modifier.weight(.3f),
             text = item.date.getDate(pattern = DD_mmm_YY_FORMAT),
             textStyle = getTextColor(smallTextStyle, color = blueDark),
             isStrikethrough = item.isEventNotActive()
