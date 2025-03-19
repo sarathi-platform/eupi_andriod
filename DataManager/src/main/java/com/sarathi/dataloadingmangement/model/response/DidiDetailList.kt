@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.model.response
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
 data class DidiDetailList(
@@ -34,7 +35,27 @@ data class DidiDetailList(
     @SerializedName("relationship")
     var relationship: String? = null,
     @SerializedName("voName")
-    var voName: String? = null
+    var voName: String? = null,
+
+    @SerializedName("shgVerificationStatus")
+    @Expose
+    var shgVerificationStatus: String?,
+
+    @SerializedName("shgVerificationDate")
+    @Expose
+    var shgVerificationDate: Long?,
+
+    @SerializedName("shgName")
+    @Expose
+    var shgName: String?,
+
+    @SerializedName("shgCode")
+    @Expose
+    var shgCode: String?,
+
+    @SerializedName("shgMemberId")
+    @Expose
+    var shgMemberId: Int?
 ) {
 
 

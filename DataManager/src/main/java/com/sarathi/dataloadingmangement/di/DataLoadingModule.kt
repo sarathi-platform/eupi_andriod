@@ -122,6 +122,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEve
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.ShgVerificationUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.SubjectEntityUseCase
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
@@ -212,6 +214,10 @@ import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAtt
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.ShgVerificationRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.ShgVerificationRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.SubjectEntityRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.SubjectEntityRepositoryImpl
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import dagger.Module
 import dagger.Provides
@@ -1780,5 +1786,44 @@ class DataLoadingModule {
         translationHelper: TranslationHelper
     ): MissionFilterUtils {
         return MissionFilterUtils(coreSharedPrefs, livelihoodListFromDbUseCase, translationHelper)
+    }
+
+    @Provides
+    @Singleton
+    fun providesShgVerificationUseCase(
+        shgVerificationRepository: ShgVerificationRepository
+    ): ShgVerificationUseCase {
+        return ShgVerificationUseCase(shgVerificationRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSubjectEntityUseCase(
+        subjectEntityRepository: SubjectEntityRepository
+    ): SubjectEntityUseCase {
+        return SubjectEntityUseCase(subjectEntityRepository)
+    }
+
+    @Provides
+    @Singleton
+    fun providesSubjectEntityRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao
+    ): SubjectEntityRepository {
+        return SubjectEntityRepositoryImpl(
+            coreSharedPrefs, subjectEntityDao
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesShgVerificationRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao,
+        dataLoadingApiService: DataLoadingApiService
+    ): ShgVerificationRepository {
+        return ShgVerificationRepositoryImpl(
+            coreSharedPrefs, subjectEntityDao, dataLoadingApiService
+        )
     }
 }

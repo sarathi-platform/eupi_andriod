@@ -9,21 +9,33 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import com.nudge.core.BLANK_STRING
+import com.nudge.core.DD_MMM_YYYY_H_MMA
 import com.nudge.core.NO_TOLA_TITLE
+import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
+import com.nudge.core.SHG_VERIFICATION_STATUS_VERIFIED
+import com.nudge.core.SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND
+import com.nudge.core.getDate
+import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.ImageCardWithBottomContent
 import com.nudge.core.ui.commonUi.ImageProperties
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_4_dp
+import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.eventTextColor
-import com.nudge.core.ui.theme.smallerTextStyle
+import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
+import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
 import com.sarathi.missionactivitytask.R
@@ -34,7 +46,9 @@ import com.sarathi.smallgroupmodule.ui.commonUi.ButtonOutline
 import com.sarathi.smallgroupmodule.ui.theme.blueDark
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_45_dp
+import com.sarathi.smallgroupmodule.ui.theme.gary_light
 import com.sarathi.smallgroupmodule.ui.theme.mediumTextStyle
+import com.sarathi.smallgroupmodule.ui.theme.orangeLight
 import com.sarathi.smallgroupmodule.ui.theme.smallTextStyleMediumWeight
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark
 import com.sarathi.smallgroupmodule.ui.theme.textColorDark80
@@ -82,25 +96,44 @@ fun DidiTabCard(
                         )
                     )
 
+                    if (!subjectEntity.shgVerificationStatus.equals(
+                            SHG_VERIFICATION_STATUS_NOT_VERIFIED
+                        )
+                    ) {
+                        val status = subjectEntity.shgVerificationStatus.value(
+                            SHG_VERIFICATION_STATUS_NOT_VERIFIED
+                        )
+                        VerifiedInfoCard(
+                            title = "SHG: " + subjectEntity.shgName.value(),
+                            statusAndDateColor = getStatusAndDateColor(status),
+                            verificationStatus = getShgStatusText(status),
+                            verifiedDateTime = subjectEntity.shgVerificationDate.getDate(pattern = DD_MMM_YYYY_H_MMA)
+                        )
+                    }
+
                     Row(modifier = Modifier.fillMaxWidth()) {
                         ButtonOutline(
                             modifier = Modifier
                                 .weight(1.0f)
-                                .fillMaxWidth(),
+                                .fillMaxWidth()
+                                .height(dimen_40_dp),
                             buttonTitle = "Verify SHG",
-                            icon = null,
-                            borderColor = eventTextColor
-                        ) { }
-                        Spacer(modifier = Modifier.width(dimen_10_dp))
-                        ButtonOutline(
-                            modifier = Modifier
-                                .weight(1.0f)
-                                .fillMaxWidth(),
-                            buttonTitle = "Verify Aadhaar",
                             icon = null,
                             borderColor = eventTextColor
                         ) {
                             onShgVerifyClick(subjectEntity)
+                        }
+                        Spacer(modifier = Modifier.width(dimen_10_dp))
+                        ButtonOutline(
+                            modifier = Modifier
+                                .weight(1.0f)
+                                .fillMaxWidth()
+                                .height(dimen_40_dp),
+                            buttonTitle = "Verify Aadhaar",
+                            icon = null,
+                            borderColor = eventTextColor
+                        ) {
+
                         }
                     }
                 }
@@ -138,28 +171,35 @@ fun DidiTabCard(
 }
 
 @Composable
-fun VerifiedInfoCard(title: String, verificationStatus: String, verifiedDateTime: String) {
+fun VerifiedInfoCard(
+    title: String,
+    statusAndDateColor: Pair<Color, Color>,
+    verificationStatus: String,
+    verifiedDateTime: String
+) {
 
-    Row(modifier = Modifier.background(color = verifiedBgColor)) {
+    Row(
+        modifier = Modifier
+            .background(color = verifiedBgColor)
+            .padding(horizontal = dimen_4_dp, vertical = dimen_8_dp)
+    ) {
         Text(
             title,
-            style = smallerTextStyle.copy(fontWeight = FontWeight.Medium)
+            style = smallTextStyleMediumWeight2
         )
         Column(modifier = Modifier.fillMaxWidth()) {
             Text(
                 verificationStatus,
-                style = smallerTextStyle.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = verifiedTextColor
+                style = smallTextStyleMediumWeight2.copy(
+                    color = statusAndDateColor.first
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End // Align text to the end
             )
             Text(
                 verifiedDateTime,
-                style = smallerTextStyle.copy(
-                    fontWeight = FontWeight.Medium,
-                    color = verifiedTextColor
+                style = smallTextStyleMediumWeight2.copy(
+                    color = statusAndDateColor.second
                 ),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.End // Align text to the end
@@ -169,8 +209,31 @@ fun VerifiedInfoCard(title: String, verificationStatus: String, verifiedDateTime
     }
 }
 
+fun getStatusAndDateColor(status: String): Pair<Color, Color> {
+    return when (status) {
+        SHG_VERIFICATION_STATUS_VERIFIED -> Pair(verifiedTextColor, verifiedTextColor)
+        SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND -> Pair(orangeLight, gary_light)
+        else -> Pair(textColorDark, textColorDark)
+    }
+}
+
+@Composable
+fun getShgStatusText(status: String): String {
+    val translationHelper = LocalTranslationHelper.current
+    return when (status) {
+        SHG_VERIFICATION_STATUS_VERIFIED -> "SHG Verified"
+        SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND -> "ID Not Found"
+        else -> BLANK_STRING
+    }
+}
+
 @Composable
 @Preview
 fun previewVerifiedInfoCard() {
-    VerifiedInfoCard("SHG: shg_name", "SHG Verified", verifiedDateTime = "18 Mar 2025 2:28pm")
+    VerifiedInfoCard(
+        "SHG: shg_name",
+        statusAndDateColor = Pair(verifiedTextColor, verifiedTextColor),
+        "SHG Verified",
+        verifiedDateTime = "18 Mar 2025 2:28pm"
+    )
 }

@@ -35,6 +35,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.R
+import com.nudge.core.getShgMemberNameWithId
+import com.nudge.core.model.response.ShgMember
+import com.nudge.core.model.response.VillageDetailsFromLokOs
 import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.borderGrey
@@ -44,6 +47,7 @@ import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
+import com.nudge.core.value
 
 @Composable
 fun <T> DropDownComponent(
@@ -140,6 +144,14 @@ fun <T> DropDownComponent(
                 when (item) {
                     is ValuesDto -> {
                         title = item.value
+                    }
+
+                    is VillageDetailsFromLokOs -> {
+                        title = item.cboName.value()
+                    }
+
+                    is ShgMember -> {
+                        title = getShgMemberNameWithId(item)
                     }
 
                     else -> {

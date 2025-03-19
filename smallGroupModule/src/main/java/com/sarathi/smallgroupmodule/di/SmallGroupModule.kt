@@ -15,6 +15,8 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDeta
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.ShgVerificationUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.SubjectEntityUseCase
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
@@ -23,6 +25,7 @@ import com.sarathi.smallgroupmodule.data.domain.EventWriterHelperImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroupListFromDbRepository
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroupListFromDbRepositoryImpl
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
+import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiVerificationUseCase
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchAttendanceHistoryForDateFromDbRepository
 import com.sarathi.smallgroupmodule.ui.smallGroupAttendance.domain.repository.FetchAttendanceHistoryForDateFromDbRepositoryImpl
@@ -347,6 +350,18 @@ class SmallGroupModule {
             subjectAttributeDao = subjectAttributeDao,
             attributeValueReferenceDao = attributeValueReferenceDao
         )
+    }
+
+    @Provides
+    @Singleton
+    fun providesDidiVerificationUseCase(
+        subjectEntityUseCase: SubjectEntityUseCase,
+        shgVerificationUseCase: ShgVerificationUseCase
+    ): DidiVerificationUseCase {
+        return DidiVerificationUseCase(
+            subjectEntityUseCase, shgVerificationUseCase
+        )
+
     }
 
 }

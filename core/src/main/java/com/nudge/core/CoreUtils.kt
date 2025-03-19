@@ -44,6 +44,7 @@ import com.nudge.core.database.entities.Events
 import com.nudge.core.datamodel.ImageEventDetailsModel
 import com.nudge.core.enums.SyncBatchEnum
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.model.response.ShgMember
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.utils.CoreLogger
@@ -1184,6 +1185,7 @@ fun updateCoreEventFileName(context: Context,mobileNo: String){
 
 const val YYYY_MM_DD = "yyyy-MM-dd"
 const val dd_MM_yyyy = "dd/MM/yyyy"
+const val DD_MMM_YYYY_H_MMA = "dd MMM, yyyy h:mma"
 
 fun Long?.getDate(pattern: String = "dd/MM/yyyy"): String {
     if (this == null)
@@ -1534,4 +1536,17 @@ fun Context.redirectToLink(link: String?) {
 }
 fun isAllowedCharacterInput(value: String?): Boolean {
     return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
+}
+
+fun getShgMemberNameWithId(shgMember: ShgMember?): String {
+    if (shgMember == null)
+        return BLANK_STRING
+
+    var result = shgMember.memberName.value()
+
+    if (shgMember.memberId != -1) {
+        result = result + " - " + shgMember.memberId.toString()
+    }
+
+    return result
 }

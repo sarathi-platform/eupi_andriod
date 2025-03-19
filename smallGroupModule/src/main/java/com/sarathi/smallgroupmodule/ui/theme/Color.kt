@@ -137,3 +137,5 @@ val tabBgColor = Color(0xFFDCE2FF)
 val uncheckedTrackColor = Color(0xFFC0C6CE)
 
 val dateRangeFieldColor = Color(0xFFD9D9D9)
+val orangeLight = Color(0xFFEF8D18)
+val gary_light = Color(0xFF8F9291)

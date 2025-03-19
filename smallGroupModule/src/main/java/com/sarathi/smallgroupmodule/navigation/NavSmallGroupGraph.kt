@@ -111,6 +111,8 @@ fun NavGraphBuilder.SmallGroupNavigation(
                 onSettingClick = onSettingIconClick
             )
 
+//            ShgVerificationScreen(shgVerificationViewModel = hiltViewModel())
+
 
         }
 
