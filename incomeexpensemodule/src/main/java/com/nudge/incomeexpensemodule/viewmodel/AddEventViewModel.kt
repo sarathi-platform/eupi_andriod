@@ -471,7 +471,7 @@ class AddEventViewModel @Inject constructor(
             "Event=${_livelihoodEventDropdownValue.find { it.id == selectedEventId.value }?.originalName}|"
         if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
             if (selectedAssetTypeId.value != -1 && selectedChildAssetTypeId.value != -1) {
-                particulars += "ChildAssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedChildAssetTypeId.value }?.originalName}|" +
+                particulars += "ChildAssetType=${_livelihoodChildAssetDropdownValue.find { it.id == selectedChildAssetTypeId.value }?.originalName}|" +
                         "AdultAssetType=${_livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName}|"
             }
         } else {
