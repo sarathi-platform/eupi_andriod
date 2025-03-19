@@ -1,10 +1,13 @@
 package com.patsurvey.nudge.activities.ui.login
 
+import android.util.Base64
 import com.google.gson.Gson
 import com.nudge.core.LAST_SYNC_TIME
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.model.response.LastSyncResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_KEY_USER_NAME
+import com.nudge.core.utils.AESHelper
 import com.patsurvey.nudge.base.BaseRepository
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.database.dao.VillageListDao
@@ -25,9 +28,13 @@ class OtpVerificationRepository @Inject constructor(
 )  :BaseRepository() {
 
     suspend fun validateOtp(otpNumber: String): ApiResponseModel<OtpVerificationModel>{
+        val secretKeyPass = getAESSecretKey()
 
         val otpRequest =
-            OtpRequest(mobileNumber = getMobileNumber() ?: "", otp = otpNumber ) //Text this code
+            OtpRequest(
+                mobileNumber = AESHelper.encrypt(getMobileNumber(), secretKeyPass),
+                otp = otpNumber
+            ) //Text this code
         NudgeLogger.d("OtpVerificationRepository","validateOtp => ${Gson().toJson(otpRequest)}")
         return apiInterface.validateOtp(otpRequest);
     }
@@ -54,13 +61,26 @@ class OtpVerificationRepository @Inject constructor(
 
     suspend fun generateOtp(
     ): ApiResponseModel<String>{
-        val loginRequest =
-            LoginRequest(mobileNumber = getMobileNumber() ?: "")
+        val secretKeyPass = getAESSecretKey()
+
+        val loginRequest = LoginRequest(AESHelper.encrypt(getMobileNumber(), secretKeyPass))
         NudgeLogger.d("OtpVerificationRepository ","generateOtp=> ${Gson().toJson(loginRequest)}")
         return apiInterface.generateOtp(loginRequest);
     }
 
-    fun getMobileNumber(): String?{
+    private fun getAESSecretKey(): String {
+        val secretKeyPass = String(
+            Base64.decode(
+                coreSharedPrefs.getPref(
+                    AppConfigKeysEnum.SENSITIVE_INFO_KEY.name,
+                    com.nudge.core.BLANK_STRING
+                ), Base64.DEFAULT
+            )
+        )
+        return secretKeyPass
+    }
+
+    fun getMobileNumber(): String {
        return prefRepo.getMobileNumber();
     }
 
