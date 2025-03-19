@@ -17,9 +17,6 @@ android {
     }
 
     buildTypes {
-        debug {
-            buildConfigField("String", "BLOB_CONNECTION_STRING", localProperties['blob_connection_token'])
-        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
