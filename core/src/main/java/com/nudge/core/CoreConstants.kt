@@ -264,6 +264,7 @@ const val ARG_IS_FROM_BACKSTACK = "isFromBackstack"
 const val ALL_MISSION_FILTER_VALUE = "All Missions"
 const val GENERAL_MISSION_FILTER_VALUE = "General Missions"
 const val DOUBLE_SLASH_N = "\\n"
+const val SLASH = "/"
 const val SLASH_N = "\n"
 const val ELLIPSIS_MAX_LENGTH = 40
 const val APP_UPDATE_REQUEST_CODE = 153

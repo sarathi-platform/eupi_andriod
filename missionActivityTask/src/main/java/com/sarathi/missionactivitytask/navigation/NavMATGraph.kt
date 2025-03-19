@@ -15,8 +15,10 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CLEAN_ROUTE_DELIMITER
 import com.nudge.core.FORWARD_SLASH_DELIMITER
 import com.nudge.core.LIVELIHOOD
+import com.nudge.core.SLASH
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
+import com.nudge.core.removeExtension
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
@@ -1349,7 +1351,13 @@ fun navigateToActivityCompletionScreen(
     activityRoutePath: String = BLANK_STRING
 ) {
     var activityNameWithNullable = if (!TextUtils.isEmpty(activityRoutePath)) activityRoutePath else null
-    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity/$activityNameWithNullable")
+    navController.navigate(
+        "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/${
+            activityMsg.removeExtension(
+                SLASH
+            )
+        }/$isFromActivity/${activityNameWithNullable?.removeExtension(SLASH)}"
+    )
 }
 
 fun navigateToLivelihoodDropDownScreen(
