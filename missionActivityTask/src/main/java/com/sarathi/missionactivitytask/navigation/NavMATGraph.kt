@@ -15,10 +15,8 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.CLEAN_ROUTE_DELIMITER
 import com.nudge.core.FORWARD_SLASH_DELIMITER
 import com.nudge.core.LIVELIHOOD
-import com.nudge.core.SLASH
 import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.SurveyFlow
-import com.nudge.core.removeExtension
 import com.nudge.core.value
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph.MAT_GRAPH
 import com.sarathi.contentmodule.media.MediaScreen
@@ -735,10 +733,15 @@ fun NavGraphBuilder.MatNavigation(
                         )
                     }
                 },
-                navController = navController, message = it.arguments?.getString(
-                    ARG_ACTIVITY_MASSAGE
-                ) ?: BLANK_STRING,
-                activityRoutePath = it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING,
+                navController = navController,
+                message = addSlashInString(
+                    it.arguments?.getString(
+                        ARG_ACTIVITY_MASSAGE
+                    ) ?: BLANK_STRING
+                ),
+                activityRoutePath = addSlashInString(
+                    it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING
+                ),
                 isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
 
             )
@@ -1350,13 +1353,13 @@ fun navigateToActivityCompletionScreen(
     isFromActivity: Boolean = false,
     activityRoutePath: String = BLANK_STRING
 ) {
-    var activityNameWithNullable = if (!TextUtils.isEmpty(activityRoutePath)) activityRoutePath else null
+    removeSlashFromString(activityMsg)
+    var activityNameWithNullable =
+        if (!TextUtils.isEmpty(activityRoutePath)) activityRoutePath else null
     navController.navigate(
         "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/${
-            activityMsg.removeExtension(
-                SLASH
-            )
-        }/$isFromActivity/${activityNameWithNullable?.removeExtension(SLASH)}"
+            removeSlashFromString(activityMsg)
+        }/$isFromActivity/${removeSlashFromString(activityNameWithNullable ?: BLANK_STRING)}"
     )
 }
 

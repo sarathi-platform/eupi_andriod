@@ -1543,7 +1543,3 @@ fun Context.redirectToLink(link: String?) {
 fun isAllowedCharacterInput(value: String?): Boolean {
     return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
 }
-
-fun String?.removeCharacter(characterToRemove: String): String? {
-    return this?.replace(characterToRemove, BLANK_STRING)
-}
