@@ -13,6 +13,7 @@ import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.network.ErrorInterceptor
 import com.patsurvey.nudge.network.interfaces.ApiService
+import com.patsurvey.nudge.network.interfaces.DynamicBaseUrlInterceptor
 import com.patsurvey.nudge.utils.*
 import dagger.Module
 import dagger.Provides
@@ -85,6 +86,7 @@ object NetworkModule {
         .connectTimeout(timeout, TimeUnit.SECONDS)
         .readTimeout(timeout, TimeUnit.SECONDS)
 //        .cache(cache)
+    clientBuilder.addInterceptor(DynamicBaseUrlInterceptor())
     clientBuilder.addNetworkInterceptor(getNetworkInterceptor(application.applicationContext))
     clientBuilder.addInterceptor(ErrorInterceptor())
     clientBuilder.addInterceptor(

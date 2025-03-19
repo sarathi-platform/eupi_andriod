@@ -10,6 +10,7 @@ import com.nudge.navigationmanager.routes.AUTH_OTP_VERIFICATION_SCREEN_ROUTE_NAM
 import com.nudge.navigationmanager.routes.AUTH_PROFILE_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_SETTING_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_START_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.AUTH_STATE_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_VIDEO_LIST_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_VIDEO_PLAYER_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME
@@ -43,6 +44,7 @@ import com.nudge.navigationmanager.routes.SEARCH_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SECTION_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SETTING_FORMS_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SETTING_ROUTE_NAME
+import com.nudge.navigationmanager.routes.STATE_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SURVEYEE_LIST_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SYNC_HISTORY_ROUTE_NAME
 import com.nudge.navigationmanager.routes.SYNC_HOME_ROUTE_NAME
@@ -224,6 +226,8 @@ sealed class SettingScreens(val route: String) {
     object SETTING_SCREEN : SettingScreens(route = SETTING_ROUTE_NAME)
     object LANGUAGE_SCREEN :
         SettingScreens(route = "$LANGUAGE_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_PAGE_FROM.value}}")
+    object STATE_SCREEN :
+        SettingScreens(route = "$STATE_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_PAGE_FROM.value}}")
     object BUG_LOGGING_SCREEN : SettingScreens(route = BUG_LOGGING_ROUTE_NAME)
     object VIDEO_LIST_SCREEN : SettingScreens(route = VIDEO_SCREEN_ROUTE_NAME)
     object VIDEO_PLAYER_SCREEN : SettingScreens(route = "$VIDEO_PLAYER_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_VIDEO_ID.value}}")
@@ -257,6 +261,8 @@ sealed class AuthScreen(val route: String) {
     object START_SCREEN : AuthScreen(route = AUTH_START_SCREEN_ROUTE_NAME)
     object LANGUAGE_SCREEN :
         AuthScreen(route = "$AUTH_LANGUAGE_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_PAGE_FROM.value}}")
+    object State_SCREEN :
+        AuthScreen(route = "$AUTH_STATE_SCREEN_ROUTE_NAME/{${NavigationParams.ARG_PAGE_FROM.value}}")
     object BUG_LOGGING_SCREEN : AuthScreen(route = AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME)
     object LOGIN : AuthScreen(route = AUTH_LOGIN_SCREEN_ROUTE_NAME)
     object VILLAGE_SELECTION_SCREEN : AuthScreen(route = AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME)

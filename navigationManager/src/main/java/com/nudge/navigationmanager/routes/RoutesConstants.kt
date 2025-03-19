@@ -4,6 +4,7 @@ package com.nudge.navigationmanager.routes
 //Authentication Routes
 const val AUTH_START_SCREEN_ROUTE_NAME="start_screen"
 const val AUTH_LANGUAGE_SCREEN_ROUTE_NAME="language_screen"
+const val AUTH_STATE_SCREEN_ROUTE_NAME = "state_screen"
 const val AUTH_BUG_LOGGING_SCREEN_ROUTE_NAME="bug_logging_screen"
 const val AUTH_LOGIN_SCREEN_ROUTE_NAME="login_screen"
 const val AUTH_VILLAGE_SELECTION_SCREEN_ROUTE_NAME="village_selection_screen"
@@ -37,6 +38,7 @@ const val Final_Step_Complition_Screen_ROUTE_NAME = "final_step_complition_scree
 const val Step_Complition_Screen_ROUTE_NAME = "step_complition_screen"
 const val SETTING_ROUTE_NAME = "setting_screen"
 const val LANGUAGE_SCREEN_ROUTE_NAME = "language_screen"
+const val STATE_SCREEN_ROUTE_NAME = "state_screen"
 const val PROFILE_BS_SCREEN_ROUTE_NAME = "profile_bs_screen"
 const val BUG_LOGGING_ROUTE_NAME = "Bug_Logging"
 const val VIDEO_SCREEN_ROUTE_NAME = "video_list_screen"

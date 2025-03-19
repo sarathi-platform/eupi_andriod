@@ -22,6 +22,7 @@ const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
 const val TRANSLATION_CONFIG_TABLE_NAME = "translation_config_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
+const val STATE_TABLE_NAME = "state_table"
 const val CASTE_TABLE = "caste_table"
 
 // Sync DB Properties
