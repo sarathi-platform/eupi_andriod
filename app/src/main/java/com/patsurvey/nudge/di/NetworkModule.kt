@@ -12,8 +12,9 @@ import com.nudge.core.KEY_HEADER_TYPE
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.data.prefs.PrefRepo
 import com.patsurvey.nudge.network.ErrorInterceptor
+import com.patsurvey.nudge.network.interceptor.DynamicBaseUrlInterceptor
+import com.patsurvey.nudge.network.interceptor.RetryInterceptor
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.network.interfaces.DynamicBaseUrlInterceptor
 import com.patsurvey.nudge.utils.*
 import dagger.Module
 import dagger.Provides
@@ -78,6 +79,7 @@ object NetworkModule {
     application: Application
   ): Retrofit {
     val cache = Cache(application.cacheDir, 10 * 1024 * 1024) // 10 MB
+    val retryInterceptor = RetryInterceptor(maxRetryCount = 2, retryDelayMillis = 2000)
     val timeout = 60.toLong()
     val clientBuilder =
       OkHttpClient.Builder()
@@ -95,6 +97,7 @@ object NetworkModule {
         application.applicationContext
       )
     )
+    clientBuilder.addInterceptor(retryInterceptor)
     if (interceptors.isNotEmpty()) {
       interceptors.forEach { interceptor ->
         clientBuilder.addInterceptor(interceptor)

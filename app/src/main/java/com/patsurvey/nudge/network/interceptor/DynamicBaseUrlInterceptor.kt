@@ -1,5 +1,6 @@
-package com.patsurvey.nudge.network.interfaces
+package com.patsurvey.nudge.network.interceptor
 
+import com.patsurvey.nudge.network.interfaces.ApiBaseUrlManager
 import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrl
 import okhttp3.Interceptor

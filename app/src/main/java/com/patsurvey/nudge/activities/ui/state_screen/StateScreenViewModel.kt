@@ -54,8 +54,31 @@ class StateScreenViewModel @Inject constructor(
                 orderNumber = 1,
                 state = "Tripura",
                 localName = "Tripura"
-            ), StateEntity(id = 2, orderNumber = 2, state = "Assam", localName = "Assam"),
-            StateEntity(id = 3, orderNumber = 3, state = "West Bengal", localName = "West Bengal")
+            ),
+            StateEntity(id = 2, orderNumber = 2, state = "Assam", localName = "Assam"),
+            StateEntity(id = 3, orderNumber = 3, state = "West Bengal", localName = "West Bengal"),
+            StateEntity(id = 4, orderNumber = 4, state = "Rajasthan", localName = "Rajasthan"),
+            StateEntity(id = 5, orderNumber = 5, state = "Meghalaya", localName = "Meghalaya"),
+            StateEntity(id = 6, orderNumber = 6, state = "Gujarat", localName = "Gujarat"),
+            StateEntity(id = 7, orderNumber = 7, state = "Jharkhand", localName = "Jharkhand"),
+            StateEntity(
+                id = 8,
+                orderNumber = 8,
+                state = "Uttar Pradesh",
+                localName = "Uttar Pradesh"
+            ),
+            StateEntity(
+                id = 9,
+                orderNumber = 9,
+                state = "Madhya Pradesh",
+                localName = "Madhya Pradesh"
+            ),
+            StateEntity(
+                id = 10,
+                orderNumber = 10,
+                state = "Uttarakhand",
+                localName = "Uttarakhand"
+            ),
         )
 
     }

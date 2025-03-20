@@ -3,6 +3,7 @@ package com.patsurvey.nudge.activities.ui.state_screen
 import android.annotation.SuppressLint
 import android.content.Context
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -25,15 +26,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.nrlm.baselinesurvey.ui.common_components.ToolbarComponent
 import com.nrlm.baselinesurvey.ui.theme.dimen_32_dp
 import com.nrlm.baselinesurvey.ui.theme.white
 import com.nudge.core.database.entities.state.StateEntity
@@ -44,7 +46,7 @@ import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBg
 import com.patsurvey.nudge.activities.ui.theme.languageItemActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.languageItemInActiveBorderBg
 import com.patsurvey.nudge.activities.ui.theme.textColorBlueLight
-import com.patsurvey.nudge.customviews.SarathiLogoTextView
+import com.patsurvey.nudge.customviews.SarathiLogoTextViewV2
 import com.patsurvey.nudge.navigation.ScreenRoutes
 import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
@@ -69,13 +71,12 @@ fun StateScreen(
         modifier = Modifier.fillMaxSize(),
         topBar = {
             if (pageFrom != ARG_FROM_HOME) {
-                ToolbarComponent(
-                    title = stringResource(R.string.language_text),
-                    modifier = Modifier
-                ) {
-                    navController.navigateUp()
-
-                }
+//                ToolbarComponent(
+//                    title = stringResource(R.string.language_text),
+//                    modifier = Modifier
+//                ) {
+//                    navController.navigateUp()
+//                }
             }
         },
         bottomBar = {
@@ -85,17 +86,21 @@ fun StateScreen(
             modifier = Modifier
                 .background(color = Color.White)
                 .fillMaxSize()
-                .padding(
-                    top = it.calculateTopPadding() + dimen_32_dp,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.lokos_bg),
+                contentDescription = "Background Image",
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop
+            )
+            Column(
+                modifier = Modifier.padding(
                     start = dimensionResource(id = R.dimen.padding_16dp),
                     end = dimensionResource(id = R.dimen.padding_16dp),
-                    bottom = dimensionResource(id = R.dimen.padding_32dp)
-                )
-                .then(modifier)
-        ) {
-            Column(modifier = Modifier, horizontalAlignment = Alignment.CenterHorizontally) {
+                ), horizontalAlignment = Alignment.CenterHorizontally
+            ) {
                 if (pageFrom == ARG_FROM_HOME) {
-                    SarathiLogoTextView()
+                    SarathiLogoTextViewV2()
                     Text(
                         text = "Choose State",
                         color = textColorBlueLight,
@@ -105,19 +110,26 @@ fun StateScreen(
                         modifier = Modifier.padding(vertical = dimensionResource(id = R.dimen.dp_20))
                     )
                 }
-                LanguageList(viewModel, context)
+                StateList(viewModel, context)
             }
-            Box(modifier = Modifier.align(Alignment.BottomCenter)) {
+            Box(
+                modifier = Modifier
+                    .padding(
+                        top = it.calculateTopPadding() + dimen_32_dp,
+                        start = dimensionResource(id = R.dimen.padding_16dp),
+                        end = dimensionResource(id = R.dimen.padding_16dp),
+                        bottom = dimensionResource(id = R.dimen.padding_32dp)
+                    )
+                    .align(Alignment.BottomCenter)
+            ) {
                 ContinueButton(viewModel, pageFrom, navController, context)
             }
         }
-
     }
-
 }
 
 @Composable
-fun LanguageItem(
+fun StateItem(
     stateModel: StateEntity,
     index: Int,
     selectedIndex: Int,
@@ -152,12 +164,12 @@ fun LanguageItem(
 
 @SuppressLint("StateFlowValueCalledInComposition")
 @Composable
-fun LanguageList(viewModel: StateScreenViewModel, context: Context) {
+fun StateList(viewModel: StateScreenViewModel, context: Context) {
     Column {
         viewModel.stateList.value?.let {
             LazyColumn {
                 itemsIndexed(it) { index, item ->
-                    LanguageItem(
+                    StateItem(
                         stateModel = item,
                         index,
                         viewModel.statePosition.value
