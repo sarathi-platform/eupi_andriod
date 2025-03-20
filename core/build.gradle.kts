@@ -42,6 +42,7 @@ android {
 }
 
 dependencies {
+    debugImplementation("androidx.compose.ui:ui-tooling:1.7.8")
     val retrofit = "2.9.0"
     val okhttp3 = "4.9.0"
 

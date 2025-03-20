@@ -1,0 +1,43 @@
+<resources>
+
+    <dimen name="sp_40">40sp</dimen>
+    <dimen name="sp_25">25sp</dimen>
+    <dimen name="sp_35">35sp</dimen>
+    <dimen name="sp_21">21sp</dimen>
+    <dimen name="sp_56">56sp</dimen>
+    <dimen name="dp_49">49dp</dimen>
+    <dimen name="sp_29">29sp</dimen>
+    <dimen name="dp_10">10dp</dimen>
+    <dimen name="dp_1">1dp</dimen>
+    <dimen name="dp_2">2dp</dimen>
+    <dimen name="dp_4">4dp</dimen>
+    <dimen name="dp_6">6dp</dimen>
+    <dimen name="dp_7">7dp</dimen>
+    <dimen name="dp_8">8dp</dimen>
+    <dimen name="dp_13">13dp</dimen>
+    <dimen name="dp_44">44dp</dimen>
+    <dimen name="dp_16">16dp</dimen>
+    <dimen name="dp_20">20dp</dimen>
+    <dimen name="dp_18">18dp</dimen>
+    <dimen name="dp_5">5dp</dimen>
+    <dimen name="dp_30">30dp</dimen>
+    <dimen name="dp_25">25dp</dimen>
+    <dimen name="dp_65">65dp</dimen>
+    <dimen name="dp_50">50dp</dimen>
+    <dimen name="dp_15">15dp</dimen>
+    <dimen name="dp_24">24dp</dimen>
+    <dimen name="sp_18">18sp</dimen>
+    <dimen name="padding_16dp">16dp</dimen>
+    <dimen name="padding_32dp">32dp</dimen>
+    <dimen name="height_60dp">60dp</dimen>
+    <dimen name="height_50dp">50dp</dimen>
+    <dimen name="height_55dp">55dp</dimen>
+    <dimen name="button_height">54dp</dimen>
+    <dimen name="text_size_12">12sp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
+    <dimen name="text_size_16">16sp</dimen>
+    <dimen name="text_size_18">18sp</dimen>
+    <dimen name="text_size_20">20sp</dimen>
+    <dimen name="text_size_22">22sp</dimen>
+    <dimen name="text_size_24">24sp</dimen>
+</resources>
