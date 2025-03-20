@@ -1,16 +1,28 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.BottomAppBar
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
 import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
@@ -21,11 +33,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -35,16 +46,22 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
-import com.nudge.core.ui.commonUi.BottomSheetScaffoldComponent
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
-import com.nudge.core.ui.commonUi.ModelBottomSheetDescriptionContentComponent
-import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
+import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
-import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_40_dp
+import com.nudge.core.ui.theme.dimen_56_dp
+import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.eventTextColor
+import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorderColor
+import com.nudge.core.ui.theme.mediumTextStyle
+import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
@@ -54,10 +71,12 @@ import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.navigation.navigateToShgVerificationScreen
+import com.sarathi.smallgroupmodule.ui.commonUi.ButtonOutline
 import com.sarathi.smallgroupmodule.ui.didiTab.viewModel.DidiTabViewModel
 import com.sarathi.smallgroupmodule.ui.smallGroupSubTab.presentation.SmallGroupSubTab
 import com.sarathi.smallgroupmodule.ui.theme.dimen_10_dp
 import com.sarathi.smallgroupmodule.ui.theme.dimen_16_dp
+import kotlinx.coroutines.launch
 import com.sarathi.dataloadingmangement.R as DataLoadingRes
 import com.sarathi.smallgroupmodule.R as Res
 
@@ -135,165 +154,287 @@ fun DidiTabScreen(
     }
 
     val didiList = didiTabViewModel.filteredDidiList
-    val customBottomSheetScaffoldProperties = rememberCustomBottomSheetScaffoldProperties()
+
     val scaffoldState =
-        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = false)
+        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+
+    val coroutineScope = rememberCoroutineScope()
 
     val tabs = listOf(SubTabs.DidiTab, SubTabs.SmallGroupTab)
     /**
      *Not required as no bottom UI present for this screen
      **/
-    BottomSheetScaffoldComponent(
-        bottomSheetScaffoldProperties = customBottomSheetScaffoldProperties,
-        defaultValue = BLANK_STRING,
-        headerTitle = "Filter",
-        bottomSheetContentItemList = listOf("SHG Verified", "SHG Not Verified", ""),
-        selectedIndex = 0,
-
-        onBottomSheetItemSelected = {
-            //  viewModel.onEvent(TaskScreenEvent.OnFilterSelected(it))
-        }
-    ) {
-        ModelBottomSheetDescriptionContentComponent(
-            sheetState = scaffoldState,
-            sheetElevation = dimen_20_dp,
-            sheetBackgroundColor = Color.White,
-            sheetShape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp),
-            sheetContent = {
-
-            }
-
-        )
-        {
-            ToolBarWithMenuComponent(
-                title = didiTabViewModel.stringResource(
-                    DataLoadingRes.string.app_name
-                ),
-                dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value)
-                    didiTabViewModel.stringResource(
-                        R.string.not_able_to_load
-                    ) else
-                    didiTabViewModel.stringResource(
-                        R.string.no_didi_s_assigned_to_you
-                    ),
-                modifier = modifier,
-                isSearch = true,
-                iconResId = Res.drawable.ic_sarathi_logo,
-                onBackIconClick = { /*TODO*/ },
-                isDataNotAvailable = (didiList.value.isEmpty() && didiTabViewModel.filteredSmallGroupList.value.isEmpty() && !isSearchActive.value && !didiTabViewModel
-                    .loaderState.value.isLoaderVisible),
-                onSearchValueChange = {
-
+    ModalBottomSheetLayout(
+        sheetState = scaffoldState,
+        sheetContent = {
+            Scaffold(
+                modifier = Modifier.fillMaxSize(),
+                topBar = {
+                    TopAppBar(
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        backgroundColor = white
+                    ) {
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = dimen_16_dp)
+                        ) {
+                            Text("Filters", style = mediumTextStyle.copy(textColorDark))
+                            IconButton(
+                                onClick = {
+                                    coroutineScope.launch {
+                                        scaffoldState.hide()
+                                    }
+                                },
+                                modifier = Modifier
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.Close,
+                                    contentDescription = "close Button",
+                                    tint = blueDark
+                                )
+                            }
+                        }
+                    }
                 },
-                onBottomUI = {
-                    /**
-                     *Not required as no bottom UI present for this screen
-                     **/
-                },
-                onSettingClick = {
-                    onSettingClicked()
-                },
-                onRetry = {},
-                onContentUI = { paddingValues, b, function ->
+                bottomBar = {
                     Box(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .pullRefresh(pullToRefreshState)
+                            .padding(bottom = dimen_56_dp)
                     ) {
-                        PullRefreshIndicator(
-                            refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
-                            state = pullToRefreshState,
-                            modifier = Modifier
-                                .align(Alignment.TopCenter)
-                                .zIndex(1f),
-                            contentColor = blueDark,
-                        )
-
-                        showNoResultUI(
-                            didiTabViewModel,
-                            didiList,
-                            Modifier.align(Alignment.Center),
-                            isSearchActive.value
-                        )
-                        Column(
-                            modifier = Modifier
-                                .padding(horizontal = dimen_16_dp)
-                                .padding(top = dimen_10_dp),
-                            verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                        BottomAppBar(
+                            Modifier
+                                .fillMaxWidth(), backgroundColor = white
                         ) {
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
 
-                            CustomSubTabLayout(
-                                parentTabIndex = TabsEnum.DidiUpcmTab.tabIndex,
-                                tabs,
-                                didiTabViewModel.countMap
-                            )
-
-                            Column {
-                                Row {}
-                                SearchWithFilterViewComponent(
-                                    placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
-                                        SubTabs.DidiTab.id -> didiTabViewModel.stringResource(
-                                            R.string.search_didi
+                                    .padding(horizontal = dimen_16_dp),
+                                horizontalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                            ) {
+                                ButtonOutline(
+                                    modifier = Modifier
+                                        .weight(1.0f)
+                                        .fillMaxWidth()
+                                        .height(dimen_40_dp),
+                                    buttonTitle = "Clear",
+                                    icon = null,
+                                    borderColor = eventTextColor
+                                ) {
+                                    didiTabViewModel.onEvent(
+                                        CommonEvents.OnVerificationStatusFilterSelected(
+                                            null
                                         )
+                                    )
+                                }
+                                ButtonPositive(
+                                    modifier = Modifier.weight(1f),
+                                    buttonTitle = "Apply",
+                                    isActive = true,
+                                    isArrowRequired = false,
+                                    onClick = {
 
-                                        SubTabs.SmallGroupTab.id ->
-                                            didiTabViewModel.stringResource(
-                                                R.string.search_by_small_groups
-                                            )
-
-                                        else -> didiTabViewModel.stringResource(
-                                            R.string.search_didi
-                                        )
-
-                                    },
-                                    filterIconSelected = R.drawable.filter_active_icon,
-                                    filterIconUnSelected = R.drawable.filter_icon,
-                                    showFilter = TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex) == SubTabs.DidiTab.id,
-                                    onFilterSelected = {
-
-                                    },
-                                    onSearchValueChange = { searchQuery ->
-                                        isSearchActive.value = searchQuery.isNotEmpty()
-                                        didiTabViewModel.onEvent(
-                                            CommonEvents.SearchValueChangedEvent(
-                                                searchQuery,
-                                                TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)
-                                            )
-                                        )
                                     }
                                 )
+                            }
 
 
-                                CustomVerticalSpacer()
-                                if (didiList.value.isNotEmpty() || didiTabViewModel.filteredSmallGroupList.value.isNotEmpty()) {
-                                    when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
-                                        SubTabs.DidiTab.id -> {
-                                            DidiSubTab(
-                                                didiTabViewModel = didiTabViewModel,
-                                                didiList = didiList.value,
-                                                onShgVerifyClick = {
-                                                    navHostController.navigateToShgVerificationScreen(
-                                                        it.subjectId.value(),
-                                                        it.subjectName,
-                                                        it.villageName
-                                                    )
-                                                }
-                                            )
-                                        }
+                        }
+                    }
+                }
+            ) { it ->
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(top = it.calculateTopPadding())
+                        .padding(com.nudge.core.ui.theme.dimen_16_dp),
+                    verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
+                ) {
+                    SearchWithFilterViewComponent(
+                        placeholderString = "Search Filter",
+                        showFilter = false,
+                        onFilterSelected = {},
+                        onSearchValueChange = { searchQuery ->
+                            isSearchActive.value = searchQuery.isNotEmpty()
+                            didiTabViewModel.onEvent(
+                                CommonEvents.SearchValueChangedEvent(
+                                    searchQuery,
+                                    -1
+                                )
+                            )
+                        }
+                    )
+                    CustomVerticalSpacer()
+                    didiTabViewModel.finalFilterValue.value.forEach { filterItem ->
+                        Row(
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clickable {
+                                    didiTabViewModel.onEvent(
+                                        CommonEvents.OnVerificationStatusFilterSelected(
+                                            filterItem
+                                        )
+                                    )
+                                },
 
-                                        SubTabs.SmallGroupTab.id -> SmallGroupSubTab(
+                            ) {
+                            Text(filterItem.value, style = newMediumTextStyle.copy(textColorDark))
+                            Checkbox(
+                                checked = didiTabViewModel.selectedFilters.contains(filterItem),
+                                onCheckedChange = {
+                                    didiTabViewModel.onEvent(
+                                        CommonEvents.OnVerificationStatusFilterSelected(
+                                            filterItem
+                                        )
+                                    )
+                                },
+                                colors = CheckboxDefaults.colors(
+                                    checkedColor = greenOnline,
+                                    checkmarkColor = white,
+                                    uncheckedColor = greyBorderColor
+                                )
+                            )
+                        }
+                    }
+                }
+            }
+        }
+    ) {
+        ToolBarWithMenuComponent(
+            title = didiTabViewModel.stringResource(
+                DataLoadingRes.string.app_name
+            ),
+            dataNotLoadMsg = if (didiTabViewModel.isSubjectApiStatusFailed.value)
+                didiTabViewModel.stringResource(
+                    R.string.not_able_to_load
+                ) else
+                didiTabViewModel.stringResource(
+                    R.string.no_didi_s_assigned_to_you
+                ),
+            modifier = modifier,
+            isSearch = true,
+            iconResId = Res.drawable.ic_sarathi_logo,
+            onBackIconClick = { /*TODO*/ },
+            isDataNotAvailable = (didiList.value.isEmpty() && didiTabViewModel.filteredSmallGroupList.value.isEmpty() && !isSearchActive.value && !didiTabViewModel
+                .loaderState.value.isLoaderVisible),
+            onSearchValueChange = {
+
+            },
+            onBottomUI = {
+                /**
+                 *Not required as no bottom UI present for this screen
+                 **/
+            },
+            onSettingClick = {
+                onSettingClicked()
+            },
+            onRetry = {},
+            onContentUI = { paddingValues, b, function ->
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .pullRefresh(pullToRefreshState)
+                ) {
+                    PullRefreshIndicator(
+                        refreshing = didiTabViewModel.loaderState.value.isLoaderVisible,
+                        state = pullToRefreshState,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .zIndex(1f),
+                        contentColor = blueDark,
+                    )
+
+                    showNoResultUI(
+                        didiTabViewModel,
+                        didiList,
+                        Modifier.align(Alignment.Center),
+                        isSearchActive.value
+                    )
+                    Column(
+                        modifier = Modifier
+                            .padding(horizontal = dimen_16_dp)
+                            .padding(top = dimen_10_dp),
+                        verticalArrangement = Arrangement.spacedBy(dimen_10_dp)
+                    ) {
+
+                        CustomSubTabLayout(
+                            parentTabIndex = TabsEnum.DidiUpcmTab.tabIndex,
+                            tabs,
+                            didiTabViewModel.countMap
+                        )
+
+                        Column {
+                            SearchWithFilterViewComponent(
+                                placeholderString = when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
+                                    SubTabs.DidiTab.id -> didiTabViewModel.stringResource(
+                                        R.string.search_didi
+                                    )
+
+                                    SubTabs.SmallGroupTab.id ->
+                                        didiTabViewModel.stringResource(
+                                            R.string.search_by_small_groups
+                                        )
+
+                                    else -> didiTabViewModel.stringResource(
+                                        R.string.search_didi
+                                    )
+
+                                },
+                                filterIconSelected = R.drawable.filter_active_icon,
+                                filterIconUnSelected = R.drawable.filter_icon,
+                                showFilter = TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex) == SubTabs.DidiTab.id,
+                                onFilterSelected = {
+                                    coroutineScope.launch {
+                                        scaffoldState.show()
+                                    }
+                                },
+                                onSearchValueChange = { searchQuery ->
+                                    isSearchActive.value = searchQuery.isNotEmpty()
+                                    didiTabViewModel.onEvent(
+                                        CommonEvents.SearchValueChangedEvent(
+                                            searchQuery,
+                                            TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)
+                                        )
+                                    )
+                                }
+                            )
+
+
+                            CustomVerticalSpacer()
+                            if (didiList.value.isNotEmpty() || didiTabViewModel.filteredSmallGroupList.value.isNotEmpty()) {
+                                when (TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex)) {
+                                    SubTabs.DidiTab.id -> {
+                                        DidiSubTab(
                                             didiTabViewModel = didiTabViewModel,
-                                            smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
-                                            navHostController = navHostController
+                                            didiList = didiList.value,
+                                            onShgVerifyClick = {
+                                                navHostController.navigateToShgVerificationScreen(
+                                                    it.subjectId.value(),
+                                                    it.subjectName,
+                                                    it.villageName
+                                                )
+                                            }
                                         )
                                     }
+
+                                    SubTabs.SmallGroupTab.id -> SmallGroupSubTab(
+                                        didiTabViewModel = didiTabViewModel,
+                                        smallGroupList = didiTabViewModel.filteredSmallGroupList.value,
+                                        navHostController = navHostController
+                                    )
                                 }
                             }
                         }
                     }
                 }
-            )
-        }
+            }
+        )
     }
 }
 

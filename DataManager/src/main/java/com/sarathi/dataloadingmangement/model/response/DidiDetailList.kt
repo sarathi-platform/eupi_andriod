@@ -55,7 +55,7 @@ data class DidiDetailList(
 
     @SerializedName("shgMemberId")
     @Expose
-    var shgMemberId: Int?
+    var shgMemberId: String?
 ) {
 
 

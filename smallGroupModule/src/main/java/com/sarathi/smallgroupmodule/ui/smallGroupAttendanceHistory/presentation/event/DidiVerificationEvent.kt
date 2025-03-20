@@ -5,9 +5,11 @@ import com.nudge.core.model.response.VillageDetailsFromLokOs
 
 sealed class DidiVerificationEvent {
 
-    data class OnShgSelected(val selectedShg: VillageDetailsFromLokOs) : DidiVerificationEvent()
+    data class OnShgSelected(val selectedShg: VillageDetailsFromLokOs, val onSuccess: () -> Unit) :
+        DidiVerificationEvent()
 
-    data class OnShgMemberSelected(val selectedShgMember: ShgMember) : DidiVerificationEvent()
+    data class OnShgMemberSelected(val selectedShgMember: ShgMember, val onSuccess: () -> Unit) :
+        DidiVerificationEvent()
 
     data class SaveShgVerificationStatus(val onDataSave: () -> Unit) : DidiVerificationEvent()
 }

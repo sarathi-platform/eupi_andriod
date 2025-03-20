@@ -35,6 +35,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.NO_TOLA_TITLE
 import com.nudge.core.getShgMemberNameWithId
+import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.ui.commonUi.ContentWithImage
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.DropDownComponent
@@ -204,7 +205,7 @@ fun DidiShgVerificationScreen(
                     },
                     onItemSelected = { item ->
                         isShgListExpanded.value = false
-                        viewModel.onEvent(DidiVerificationEvent.OnShgSelected(item))
+                        viewModel.onEvent(DidiVerificationEvent.OnShgSelected(item) {})
                         viewModel.checkSubmitButtonValidation()
                     }
                 )
@@ -231,7 +232,7 @@ fun DidiShgVerificationScreen(
                         },
                         onItemSelected = { item ->
                             isShgMemberListExpanded.value = false
-                            viewModel.onEvent(DidiVerificationEvent.OnShgMemberSelected(item))
+                            viewModel.onEvent(DidiVerificationEvent.OnShgMemberSelected(item) {})
                             viewModel.checkSubmitButtonValidation()
                         }
                     )
@@ -263,21 +264,33 @@ fun DidiShgVerificationScreen(
                             .padding(dimen_10_dp)
                     ) {
                         LokosDataSection(
-                            "Husband's Name: ",
+                            "Member Code: ",
+                            viewModel.lokOsDataModel.value?.memberId.value()
+                        )
+                        LokosDataSection(
+                            "SHG Name: ",
+                            viewModel.lokOsDataModel.value?.shgName.value()
+                        )
+                        LokosDataSection(
+                            "Didi Name: ",
+                            viewModel.lokOsDataModel.value?.memberName.value()
+                        )
+                        LokosDataSection(
+                            getRelationLabel(viewModel.lokOsDataModel.value?.relationName.value()),
                             viewModel.lokOsDataModel.value?.husbandName.value()
                         )
                         LokosDataSection(
-                            "Relation Name: ",
-                            viewModel.lokOsDataModel.value?.relationName.value()
+                            "Caste: ",
+                            viewModel.lokOsDataModel.value?.caste.value()
+                        )
+
+                        LokosDataSection(
+                            "Village: ",
+                            viewModel.lokOsDataModel.value?.village.value()
                         )
                         LokosDataSection(
-                            "Member Id: ",
-                            viewModel.lokOsDataModel.value?.memberId.value()
-                        )
-                        LokosDataSection("Caste: ", viewModel.lokOsDataModel.value?.caste.value())
-                        LokosDataSection(
-                            "House No: ",
-                            viewModel.lokOsDataModel.value?.houseNumber.value()
+                            "Panchayat: ",
+                            viewModel.lokOsDataModel.value?.panchayatName.value()
                         )
                     }
                 }
@@ -302,6 +315,15 @@ fun LokosDataSection(label: String, info: String) {
     }
 }
 
+@Composable
+fun getRelationLabel(relationType: String): String {
+    val translationHelper = LocalTranslationHelper.current
+    return when (relationType.lowercase()) {
+        "SPOUSE".lowercase() -> "Husband Name: "
+        "FATHER".lowercase() -> "Father Name: "
+        else -> "Husband/Father Name: "
+    }
+}
 
 @Preview
 @Composable

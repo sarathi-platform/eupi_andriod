@@ -106,6 +106,7 @@ class ShgVerificationRepositoryImpl @Inject constructor(
             shgVerificationStatus = shgVerificationDataModel.shgVerificationStatus.value(),
             shgVerificationDate = shgVerificationDataModel.shgVerificationDate.value(),
             shgName = shgVerificationDataModel.shgName.value(),
+            shgCode = shgVerificationDataModel.shgCode.value(),
             shgMemberId = shgVerificationDataModel.shgMemberId.value()
         )
     }

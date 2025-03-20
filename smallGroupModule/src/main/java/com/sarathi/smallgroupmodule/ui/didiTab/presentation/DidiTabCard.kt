@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,9 +29,10 @@ import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.ImageCardWithBottomContent
 import com.nudge.core.ui.commonUi.ImageProperties
+import com.nudge.core.ui.theme.dimen_14_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_40_dp
-import com.nudge.core.ui.theme.dimen_4_dp
-import com.nudge.core.ui.theme.dimen_8_dp
+import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
 import com.nudge.core.value
@@ -81,6 +81,7 @@ fun DidiTabCard(
             ), bottomContent = {
                 Column {
                     TextWithIconComponent(
+                        modifier = Modifier.padding(horizontal = dimen_14_dp),
                         iconProperties = IconProperties(
                             icon = painterResource(id = R.drawable.home_icn),
                             "home icon"
@@ -103,27 +104,33 @@ fun DidiTabCard(
                         val status = subjectEntity.shgVerificationStatus.value(
                             SHG_VERIFICATION_STATUS_NOT_VERIFIED
                         )
+                        CustomVerticalSpacer()
                         VerifiedInfoCard(
                             title = "SHG: " + subjectEntity.shgName.value(),
                             statusAndDateColor = getStatusAndDateColor(status),
                             verificationStatus = getShgStatusText(status),
                             verifiedDateTime = subjectEntity.shgVerificationDate.getDate(pattern = DD_MMM_YYYY_H_MMA)
                         )
+                        CustomVerticalSpacer()
                     }
 
-                    Row(modifier = Modifier.fillMaxWidth()) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimen_14_dp, vertical = dimen_10_dp)
+                    ) {
                         ButtonOutline(
                             modifier = Modifier
                                 .weight(1.0f)
                                 .fillMaxWidth()
                                 .height(dimen_40_dp),
-                            buttonTitle = "Verify SHG",
+                            buttonTitle = if (subjectEntity.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED || subjectEntity.shgVerificationStatus == null) "Verify SHG" else "Re-verify SHG",
                             icon = null,
                             borderColor = eventTextColor
                         ) {
                             onShgVerifyClick(subjectEntity)
                         }
-                        Spacer(modifier = Modifier.width(dimen_10_dp))
+                        /*Spacer(modifier = Modifier.width(dimen_10_dp))
                         ButtonOutline(
                             modifier = Modifier
                                 .weight(1.0f)
@@ -134,7 +141,7 @@ fun DidiTabCard(
                             borderColor = eventTextColor
                         ) {
 
-                        }
+                        }*/
                     }
                 }
 
@@ -181,7 +188,7 @@ fun VerifiedInfoCard(
     Row(
         modifier = Modifier
             .background(color = verifiedBgColor)
-            .padding(horizontal = dimen_4_dp, vertical = dimen_8_dp)
+            .padding(horizontal = dimen_16_dp, vertical = dimen_6_dp)
     ) {
         Text(
             title,

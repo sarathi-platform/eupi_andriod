@@ -117,7 +117,7 @@ data class SubjectEntity(
     @SerializedName("shgMemberId")
     @Expose
     @ColumnInfo(name = "shgMemberId")
-    var shgMemberId: Int?
+    var shgMemberId: String?
 
 ) {
 
@@ -165,7 +165,7 @@ data class ShgVerificationDataModel(
     val shgVerificationStatus: String? = null,
     val shgVerificationDate: Long? = null,
     val shgName: String? = null,
-    val shgMemberId: Int? = null,
+    val shgMemberId: String? = null,
     val shgCode: String? = null
 )
 

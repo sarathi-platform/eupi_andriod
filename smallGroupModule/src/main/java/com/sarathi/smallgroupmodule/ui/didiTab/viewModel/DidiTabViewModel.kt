@@ -2,9 +2,11 @@ package com.sarathi.smallgroupmodule.ui.didiTab.viewModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
@@ -50,6 +52,12 @@ class DidiTabViewModel @Inject constructor(
     val isSearchListEmpty = mutableStateOf(false)
     val isFilterApplied = mutableStateOf(false)
 
+    val filterValues = ArrayList<ValuesDto>()
+
+    val finalFilterValue = mutableStateOf<List<ValuesDto>>(emptyList())
+
+    val selectedFilters = mutableStateListOf<ValuesDto>()
+
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -67,7 +75,9 @@ class DidiTabViewModel @Inject constructor(
                     1 -> {
                         searchBySmallGroup(event.searchQuery)
                     }
-
+                    -1 -> {
+                        searchFilter(event.searchQuery)
+                    }
                     else -> {
                         searchByDidis(event.searchQuery)
                     }
@@ -79,9 +89,30 @@ class DidiTabViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
+            is CommonEvents.OnVerificationStatusFilterSelected -> {
+                if (event.selectedFilter == null) {
+                    selectedFilters.clear()
+                    return
+                }
+
+                if (selectedFilters.contains(event.selectedFilter)) {
+                    selectedFilters.remove(event.selectedFilter)
+                } else {
+                    selectedFilters.add(event.selectedFilter!!)
+                }
+            }
+
         }
 
 
+    }
+
+    private fun searchFilter(searchQuery: String) {
+        finalFilterValue.value = if (searchQuery.isNotEmpty())
+            filterValues.filter { it.value.equals(searchQuery, true) }
+        else
+            filterValues
     }
 
     private fun loadAllDataForDidiTab(isRefresh: Boolean) {
@@ -95,7 +126,36 @@ class DidiTabViewModel @Inject constructor(
                 }
             }
             isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
+            createFilterListForLanguage()
         }
+    }
+
+    private fun createFilterListForLanguage() {
+        filterValues.clear()
+        filterValues.add(ValuesDto(id = 1, value = "SHG Verified", originalName = "SHG Verified"))
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = "SHG Not Verified",
+                originalName = "SHG Not Verified"
+            )
+        )
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = "Aadhar Verified",
+                originalName = "Aadhar Verified"
+            )
+        )
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = "Aadhar Not Verified",
+                originalName = "Aadhar Not Verified"
+            )
+        )
+
+        finalFilterValue.value = filterValues
     }
 
 

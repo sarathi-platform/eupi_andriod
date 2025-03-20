@@ -1545,7 +1545,7 @@ fun getShgMemberNameWithId(shgMember: ShgMember?): String {
     var result = shgMember.memberName.value()
 
     if (shgMember.memberId != -1) {
-        result = result + " - " + shgMember.memberId.toString()
+        result = result + " - " + shgMember.memberCode
     }
 
     return result
