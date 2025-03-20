@@ -5,6 +5,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
 import androidx.compose.material.pullrefresh.pullRefresh
@@ -28,7 +30,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -44,6 +48,7 @@ import com.nudge.core.ui.commonUi.FilterRowItem
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_14_dp
@@ -51,8 +56,10 @@ import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_50_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.textColorDark
+import com.nudge.core.ui.theme.trackLinearColor
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
@@ -61,6 +68,7 @@ import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCardV2
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
+import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.ApiStatus
 import com.sarathi.missionactivitytask.ui.mission_screen.viewmodel.MissionScreenViewModel
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -197,7 +205,9 @@ fun MissionScreen(
                         .padding(horizontal = dimen_5_dp),
                     verticalArrangement = Arrangement.spacedBy(dimen_14_dp)
                 ) {
-                    
+                    if (viewModel.apiStatus.value == ApiStatus.InProgress) {
+                        ApiProgressIndicatorWithLabel(viewModel.progress.value)
+                    }
                     Box(
                         modifier = Modifier
                             .padding(horizontal = dimen_10_dp)
@@ -317,4 +327,33 @@ fun MissionScreen(
     )
 
 
+}
+
+@Composable
+fun ApiProgressIndicatorWithLabel(progress: Float) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = dimen_16_dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        LinearProgressIndicator(
+            progress = progress,
+            backgroundColor = trackLinearColor,
+            strokeCap = StrokeCap.Round,
+            color = greenOnline,
+            modifier = Modifier
+                .height(
+                    dimen_5_dp
+                )
+        )
+        Text(
+            modifier = Modifier.padding(horizontal = dimen_10_dp),
+            text = "${(progress * 100).toInt()}%",
+            textAlign = TextAlign.Start,
+            style = defaultTextStyle.copy(color = blueDark),
+        )
+
+    }
 }
