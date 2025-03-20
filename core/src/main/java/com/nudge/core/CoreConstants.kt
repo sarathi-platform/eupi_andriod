@@ -117,6 +117,7 @@ const val DD_mmm_hh_mm_a_FORMAT = "dd MMM, hh:mm a"
 const val DEFAULT_LIVELIHOOD_ID = -2
 
 const val SMALL_GROUP_ATTENDANCE_MISSION = "SMALL_GROUP_ATTENDANCE"
+const val SHG_VERIFICATION = "SHG_VERIFICATION"
 
 const val BASELINE_MISSION_NAME = "Baseline"
 

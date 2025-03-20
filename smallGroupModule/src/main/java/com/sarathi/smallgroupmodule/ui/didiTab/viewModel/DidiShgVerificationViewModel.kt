@@ -117,7 +117,10 @@ class DidiShgVerificationViewModel @Inject constructor(
                             shgVerificationDataModel
                         )
 
-                        //TODO Write SHG Verification Event for Sync
+                        didiVerificationUseCase.verificationEventWriterUseCase.invoke(
+                            subjectId = subjectId,
+                            isFromRegenerate = false
+                        )
 
                         withContext(mainDispatcher) {
                             showLoader.value = false

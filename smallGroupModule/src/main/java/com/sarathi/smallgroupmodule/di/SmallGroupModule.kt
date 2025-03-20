@@ -17,6 +17,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGro
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.ShgVerificationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.SubjectEntityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.VerificationEventWriterUseCase
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchDidiDetailsFromDbRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchDidiDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepository
@@ -356,12 +357,14 @@ class SmallGroupModule {
     @Singleton
     fun providesDidiVerificationUseCase(
         subjectEntityUseCase: SubjectEntityUseCase,
-        shgVerificationUseCase: ShgVerificationUseCase
+        shgVerificationUseCase: ShgVerificationUseCase,
+        verificationEventWriterUseCase: VerificationEventWriterUseCase
     ): DidiVerificationUseCase {
         return DidiVerificationUseCase(
-            subjectEntityUseCase, shgVerificationUseCase
+            subjectEntityUseCase = subjectEntityUseCase,
+            shgVerificationUseCase = shgVerificationUseCase,
+            verificationEventWriterUseCase = verificationEventWriterUseCase
         )
-
     }
 
 }

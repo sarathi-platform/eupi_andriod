@@ -124,6 +124,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGro
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.ShgVerificationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.SubjectEntityUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.VerificationEventWriterUseCase
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
@@ -218,6 +219,8 @@ import com.sarathi.dataloadingmangement.repository.smallGroup.ShgVerificationRep
 import com.sarathi.dataloadingmangement.repository.smallGroup.ShgVerificationRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.SubjectEntityRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.SubjectEntityRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.VerificationEventWriterRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.VerificationEventWriterRepositoryImpl
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import dagger.Module
 import dagger.Provides
@@ -1824,6 +1827,29 @@ class DataLoadingModule {
     ): ShgVerificationRepository {
         return ShgVerificationRepositoryImpl(
             coreSharedPrefs, subjectEntityDao, dataLoadingApiService
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesVerificationEventWriterUseCase(
+        verificationEventWriterRepository: VerificationEventWriterRepository,
+        eventWriterRepositoryImpl: EventWriterRepositoryImpl
+    ): VerificationEventWriterUseCase {
+        return VerificationEventWriterUseCase(
+            verificationEventWriterRepository,
+            eventWriterRepositoryImpl
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun providesVerificationEventWriterRepository(
+        coreSharedPrefs: CoreSharedPrefs,
+        subjectEntityDao: SubjectEntityDao
+    ): VerificationEventWriterRepository {
+        return VerificationEventWriterRepositoryImpl(
+            coreSharedPrefs, subjectEntityDao
         )
     }
 }
