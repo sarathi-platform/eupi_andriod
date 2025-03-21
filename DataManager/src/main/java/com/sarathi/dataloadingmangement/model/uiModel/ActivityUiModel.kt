@@ -9,7 +9,7 @@ data class ActivityUiModel(
     val status: String,
     val taskCount: Int,
     val pendingTaskCount: Int,
-    val activityType: String,
+    val activityType: String?,
     val activityTypeId: Int,
     var icon: String? = BLANK_STRING
 ) {

@@ -13,6 +13,7 @@ import com.sarathi.dataloadingmangement.data.entities.ActivityEntity
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import kotlinx.coroutines.flow.Flow
 
 
 const val activityForSubject =
@@ -76,7 +77,7 @@ interface ActivityDao {
                 "  ORDER BY activity_table.activityOrder ASC"
     )
 
-    suspend fun getActivities(
+    fun getActivities(
         userId: String,
         languageCode: String,
         missionId: Int,
@@ -85,6 +86,46 @@ interface ActivityDao {
             SurveyStatusEnum.NOT_AVAILABLE.name
         )
     ): List<ActivityUiModel>
+
+    @Query(
+        "SELECT \n" +
+                "    activity_table.missionId,\n" +
+                "    activity_table.activityId,\n" +
+                "    activity_language_attribute_table.description, \n" +
+                "    activity_table.status, \n" +
+                "    activity_config_table.activityType, \n" +
+                "    activity_config_table.activityTypeId, \n" +
+                "    activity_config_table.icon, \n" +
+                "    COUNT(task_table.taskId) AS taskCount,\n" +
+                "    SUM(CASE WHEN task_table.status IN (:surveyStatus) THEN 1 ELSE 0 END) AS pendingTaskCount\n" +
+                "FROM activity_table\n" +
+                "INNER JOIN activity_language_attribute_table \n" +
+                "    ON activity_table.activityId = activity_language_attribute_table.activityId  \n" +
+                "LEFT JOIN task_table \n" +
+                "    ON activity_table.activityId = task_table.activityId \n" +
+                "    AND task_table.isActive = 1 \n" +
+                "    AND task_table.userId = :userId \n" +
+                "LEFT JOIN activity_config_table \n" +
+                "    ON activity_table.activityId = activity_config_table.activityId \n" +
+                "    AND activity_config_table.userId =:userId \n" +
+                "WHERE activity_language_attribute_table.languageCode = :languageCode \n" +
+                "  AND activity_table.isActive = 1 \n" +
+                "  AND activity_table.userId = :userId \n" +
+                "  AND activity_table.missionId = :missionId\n" +
+                "  AND activity_language_attribute_table.userId = :userId \n" +
+                "  GROUP BY activity_table.activityId \n" +
+                "  ORDER BY activity_table.activityOrder ASC"
+    )
+
+    fun getFlowActivities(
+        userId: String,
+        languageCode: String,
+        missionId: Int,
+        surveyStatus: List<String> = listOf(
+            SurveyStatusEnum.COMPLETED.name,
+            SurveyStatusEnum.NOT_AVAILABLE.name
+        )
+    ): Flow<List<ActivityUiModel>>
 
     @Query("SELECT COUNT(*) from $ACTIVITY_TABLE_NAME where userId=:userId and missionId = :missionId AND status NOT in (:status) and isActive=1")
     fun getPendingActivity(

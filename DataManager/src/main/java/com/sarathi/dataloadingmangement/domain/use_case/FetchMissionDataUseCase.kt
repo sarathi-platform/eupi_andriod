@@ -7,6 +7,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FetchMissionDataUseCase @Inject constructor(
@@ -93,7 +94,7 @@ class FetchMissionDataUseCase @Inject constructor(
         return false
     }
 
-    suspend fun getAllMission(): List<MissionUiModel> {
+    fun getAllMission(): Flow<List<MissionUiModel>> {
         return repository.getAllMission()
     }
     suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {

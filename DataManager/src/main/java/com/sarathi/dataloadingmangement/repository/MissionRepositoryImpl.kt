@@ -61,6 +61,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.ContentCategoryEnum
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class MissionRepositoryImpl @Inject constructor(
@@ -398,8 +399,8 @@ class MissionRepositoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun getAllMission(): List<MissionUiModel> {
-        return missionDao.getMissions(
+    override fun getAllMission(): Flow<List<MissionUiModel>> {
+        return missionDao.getMissionsFlow(
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getAppLanguage()
         )

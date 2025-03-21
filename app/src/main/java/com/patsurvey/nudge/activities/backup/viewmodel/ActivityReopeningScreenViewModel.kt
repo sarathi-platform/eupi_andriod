@@ -1,5 +1,6 @@
 package com.patsurvey.nudge.activities.backup.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -20,6 +21,9 @@ import com.sarathi.dataloadingmangement.util.LoaderState
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -76,7 +80,10 @@ class ActivityReopeningScreenViewModel @Inject constructor(
 
     private fun initMissionTab() {
         ioViewModelScope {
-            _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
+            fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission().collect()
+            { missionListFlow ->
+                _missionList.value = missionListFlow
+            }
             withContext(mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
@@ -98,7 +105,13 @@ class ActivityReopeningScreenViewModel @Inject constructor(
                         _activityList.value = it.toActivityUiModelList()
                     }
             } else {
-                _activityList.value = getActivityUseCase.getActivities(missionId)
+                getActivityUseCase.getActivities(missionId).catch {
+                    Log.e("Flow", it.stackTraceToString())
+                }.flowOn(Dispatchers.Main).collect()
+                { missionListFlow ->
+                    Log.e("Flow", missionListFlow.toString())
+                    _activityList.value = missionListFlow
+                }
             }
 
             withContext(mainDispatcher) {

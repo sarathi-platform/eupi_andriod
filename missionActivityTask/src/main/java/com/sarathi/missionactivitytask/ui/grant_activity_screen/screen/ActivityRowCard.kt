@@ -71,7 +71,7 @@ fun ActivityRowCard(
                     isDividerVisible = index != activities.lastIndex,
                     imageUri = getFilePathUri(activity.icon ?: BLANK_STRING)
                 ) {
-                    when (activity.activityType.lowercase()) {
+                    when (activity.activityType?.lowercase()) {
                         ActivityTypeEnum.GRANT.name.lowercase(
                             Locale.ENGLISH
                         ) -> {

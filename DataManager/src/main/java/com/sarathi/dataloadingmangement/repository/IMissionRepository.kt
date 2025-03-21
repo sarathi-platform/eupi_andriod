@@ -8,6 +8,7 @@ import com.sarathi.dataloadingmangement.model.mat.response.TaskResponse
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+import kotlinx.coroutines.flow.Flow
 
 interface IMissionRepository {
     suspend fun fetchActivityDataFromServer(
@@ -35,7 +36,7 @@ interface IMissionRepository {
     suspend fun saveProgrammeToDb(programme: ProgrameResponse)
 
 
-    suspend fun getAllMission(): List<MissionUiModel>
+    fun getAllMission(): Flow<List<MissionUiModel>>
     suspend fun saveActivityConfig(
         missionActivityModel: ActivityResponse,
         missionId: Int,

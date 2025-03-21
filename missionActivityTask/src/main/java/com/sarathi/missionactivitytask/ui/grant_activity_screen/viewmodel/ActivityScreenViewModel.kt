@@ -1,6 +1,5 @@
 package com.sarathi.missionactivitytask.ui.grant_activity_screen.viewmodel
 
-import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -29,6 +28,8 @@ import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -49,8 +50,8 @@ class ActivityScreenViewModel @Inject constructor(
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
     var programId: Int = 0
-    private val _activityList = mutableStateOf<List<ActivityUiModel>>(emptyList())
-    val activityList: State<List<ActivityUiModel>> get() = _activityList
+    private val _activityList = MutableStateFlow<List<ActivityUiModel>>(emptyList())
+    val activityList: StateFlow<List<ActivityUiModel>> get() = _activityList
     val isButtonEnable = mutableStateOf<Boolean>(false)
     var showDialog = mutableStateOf<Boolean>(false)
     var missionInfoUIModel by mutableStateOf(MissionInfoUIModel.getDefaultValue())
@@ -73,7 +74,7 @@ class ActivityScreenViewModel @Inject constructor(
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
-            _activityList.value = getActivityUseCase.getActivities(missionId)
+
             getContentValue(_activityList.value)
             checkButtonValidation()
             updateActivityStatus()
@@ -85,11 +86,18 @@ class ActivityScreenViewModel @Inject constructor(
     }
 
     private fun loadMissionRelatedData(isRefresh: Boolean) {
+        viewModelScope.launch {
+            getActivityUseCase.getActivities(missionId).collect() {
+                _activityList.value = it
+            }
+        }
+
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
             val missionDetails = fetchInfoUiModelUseCase.fetchMissionInfo(missionId)
             withContext(mainDispatcher) {
                 missionInfoUIModel = missionDetails
             }
+
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,
@@ -98,7 +106,9 @@ class ActivityScreenViewModel @Inject constructor(
 
                     initActivityScreen()
                 })
+
         }
+
     }
 
     fun setMissionDetail(missionId: Int, isMissionCompleted: Boolean, programId: Int) {

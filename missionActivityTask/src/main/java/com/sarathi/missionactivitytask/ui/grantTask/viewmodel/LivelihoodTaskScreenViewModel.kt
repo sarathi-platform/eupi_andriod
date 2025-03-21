@@ -1,5 +1,6 @@
 package com.sarathi.missionactivitytask.ui.grantTask.viewmodel
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.CoreDispatchers
@@ -27,6 +28,8 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -97,7 +100,13 @@ class LivelihoodTaskScreenViewModel @Inject constructor(
 
 
          CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
-             _activityList.value = getActivityUseCase.getActivities(missionId)
+             getActivityUseCase.getActivities(missionId).catch {
+                 Log.e("Flow", it.stackTraceToString())
+             }.flowOn(Dispatchers.Main).collect()
+             { missionListFlow ->
+                 Log.e("Flow", missionListFlow.toString())
+                 _activityList.value = missionListFlow
+             }
          }
     }
 

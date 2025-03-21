@@ -23,6 +23,7 @@ import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -107,7 +108,7 @@ fun MissionScreen(
             viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
         }
     }
-    LaunchedEffect(viewModel.filterMissionList.value) {
+    LaunchedEffect(viewModel.filterMissionList.collectAsState(listOf()).value) {
         try {
             if (completedMissionId?.value != 0 && completedMissionId?.value != null && viewModel.filterMissionList.value.isNotEmpty()) {
                 val index = viewModel.filterMissionList.value.map { it.missionId }
@@ -180,7 +181,7 @@ fun MissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataNotAvailable = viewModel.missionList.value.isEmpty() && !viewModel.loaderState.value.isLoaderVisible,
+        isDataNotAvailable = viewModel.missionList.collectAsState(listOf()).value.isEmpty() && !viewModel.loaderState.value.isLoaderVisible,
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },

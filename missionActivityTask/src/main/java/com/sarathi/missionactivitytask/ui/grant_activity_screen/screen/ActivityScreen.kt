@@ -15,6 +15,7 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -81,7 +82,9 @@ fun ActivityScreen(
         onRetry = {
             viewModel.refreshData()
         },
-        isDataNotAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.activityList.value.isEmpty(),
+        isDataNotAvailable = !viewModel.loaderState.value.isLoaderVisible && viewModel.activityList?.collectAsState(
+            listOf()
+        )?.value?.isEmpty() == true,
         onSearchValueChange = {
 
         },
@@ -118,10 +121,11 @@ fun ActivityScreen(
                     contentColor = blueDark,
                 )
                 Spacer(modifier = Modifier.height(dimen_10_dp))
-                if (viewModel.activityList.value.isNotEmpty()) {
+                if (viewModel.activityList?.collectAsState(listOf())?.value?.isNotEmpty() == true) {
                     ActivityRowCard(
                         missionId = missionId,
-                        activities = viewModel.activityList.value,
+                        activities = viewModel.activityList?.collectAsState(listOf())?.value
+                            ?: listOf(),
                         programId = programId,
                         navController = navController,
                     ) { contentValue, contentKey, contentType, contentTitle ->

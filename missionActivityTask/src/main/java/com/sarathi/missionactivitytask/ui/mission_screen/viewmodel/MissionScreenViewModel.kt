@@ -1,7 +1,6 @@
 package com.sarathi.missionactivitytask.ui.mission_screen.viewmodel
 
 import android.content.Context
-import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.ALL_MISSION_FILTER_VALUE
@@ -14,14 +13,12 @@ import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
-import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
@@ -35,6 +32,10 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -45,27 +46,21 @@ class MissionScreenViewModel @Inject constructor(
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
-    private val fetchAppConfigFromCacheOrDbUsecase: FetchAppConfigFromCacheOrDbUsecase,
     private val baselineV1CheckUseCase: BaselineV1CheckUseCase,
     private val syncMigrationUseCase: SyncMigrationUseCase,
-    private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
     val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {
-    private val _missionList = mutableStateOf<List<MissionUiModel>>(emptyList())
-    val missionList: State<List<MissionUiModel>> get() = _missionList
-    private val _filterMissionList = mutableStateOf<List<MissionUiModel>>(emptyList())
+    private val _missionList = MutableStateFlow<List<MissionUiModel>>(emptyList())
+    val missionList: StateFlow<List<MissionUiModel>> get() = _missionList
+    private val _filterMissionList = MutableStateFlow<List<MissionUiModel>>(emptyList())
 
-    val filterMissionList: State<List<MissionUiModel>> get() = _filterMissionList
+    val filterMissionList: StateFlow<List<MissionUiModel>> get() = _filterMissionList
 
     val tabs = TabsEnum.tabsList[TabsEnum.MissionTab] ?: listOf(
         SubTabs.OngoingMissions,
         SubTabs.CompletedMissions
     )
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
-
-//    val missionFilterList: SnapshotStateList<FilterUiModel> = mutableStateListOf()
-
-//    val selectedMissionFilter: MutableState<FilterUiModel?> = mutableStateOf(null)
 
     val filteredListLabel = mutableStateOf(BLANK_STRING)
 
@@ -76,6 +71,7 @@ class MissionScreenViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitDataState -> {
                 setTranslationConfig()
+                collectMissionListFromFlow()
                 loadAllData(false)
             }
 
@@ -193,7 +189,7 @@ class MissionScreenViewModel @Inject constructor(
 
             }
 
-            _missionList.value = fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission()
+
             checkAndUpdateDefaultTabAndCount()
             missionFilterUtils.createMissionFilters(missionList.value)
             delay(500)
@@ -233,14 +229,33 @@ class MissionScreenViewModel @Inject constructor(
     private fun loadAllData(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            // To Delete events for version 1 to 2 sync migration
+
+        // To Delete events for version 1 to 2 sync migration
             syncMigrationUseCase.deleteEventsAfter1To2Migration()
             fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
                 initMissionScreen()
             })
+
         }
     }
 
+    private fun collectMissionListFromFlow() {
+        viewModelScope.launch {
+            fetchAllDataUseCase.fetchMissionDataUseCase.getAllMission().catch {
+            }.flowOn(Dispatchers.Main).collect()
+            { missionListFlow ->
+                _missionList.value = missionListFlow
+                checkAndUpdateDefaultTabAndCount()
+
+                onEvent(
+
+                    CommonEvents.OnFilterUiModelSelected(
+                        missionFilterUtils.getSelectedMissionFilterValue()
+                    )
+                )
+            }
+        }
+    }
 
     // Temp method to be removed after baseline is migrated to Grant flow.
     private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {

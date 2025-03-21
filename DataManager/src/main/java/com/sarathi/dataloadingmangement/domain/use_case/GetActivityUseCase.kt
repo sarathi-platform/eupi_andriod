@@ -5,12 +5,13 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.repository.GetActivityRepositoryImpl
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
 class GetActivityUseCase @Inject constructor(private val activityRepositoryImpl: GetActivityRepositoryImpl) {
 
-    suspend fun getActivities(missionId: Int): List<ActivityUiModel> =
+    fun getActivities(missionId: Int): Flow<List<ActivityUiModel>> =
         activityRepositoryImpl.getActivity(missionId)
 
     suspend fun isActivityCompleted(missionId: Int, activityId: Int): Boolean {

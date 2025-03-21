@@ -7,6 +7,7 @@ import com.sarathi.dataloadingmangement.data.dao.MissionDao
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityFormUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 
@@ -16,8 +17,8 @@ class GetActivityRepositoryImpl @Inject constructor(
     val coreSharedPrefs: CoreSharedPrefs
 ) :
     IActivityRepository {
-    override suspend fun getActivity(missionId: Int): List<ActivityUiModel> {
-        return activityDao.getActivities(
+    override fun getActivity(missionId: Int): Flow<List<ActivityUiModel>> {
+        return activityDao.getFlowActivities(
             coreSharedPrefs.getUniqueUserIdentifier(),
             coreSharedPrefs.getAppLanguage(),
             missionId
