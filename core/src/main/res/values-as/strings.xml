@@ -79,4 +79,5 @@
     <string name="click_here_to_install">ইনষ্টল কৰিবলৈ ইয়াত ক্লিক কৰক</string>
     <string name="str_app_update_fail">এপ্লিকেচন আপডেইট বিফল</string>
     <string name="missions_filter_label_suffix">অভিযানসমূহ</string>
+    <string name="didi_reasignment_warning_text">You have unsynced data, please sync all your data before starting reassignemnt</string>
 </resources>

@@ -81,4 +81,5 @@
     <string name="click_here_to_install">ইনস্টল করতে এখানে ক্লিক করুন</string>
     <string name="str_app_update_fail">অ্যাপ্লিকেশন আপডেট ব্যর্থ হয়েছে</string>
     <string name="missions_filter_label_suffix">মিশন</string>
+    <string name="didi_reasignment_warning_text">You have unsynced data, please sync all your data before starting reassignemnt</string>
 </resources>

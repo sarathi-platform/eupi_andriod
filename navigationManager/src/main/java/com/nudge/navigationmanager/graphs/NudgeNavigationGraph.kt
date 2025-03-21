@@ -20,6 +20,7 @@ import com.nudge.navigationmanager.routes.BASELINE_START_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.BPC_PROGRESS_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.BUG_LOGGING_ROUTE_NAME
 import com.nudge.navigationmanager.routes.DATA_LOADING_SCREEN_ROUTE_NAME
+import com.nudge.navigationmanager.routes.DIDI_REASSIGNMENT_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.DIDI_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME
 import com.nudge.navigationmanager.routes.FORM_A_SCREEN_ROUTE_NAME
@@ -240,6 +241,7 @@ sealed class SettingScreens(val route: String) {
     object SYNC_HISTORY_SCREEN : SettingScreens(route = "$SYNC_HISTORY_ROUTE_NAME/{${NavigationParams.ARG_SYNC_TYPE.value}}")
     object EXPORT_BACKUP_FILE_SCREEN : SettingScreens(route = EXPORT_BACKUP_FILE_SCREEN_ROUTE_NAME)
     object SETTING_FORMS_SCREEN : SettingScreens(route = SETTING_FORMS_SCREEN_ROUTE_NAME)
+    object DIDI_REASSIGNMENT_SCREEN : SettingScreens(route = DIDI_REASSIGNMENT_SCREEN_ROUTE_NAME)
 
 }
 

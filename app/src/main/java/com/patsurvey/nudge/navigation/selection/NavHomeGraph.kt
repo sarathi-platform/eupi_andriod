@@ -41,6 +41,7 @@ import com.patsurvey.nudge.activities.PatSurveyCompleteSummary
 import com.patsurvey.nudge.activities.StepCompletionScreen
 import com.patsurvey.nudge.activities.VillageScreen
 import com.patsurvey.nudge.activities.backup.presentation.ActivityReopeningScreen
+import com.patsurvey.nudge.activities.backup.presentation.DidiReassignmentScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportBackupScreen
 import com.patsurvey.nudge.activities.backup.presentation.ExportImportScreen
 import com.patsurvey.nudge.activities.forms.presentation.SettingFormsScreen
@@ -821,6 +822,10 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController, v2TheameEn
         }
         composable(route = SettingScreens.SETTING_FORMS_SCREEN.route) {
             SettingFormsScreen(navController = navController, viewModel = hiltViewModel())
+        }
+
+        composable(SettingScreens.DIDI_REASSIGNMENT_SCREEN.route) {
+            DidiReassignmentScreen(navController = navController)
         }
     }
 }

@@ -33,6 +33,8 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.SyncType
+import com.nudge.syncmanager.domain.usecase.FetchEventsFromDBUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
@@ -55,7 +57,8 @@ class ExportImportViewModel @Inject constructor(
     private val settingRepository: SettingRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
-    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase
+    private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    private val fetchEventsFromDBUseCase: FetchEventsFromDBUseCase,
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -263,6 +266,16 @@ class ExportImportViewModel @Inject constructor(
             fetchAppConfigFromNetworkUseCase.invoke {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 onApiSuccess()
+            }
+        }
+    }
+
+    fun checkIsDataAvailableForSync(result: (Boolean) -> Unit) {
+        ioViewModelScope {
+            val pendingEventCount =
+                fetchEventsFromDBUseCase.getPendingEventCount(SyncType.SYNC_ALL.ordinal)
+            withContext(mainDispatcher) {
+                result(pendingEventCount > 0)
             }
         }
     }

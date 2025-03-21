@@ -64,6 +64,14 @@ class GetExportOptionListUseCase(private val repository: ExportImportRepository)
 
             )
         )
+        list.add(
+            SettingOptionModel(
+                6,
+                "Start Didi Reassignment",
+                BLANK_STRING,
+                SettingTagEnum.START_DIDI_REASSIGNMENT.name
+            )
+        )
         return list.ifEmpty { arrayListOf() }
     }
 

@@ -77,4 +77,5 @@
     <string name="click_here_to_install">इंस्टॉल करने के लिए यहां क्लिक करें</string>
     <string name="str_app_update_fail">आवेदन अपडेट विफल</string>
     <string name="missions_filter_label_suffix">Missions</string>
+    <string name="didi_reasignment_warning_text">You have unsynced data, please sync all your data before starting reassignemnt</string>
 </resources>

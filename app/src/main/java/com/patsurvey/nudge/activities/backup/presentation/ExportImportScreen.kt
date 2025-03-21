@@ -87,6 +87,15 @@ fun ExportImportScreen(
                 SettingTagEnum.MARK_ACTIVITY_IN_PROGRESS.name -> {
                     navController.navigate(SettingScreens.ACTIVITY_REOPENING_SCREEN.route)
                 }
+                SettingTagEnum.START_DIDI_REASSIGNMENT.name -> {
+                    viewModel.checkIsDataAvailableForSync { result ->
+                        if (result) {
+                            viewModel.showConfirmationDialog.value = true
+                        } else {
+                            navController.navigate(SettingScreens.DIDI_REASSIGNMENT_SCREEN.route)
+                        }
+                    }
+                }
             }
         },
         onLogoutClick = {},
@@ -182,6 +191,10 @@ fun ExportImportScreen(
                             )
                         }
                     }
+
+                    SettingTagEnum.START_DIDI_REASSIGNMENT.name -> {
+                        viewModel.showConfirmationDialog.value = false
+                    }
                 }
             })
     }
@@ -231,6 +244,13 @@ private fun findTitleAndMessageForDialog(selectedTag: String): Tuple4<Int, Int, 
             R.string.are_you_sure_you_want_to_regenerate_events_there_will_be_data_loss_after_this_action,
             R.string.continue_text,
             R.string.cancel_text
+        )
+
+        SettingTagEnum.START_DIDI_REASSIGNMENT.name -> Tuple4(
+            R.string.warning_title,
+            R.string.didi_reasignment_warning_text,
+            R.string.ok,
+            R.string.blank_string
         )
 
         else -> Tuple4(

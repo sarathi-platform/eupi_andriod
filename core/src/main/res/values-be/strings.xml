@@ -80,5 +80,6 @@
     <string name="click_here_to_install">install खालामनो थाखाय बेयाव click (क्लिक) खालाम।</string>
     <string name="str_app_update_fail">Application Update आ फेलें</string>
     <string name="missions_filter_label_suffix">मिसनफोर</string>
+    <string name="didi_reasignment_warning_text">You have unsynced data, please sync all your data before starting reassignemnt</string>
 
 </resources>
