@@ -237,12 +237,17 @@ fun DidiTabScreen(
                                     isActive = true,
                                     isArrowRequired = false,
                                     onClick = {
-
+                                        didiTabViewModel.onEvent(
+                                            CommonEvents.OnVerificationFilterApplied(
+                                                didiTabViewModel.selectedFilters.toList()
+                                            )
+                                        )
+                                        coroutineScope.launch {
+                                            scaffoldState.hide()
+                                        }
                                     }
                                 )
                             }
-
-
                         }
                     }
                 }
@@ -388,6 +393,7 @@ fun DidiTabScreen(
                                 },
                                 filterIconSelected = R.drawable.filter_active_icon,
                                 filterIconUnSelected = R.drawable.filter_icon,
+                                filterSelected = didiTabViewModel.selectedFilters.isNotEmpty(),
                                 showFilter = TabsCore.getSubTabForTabIndex(TabsEnum.DidiUpcmTab.tabIndex) == SubTabs.DidiTab.id,
                                 onFilterSelected = {
                                     coroutineScope.launch {
@@ -477,6 +483,8 @@ private fun validateAndMessage(
 
     return if (isListEmpty && isSearchActive) {
         didiTabViewModel.getString(R.string.no_result_found)
+    } else if (didiTabViewModel.selectedFilters.isNotEmpty()) {
+        "No result for selected filter"
     } else {
         when (subTabId) {
             SubTabs.DidiTab.id -> didiTabViewModel.getString(R.string.no_didi_s_assigned_to_you)

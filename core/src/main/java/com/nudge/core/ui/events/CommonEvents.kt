@@ -17,5 +17,7 @@ sealed class CommonEvents {
     data class OnFilterUiModelSelected(val filterUiModel: FilterUiModel) : CommonEvents()
 
     data class OnVerificationStatusFilterSelected(val selectedFilter: ValuesDto?) : CommonEvents()
+
+    data class OnVerificationFilterApplied(val selectedFilters: List<ValuesDto>) : CommonEvents()
 }
 

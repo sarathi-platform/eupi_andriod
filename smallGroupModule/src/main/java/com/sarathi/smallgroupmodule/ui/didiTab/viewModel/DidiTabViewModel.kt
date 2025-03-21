@@ -4,6 +4,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
+import com.nudge.core.SHG_VERIFICATION_STATUS_VERIFIED
+import com.nudge.core.SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.ValuesDto
@@ -103,14 +106,47 @@ class DidiTabViewModel @Inject constructor(
                 }
             }
 
+            is CommonEvents.OnVerificationFilterApplied -> {
+                _filteredDidiList.value = if (event.selectedFilters.isNotEmpty()) {
+                    val filteredList = ArrayList<SubjectEntity>()
+                    event.selectedFilters.forEach { selectedFilterItem ->
+                        if (selectedFilterItem.originalName?.equals("SHG Verified", true) == true) {
+                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED || it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND })
+                        }
+                        if (selectedFilterItem.originalName?.equals(
+                                "SHG Not Verified",
+                                true
+                            ) == true
+                        ) {
+                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED })
+                        }
+                        if (selectedFilterItem.originalName?.equals(
+                                "Aadhar Verified",
+                                true
+                            ) == true
+                        ) {
+//                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED || it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND })
+                        }
+                        if (selectedFilterItem.originalName?.equals(
+                                "Aadhar Not Verified",
+                                true
+                            ) == true
+                        ) {
+//                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED })
+                        }
+                    }
+                    filteredList.sortedBy { it.subjectName.toLowerCase() }
+                } else {
+                    didiList.value.sortedBy { it.subjectName.toLowerCase() }
+                }
+            }
+
         }
-
-
     }
 
     private fun searchFilter(searchQuery: String) {
         finalFilterValue.value = if (searchQuery.isNotEmpty())
-            filterValues.filter { it.value.equals(searchQuery, true) }
+            filterValues.filter { it.value.lowercase().contains(searchQuery.lowercase()) }
         else
             filterValues
     }

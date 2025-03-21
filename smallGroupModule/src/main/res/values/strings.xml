@@ -81,5 +81,6 @@ Do you want to mark all absent</string>
     <string name="select_didi">Select Didi</string>
     <string name="select_shg">Select SHG</string>
     <string name="lokos_data">Lokos Data</string>
+    <string name="confirm">Confirm</string>
 
 </resources>

@@ -13,6 +13,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextDecoration
@@ -43,7 +44,8 @@ fun LinkTextButtonWithIcon(
                 color = Color.White
             )
         )
-        .then(modifier)
+        .then(modifier),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             text = title,

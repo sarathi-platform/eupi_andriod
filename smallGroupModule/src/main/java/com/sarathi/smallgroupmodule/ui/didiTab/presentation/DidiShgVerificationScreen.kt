@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.ui.didiTab.presentation
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
@@ -34,8 +36,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.NO_TOLA_TITLE
+import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
 import com.nudge.core.getShgMemberNameWithId
 import com.nudge.core.helper.LocalTranslationHelper
+import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.ContentWithImage
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.DropDownComponent
@@ -86,6 +90,15 @@ fun DidiShgVerificationScreen(
 
     val isShgMemberListExpanded = remember { mutableStateOf(false) }
 
+    val showAlertDialog = remember { mutableStateOf(false) }
+
+    BackHandler {
+        if (viewModel.subjectEntity.value?.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED)
+            showAlertDialog.value = true
+        else
+            navController.navigateUp()
+    }
+
     if (viewModel.showLoader.value) {
         Dialog(
             properties = DialogProperties(
@@ -109,36 +122,55 @@ fun DidiShgVerificationScreen(
         }
     }
 
+    if (showAlertDialog.value) {
+        AlertDialogComponent(
+            onDismissRequest = { showAlertDialog.value = false },
+            onConfirmation = {
+                showAlertDialog.value = false
+                navController.navigateUp()
+            },
+            dialogTitle = stringResource(R.string.alert_dialog_title_text),
+            dialogText = "Data is not saved, are you sure you want to continue?",
+            confirmButtonText = stringResource(R.string.confirm),
+            dismissButtonText = stringResource(R.string.cancel_text)
+        )
+    }
+
     ToolBarWithMenuComponent(
         title = "Verify SHG",
-//        subTitle = villageName,
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onSearchValueChange = {},
+        onBackIconClick = {
+            if (viewModel.subjectEntity.value?.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED)
+                showAlertDialog.value = true
+            else
+                navController.navigateUp()
+        },
         onBottomUI = {
-            BottomAppBar(
-                modifier = Modifier.height(dimen_72_dp),
-                backgroundColor = white
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = dimen_10_dp),
+            if (viewModel.subjectEntity.value?.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED) {
+                BottomAppBar(
+                    modifier = Modifier.height(dimen_72_dp),
+                    backgroundColor = white
                 ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimen_10_dp),
+                    ) {
+                        ButtonPositive(
+                            modifier = Modifier.weight(0.5f),
+                            buttonTitle = viewModel.getString(R.string.submit),
+                            isActive = viewModel.isSubmitButtonEnable.value,
+                            isArrowRequired = false,
+                            onClick = {
+                                viewModel.onEvent(DidiVerificationEvent.SaveShgVerificationStatus {
+                                    navController.navigateUp()
+                                })
+                            }
+                        )
 
-
-                    ButtonPositive(
-                        modifier = Modifier.weight(0.5f),
-                        buttonTitle = viewModel.getString(R.string.submit),
-                        isActive = viewModel.isSubmitButtonEnable.value,
-                        isArrowRequired = false,
-                        onClick = {
-                            viewModel.onEvent(DidiVerificationEvent.SaveShgVerificationStatus {
-                                navController.navigateUp()
-                            })
-                        }
-                    )
-
+                    }
                 }
             }
         },
@@ -296,7 +328,6 @@ fun DidiShgVerificationScreen(
                 }
             }
         },
-        onBackIconClick = { navController.navigateUp() },
         onRetry = {}
     )
 }

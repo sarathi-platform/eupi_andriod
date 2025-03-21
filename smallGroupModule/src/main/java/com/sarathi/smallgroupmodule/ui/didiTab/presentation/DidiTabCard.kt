@@ -35,9 +35,11 @@ import com.nudge.core.ui.theme.dimen_40_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.eventTextColor
 import com.nudge.core.ui.theme.smallTextStyleMediumWeight2
+import com.nudge.core.ui.theme.summaryCardViewBlue
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.data.entities.getSubtitle
+import com.sarathi.dataloadingmangement.ui.component.LinkTextButtonWithIcon
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.components.IconProperties
 import com.sarathi.missionactivitytask.ui.components.TextProperties
@@ -110,38 +112,42 @@ fun DidiTabCard(
                             statusAndDateColor = getStatusAndDateColor(status),
                             verificationStatus = getShgStatusText(status),
                             verifiedDateTime = subjectEntity.shgVerificationDate.getDate(pattern = DD_MMM_YYYY_H_MMA)
-                        )
-                        CustomVerticalSpacer()
-                    }
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimen_14_dp, vertical = dimen_10_dp)
-                    ) {
-                        ButtonOutline(
-                            modifier = Modifier
-                                .weight(1.0f)
-                                .fillMaxWidth()
-                                .height(dimen_40_dp),
-                            buttonTitle = if (subjectEntity.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED || subjectEntity.shgVerificationStatus == null) "Verify SHG" else "Re-verify SHG",
-                            icon = null,
-                            borderColor = eventTextColor
                         ) {
                             onShgVerifyClick(subjectEntity)
                         }
-                        /*Spacer(modifier = Modifier.width(dimen_10_dp))
-                        ButtonOutline(
-                            modifier = Modifier
-                                .weight(1.0f)
-                                .fillMaxWidth()
-                                .height(dimen_40_dp),
-                            buttonTitle = "Verify Aadhaar",
-                            icon = null,
-                            borderColor = eventTextColor
-                        ) {
+                        CustomVerticalSpacer()
+                    }
 
-                        }*/
+                    if (subjectEntity.shgVerificationStatus.value() == SHG_VERIFICATION_STATUS_NOT_VERIFIED) {
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = dimen_14_dp, vertical = dimen_10_dp)
+                        ) {
+                            ButtonOutline(
+                                modifier = Modifier
+                                    .weight(1.0f)
+                                    .fillMaxWidth()
+                                    .height(dimen_40_dp),
+                                buttonTitle = "Verify SHG"/*if (subjectEntity.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED || subjectEntity.shgVerificationStatus == null) "Verify SHG" else "Re-verify SHG"*/,
+                                icon = null,
+                                borderColor = eventTextColor
+                            ) {
+                                onShgVerifyClick(subjectEntity)
+                            }
+                            /*Spacer(modifier = Modifier.width(dimen_10_dp))
+                            ButtonOutline(
+                                modifier = Modifier
+                                    .weight(1.0f)
+                                    .fillMaxWidth()
+                                    .height(dimen_40_dp),
+                                buttonTitle = "Verify Aadhaar",
+                                icon = null,
+                                borderColor = eventTextColor
+                            ) {
+
+                            }*/
+                        }
                     }
                 }
 
@@ -182,36 +188,56 @@ fun VerifiedInfoCard(
     title: String,
     statusAndDateColor: Pair<Color, Color>,
     verificationStatus: String,
-    verifiedDateTime: String
+    verifiedDateTime: String,
+    showViewDetailsItem: Boolean = true,
+    onViewDetailsClicked: () -> Unit
 ) {
 
-    Row(
-        modifier = Modifier
+    Column(
+        Modifier
             .background(color = verifiedBgColor)
             .padding(horizontal = dimen_16_dp, vertical = dimen_6_dp)
     ) {
-        Text(
-            title,
-            style = smallTextStyleMediumWeight2
-        )
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Text(
-                verificationStatus,
-                style = smallTextStyleMediumWeight2.copy(
-                    color = statusAndDateColor.first
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.End // Align text to the end
-            )
-            Text(
-                verifiedDateTime,
-                style = smallTextStyleMediumWeight2.copy(
-                    color = statusAndDateColor.second
-                ),
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.End // Align text to the end
-            )
+        Row(
+            modifier = Modifier
 
+        ) {
+            Text(
+                title,
+                style = smallTextStyleMediumWeight2,
+                color = textColorDark
+            )
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(
+                    verificationStatus,
+                    style = smallTextStyleMediumWeight2.copy(
+                        color = statusAndDateColor.first
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End // Align text to the end
+                )
+                Text(
+                    verifiedDateTime,
+                    style = smallTextStyleMediumWeight2.copy(
+                        color = statusAndDateColor.second
+                    ),
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End // Align text to the end
+                )
+
+            }
+        }
+        if (showViewDetailsItem) {
+            LinkTextButtonWithIcon(
+                modifier = Modifier
+                    .align(Alignment.Start),
+                title = "View Details",
+                isIconRequired = true,
+                textColor = summaryCardViewBlue,
+                iconTint = summaryCardViewBlue
+            ) {
+                onViewDetailsClicked()
+            }
         }
     }
 }
@@ -242,5 +268,5 @@ fun previewVerifiedInfoCard() {
         statusAndDateColor = Pair(verifiedTextColor, verifiedTextColor),
         "SHG Verified",
         verifiedDateTime = "18 Mar 2025 2:28pm"
-    )
+    ) {}
 }
