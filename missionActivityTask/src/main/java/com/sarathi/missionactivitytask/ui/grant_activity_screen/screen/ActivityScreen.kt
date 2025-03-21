@@ -193,7 +193,6 @@ fun ActivityScreen(
 @Composable
 fun showLoadingEffect() {
     Column {
-
         repeat(4) {
             Box(
                 modifier = Modifier
