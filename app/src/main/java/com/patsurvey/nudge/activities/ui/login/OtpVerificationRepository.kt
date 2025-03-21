@@ -33,7 +33,7 @@ class OtpVerificationRepository @Inject constructor(
         val otpRequest =
             OtpRequest(
                 mobileNumber = AESHelper.encrypt(getMobileNumber(), secretKeyPass),
-                otp = otpNumber
+                otp = AESHelper.encrypt(otpNumber, secretKeyPass)
             ) //Text this code
         NudgeLogger.d("OtpVerificationRepository","validateOtp => ${Gson().toJson(otpRequest)}")
         return apiInterface.validateOtp(otpRequest);
