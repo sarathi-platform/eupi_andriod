@@ -128,6 +128,6 @@ fun LoadingDataComponentPreview() {
         title = "Data is Loading..",
         subTitle = "For API Survey",
         isVisible = true,
-        apiStatus = ApiStatus.FAILED
+        apiStatus = ApiStatus.SUCCESS
     )
 }
