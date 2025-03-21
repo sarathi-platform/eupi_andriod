@@ -13,7 +13,8 @@ interface MoneyJournalForPopRepository {
         referenceType: String,
         subjectType: String,
         subjectId: Int,
-        transactionFlow: String
+        transactionFlow: String,
+        localTransactionId: String
     ): MoneyJournalEntity
 
     suspend fun updateMoneyJournalTransaction(

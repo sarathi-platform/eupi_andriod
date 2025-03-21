@@ -36,4 +36,6 @@ data class MoneyJournalApiResponse(
     val eventId: Int?,
     @SerializedName("eventType")
     val eventType: String?,
+    @SerializedName("localTransactionId")
+    val localTransactionId: String?,
 )

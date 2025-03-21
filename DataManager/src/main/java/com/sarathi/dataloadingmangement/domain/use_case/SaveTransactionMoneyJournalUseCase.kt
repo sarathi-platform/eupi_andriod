@@ -21,7 +21,8 @@ class SaveTransactionMoneyJournalUseCase(private val repository: IMoneyJournalRe
         referenceId: String,
         grantId: Int,
         grantType: String,
-        questionUiModels: List<QuestionUiModel>
+        questionUiModels: List<QuestionUiModel>,
+        localTransactionId: String
     ) {
         val amountInString = questionUiModels.find {
             it.tagId.contains(DISBURSED_AMOUNT_TAG) || it.tagId.contains(RECEIVED_AMOUNT_TAG)
@@ -65,7 +66,8 @@ class SaveTransactionMoneyJournalUseCase(private val repository: IMoneyJournalRe
             grantId,
             grantType,
             subjectType,
-            subjectId
+            subjectId,
+            localTransactionId = localTransactionId
         )
 
     }

@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
 import com.nudge.core.preference.CoreSharedPrefs
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.dao.livelihood.SubjectLivelihoodEventMappingDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodEventMappingEntity
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.SaveLivelihoodEventDto
@@ -51,7 +52,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
     override suspend fun addOrUpdateLivelihoodEvent(
         eventData: LivelihoodEventScreenData,
         currentDateTime: Long,
-        modifiedDateTime: Long
+        modifiedDateTime: Long,
+        localTransactionId: String
     ) {
         val subjectLivelihoodEventMappingEntity =
             SubjectLivelihoodEventMappingEntity.getSubjectLivelihoodEventMappingEntity(
@@ -59,7 +61,8 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
                 eventData,
                 createdDate = currentDateTime,
                 modifiedDate = modifiedDateTime,
-                status = 1
+                status = 1,
+                localTransactionId = localTransactionId
             )
         if (subjectLivelihoodEventMappingDao.isLivelihoodEventMappingExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(),
@@ -121,7 +124,10 @@ class SubjectLivelihoodEventMappingRepositoryImpl @Inject constructor(
             createdDate = currentDateTime,
             modifiedDate = modifiedDateTime,
             status = 1,
-            eventType = eventData.selectedEvent.name
+            eventType = eventData.selectedEvent.name,
+            localTransactionId = eventData.localTransactionId ?: BLANK_STRING,
+            toAssetType = eventData.toAssetType,
+            toAssetTypeValue = eventData.toAssetTypeValue
         )
     }
 

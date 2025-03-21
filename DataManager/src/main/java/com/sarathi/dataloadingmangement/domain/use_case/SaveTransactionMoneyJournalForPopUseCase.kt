@@ -16,6 +16,7 @@ class SaveTransactionMoneyJournalForPopUseCase(private val moneyJournalForPopRep
         referenceType: String,
         questionUiModels: List<QuestionUiModel>,
         transactionFlow: String,
+        localTransactionId: String
     ): MoneyJournalEntity {
         val moneyJournalEntryData = getMoneyJournalEntryData(questionUiModels, subjectType)
         val amountInString = moneyJournalEntryData.first
@@ -31,7 +32,8 @@ class SaveTransactionMoneyJournalForPopUseCase(private val moneyJournalForPopRep
             referenceType = referenceType,
             subjectType = subjectType,
             subjectId = subjectId,
-            transactionFlow = transactionFlow
+            transactionFlow = transactionFlow,
+            localTransactionId = localTransactionId
         )
     }
 

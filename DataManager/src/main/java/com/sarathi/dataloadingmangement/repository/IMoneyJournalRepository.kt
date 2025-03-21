@@ -13,12 +13,14 @@ interface IMoneyJournalRepository {
         grantId: Int,
         grantType: String,
         subjectType: String,
-        subjectId: Int
+        subjectId: Int,
+        localTransactionId: String
     )
     suspend fun saveAndUpdateMoneyJournalTransaction(
         particular: String,
         eventData: LivelihoodEventScreenData,
-        createdData: Long
+        createdData: Long,
+        localTransactionId: String
     )
 
     suspend fun deleteMoneyJournalTransaction(transactionId: String, subjectId: Int)

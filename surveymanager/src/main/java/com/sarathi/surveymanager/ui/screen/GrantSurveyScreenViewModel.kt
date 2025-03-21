@@ -31,6 +31,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
@@ -140,7 +141,8 @@ class GrantSurveyScreenViewModel @Inject constructor(
                 grantType = granType,
                 questionUiModels = questionUiModel.value,
                 subjectId = taskEntity?.subjectId ?: -1,
-                subjectType = subjectType
+                subjectType = subjectType,
+                localTransactionId = UUID.randomUUID().toString()
             )
             surveyAnswerEventWriterUseCase.invoke(
                 questionUiModels = questionUiModel.value,

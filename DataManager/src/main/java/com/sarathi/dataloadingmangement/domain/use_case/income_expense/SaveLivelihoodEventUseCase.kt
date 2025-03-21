@@ -1,6 +1,5 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
-import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IMoneyJournalRepository
@@ -20,13 +19,15 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         createdDate: Long,
         modifiedDate: Long,
         isEventNeedToSaveInSubjectEventMapping: Boolean = true,
-        isEventNeedToDelete: Boolean = false
+        isEventNeedToDelete: Boolean = false,
+        localTransactionId: String
     ) {
         if (isEventNeedToSaveInSubjectEventMapping) {
             subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
                 eventData,
                 currentDateTime = createdDate,
-                modifiedDateTime = modifiedDate
+                modifiedDateTime = modifiedDate,
+                localTransactionId = localTransactionId
             )
         }
 
@@ -55,7 +56,8 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             moneyJournalRepo.saveAndUpdateMoneyJournalTransaction(
                 particular = particular,
                 eventData = eventData,
-                createdData = createdDate
+                createdData = createdDate,
+                localTransactionId = localTransactionId
             )
         }
 
@@ -82,14 +84,4 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             moneyJournalRepo.deleteMoneyJournalTransaction(transactionId, subjectId)
         }
     }
-
-    suspend fun fetchAssetJournalList(
-        transactionId: String,
-        subjectId: Int
-    ): List<AssetJournalEntity>? {
-        return assetJournalRepository.getAssetJournalListForTransaction(transactionId, subjectId)
-    }
-
-
-
 }

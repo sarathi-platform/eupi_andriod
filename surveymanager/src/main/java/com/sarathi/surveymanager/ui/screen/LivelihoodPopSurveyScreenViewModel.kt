@@ -164,7 +164,8 @@ class LivelihoodPopSurveyScreenViewModel @Inject constructor(
                     referenceId = activityConfig?.referenceId.value(),
                     referenceType = activityConfig?.referenceType.value(),
                     questionUiModels = filteredQuestions,
-                    transactionFlow = OUTFLOW
+                    transactionFlow = OUTFLOW,
+                    localTransactionId = UUID.randomUUID().toString()
                 )
 
             moneyJournalForPopEventWriterUseCase.writeMoneyJournalEventForPop(

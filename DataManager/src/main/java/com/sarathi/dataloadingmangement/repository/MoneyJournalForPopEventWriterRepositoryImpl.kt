@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.MoneyJournalDao
 import com.sarathi.dataloadingmangement.data.entities.livelihood.MoneyJournalEntity
@@ -28,7 +29,8 @@ class MoneyJournalForPopEventWriterRepositoryImpl(
                 status = status,
                 modifiedDate = modifiedDate,
                 eventId = eventId,
-                eventType = eventType
+                eventType = eventType,
+                localTransactionId = moneyJournalEntity.localTransactionId ?: BLANK_STRING
             )
         }
 

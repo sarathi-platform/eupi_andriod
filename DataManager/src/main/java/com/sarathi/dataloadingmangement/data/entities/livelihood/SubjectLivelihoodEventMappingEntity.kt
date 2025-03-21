@@ -21,7 +21,8 @@ data class SubjectLivelihoodEventMappingEntity(
     val surveyResponse: String,
     val status: Int,
     val createdDate: Long,
-    val modifiedDate: Long
+    val modifiedDate: Long,
+    val localTransactionId: String?// To identify the unique events for delete operation
 
 ) {
     companion object {
@@ -30,7 +31,8 @@ data class SubjectLivelihoodEventMappingEntity(
             eventData: LivelihoodEventScreenData,
             createdDate: Long,
             modifiedDate: Long,
-            status: Int
+            status: Int,
+            localTransactionId: String?
         ): SubjectLivelihoodEventMappingEntity {
             return SubjectLivelihoodEventMappingEntity(
                 userId = uniqueUserIdentifier,
@@ -45,6 +47,7 @@ data class SubjectLivelihoodEventMappingEntity(
                 status = status,
                 modifiedDate = modifiedDate,
                 createdDate = createdDate,
+                localTransactionId = localTransactionId
             )
         }
 

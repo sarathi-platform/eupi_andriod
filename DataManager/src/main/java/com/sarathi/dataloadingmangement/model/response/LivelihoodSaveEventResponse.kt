@@ -37,4 +37,6 @@ data class LivelihoodSaveEventResponse(
     val modifiedDate: Long,
     @SerializedName("status")
     val status: Int,
+    @SerializedName("localTransactionId")
+    val localTransactionId: String,
 )

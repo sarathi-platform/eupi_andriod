@@ -22,15 +22,19 @@ class WriteLivelihoodEventUseCase @Inject constructor(
         eventData: LivelihoodEventScreenData,
         particular: String,
         createdDateTime: Long,
-        modifiedDate: Long
+        modifiedDate: Long,
+        isLivelihoodEventMappingNeedToCapture: Boolean = true
     ) {
-        val livelihoodPayload =
-            subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
-                eventData,
-                currentDateTime = createdDateTime,
-                modifiedDateTime = modifiedDate
-            )
-        writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
+        if (isLivelihoodEventMappingNeedToCapture) {
+            val livelihoodPayload =
+                subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
+                    eventData,
+                    currentDateTime = createdDateTime,
+                    modifiedDateTime = modifiedDate
+                )
+            writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
+
+        }
 
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
 
