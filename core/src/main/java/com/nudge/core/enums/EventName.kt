@@ -57,7 +57,7 @@ enum class EventName(val id: Int, val depends_on: List<Int> = emptyList(), val t
     RANKING_FLAG_EDIT_NEW(43, topicName = "RANKING_FLAG_EDIT_NEW_TOPIC"),
     SHG_FLAG_EVENT(44, topicName = "SHG_FLAG_TOPIC"),
     ABLE_BODIED_FLAG_EVENT(45, topicName = "ABLE_BODIED_FLAG_TOPIC"),
-    SHG_VERIFICATION_EVENT(46, topicName = "SHG_VERIFICATION_EVENT");
+    SHG_VERIFICATION_EVENT(46, topicName = "SHG_VERIFICATION_TOPIC");
 
 }
 
