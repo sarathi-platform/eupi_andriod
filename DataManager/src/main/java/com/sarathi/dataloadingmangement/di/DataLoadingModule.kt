@@ -241,7 +241,8 @@ class DataLoadingModule {
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_3_4,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_4_5,
                 NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_5_6,
-                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_6_7
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_6_7,
+                NudgeGrantDatabase.NUDGE_GRANT_DATABASE_MIGRATION_7_8
             )
             .setJournalMode(RoomDatabase.JournalMode.TRUNCATE)
             .addCallback(NudgeGrantDatabase.NudgeGrantDatabaseCallback())

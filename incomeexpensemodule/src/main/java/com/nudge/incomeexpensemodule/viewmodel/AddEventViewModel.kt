@@ -335,7 +335,7 @@ class AddEventViewModel @Inject constructor(
         selectedEventId.value = selectedValue.id
         selectedProductId.value = -1
         selectedAssetTypeId.value = -1
-
+        selectedChildAssetTypeId.value = -1
         assetCount.value = BLANK_STRING
         amount.value = BLANK_STRING
 
@@ -452,7 +452,7 @@ class AddEventViewModel @Inject constructor(
             createdDate = createdDateTime,
             eventData = livelihoodScreenData,
             modifiedDate = modifiedDate,
-            isEventNeedToSaveInSubjectEventMapping = isChildEvent,
+            isEventNeedToSaveInSubjectEventMapping = isChildEvent || eventType != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name,
             isEventNeedToDelete = (!isChildEvent && isEventNeedToDelete),
             localTransactionId = localTransactionId
         )
