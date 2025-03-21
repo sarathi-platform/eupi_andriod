@@ -23,10 +23,10 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
     private val apiStatusDao: ApiStatusDao,
     private val coreSharedPrefs: CoreSharedPrefs,
 ) {
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke() {
         try {
             if (!isNeedToCallApi(SUBPATH_GET_CASTE_LIST)) {
-                return false
+                return
             }
             val casteList = arrayListOf<CasteModel>()
             val casteEntityList = arrayListOf<CasteEntity>()
@@ -52,8 +52,6 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                         casteList.addAll(casteApiResponse.data)
                     }
                 }
-                coreSharedPrefs.savePref("caste_list", casteList.json())
-                return true
             } else {
                 updateApiStatus(
                     SUBPATH_GET_CASTE_LIST,
@@ -61,9 +59,8 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                     casteApiResponse.message,
                     DEFAULT_ERROR_CODE
                 )
-                coreSharedPrefs.savePref("caste_list", casteList.json())
-                return false
             }
+            coreSharedPrefs.savePref("caste_list", casteList.json())
 
         } catch (apiException: ApiException) {
             updateApiStatus(

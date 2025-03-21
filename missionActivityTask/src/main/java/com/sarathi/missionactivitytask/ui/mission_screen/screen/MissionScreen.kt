@@ -198,7 +198,7 @@ fun MissionScreen(
                     verticalArrangement = Arrangement.spacedBy(dimen_14_dp)
                 ) {
 
-                Box(
+                    Box(
                         modifier = Modifier
                             .padding(horizontal = dimen_10_dp)
                     ) {
