@@ -72,15 +72,6 @@ class MissionScreenViewModel @Inject constructor(
     private var baseCurrentApiCount = 0 // only count api survey count
     private var TOTAL_API_CALL = 0
 
-    val progress = mutableStateOf(0f)
-    var successfulApiCalls = 0
-    var totalApiCalls = 7
-    var failedCalls = 0
-
-    val apiStatus = mutableStateOf<ApiStatus>(ApiStatus.Idle)
-
-
-
     override fun <T> onEvent(event: T) {
         when (event) {
             is InitDataEvent.InitDataState -> {
@@ -244,37 +235,12 @@ class MissionScreenViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
             // To Delete events for version 1 to 2 sync migration
             syncMigrationUseCase.deleteEventsAfter1To2Migration()
-            apiStatus.value = ApiStatus.InProgress
             fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
-                resetApiProgressData()
                 initMissionScreen()
-            }, onApiCallCompleted = {
-                successfulApiCalls++
-                updateProgress()
-            }, onApiCallFailure = {
-                failedCalls++
-                updateProgress()
             })
         }
     }
 
-    private fun resetApiProgressData() {
-        apiStatus.value = ApiStatus.Idle
-        failedCalls = 0
-        successfulApiCalls = 0
-        progress.value = 0f
-    }
-
-    private fun updateProgress() {
-        progress.value = (successfulApiCalls + failedCalls).toFloat() / totalApiCalls
-        if (successfulApiCalls + failedCalls == totalApiCalls) {
-            if (failedCalls > 0) {
-                apiStatus.value = ApiStatus.Failure
-            } else {
-                apiStatus.value = ApiStatus.Success
-            }
-        }
-    }
 
     // Temp method to be removed after baseline is migrated to Grant flow.
     private fun updateStatusForBaselineMission(onSuccess: (isSuccess: Boolean) -> Unit) {
@@ -361,8 +327,4 @@ class MissionScreenViewModel @Inject constructor(
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.MissionScreen
     }
-}
-
-enum class ApiStatus {
-    Idle, InProgress, Success, Failure
 }

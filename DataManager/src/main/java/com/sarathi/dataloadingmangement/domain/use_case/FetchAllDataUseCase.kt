@@ -38,31 +38,20 @@ class FetchAllDataUseCase @Inject constructor(
 
 
     suspend fun invoke(
-        onApiCallCompleted: () -> Unit = {},
-        onApiCallFailure: () -> Unit = {},
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
-        suspend fun performApiCall(call: suspend () -> Boolean): Boolean {
-            return try {
-                call.invoke().also {
-                    if (it) onApiCallCompleted() else onApiCallFailure()
-                }
-            } catch (exception: Exception) {
-                onApiCallFailure()
-                false
-            }
-        }
-        performApiCall { fetchUserDetailUseCase.invoke() }
+        fetchUserDetailUseCase.invoke()
+
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            performApiCall { fetchMissionDataUseCase.getAllMissionList() }
-            performApiCall { livelihoodUseCase.invoke() }
+            fetchMissionDataUseCase.getAllMissionList()
+            livelihoodUseCase.invoke()
             contentDownloaderUseCase.livelihoodContentDownload()
-            performApiCall { fetchContentDataFromNetworkUseCase.invoke() }
-            performApiCall { languageConfigUseCase.invoke() }
-            performApiCall { fetchCasteConfigNetworkUseCase.invoke() }
+            fetchContentDataFromNetworkUseCase.invoke()
+            languageConfigUseCase.invoke()
+            fetchCasteConfigNetworkUseCase.invoke()
             if (!isRefresh) {
-                performApiCall { fetchAppConfigFromNetworkUseCase.invoke() }
+                fetchAppConfigFromNetworkUseCase.invoke()
             }
             coreSharedPrefs.setDataLoaded(true)
             onComplete(true, BLANK_STRING)
