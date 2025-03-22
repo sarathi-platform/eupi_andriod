@@ -638,7 +638,7 @@ private fun OptionsUI(
                         optionItemEntityState = it,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         selectedValue = selectedValue,
-                        isIconRequired = !it?.get(0)?.optionImage.isNullOrEmpty(),
+                        isIconRequired = !it.firstOrNull()?.optionImage.isNullOrEmpty(),
                         isActivityCompleted = isActivityCompleted,
                     ) { selectedIndex, optionValue, optionId ->
                         questionUiModel.options?.let { options ->
