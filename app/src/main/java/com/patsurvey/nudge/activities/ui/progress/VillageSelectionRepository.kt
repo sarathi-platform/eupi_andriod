@@ -3805,7 +3805,7 @@ class VillageSelectionRepository @Inject constructor(
         val trainingVideos = trainingVideoDao.getVideoList()
         trainingVideoDao.deleteTrainingData()
         if (trainingVideos.isEmpty()) {
-            videoList.forEach {
+            videoList?.forEach {
                 val trainingVideoEntity = createTrainingVideoEntity(context, it.id, it)
                 trainingVideoDao.insert(trainingVideoEntity)
             }
@@ -3848,6 +3848,7 @@ class VillageSelectionRepository @Inject constructor(
                     "VillageSelectionRepository", "get training data " +
                             "response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
                 )
+                handleExistingVideos(context)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         trainingVideoDao.deleteTrainingData()

@@ -1021,11 +1021,11 @@ class VillageSelectionViewModel @Inject constructor(
         )
     }
 
-    private fun handleExistingVideos(context: Context, videosListTemp: List<TrainingVideoEntity>) {
+    private fun handleExistingVideos(context: Context, videosListTemp: List<TrainingVideoEntity>?) {
         trainingVideoDao.deleteTrainingData()
         val trainingVideos = trainingVideoDao.getVideoList()
         if (trainingVideos.isEmpty()) {
-            videosListTemp.forEach {
+            videosListTemp?.forEach {
                 val trainingVideoEntity = TrainingVideoEntity(
                     id = it.id,
                     title = it.title ?: BLANK_STRING,

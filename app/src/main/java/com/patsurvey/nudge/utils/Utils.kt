@@ -129,6 +129,7 @@ import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
+import java.io.FileReader
 import java.io.IOException
 import java.lang.reflect.Type
 import java.math.RoundingMode
@@ -329,380 +330,396 @@ fun openSettings(context: Context) {
     (context as MainActivity).startActivity(appSettingsIntent)
 }
 
-var videoList = listOf(
-    VideoItem(
-        id = 1,
-        languageCode = "en",
-        title = "Logging into Sarathi app",
-        description = "How to login to Sarathi app",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M2LoggingIntoSarathiApp.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M2.png"
-    ),
-    VideoItem(
-        id = 2,
-        title = "App overview",
-        languageCode = "en",
-        description = "Brief introduction to Sarathi app",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M3AppOverview.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M3.png"
-    ),
-    VideoItem(
-        id = 3,
-        title = "Transect Walk",
-        languageCode = "en",
-        description = "How to use Sarathi app during Transect Walk",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M4TransectWalk.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M4.png"
-    ),
-    VideoItem(
-        id = 4,
-        title = "Social Mapping",
-        languageCode = "en",
-        description = "How to enter didi details during Social Mapping",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M5SocialMapping.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M5.png"
-    ),
-    VideoItem(
-        id = 5,
-        title = "Participatory Wealth Ranking",
-        languageCode = "en",
-        description = "How to record Didi's wealth ranking",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M6.png"
-    ), VideoItem(
-        id = 6,
-        title = "PAT Survey - Overview",
-        languageCode = "en",
-        description = "Introduction to PAT survey on Sarathi app",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M7PATSurveyOverview.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M7.png"
-    ), VideoItem(
-        id = 7,
-        title = "Filling PAT Survey - Part 1",
-        languageCode = "en",
-        description = "How to fill PAT survey - Part 1",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart1.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8.1.png"
-    ),
-    VideoItem(
-        id = 8,
-        title = "Filling PAT Survey - Part 2",
-        languageCode = "en",
-        description = "How to fill PAT Survey - Part 2",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart2.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8.2.png"
-    ),
-    VideoItem(
-        id = 9,
-        title = "Digital Form B and Submit for VO endorsement",
-        languageCode = "en",
-        description = "How to download Digital Form B and submit for VO endorsement",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M9DigitalFormBAndSubmitForVOEndorsement.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M9.png"
-    ),
-    VideoItem(
-        id = 10,
-        title = "VO Endorsement",
-        languageCode = "en",
-        description = "How to record VO endorsement",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M10VOEndorsement.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M10.png"
-    ),
-    VideoItem(
-        id = 11,
-        title = "Syncing data",
-        languageCode = "en",
-        description = "How to sync/ upload data from Sarathi app",
-        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M11SyncingData.mp4",
-        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M11.png"
-    ),
+fun <T> convertJsonFileToList(filePath: String, clazz: Class<T>): List<T> {
+    // Read the file
+    val file = File(filePath)
+    if (!file.exists()) throw IllegalArgumentException("File not found: $filePath")
 
+    // Use Gson to parse the JSON content
+    val gson = Gson()
+    val reader = FileReader(file)
 
-    VideoItem(
-        id = 12,
-        title = "সারথি অ্যাপে লগ ইন করুন",
-        languageCode = "bn",
-        description = "সারথি অ্যাপে কিভাবে লগইন করবেন",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
-    ),
-    VideoItem(
-        id = 13,
-        title = "অ্যাপের সংক্ষিপ্ত বিবরণ",
-        languageCode = "bn",
-        description = "সারথি অ্যাপের সংক্ষিপ্ত পরিচয়",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
-    ),
-    VideoItem(
-        id = 14,
-        title = "গ্রামের ভ্রমণ",
-        languageCode = "bn",
-        description = "গ্রাম ভ্রমণের সময় কিভাবে সারথি অ্যাপ ব্যবহার করবেন",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
-    ),
-    VideoItem(
-        id = 15,
-        title = "সামাজিক মানচিত্র",
-        languageCode = "bn",
-        description = "সামাজিক মানচিত্রয়ের সময় কীভাবে দিদির বিবরণ প্রবেশ করানো যায়",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
-    ),
-    VideoItem(
-        id = 16,
-        title = "অংশগ্রহণমূলক সম্পদ র\u200C্যাঙ্কিং",
-        languageCode = "bn",
-        description = "দিদির সম্পদের র্যাঙ্কিং কিভাবে রেকর্ড করবেন",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
-    ), VideoItem(
-        id = 17,
-        title = "PAT সার্ভে - সংক্ষিপ্ত বিবরণ",
-        languageCode = "bn",
-        description = "সারথি অ্যাপে PAT সার্ভে সূচনা",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATBengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
-    ), VideoItem(
-        id = 18,
-        title = "PAT সার্ভে পূরণ করা-অংশ 1",
-        languageCode = "bn",
-        description = "PAT সার্ভে কিভাবে পূরণ করা যায়-প্রথম অংশ",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATBengali1.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
-    ),
-    VideoItem(
-        id = 19,
-        title = "PAT সার্ভে পূরণ করা-অংশ 2",
-        languageCode = "bn",
-        description = "PAT সার্ভে কিভাবে পূরণ করা যায়-দ্বিতীয় অংশ",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATBengali2.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
-    ),
-    VideoItem(
-        id = 20,
-        title = "ডিজিটাল ফর্ম B এবং ভিও অনুমোদন",
-        languageCode = "bn",
-        description = "কিভাবে ডিজিটাল ফর্ম B ডাউনলোড করতে হবে এবং ভিও অনুমোদনের জন্য জমা দিতে হবে",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
-    ),
-    VideoItem(
-        id = 21,
-        title = "ভিও অনুমোদন",
-        languageCode = "bn",
-        description = "কিভাবে ভিও অনুমোদন রেকর্ড করা যায়",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10VOBengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
-    ),
-    VideoItem(
-        id = 22,
-        title = "ডেটা সিঙ্ক করা",
-        languageCode = "bn",
-        description = "সারথি অ্যাপ থেকে কীভাবে ডেটা সিঙ্ক / আপলোড করা যায়",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Bengali.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
-    ),
+    // Use TypeToken to handle the generic List type
+    val listType = object : TypeToken<List<T>>() {}.type
+    return gson.fromJson(reader, listType)
+}
 
-
-    VideoItem(
-        id = 23,
-        title = "সাৰথি এপত লগ ইন কৰা",
-        languageCode = "as",
-        description = "সাৰথি এপত কেনেকৈ লগইন কৰিব",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
-    ),
-    VideoItem(
-        id = 24,
-        title = "এপৰ সংক্ষিপ্তত",
-        description = "সাৰথি এপৰ চমু পৰিচয়",
-        languageCode = "as",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
-    ),
-    VideoItem(
-        id = 25,
-        title = "গ্রামের ভ্রমণ",
-        languageCode = "as",
-        description = "গ্রাম ভ্রমণের সময় কিভাবে সারথি অ্যাপ ব্যবহার করবেন",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
-    ),
-    VideoItem(
-        id = 26,
-        title = "সামাজিক মানচিত্র",
-        languageCode = "as",
-        description = "সামাজিক মানচিত্রৰ সময়ত বাইদেউৰ বিৱৰণ কেনেকৈ দিব",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
-    ),
-    VideoItem(
-        id = 27,
-        title = "অংশগ্রহণমূলক সম্পদ ৰেংকিং",
-        languageCode = "as",
-        description = "বাইদেউৰ সম্পদৰ ৰেংকিং কেনেকৈ ৰেকৰ্ড কৰিব",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
-    ), VideoItem(
-        id = 28,
-        title = "PAT সমীক্ষা - সংক্ষিপ্তত",
-        languageCode = "as",
-        description = "সাৰথি এপত PAT সমীক্ষাৰ পৰিচয়",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
-    ), VideoItem(
-        id = 29,
-        title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ১",
-        languageCode = "as",
-        description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ১",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATAssamesePart1.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
-    ),
-    VideoItem(
-        id = 30,
-        title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ২",
-        languageCode = "as",
-        description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ২",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATAssamesePart2.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
-    ),
-    VideoItem(
-        id = 31,
-        title = "ডিজিটেল ফৰ্ম B আৰু VO অনুমোদনৰ বাবে জমা দিবলৈ",
-        languageCode = "as",
-        description = "কডিজিটেল ফৰ্ম B কেনেকৈ ডাউনলোড কৰি VO অনুমোদনৰ বাবে জমা দিব",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
-    ),
-    VideoItem(
-        id = 32,
-        title = "VO অনুমোদন",
-        languageCode = "as",
-        description = "VO অনুমোদন কেনেকৈ ৰেকৰ্ড কৰিব লাগে",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
-    ),
-    VideoItem(
-        id = 33,
-        title = "বিবৰণ ছিঙ্ক কৰা",
-        languageCode = "as",
-        description = "সাৰথি এপৰ পৰা কেনেকৈ ডাটা ছিংক বা আপলোড কৰিব",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Assamese.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
-    ),
-    VideoItem(
-        id = 34,
-        title = "सारथी ऐप में लॉग इन करें",
-        languageCode = "as",
-        description = "सारथी ऐप में लॉग इन कैसे करें",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
-    ),
-    VideoItem(
-        id = 35,
-        title = "ऐप सिंहावलोकन",
-        languageCode = "as",
-        description = "सारथी ऐप का संक्षिप्त परिचय",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
-    ),
-    VideoItem(
-        id = 36,
-        title = "ट्रांसेक्ट वॉक",
-        languageCode = "as",
-        description = "ट्रांसेक्ट वॉक के दौरान सारथी ऐप का उपयोग कैसे करें",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
-    ),
-    VideoItem(
-        id = 37,
-        title = "सामाजिक मानचित्रण",
-        languageCode = "as",
-        description = "सोशल मैपिंग के दौरान दीदी विवरण कैसे दर्ज करें",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
-    ),
-    VideoItem(
-        id = 38,
-        title = "सहभागी धन रैंकिंग",
-        languageCode = "as",
-        description = "दीदी की संपत्ति रैंकिंग कैसे दर्ज करें",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
-    ),
-    VideoItem(
-        id = 39,
-        title = "पीएटी सर्वेक्षण - अवलोकन",
-        languageCode = "as",
-        description = "सारथी ऐप पर पीएटी सर्वेक्षण का परिचय",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
-    ),
-    VideoItem(
-        id = 40,
-        title = "PAT सर्वेक्षण भरना - भाग 1",
-        languageCode = "as",
-        description = "PAT सर्वेक्षण कैसे भरें - भाग 1",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart1.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
-    ),
-    VideoItem(
-        id = 41,
-        title = "PAT सर्वेक्षण भरना - भाग 2",
-        languageCode = "hi",
-        description = "PAT सर्वेक्षण कैसे भरें - भाग 2",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart2.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
-    ),
-    VideoItem(
-        id = 42,
-        title = "डिजिटल फॉर्म बी और वीओ समर्थन के लिए जमा करें",
-        languageCode = "hi",
-        description = "डिजिटल फॉर्म बी कैसे डाउनलोड करें और वीओ अनुमोदन के लिए जमा करें",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
-    ),
-    VideoItem(
-        id = 43,
-        title = "वीओ अनुमोदन",
-        languageCode = "hi",
-        description = "वीओ समर्थन कैसे रिकॉर्ड करें",
-        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Hindi.mp4",
-        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
-    )
-
-    /*VideoItem(
-        id = 24,
-        title = "Video 1",
-        description = "Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For \$35.  Find out more at google.com/chromecast.",
-        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-        thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
-    ),
-    VideoItem(
-        id = 25,
-        title = "Video 2",
-        description = "Supporting description",
-        url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-        thumbUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg"
-    ),
-    VideoItem(
-        id = 26,
-        title = "Video 3",
-        description = "Supporting description",
-        url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-        thumbUrl =     "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg"
-    ),
-    VideoItem(
-        id = 27,
-        title = "Video 4",
-        description = "Supporting description",
-        url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-        thumbUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg"
-    ),*/
-
-)
+var videoList =
+    convertJsonFileToList(filePath = "trainingVideoList.json", clazz = VideoItem::class.java)
+//var videoList = listOf(
+//    VideoItem(
+//        id = 1,
+//        languageCode = "en",
+//        title = "Logging into Sarathi app",
+//        description = "How to login to Sarathi app",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M2LoggingIntoSarathiApp.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M2.png"
+//    ),
+//    VideoItem(
+//        id = 2,
+//        title = "App overview",
+//        languageCode = "en",
+//        description = "Brief introduction to Sarathi app",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M3AppOverview.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M3.png"
+//    ),
+//    VideoItem(
+//        id = 3,
+//        title = "Transect Walk",
+//        languageCode = "en",
+//        description = "How to use Sarathi app during Transect Walk",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M4TransectWalk.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M4.png"
+//    ),
+//    VideoItem(
+//        id = 4,
+//        title = "Social Mapping",
+//        languageCode = "en",
+//        description = "How to enter didi details during Social Mapping",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M5SocialMapping.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M5.png"
+//    ),
+//    VideoItem(
+//        id = 5,
+//        title = "Participatory Wealth Ranking",
+//        languageCode = "en",
+//        description = "How to record Didi's wealth ranking",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M6ParticipatoryWealthRanking.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M6.png"
+//    ), VideoItem(
+//        id = 6,
+//        title = "PAT Survey - Overview",
+//        languageCode = "en",
+//        description = "Introduction to PAT survey on Sarathi app",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M7PATSurveyOverview.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M7.png"
+//    ), VideoItem(
+//        id = 7,
+//        title = "Filling PAT Survey - Part 1",
+//        languageCode = "en",
+//        description = "How to fill PAT survey - Part 1",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart1.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8.1.png"
+//    ),
+//    VideoItem(
+//        id = 8,
+//        title = "Filling PAT Survey - Part 2",
+//        languageCode = "en",
+//        description = "How to fill PAT Survey - Part 2",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8FillingPATSurveyPart2.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M8.2.png"
+//    ),
+//    VideoItem(
+//        id = 9,
+//        title = "Digital Form B and Submit for VO endorsement",
+//        languageCode = "en",
+//        description = "How to download Digital Form B and submit for VO endorsement",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M9DigitalFormBAndSubmitForVOEndorsement.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M9.png"
+//    ),
+//    VideoItem(
+//        id = 10,
+//        title = "VO Endorsement",
+//        languageCode = "en",
+//        description = "How to record VO endorsement",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M10VOEndorsement.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M10.png"
+//    ),
+//    VideoItem(
+//        id = 11,
+//        title = "Syncing data",
+//        languageCode = "en",
+//        description = "How to sync/ upload data from Sarathi app",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M11SyncingData.mp4",
+//        thumbUrl = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M11.png"
+//    ),
+//
+//
+//    VideoItem(
+//        id = 12,
+//        title =  "সারথি অ্যাপে লগ ইন করুন",
+//        languageCode = "bn",
+//        description = "সারথি অ্যাপে কিভাবে লগইন করবেন",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M2Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+//    ),
+//    VideoItem(
+//        id = 13,
+//        title = "অ্যাপের সংক্ষিপ্ত বিবরণ",
+//        languageCode = "bn",
+//        description =  "সারথি অ্যাপের সংক্ষিপ্ত পরিচয়",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M3Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+//    ),
+//    VideoItem(
+//        id = 14,
+//        title =  "গ্রামের ভ্রমণ",
+//        languageCode = "bn",
+//        description = "গ্রাম ভ্রমণের সময় কিভাবে সারথি অ্যাপ ব্যবহার করবেন",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M4Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+//    ),
+//    VideoItem(
+//        id = 15,
+//        title = "সামাজিক মানচিত্র",
+//        languageCode = "bn",
+//        description =  "সামাজিক মানচিত্রয়ের সময় কীভাবে দিদির বিবরণ প্রবেশ করানো যায়",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M5Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+//    ),
+//    VideoItem(
+//        id = 16,
+//        title = "অংশগ্রহণমূলক সম্পদ র\u200C্যাঙ্কিং",
+//        languageCode = "bn",
+//        description =  "দিদির সম্পদের র্যাঙ্কিং কিভাবে রেকর্ড করবেন",
+//        url = "https://trainingdatanudge.blob.core.windows.net/recordings/Videos/M6Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+//    ), VideoItem(
+//        id = 17,
+//        title = "PAT সার্ভে - সংক্ষিপ্ত বিবরণ",
+//        languageCode = "bn",
+//        description = "সারথি অ্যাপে PAT সার্ভে সূচনা",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7PATBengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+//    ), VideoItem(
+//        id = 18,
+//        title = "PAT সার্ভে পূরণ করা-অংশ 1",
+//        languageCode = "bn",
+//        description = "PAT সার্ভে কিভাবে পূরণ করা যায়-প্রথম অংশ",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATBengali1.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+//    ),
+//    VideoItem(
+//        id = 19,
+//        title = "PAT সার্ভে পূরণ করা-অংশ 2",
+//        languageCode = "bn",
+//        description = "PAT সার্ভে কিভাবে পূরণ করা যায়-দ্বিতীয় অংশ",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATBengali2.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+//    ),
+//    VideoItem(
+//        id = 20,
+//        title = "ডিজিটাল ফর্ম B এবং ভিও অনুমোদন",
+//        languageCode = "bn",
+//        description = "কিভাবে ডিজিটাল ফর্ম B ডাউনলোড করতে হবে এবং ভিও অনুমোদনের জন্য জমা দিতে হবে",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+//    ),
+//    VideoItem(
+//        id = 21,
+//        title = "ভিও অনুমোদন",
+//        languageCode = "bn",
+//        description = "কিভাবে ভিও অনুমোদন রেকর্ড করা যায়",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10VOBengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+//    ),
+//    VideoItem(
+//        id = 22,
+//        title = "ডেটা সিঙ্ক করা",
+//        languageCode = "bn",
+//        description = "সারথি অ্যাপ থেকে কীভাবে ডেটা সিঙ্ক / আপলোড করা যায়",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Bengali.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
+//    ),
+//
+//
+//    VideoItem(
+//        id = 23,
+//        title = "সাৰথি এপত লগ ইন কৰা",
+//        languageCode = "as",
+//        description = "সাৰথি এপত কেনেকৈ লগইন কৰিব",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+//    ),
+//    VideoItem(
+//        id = 24,
+//        title = "এপৰ সংক্ষিপ্তত",
+//        description = "সাৰথি এপৰ চমু পৰিচয়",
+//        languageCode = "as",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+//    ),
+//    VideoItem(
+//        id = 25,
+//        title = "গ্রামের ভ্রমণ",
+//        languageCode = "as",
+//        description = "গ্রাম ভ্রমণের সময় কিভাবে সারথি অ্যাপ ব্যবহার করবেন",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+//    ),
+//    VideoItem(
+//        id = 26,
+//        title = "সামাজিক মানচিত্র",
+//        languageCode = "as",
+//        description = "সামাজিক মানচিত্রৰ সময়ত বাইদেউৰ বিৱৰণ কেনেকৈ দিব",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+//    ),
+//    VideoItem(
+//        id = 27,
+//        title = "অংশগ্রহণমূলক সম্পদ ৰেংকিং",
+//        languageCode = "as",
+//        description = "বাইদেউৰ সম্পদৰ ৰেংকিং কেনেকৈ ৰেকৰ্ড কৰিব",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+//    ), VideoItem(
+//        id = 28,
+//        title = "PAT সমীক্ষা - সংক্ষিপ্তত",
+//        languageCode = "as",
+//        description = "সাৰথি এপত PAT সমীক্ষাৰ পৰিচয়",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+//    ), VideoItem(
+//        id = 29,
+//        title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ১",
+//        languageCode = "as",
+//        description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ১",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATAssamesePart1.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+//    ),
+//    VideoItem(
+//        id = 30,
+//        title = "PAT সমীক্ষা পূৰণ কৰা - ভাগ ২",
+//        languageCode = "as",
+//        description = "PAT সমীক্ষা কেনেকৈ পূৰণ কৰিব - ভাগ ২",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8PATAssamesePart2.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+//    ),
+//    VideoItem(
+//        id = 31,
+//        title = "ডিজিটেল ফৰ্ম B আৰু VO অনুমোদনৰ বাবে জমা দিবলৈ",
+//        languageCode = "as",
+//        description = "কডিজিটেল ফৰ্ম B কেনেকৈ ডাউনলোড কৰি VO অনুমোদনৰ বাবে জমা দিব",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+//    ),
+//    VideoItem(
+//        id = 32,
+//        title = "VO অনুমোদন",
+//        languageCode = "as",
+//        description = "VO অনুমোদন কেনেকৈ ৰেকৰ্ড কৰিব লাগে",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+//    ),
+//    VideoItem(
+//        id = 33,
+//        title = "বিবৰণ ছিঙ্ক কৰা",
+//        languageCode = "as",
+//        description = "সাৰথি এপৰ পৰা কেনেকৈ ডাটা ছিংক বা আপলোড কৰিব",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11Assamese.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M11.png"
+//    ),
+//    VideoItem(
+//        id = 34,
+//        title = "सारथी ऐप में लॉग इन करें",
+//        languageCode = "as",
+//        description = "सारथी ऐप में लॉग इन कैसे करें",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M2.png"
+//    ),
+//    VideoItem(
+//        id = 35,
+//        title = "ऐप सिंहावलोकन",
+//        languageCode = "as",
+//        description = "सारथी ऐप का संक्षिप्त परिचय",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M3.png"
+//    ),
+//    VideoItem(
+//        id = 36,
+//        title = "ट्रांसेक्ट वॉक",
+//        languageCode = "as",
+//        description = "ट्रांसेक्ट वॉक के दौरान सारथी ऐप का उपयोग कैसे करें",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M4.png"
+//    ),
+//    VideoItem(
+//        id = 37,
+//        title = "सामाजिक मानचित्रण",
+//        languageCode = "as",
+//        description = "सोशल मैपिंग के दौरान दीदी विवरण कैसे दर्ज करें",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M5.png"
+//    ),
+//    VideoItem(
+//        id = 38,
+//        title = "सहभागी धन रैंकिंग",
+//        languageCode = "as",
+//        description = "दीदी की संपत्ति रैंकिंग कैसे दर्ज करें",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M6.png"
+//    ),
+//    VideoItem(
+//        id = 39,
+//        title = "पीएटी सर्वेक्षण - अवलोकन",
+//        languageCode = "as",
+//        description = "सारथी ऐप पर पीएटी सर्वेक्षण का परिचय",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M7.png"
+//    ),
+//    VideoItem(
+//        id = 40,
+//        title = "PAT सर्वेक्षण भरना - भाग 1",
+//        languageCode = "as",
+//        description = "PAT सर्वेक्षण कैसे भरें - भाग 1",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart1.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.1.png"
+//    ),
+//    VideoItem(
+//        id = 41,
+//        title = "PAT सर्वेक्षण भरना - भाग 2",
+//        languageCode = "hi",
+//        description = "PAT सर्वेक्षण कैसे भरें - भाग 2",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8HindiPart2.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M8.2.png"
+//    ),
+//    VideoItem(
+//        id = 42,
+//        title = "डिजिटल फॉर्म बी और वीओ समर्थन के लिए जमा करें",
+//        languageCode = "hi",
+//        description = "डिजिटल फॉर्म बी कैसे डाउनलोड करें और वीओ अनुमोदन के लिए जमा करें",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M9.png"
+//    ),
+//    VideoItem(
+//        id = 43,
+//        title = "वीओ अनुमोदन",
+//        languageCode = "hi",
+//        description = "वीओ समर्थन कैसे रिकॉर्ड करें",
+//        url = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10Hindi.mp4",
+//        thumbUrl = "https://nudgetrainingdata.blob.core.windows.net/recordings/Videos/M10.png"
+//    )
+//
+//    /*VideoItem(
+//        id = 24,
+//        title = "Video 1",
+//        description = "Introducing Chromecast. The easiest way to enjoy online video and music on your TV. For \$35.  Find out more at google.com/chromecast.",
+//        url = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+//        thumbUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerJoyrides.jpg"
+//    ),
+//    VideoItem(
+//        id = 25,
+//        title = "Video 2",
+//        description = "Supporting description",
+//        url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+//        thumbUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ElephantsDream.jpg"
+//    ),
+//    VideoItem(
+//        id = 26,
+//        title = "Video 3",
+//        description = "Supporting description",
+//        url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+//        thumbUrl =     "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerBlazes.jpg"
+//    ),
+//    VideoItem(
+//        id = 27,
+//        title = "Video 4",
+//        description = "Supporting description",
+//        url = "https://storage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
+//        thumbUrl = "https://storage.googleapis.com/gtv-videos-bucket/sample/images/ForBiggerEscapes.jpg"
+//    ),*/
+//
+//)
 
 @OptIn(ExperimentalAnimationApi::class)
 @Composable
