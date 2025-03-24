@@ -3848,7 +3848,6 @@ class VillageSelectionRepository @Inject constructor(
                     "VillageSelectionRepository", "get training data " +
                             "response status = ${response.status}, message = ${response.message}, data = ${response.data.toString()}"
                 )
-                handleExistingVideos(context)
                 if (response.status.equals(SUCCESS, true)) {
                     response.data?.let {
                         trainingVideoDao.deleteTrainingData()
