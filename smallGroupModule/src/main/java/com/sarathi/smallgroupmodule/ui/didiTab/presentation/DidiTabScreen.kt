@@ -182,7 +182,10 @@ fun DidiTabScreen(
                                 .fillMaxWidth()
                                 .padding(horizontal = dimen_16_dp)
                         ) {
-                            Text("Filters", style = mediumTextStyle.copy(textColorDark))
+                            Text(
+                                didiTabViewModel.getString(R.string.filters_title),
+                                style = mediumTextStyle.copy(textColorDark)
+                            )
                             IconButton(
                                 onClick = {
                                     coroutineScope.launch {
@@ -221,7 +224,7 @@ fun DidiTabScreen(
                                         .weight(1.0f)
                                         .fillMaxWidth()
                                         .height(dimen_40_dp),
-                                    buttonTitle = "Clear",
+                                    buttonTitle = didiTabViewModel.getString(R.string.clear_button_label),
                                     icon = null,
                                     borderColor = eventTextColor
                                 ) {
@@ -233,7 +236,7 @@ fun DidiTabScreen(
                                 }
                                 ButtonPositive(
                                     modifier = Modifier.weight(1f),
-                                    buttonTitle = "Apply",
+                                    buttonTitle = didiTabViewModel.getString(R.string.apply_button_label),
                                     isActive = true,
                                     isArrowRequired = false,
                                     onClick = {
@@ -260,7 +263,7 @@ fun DidiTabScreen(
                     verticalArrangement = Arrangement.spacedBy(dimen_8_dp)
                 ) {
                     SearchWithFilterViewComponent(
-                        placeholderString = "Search Filter",
+                        placeholderString = didiTabViewModel.getString(R.string.search_filter_placeholder),
                         showFilter = false,
                         onFilterSelected = {},
                         onSearchValueChange = { searchQuery ->

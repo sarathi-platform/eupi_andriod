@@ -12,6 +12,7 @@ import com.nudge.core.model.EventLimitAlertUiModel
 import com.nudge.core.notifications.NotificationHandler
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
 import com.patsurvey.nudge.base.BaseViewModel
@@ -29,7 +30,6 @@ import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

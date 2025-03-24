@@ -35,8 +35,10 @@ import androidx.compose.ui.window.DialogProperties
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.FATHER_LABEL
 import com.nudge.core.NO_TOLA_TITLE
 import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
+import com.nudge.core.SPOUSE_LABEL
 import com.nudge.core.getShgMemberNameWithId
 import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.ui.commonUi.AlertDialogComponent
@@ -137,7 +139,7 @@ fun DidiShgVerificationScreen(
     }
 
     ToolBarWithMenuComponent(
-        title = "Verify SHG",
+        title = viewModel.getString(R.string.verify_shg_screen_title),
         modifier = Modifier.fillMaxSize(),
         navController = navController,
         onSearchValueChange = {},
@@ -220,7 +222,7 @@ fun DidiShgVerificationScreen(
 
                 DropDownComponent(
                     modifier = Modifier,
-                    title = "Select SHG",
+                    title = viewModel.getString(R.string.select_shg_dropdown_label),
                     isMandatory = true,
                     items = viewModel.shgList,
                     selectedItem = viewModel.selectedShg.value?.cboName.value(),
@@ -247,7 +249,7 @@ fun DidiShgVerificationScreen(
                     CustomVerticalSpacer()
                     DropDownComponent(
                         modifier = Modifier,
-                        title = "Select Didi",
+                        title = viewModel.getString(R.string.select_didi_dropdown_label),
                         isMandatory = true,
                         items = viewModel.shgMemberList,
                         selectedItem = getShgMemberNameWithId(viewModel.selectedShgMember.value),
@@ -296,15 +298,15 @@ fun DidiShgVerificationScreen(
                             .padding(dimen_10_dp)
                     ) {
                         LokosDataSection(
-                            "Member Code: ",
+                            viewModel.getString(R.string.member_code_label),
                             viewModel.lokOsDataModel.value?.memberId.value()
                         )
                         LokosDataSection(
-                            "SHG Name: ",
+                            viewModel.getString(R.string.shg_name_label_text),
                             viewModel.lokOsDataModel.value?.shgName.value()
                         )
                         LokosDataSection(
-                            "Didi Name: ",
+                            viewModel.getString(R.string.didi_name_lable_text),
                             viewModel.lokOsDataModel.value?.memberName.value()
                         )
                         LokosDataSection(
@@ -312,16 +314,16 @@ fun DidiShgVerificationScreen(
                             viewModel.lokOsDataModel.value?.husbandName.value()
                         )
                         LokosDataSection(
-                            "Caste: ",
+                            viewModel.getString(R.string.caste_label_text),
                             viewModel.lokOsDataModel.value?.caste.value()
                         )
 
                         LokosDataSection(
-                            "Village: ",
+                            viewModel.getString(R.string.village_label_text),
                             viewModel.lokOsDataModel.value?.village.value()
                         )
                         LokosDataSection(
-                            "Panchayat: ",
+                            viewModel.getString(R.string.panchayat_label_text),
                             viewModel.lokOsDataModel.value?.panchayatName.value()
                         )
                     }
@@ -350,9 +352,9 @@ fun LokosDataSection(label: String, info: String) {
 fun getRelationLabel(relationType: String): String {
     val translationHelper = LocalTranslationHelper.current
     return when (relationType.lowercase()) {
-        "SPOUSE".lowercase() -> "Husband Name: "
-        "FATHER".lowercase() -> "Father Name: "
-        else -> "Husband/Father Name: "
+        SPOUSE_LABEL.lowercase() -> translationHelper.getString(R.string.husband_name_label)
+        FATHER_LABEL.lowercase() -> translationHelper.getString(R.string.father_name_label_text)
+        else -> translationHelper.getString(R.string.husband_father_name_label_text)
     }
 }
 

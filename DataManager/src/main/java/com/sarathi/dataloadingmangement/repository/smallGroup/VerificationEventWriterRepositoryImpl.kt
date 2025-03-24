@@ -19,7 +19,7 @@ class VerificationEventWriterRepositoryImpl @Inject constructor(
             shgVerificationStatus = subjectEntity.shgVerificationStatus,
             shgVerificationDate = subjectEntity.shgVerificationDate,
             shgMemberId = subjectEntity.shgMemberId,
-            shgName = subjectEntity.shgCode,
+            shgName = subjectEntity.shgName,
             shgCode = subjectEntity.shgCode
         )
 

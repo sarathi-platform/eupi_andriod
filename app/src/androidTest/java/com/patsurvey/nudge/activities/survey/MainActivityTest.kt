@@ -7,8 +7,9 @@ import androidx.test.core.app.launchActivity
 import androidx.test.filters.LargeTest
 import androidx.test.rule.ActivityTestRule
 import com.nrlm.baselinesurvey.data.domain.useCase.UpdateBaselineStatusOnInitUseCase
-import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.dao.language.LanguageListDao
+import com.nudge.core.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.activities.MainActivity
 import com.patsurvey.nudge.activities.MainActivityViewModel
 import com.patsurvey.nudge.data.prefs.PrefRepo
@@ -23,7 +24,6 @@ import com.patsurvey.nudge.database.dao.TolaDao
 import com.patsurvey.nudge.database.dao.TrainingVideoDao
 import com.patsurvey.nudge.database.dao.VillageListDao
 import com.patsurvey.nudge.network.interfaces.ApiService
-import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import kotlinx.coroutines.test.TestCoroutineDispatcher
 import kotlinx.coroutines.test.TestCoroutineScope
 import org.junit.Before

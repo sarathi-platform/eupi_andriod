@@ -65,6 +65,8 @@ fun DidiTabCard(
     onClick: () -> Unit
 ) {
 
+    val translationHelper = LocalTranslationHelper.current
+
     Column {
         ImageCardWithBottomContent(
             modifier = Modifier
@@ -108,7 +110,7 @@ fun DidiTabCard(
                         )
                         CustomVerticalSpacer()
                         VerifiedInfoCard(
-                            title = "SHG: " + subjectEntity.shgName.value(),
+                            title = translationHelper.getString(R.string.shg_name_label) + subjectEntity.shgName.value(),
                             statusAndDateColor = getStatusAndDateColor(status),
                             verificationStatus = getShgStatusText(status),
                             verifiedDateTime = subjectEntity.shgVerificationDate.getDate(pattern = DD_MMM_YYYY_H_MMA)
@@ -129,10 +131,11 @@ fun DidiTabCard(
                                     .weight(1.0f)
                                     .fillMaxWidth()
                                     .height(dimen_40_dp),
-                                buttonTitle = "Verify SHG"/*if (subjectEntity.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED || subjectEntity.shgVerificationStatus == null) "Verify SHG" else "Re-verify SHG"*/,
+                                buttonTitle = translationHelper.getString(R.string.verify_shg_button_text)/*if (subjectEntity.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED || subjectEntity.shgVerificationStatus == null) "Verify SHG" else "Re-verify SHG"*/,
                                 icon = null,
                                 borderColor = eventTextColor
                             ) {
+
                                 onShgVerifyClick(subjectEntity)
                             }
                             /*Spacer(modifier = Modifier.width(dimen_10_dp))
@@ -254,8 +257,8 @@ fun getStatusAndDateColor(status: String): Pair<Color, Color> {
 fun getShgStatusText(status: String): String {
     val translationHelper = LocalTranslationHelper.current
     return when (status) {
-        SHG_VERIFICATION_STATUS_VERIFIED -> "SHG Verified"
-        SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND -> "ID Not Found"
+        SHG_VERIFICATION_STATUS_VERIFIED -> translationHelper.getString(R.string.shg_verified_status_text)
+        SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND -> translationHelper.getString(R.string.id_not_found_status_label)
         else -> BLANK_STRING
     }
 }

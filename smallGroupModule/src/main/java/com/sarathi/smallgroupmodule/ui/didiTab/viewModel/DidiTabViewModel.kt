@@ -11,11 +11,13 @@ import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.utils.ConnectionMonitorV2
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -24,8 +26,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DidiTabViewModel @Inject constructor(
-    val didiTabUseCase: DidiTabUseCase
+    val didiTabUseCase: DidiTabUseCase,
+    val connectionMonitor: ConnectionMonitorV2,
 ) : BaseViewModel() {
+
+    val isOnline = connectionMonitor.isConnected
 
     private val _totalDidiCount: MutableState<Int> = mutableStateOf(0)
     val totalCount: State<Int> get() = _totalDidiCount
@@ -168,25 +173,31 @@ class DidiTabViewModel @Inject constructor(
 
     private fun createFilterListForLanguage() {
         filterValues.clear()
-        filterValues.add(ValuesDto(id = 1, value = "SHG Verified", originalName = "SHG Verified"))
         filterValues.add(
             ValuesDto(
                 id = 1,
-                value = "SHG Not Verified",
+                value = translationHelper.getString(R.string.shg_verified_filter_item_label),
+                originalName = "SHG Verified"
+            )
+        )
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = translationHelper.getString(R.string.shg_not_verified_filter_item_label),
                 originalName = "SHG Not Verified"
             )
         )
         filterValues.add(
             ValuesDto(
                 id = 1,
-                value = "Aadhar Verified",
+                value = translationHelper.getString(R.string.aadhar_verified_filter_item_label),
                 originalName = "Aadhar Verified"
             )
         )
         filterValues.add(
             ValuesDto(
                 id = 1,
-                value = "Aadhar Not Verified",
+                value = translationHelper.getString(R.string.aadhar_not_verified_filter_item_label),
                 originalName = "Aadhar Not Verified"
             )
         )
