@@ -4,6 +4,8 @@ package com.patsurvey.nudge.activities.ui.splash
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.CoreDispatchers
+import com.nudge.core.enums.AppConfigKeysEnum
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.patsurvey.nudge.activities.domain.useCase.SyncEventProgressUseCase
@@ -28,7 +30,8 @@ class ConfigViewModel @Inject constructor(
     private val configRepository: ConfigRepository,
     val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
     val languageConfigUseCase: LanguageConfigUseCase,
-    val syncEventProgressUseCase: SyncEventProgressUseCase
+    val syncEventProgressUseCase: SyncEventProgressUseCase,
+    val coreSharedPrefs: CoreSharedPrefs
 ) : BaseViewModel() {
 
     fun isLoggedIn(): Boolean {
@@ -130,6 +133,11 @@ class ConfigViewModel @Inject constructor(
             }
         }
     }
+
+    fun isV2TheameEnable(): Boolean {
+        return coreSharedPrefs.getPref(AppConfigKeysEnum.V2TheameEnable.name, false)
+    }
+
 
     fun checkAndSendSyncProgress() {
         if (isLoggedIn()) {

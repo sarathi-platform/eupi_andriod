@@ -99,8 +99,13 @@ fun SnackBarCustom(
 }
 
 @Composable
-fun CustomSnackBarShow(state: CustomSnackBarViewState, position: CustomSnackBarViewPosition = CustomSnackBarViewPosition.Top){
+fun CustomSnackBarShow(
+    modifier: Modifier = Modifier,
+    state: CustomSnackBarViewState,
+    position: CustomSnackBarViewPosition = CustomSnackBarViewPosition.Top
+) {
     SnackBarCustom(
+        modifier = modifier,
         state = state,
         position = position,
         duration = 3000L,
@@ -289,8 +294,8 @@ internal fun SnackBarView(
     isSuccess: Boolean,
 ) {
 
-    Row(modifier = Modifier.
-    padding(top = 90.dp)
+    Row(modifier = Modifier
+        .padding(top = 90.dp)
         .padding(horizontalPadding)) {
     Row(
         modifier = Modifier

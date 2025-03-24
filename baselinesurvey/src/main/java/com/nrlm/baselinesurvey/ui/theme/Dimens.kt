@@ -34,8 +34,10 @@ val dimen_56_dp = 56.dp
 val dimen_65_dp = 65.dp
 val dimen_64_dp = 64.dp
 val dimen_80_dp = 80.dp
+val dimen_93_dp = 93.dp
 
 val dimen_100_dp = 100.dp
+val dimen_137_dp = 137.dp
 
 val dimen_450_px = 450
 val dimen_400_px = 400

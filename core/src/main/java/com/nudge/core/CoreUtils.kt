@@ -1527,8 +1527,19 @@ fun List<Events>.getEventCountsByStatus(): Map<String, Int> {
         .eachCount()
 }
 
+fun maskMobileNumber(mobileNumber: String): String {
+    return if (mobileNumber.length >= 10) {
+        mobileNumber.take(2) + "XXXXXX" + mobileNumber.takeLast(2)
+    } else {
+        mobileNumber // Return as is if the length is invalid
+    }
+}
+
 @Composable
 fun Context.redirectToLink(link: String?) {
     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
     this.startActivity(intent)
+}
+fun isAllowedCharacterInput(value: String?): Boolean {
+    return value?.matches(Regex("^[a-zA-Z0-9 ]*$")) == true
 }

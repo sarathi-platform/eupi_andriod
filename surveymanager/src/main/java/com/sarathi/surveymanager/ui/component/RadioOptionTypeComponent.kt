@@ -57,6 +57,7 @@ fun RadioOptionTypeComponent(
     isTaskMarkedNotAvailable: MutableState<Boolean> = mutableStateOf(false),
     selectedValue: String = BLANK_STRING,
     isActivityCompleted: Boolean,
+    isIconRequired: Boolean = true,
     onOptionSelected: (index: Int, optionValue: String, optionId: Int) -> Unit
 ) {
     val yesNoButtonViewHeight = remember {
@@ -104,6 +105,7 @@ fun RadioOptionTypeComponent(
                 Spacer(modifier = Modifier.width(dimen_5_dp))
                 optionItemEntityState.forEachIndexed { index, optionValueText ->
                     OptionCard(
+                        isIconRequired = isIconRequired,
                         modifier = Modifier.weight(1f),
                         index = index,
                         textColor = selectTextColor(
@@ -233,6 +235,7 @@ fun OptionCard(
     backgroundColor: Color,
     borderColor: Color,
     isOptionSelected: Boolean = false,
+    isIconRequired: Boolean = true,
     isNotAvailableOption: Boolean = false,
     index: Int? = 0,
     onClick: () -> Unit
@@ -252,7 +255,7 @@ fun OptionCard(
             .then(modifier)
 
     ) {
-        if (!isNotAvailableOption) {
+        if (!isNotAvailableOption && isIconRequired) {
             Icon(
                 if (index == 0)
                     painterResource(id = R.drawable.icon_check)
