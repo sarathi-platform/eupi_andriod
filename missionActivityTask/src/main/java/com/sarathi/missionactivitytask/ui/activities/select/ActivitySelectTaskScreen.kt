@@ -62,7 +62,6 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
-import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
@@ -639,6 +638,7 @@ private fun OptionsUI(
                         optionItemEntityState = it,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         selectedValue = selectedValue,
+                        isIconRequired = !it.firstOrNull()?.optionImage.isNullOrEmpty(),
                         isActivityCompleted = isActivityCompleted,
                     ) { selectedIndex, optionValue, optionId ->
                         questionUiModel.options?.let { options ->
