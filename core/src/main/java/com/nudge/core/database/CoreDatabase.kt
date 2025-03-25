@@ -6,6 +6,8 @@ import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 import com.nudge.core.CORE_DB_VERSION
+import com.nudge.core.database.MigrationQueries.CREATE_API_CALL_CONFIG_TABLE
+import com.nudge.core.database.MigrationQueries.CREATE_API_CALL_JOURNAL_TABLE
 import com.nudge.core.database.MigrationQueries.CREATE_CASTE_TABLE
 import com.nudge.core.database.MigrationQueries.CREATE_LANGUAGE_TABLE
 import com.nudge.core.database.MigrationQueries.CREATE_TRANSLATION_CONFIG_TABLE
@@ -13,10 +15,14 @@ import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.dao.api.ApiCallConfigDao
+import com.nudge.core.database.dao.api.ApiCallJournalDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.database.entities.AppConfigEntity
 import com.nudge.core.database.entities.CasteEntity
+import com.nudge.core.database.entities.api.ApiCallConfigEntity
+import com.nudge.core.database.entities.api.ApiCallJournalEntity
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.database.entities.traslation.TranslationConfigEntity
 import com.nudge.core.utils.CoreLogger
@@ -27,7 +33,9 @@ import java.sql.SQLException
         AppConfigEntity::class,
         TranslationConfigEntity::class,
         LanguageEntity::class,
-        CasteEntity::class
+        CasteEntity::class,
+        ApiCallConfigEntity::class,
+        ApiCallJournalEntity::class
     ],
     version = CORE_DB_VERSION,
     exportSchema = false
@@ -39,6 +47,8 @@ abstract class CoreDatabase : RoomDatabase() {
     abstract fun casteListDao(): CasteListDao
     abstract fun translationConfigDao(): TranslationConfigDao
     abstract fun languageListDao(): LanguageListDao
+    abstract fun apiCallJournalDao(): ApiCallJournalDao
+    abstract fun apiCallConfigDao(): ApiCallConfigDao
 
     companion object {
 
@@ -53,6 +63,12 @@ abstract class CoreDatabase : RoomDatabase() {
             override fun migrate(db: SupportSQLiteDatabase) {
                 CoreLogger.d(tag = "CoreDatabase", msg = "MIGRATION_2_3")
                 migration(db, listOf(CREATE_LANGUAGE_TABLE, CREATE_TRANSLATION_CONFIG_TABLE))
+            }
+        }
+        val CORE_DATABASE_MIGRATION_3_4 = object : Migration(3, 4) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "CoreDatabase", msg = "MIGRATION_3_4")
+                migration(db, listOf(CREATE_API_CALL_JOURNAL_TABLE, CREATE_API_CALL_CONFIG_TABLE))
             }
         }
 
