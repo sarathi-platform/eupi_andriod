@@ -15,7 +15,7 @@ object MigrationQueries {
     const val CREATE_TRANSLATION_CONFIG_TABLE =
         "CREATE TABLE IF NOT EXISTS $TRANSLATION_CONFIG_TABLE_NAME (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `key` TEXT NOT NULL, `value` TEXT NOT NULL, `languageCode` TEXT NOT NULL)"
     const val CREATE_API_CALL_JOURNAL_TABLE =
-        "CREATE TABLE IF NOT EXISTS $ApiCallJournalTable (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `apiUrl` TEXT NOT NULL, `status` TEXT NOT NULL, `moduleName` TEXT NOT NULL, `screenName` TEXT NOT NULL, `requestBody` TEXT NOT NULL,`triggerPoint` TEXT NOT NULL,`errorMsg` TEXT NOT NULL,`retryCount` INTEGER NOT NULL,`createdDate` TEXT NOT NULL,`modifiedDate` TEXT NOT NULL)"
+        "CREATE TABLE IF NOT EXISTS $ApiCallJournalTable (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `apiUrl` TEXT NOT NULL, `status` TEXT NOT NULL, `moduleName` TEXT NOT NULL, `screenName` TEXT NOT NULL, `requestBody` TEXT,`triggerPoint` TEXT NOT NULL,`errorMsg` TEXT  ,`retryCount` INTEGER NOT NULL,`createdDate` INTEGER NOT NULL,`modifiedDate` INTEGER NOT NULL)"
     const val CREATE_API_CALL_CONFIG_TABLE =
         "CREATE TABLE IF NOT EXISTS $ApiCallConfigTable (`id` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `userId` TEXT NOT NULL, `apiUrls` TEXT NOT NULL, `screenName` TEXT NOT NULL, `triggerPoint` TEXT NOT NULL, `apiType` TEXT NOT NULL, `moduleName` TEXT NOT NULL)"
 }

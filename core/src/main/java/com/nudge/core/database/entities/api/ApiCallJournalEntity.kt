@@ -13,10 +13,10 @@ data class ApiCallJournalEntity(
     @ColumnInfo("status") val status: String,
     @ColumnInfo("moduleName") val moduleName: String,
     @ColumnInfo("screenName") val screenName: String,
-    @ColumnInfo("requestBody") val requestBody: String,
+    @ColumnInfo("requestBody") val requestBody: String?,
     @ColumnInfo("triggerPoint") val triggerPoint: String,
-    @ColumnInfo("errorMsg") val errorMsg: String,
+    @ColumnInfo("errorMsg") val errorMsg: String?,
     @ColumnInfo("retryCount") val retryCount: Int,
-    @ColumnInfo("createdDate") val createdDate: String,
-    @ColumnInfo("modifiedDate") val modifiedDate: String
+    @ColumnInfo("createdDate") val createdDate: Int,
+    @ColumnInfo("modifiedDate") val modifiedDate: Int
 )
