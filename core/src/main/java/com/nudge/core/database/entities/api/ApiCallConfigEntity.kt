@@ -10,8 +10,11 @@ data class ApiCallConfigEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo("id") val id: Int,
     @ColumnInfo("userId") val userId: String,
     @ColumnInfo("apiUrls") val apiUrls: String,
+    @ColumnInfo("apiName") val apiName: String,
     @ColumnInfo("screenName") val screenName: String,
     @ColumnInfo("triggerPoint") val triggerPoint: String,
     @ColumnInfo("apiType") val apiType: String,
-    @ColumnInfo("moduleName") val moduleName: String
+    @ColumnInfo("moduleName") val moduleName: String,
+    @ColumnInfo("order") val order: Int,
+    @ColumnInfo("isAsyncCall") val isAsyncCall: Boolean
 )
