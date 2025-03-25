@@ -22,7 +22,8 @@ class StorageModule {
         Room.databaseBuilder(context, CoreDatabase::class.java, CORE_DATABASE)
             .addMigrations(
                 CoreDatabase.CORE_DATABASE_MIGRATION_1_2,
-                CoreDatabase.CORE_DATABASE_MIGRATION_2_3
+                CoreDatabase.CORE_DATABASE_MIGRATION_2_3,
+                CoreDatabase.CORE_DATABASE_MIGRATION_3_4
             )
             .fallbackToDestructiveMigration()
             .build()
@@ -43,5 +44,13 @@ class StorageModule {
     @Provides
     @Singleton
     fun prodiveCasteListDao(db: CoreDatabase) = db.casteListDao()
+
+    @Provides
+    @Singleton
+    fun provideApiCallJournalDao(db: CoreDatabase) = db.apiCallJournalDao()
+
+    @Provides
+    @Singleton
+    fun provideApiCallConfigDao(db: CoreDatabase) = db.apiCallConfigDao()
 
 }
