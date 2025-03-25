@@ -17,6 +17,8 @@ const val EventsTable = "events_table"
 const val EVENT_STATUS_TABLE_NAME = "events_status_table"
 const val EventDependencyTable = "event_dependency_table"
 const val ApiStatusTable = "api_status_table"
+const val ApiCallJournalTable = "api_call_journal_table"
+const val ApiCallConfigTable = "api_call_config_table"
 const val IMAGE_STATUS_TABLE_NAME = "image_status_table"
 const val REQUEST_STATUS_TABLE_NAME = "request_status_table"
 const val APP_CONFIG_TABLE = "app_config"
@@ -197,7 +199,7 @@ const val FILTER_BY_SMALL_GROUP_LABEL = "sgName"
 const val FILTER_BY_VILLAGE_NAME_LABEL = "villageName"
 
 const val CORE_DATABASE = "CoreDatabase"
-const val CORE_DB_VERSION = 3
+const val CORE_DB_VERSION = 4
 
 const val OPERAND_DELIMITER = "@?"
 const val DEFAULT_OPERAND_FOR_EXPRESSION_VALUE = -1
