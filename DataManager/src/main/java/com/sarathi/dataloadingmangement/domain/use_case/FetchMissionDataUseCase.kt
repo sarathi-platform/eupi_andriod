@@ -6,15 +6,26 @@ import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.ApiException
+import com.sarathi.dataloadingmangement.network.SUB_PATH_GET_MISSION_DETAILS
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FetchMissionDataUseCase @Inject constructor(
     private val repository: IMissionRepository,
-) {
-    suspend fun invoke(missionId: Int, programId: Int): Boolean {
+) : BaseApiCallNetworkUseCase() {
+
+    override suspend fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
+            val missionId = customData["MissionId"] as Int
+            val programId = customData["ProgramId"] as Int
 
             val apiResponse = repository.fetchActivityDataFromServer(programId, missionId)
             if (apiResponse.status.equals(SUCCESS, true)) {
@@ -107,5 +118,9 @@ class FetchMissionDataUseCase @Inject constructor(
 
     suspend fun getActivityTypesForMission(missionId: Int): List<String> =
         repository.getActivityTypesForMission(missionId = missionId)
+
+    override fun getApiEndpoint(): String {
+        return SUB_PATH_GET_MISSION_DETAILS
+    }
 
 }

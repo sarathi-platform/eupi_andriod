@@ -1,19 +1,29 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.sarathi.dataloadingmangement.SUCCESS
+import com.sarathi.dataloadingmangement.domain.use_case.BaseApiCallNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.DataLoadingTriggerType
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.network.ApiException
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_LIVELIHOOD_CONFIG
 import com.sarathi.dataloadingmangement.repository.liveihood.ICoreLivelihoodRepository
 import javax.inject.Inject
 
 class LivelihoodUseCase @Inject constructor(
     private val coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository
-) {
-    suspend operator fun invoke(): Boolean {
+) : BaseApiCallNetworkUseCase() {
+    override suspend operator fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
 
 
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
             val apiResponse = coreLivelihoodRepositoryImpl.getLivelihoodConfigFromNetwork()
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let {
@@ -68,5 +78,9 @@ class LivelihoodUseCase @Inject constructor(
             }
 
         }
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUBPATH_GET_LIVELIHOOD_CONFIG
     }
 }

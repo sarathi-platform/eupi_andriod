@@ -36,11 +36,28 @@ class FetchAllDataUseCase @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
+    val apiUseCaseList: Map<String, BaseApiCallNetworkUseCase> = mapOf(
+        "SUB_PATH_GET_MISSION_DETAILS" to fetchMissionDataUseCase,
+        "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase
+    )
+
+    suspend fun fetchAllDataFromServer(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ) {
+
+    }
+
 
     suspend fun invoke(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
+        //api config list using order  and then check with apiUseCaseList
+
+        apiUseCaseList[""].invoke()
+
         fetchUserDetailUseCase.invoke()
 
         if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
@@ -128,3 +145,8 @@ class FetchAllDataUseCase @Inject constructor(
     }
 }
 
+enum class DataLoadingTriggerType(
+    PULL_TO_REFRESH,
+    LOAD_SERVER_DATA,
+    FRESH_LOGIN
+)
