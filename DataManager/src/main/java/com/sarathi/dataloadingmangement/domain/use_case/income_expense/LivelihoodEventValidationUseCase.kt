@@ -183,11 +183,12 @@ class LivelihoodEventValidationUseCase @Inject constructor(
             }
 
             it.key == ValidationExpressionEnum.TO_SELECTED_ASSET_TYPE.originalValue -> {
-                map[it.key] = selectedAsset?.type?.split("_")?.get(0).toString()
+                map[it.key] = selectedAsset?.type?.split("_")?.get(0).toString() ?: BLANK_STRING
             }
 
             it.key == ValidationExpressionEnum.FROM_SELECTED_ASSET_TYPE.originalValue -> {
-                map[it.key] = selectedChildAsset?.type?.split("_")?.get(0).toString()
+                map[it.key] =
+                    selectedChildAsset?.type?.split("_")?.get(0).toString() ?: BLANK_STRING
             }
 
         }
