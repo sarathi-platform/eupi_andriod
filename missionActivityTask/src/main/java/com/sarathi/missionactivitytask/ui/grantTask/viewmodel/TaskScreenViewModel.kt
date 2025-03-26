@@ -16,6 +16,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.FILTER_BY_SMALL_GROUP_LABEL
 import com.nudge.core.FilterCore
 import com.nudge.core.NO_FILTER_VALUE
+import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.ui.commonUi.CustomProgressState
@@ -25,7 +26,6 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.ALL
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
-import com.sarathi.dataloadingmangement.domain.use_case.DataLoadingTriggerType
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase

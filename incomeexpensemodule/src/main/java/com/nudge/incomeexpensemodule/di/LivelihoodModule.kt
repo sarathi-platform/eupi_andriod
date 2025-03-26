@@ -1,5 +1,6 @@
 package com.nudge.incomeexpensemodule.di
 
+import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
@@ -35,7 +36,9 @@ class LivelihoodModule {
         fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
         livelihoodUseCase: LivelihoodUseCase,
         moneyJournalUseCase: FetchMoneyJournalUseCase,
-        contentDownloaderUseCase: ContentDownloaderUseCase
+        contentDownloaderUseCase: ContentDownloaderUseCase,
+        apiCallConfigRepository: IApiCallConfigRepository
+
     ): DataTabUseCase {
         return DataTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
@@ -48,7 +51,8 @@ class LivelihoodModule {
             fetchLivelihoodOptionNetworkUseCase = fetchLivelihoodOptionNetworkUseCase,
             livelihoodUseCase = livelihoodUseCase,
             moneyJournalUseCase = moneyJournalUseCase,
-            contentDownloaderUseCase = contentDownloaderUseCase
+            contentDownloaderUseCase = contentDownloaderUseCase,
+            apiCallConfigRepository = apiCallConfigRepository
         )
     }
 

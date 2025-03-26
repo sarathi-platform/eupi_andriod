@@ -3,6 +3,7 @@ package com.sarathi.smallgroupmodule.ui.didiTab.viewModel
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
@@ -86,13 +87,17 @@ class DidiTabViewModel @Inject constructor(
     private fun loadAllDataForDidiTab(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         ioViewModelScope {
-            didiTabUseCase.invoke(isRefresh) { isSuccess, successMsg ->
-                if (isSuccess) {
-                    initDidiTab()
-                } else {
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-                }
-            }
+            didiTabUseCase.invoke(
+                screenName = "DidiTabScreen",
+                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+                isRefresh = isRefresh,
+                onComplete = { isSuccess, message ->
+                    if (isSuccess) {
+                        initDidiTab()
+                    } else {
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
+                    }
+                })
             isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
         }
     }

@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -34,8 +36,13 @@ class FetchAllDataUseCase @Inject constructor(
 ) {
 
     val apiUseCaseList: Map<String, BaseApiCallNetworkUseCase> = mapOf(
+        "SUBPATH_USER_VIEW" to fetchUserDetailUseCase,
         "SUB_PATH_GET_MISSION_DETAILS" to fetchMissionDataUseCase,
-        "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase
+        "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase,
+        "SUB_PATH_CONTENT_MANAGER" to fetchContentDataFromNetworkUseCase,
+        "SUB_PATH_GET_V3_CONFIG_LANGUAGE" to languageConfigUseCase,
+        "SUB_PATH_GET_CONFIG_CASTE" to fetchCasteConfigNetworkUseCase,
+        "SUB_PATH_REGISTRY_SERVICE_PROPERTY" to fetchAppConfigFromNetworkUseCase,
     )
 
     suspend fun invoke(
@@ -44,10 +51,9 @@ class FetchAllDataUseCase @Inject constructor(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
+        //       customData123["propertiesName"] = propertiesName ->>> val propertiesName: List<String> = AppConfigKeysEnum.values().map { it.name } for pass fetchAppConfigFromNetworkUseCase request map
         //api config list using order  and then check with apiUseCaseList
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
-
-
             apiUseCaseList[it.apiName]?.invoke(screenName, dataLoadingTriggerType, mapOf())
         }
 
@@ -152,8 +158,3 @@ class FetchAllDataUseCase @Inject constructor(
 }
 
 
-enum class DataLoadingTriggerType {
-    PULL_TO_REFRESH,
-    LOAD_SERVER_DATA,
-    FRESH_LOGIN
-}

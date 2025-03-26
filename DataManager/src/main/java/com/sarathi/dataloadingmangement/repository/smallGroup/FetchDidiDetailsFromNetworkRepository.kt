@@ -5,7 +5,7 @@ import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
 
 interface FetchDidiDetailsFromNetworkRepository {
 
-    suspend fun fetchDidiDetailsFromNetwork()
+    suspend fun fetchDidiDetailsFromNetwork(): Boolean
 
     suspend fun saveDidiDetailsToDb(beneficiaryApiResponse: BeneficiaryApiResponse)
     suspend fun isFetchDidiDetailsAPIStatus(): ApiStatusEntity?

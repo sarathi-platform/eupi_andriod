@@ -1,4 +1,6 @@
-package com.sarathi.dataloadingmangement.domain.use_case
+package com.nudge.core.data.repository
+
+import com.nudge.core.constants.DataLoadingTriggerType
 
 abstract class BaseApiCallNetworkUseCase {
     abstract fun getApiEndpoint(): String

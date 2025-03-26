@@ -1,5 +1,6 @@
 package com.sarathi.smallgroupmodule.di
 
+import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -69,6 +70,7 @@ class SmallGroupModule {
         fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository,
         fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository,
         contentDownloaderUseCase: ContentDownloaderUseCase,
+        apiCallConfigRepository: IApiCallConfigRepository
     ): DidiTabUseCase {
         return DidiTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
@@ -87,7 +89,8 @@ class SmallGroupModule {
             fetchSmallGroupAttendanceHistoryFromNetworkUseCase = FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
                 fetchSmallGroupAttendanceHistoryFromNetworkRepository
             ),
-            contentDownloaderUseCase = contentDownloaderUseCase
+            contentDownloaderUseCase = contentDownloaderUseCase,
+            apiCallConfigRepository = apiCallConfigRepository
         )
     }
 

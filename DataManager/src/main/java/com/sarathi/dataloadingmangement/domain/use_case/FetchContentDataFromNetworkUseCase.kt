@@ -1,10 +1,13 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.Content
 import com.sarathi.dataloadingmangement.model.mapper.ContentMapper
+import com.sarathi.dataloadingmangement.network.SUB_PATH_CONTENT_MANAGER
 import com.sarathi.dataloadingmangement.repository.IContentRepository
 import javax.inject.Inject
 
@@ -12,9 +15,17 @@ import javax.inject.Inject
 class FetchContentDataFromNetworkUseCase @Inject constructor(
     private val repository: IContentRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
-) {
-    suspend fun invoke(): Boolean {
+) : BaseApiCallNetworkUseCase() {
+
+    override suspend operator fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
             val contentEntities = mutableListOf<Content>()
             val apiContentResponse =
                 repository.fetchContentsFromServer(repository.getAllContentRequest())
@@ -44,6 +55,10 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
         } catch (ex: Exception) {
             throw ex
         }
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUB_PATH_CONTENT_MANAGER
     }
 
 

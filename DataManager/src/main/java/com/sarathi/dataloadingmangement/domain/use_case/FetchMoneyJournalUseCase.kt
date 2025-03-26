@@ -1,15 +1,26 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_MONEY_JOURNAL_DETAILS
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
 import javax.inject.Inject
 
 
-class FetchMoneyJournalUseCase @Inject constructor(private val moneyJournalNetworkRepository: MoneyJournalNetworkRepository) {
+class FetchMoneyJournalUseCase @Inject constructor(private val moneyJournalNetworkRepository: MoneyJournalNetworkRepository) :
+    BaseApiCallNetworkUseCase() {
 
-    suspend fun invoke(): Boolean {
+    override suspend fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
             val apiResponse = moneyJournalNetworkRepository.getMoneyJournalFromNetwork()
             if (apiResponse.status.equals(SUCCESS, true)) {
                 apiResponse.data?.let {
@@ -26,5 +37,9 @@ class FetchMoneyJournalUseCase @Inject constructor(private val moneyJournalNetwo
         } catch (ex: Exception) {
             throw ex
         }
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUBPATH_GET_MONEY_JOURNAL_DETAILS
     }
 }
