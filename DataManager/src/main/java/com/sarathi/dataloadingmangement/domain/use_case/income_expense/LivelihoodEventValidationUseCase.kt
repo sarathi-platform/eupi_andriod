@@ -31,7 +31,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
         amount: String,
         message: String,
         transactionId: String,
-        assetExpression: String?
+        constantExpression: String?
     ): Pair<Boolean, String> {
         if (!TextUtils.isEmpty(validationExpression) || !(TextUtils.isEmpty(message))) {
             var map = HashMap<String, String>()
@@ -100,7 +100,7 @@ class LivelihoodEventValidationUseCase @Inject constructor(
                     expression = completeExpression ?: BLANK_STRING,
                     validationString = BLANK_STRING,
                     validationRegex = validationRegex,
-                    assetExpression = assetExpression
+                    constantExpression = constantExpression
 
                 ) else true,
                 validationMessage

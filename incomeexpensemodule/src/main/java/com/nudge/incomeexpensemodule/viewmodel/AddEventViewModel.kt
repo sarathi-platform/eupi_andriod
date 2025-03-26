@@ -685,7 +685,7 @@ class AddEventViewModel @Inject constructor(
             message = validation.message,
             transactionId = transactionId,
             selectedChildAsset = selectedChildAssetType,
-            assetExpression = validation.expression
+            constantExpression = validation.expression
         )
         validation.conditionalMessage?.let { conditionalMessages ->
             conditionalMessages.forEach { conditionalMessage ->
@@ -701,7 +701,7 @@ class AddEventViewModel @Inject constructor(
                         ?: BLANK_STRING,
                     transactionId = transactionId,
                     selectedChildAsset = selectedChildAssetType,
-                    assetExpression = validation.expression
+                    constantExpression = validation.expression
                 )
                 if (conditionalMessageExpressionResult.first) {
                     onValidationResult(

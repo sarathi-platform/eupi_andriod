@@ -19,11 +19,11 @@ object ExpressionEvaluator {
         expression: String,
         validationString: String,
         validationRegex: String?,
-        assetExpression: String?
+        constantExpression: String?
     ): Boolean {
 
         return if (isStringExpression(expression)) {
-            if (assetExpression?.isNotEmpty() == true && assetExpression == EXPRESSION_STRING_COMPARISON)
+            if (constantExpression?.isNotEmpty() == true && constantExpression == EXPRESSION_STRING_COMPARISON)
                 compareStringExpressions(expression)
             else evaluateStringExpressions(expression, validationString, validationRegex)
         } else

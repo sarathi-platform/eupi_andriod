@@ -152,7 +152,7 @@ class SurveyValidationUseCase @Inject constructor(
                 completedExpression.value(),
                 selectionOption.selectedValue.value(),
                 validationRegex,
-                assetExpression = BLANK_STRING
+                constantExpression = BLANK_STRING
             ),
             validationMessage
         )
