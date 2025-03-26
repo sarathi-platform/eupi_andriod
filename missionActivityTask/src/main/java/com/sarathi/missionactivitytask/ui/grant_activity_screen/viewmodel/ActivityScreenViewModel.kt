@@ -14,6 +14,7 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
+import com.sarathi.dataloadingmangement.domain.use_case.DataLoadingTriggerType
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -101,6 +102,8 @@ class ActivityScreenViewModel @Inject constructor(
             fetchAllDataUseCase.fetchMissionRelatedData(
                 missionId = missionId,
                 programId = programId,
+                screenName = "ActivityScreen",
+                dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH,
                 isRefresh = isRefresh,
                 { isSuccess, successMsg ->
 

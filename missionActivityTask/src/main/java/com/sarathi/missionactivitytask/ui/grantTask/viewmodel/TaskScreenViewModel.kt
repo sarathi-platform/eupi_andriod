@@ -25,6 +25,7 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.ALL
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
+import com.sarathi.dataloadingmangement.domain.use_case.DataLoadingTriggerType
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
@@ -634,6 +635,9 @@ open class TaskScreenViewModel @Inject constructor(
                 missionId = missionId,
                 programId = programId,
                 isRefresh = isRefresh,
+                screenName = "TaskScreen",
+                dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH,
+                onComplete =
                 { isSuccess, successMsg ->
                 // Temp method to be removed after baseline is migrated to Grant flow.
                 updateStatusForBaselineMission() { success ->

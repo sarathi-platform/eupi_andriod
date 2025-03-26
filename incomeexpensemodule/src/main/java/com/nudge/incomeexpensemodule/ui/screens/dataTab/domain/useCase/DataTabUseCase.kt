@@ -47,7 +47,7 @@ class DataTabUseCase @Inject constructor(
                     assetJournalUseCase.invoke()
                     moneyJournalUseCase.invoke()
                 }
-                livelihoodUseCase.invoke()
+                //livelihoodUseCase.invoke()
                 contentDownloaderUseCase.livelihoodContentDownload()
                 coreSharedPrefs.setDataTabDataLoaded(true)
                 withContext(CoreDispatchers.mainDispatcher) {

@@ -5,6 +5,7 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
+import com.nudge.core.data.repository.ApiCallConfigRepositoryImpl
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
@@ -672,6 +673,7 @@ class DataLoadingModule {
         languageConfigUseCase: LanguageConfigUseCase,
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
         fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+        apiCallConfigRepositoryImpl: ApiCallConfigRepositoryImpl
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionDataUseCase = FetchMissionDataUseCase(
@@ -698,7 +700,8 @@ class DataLoadingModule {
             fetchTranslationConfigUseCase = fetchTranslationConfigUseCase,
             languageConfigUseCase = languageConfigUseCase,
             fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
-            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase
+            fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase,
+            apiCallConfigRepository = apiCallConfigRepositoryImpl
         )
     }
 
