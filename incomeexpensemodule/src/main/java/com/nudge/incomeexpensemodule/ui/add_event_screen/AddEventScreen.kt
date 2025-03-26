@@ -83,7 +83,7 @@ fun AddEventScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
-        viewModel.showDeleteButton.value = showDeleteButton
+        viewModel.isEventEdit.value = showDeleteButton
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
     }
     BackHandler {
@@ -383,8 +383,7 @@ fun AddEventScreen(
                                 viewModel.validateForm(
                                     subjectId = subjectId,
                                     fieldName = AddEventFieldEnum.CHILD_ASSET_TYPE.name,
-                                    transactionId = transactionId,
-                                    isChildTransition = true
+                                    transactionId = transactionId
                                 ) { isValid, message ->
                                     viewModel.updateAssetVisibility(isValid)
                                     viewModel.updateFieldValidationMessageAndMap(

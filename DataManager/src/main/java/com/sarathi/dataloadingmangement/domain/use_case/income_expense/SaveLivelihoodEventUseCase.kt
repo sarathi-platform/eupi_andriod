@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IMoneyJournalRepository
@@ -18,11 +19,15 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         particular: String,
         createdDate: Long,
         modifiedDate: Long,
-        isEventNeedToSaveInSubjectEventMapping: Boolean = true,
         isEventNeedToDelete: Boolean = false,
         localTransactionId: String
     ) {
-        if (isEventNeedToSaveInSubjectEventMapping) {
+        if (!(eventData.selectedEvent
+                    == LivelihoodEventTypeDataCaptureMapping.AssetTransition
+                    && eventData.selectedEvent.assetJournalEntryFlowType
+                    == EntryFlowTypeEnum.INFLOW
+                    )
+        ) {
             subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
                 eventData,
                 currentDateTime = createdDate,

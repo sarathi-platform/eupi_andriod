@@ -62,7 +62,7 @@ class AddEventViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     val showDeleteDialog = mutableStateOf(false)
-    val showDeleteButton = mutableStateOf(false)
+    val isEventEdit = mutableStateOf(false)
     private val _livelihoodDropdownValue = mutableStateListOf<ValuesDto>()
     val livelihoodDropdownValue: SnapshotStateList<ValuesDto> get() = _livelihoodDropdownValue
 
@@ -376,21 +376,21 @@ class AddEventViewModel @Inject constructor(
         ioViewModelScope {
             val event = getLivelihoodEventFromName(eventType)
             val localTransactionId = UUID.randomUUID().toString()
-            createAndAddEvent(
+
+            validateAndAddEvent(
                 transactionId = transactionId,
                 subjectId = subjectId,
                 event = event,
                 selectedAssetId = selectedAssetTypeId.value,
-                isEventNeedToDelete = showDeleteButton.value,
                 localTransactionId = localTransactionId
             )
             if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
-                createAndAddEvent(
+                event.assetJournalEntryFlowType = EntryFlowTypeEnum.OUTFLOW
+                validateAndAddEvent(
                     transactionId = transactionId,
                     subjectId = subjectId,
                     event = event,
                     selectedAssetId = selectedChildAssetTypeId.value,
-                    isChildEvent = true,
                     localTransactionId = localTransactionId
                 )
             }
@@ -403,18 +403,17 @@ class AddEventViewModel @Inject constructor(
         }
     }
 
-    private suspend fun createAndAddEvent(
+    private suspend fun validateAndAddEvent(
         transactionId: String,
         subjectId: Int,
         event: LivelihoodEventTypeDataCaptureMapping,
         selectedAssetId: Int,
-        isChildEvent: Boolean = false,
-        isEventNeedToDelete: Boolean = false,
         localTransactionId: String
     ) {
-        if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
-            event.assetJournalEntryFlowType =
-                if (isChildEvent) EntryFlowTypeEnum.OUTFLOW else EntryFlowTypeEnum.INFLOW
+        if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name
+            && event.assetJournalEntryFlowType == EntryFlowTypeEnum.OUTFLOW_INFLOW
+        ) {
+            event.assetJournalEntryFlowType = EntryFlowTypeEnum.INFLOW
         }
         val createdDateTime = getCurrentTimeInMillis()
         val modifiedDate = getCurrentTimeInMillis()
@@ -436,14 +435,26 @@ class AddEventViewModel @Inject constructor(
                 ?: BLANK_STRING,
             livelihoodValue = livelihoodDropdownValue.find { it.id == selectedLivelihoodId.value }?.originalName
                 ?: BLANK_STRING,
-            assetTypeValue = if (isChildEvent) livelihoodChildAssetDropdownValue.find { it.id == selectedAssetId }?.originalName
+            assetTypeValue = if (isValidOutFlowAssetTransitionEvent(
+                    eventType = eventType,
+                    event = event
+                )
+            ) livelihoodChildAssetDropdownValue.find { it.id == selectedAssetId }?.originalName
                 ?: BLANK_STRING else livelihoodAssetDropdownValue.find { it.id == selectedAssetId }?.originalName
                 ?: BLANK_STRING,
             productValue = livelihoodProductDropdownValue.find { it.id == selectedProductId.value }?.originalName
                 ?: BLANK_STRING,
             localTransactionId = localTransactionId,
-            toAssetType = if (isChildEvent) selectedAssetTypeId.value else -1,
-            toAssetTypeValue = if (isChildEvent) livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName
+            toAssetType = if (isValidOutFlowAssetTransitionEvent(
+                    eventType = eventType,
+                    event = event
+                )
+            ) selectedAssetTypeId.value else -1,
+            toAssetTypeValue = if (isValidOutFlowAssetTransitionEvent(
+                    eventType = eventType,
+                    event = event
+                )
+            ) livelihoodAssetDropdownValue.find { it.id == selectedAssetTypeId.value }?.originalName
                 ?: BLANK_STRING else BLANK_STRING
         )
 
@@ -452,16 +463,17 @@ class AddEventViewModel @Inject constructor(
             createdDate = createdDateTime,
             eventData = livelihoodScreenData,
             modifiedDate = modifiedDate,
-            isEventNeedToSaveInSubjectEventMapping = isChildEvent || eventType != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name,
-            isEventNeedToDelete = (!isChildEvent && isEventNeedToDelete),
+            isEventNeedToDelete = (!isValidOutFlowAssetTransitionEvent(
+                eventType = eventType,
+                event = event
+            ) && isEventEdit.value),
             localTransactionId = localTransactionId
         )
         writeLivelihoodEventUseCase.writeLivelihoodEvent(
             particular = getParticulars(),
             eventData = livelihoodScreenData,
             createdDateTime = createdDateTime,
-            modifiedDate = modifiedDate,
-            isLivelihoodEventMappingNeedToCapture = isChildEvent
+            modifiedDate = modifiedDate
         )
     }
 
@@ -494,14 +506,12 @@ class AddEventViewModel @Inject constructor(
         subjectId: Int,
         fieldName: String,
         transactionId: String,
-        isChildTransition: Boolean = false,
         onValidationComplete: (Boolean, String) -> Unit
     ) {
         validationExpressionEvalutor(
             subjectId,
             fieldName,
-            transactionId = transactionId,
-            isChildTransition = isChildTransition
+            transactionId = transactionId
         ) { isValid, message ->
             // Pass the result back through the callback
             // Update submit button state based on validation result
@@ -579,7 +589,6 @@ class AddEventViewModel @Inject constructor(
         subjectId: Int,
         fieldName: String,
         transactionId: String,
-        isChildTransition: Boolean = false,
         onValidationResult: (Boolean, String) -> Unit
     ) {
         ioViewModelScope {
@@ -587,7 +596,7 @@ class AddEventViewModel @Inject constructor(
                 livelihoodList.find { it.programLivelihoodId == selectedLivelihoodId.value }
             val selectedEvent = eventList.find { it.id == selectedEventId.value }
             val selectedAssetType =
-                assetTypeList.find { it.id == if (isChildTransition) selectedChildAssetTypeId.value else selectedAssetTypeId.value }
+                assetTypeList.find { it.id == if (fieldName == AddEventFieldEnum.CHILD_ASSET_TYPE.name) selectedChildAssetTypeId.value else selectedAssetTypeId.value }
             val selectedProduct = producTypeList.find { it.id == selectedProductId.value }
             val selectedValidations =
                 selectedLivelihood?.validations?.filter { it.eventName == selectedEvent?.originalName }
@@ -712,6 +721,13 @@ class AddEventViewModel @Inject constructor(
                 this[key] = value
             }
 }
+    private fun isValidOutFlowAssetTransitionEvent(
+        eventType: String,
+        event: LivelihoodEventTypeDataCaptureMapping
+    ): Boolean {
+        return (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name
+                && event.assetJournalEntryFlowType == EntryFlowTypeEnum.OUTFLOW)
+    }
 }
 
 
