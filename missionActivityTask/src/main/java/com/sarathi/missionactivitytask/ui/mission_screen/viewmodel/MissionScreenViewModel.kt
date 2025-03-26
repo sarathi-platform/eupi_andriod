@@ -7,6 +7,7 @@ import com.nudge.core.ALL_MISSION_FILTER_VALUE
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.TabsCore
 import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
@@ -72,8 +73,8 @@ class MissionScreenViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitDataState -> {
                 setTranslationConfig()
+                loadAllData(false, DataLoadingTriggerType.FRESH_LOGIN)
                 collectMissionListFromFlow()
-                loadAllData(false)
             }
 
             is SearchEvent.PerformSearch -> {
@@ -160,7 +161,7 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     override fun refreshData() {
-        loadAllData(true)
+        loadAllData(true, dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH)
     }
 
     private fun performSearchQuery(searchTerm: String, searchApplied: Boolean) {
@@ -189,8 +190,6 @@ class MissionScreenViewModel @Inject constructor(
             updateStatusForBaselineMission {
 
             }
-
-
             checkAndUpdateDefaultTabAndCount()
             missionFilterUtils.createMissionFilters(missionList.value)
             delay(500)
@@ -227,15 +226,22 @@ class MissionScreenViewModel @Inject constructor(
         )
     }
 
-    private fun loadAllData(isRefresh: Boolean) {
+    private fun loadAllData(
+        isRefresh: Boolean,
+        dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+    ) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
 
         // To Delete events for version 1 to 2 sync migration
             syncMigrationUseCase.deleteEventsAfter1To2Migration()
+            val customData: Map<String, Any> = mapOf(
+                "propertiesName" to AppConfigKeysEnum.values().map { it.name }
+            )
             fetchAllDataUseCase.invoke(
+                customData = customData,
                 screenName = "MissionScreen",
-                dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH,
+                dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = isRefresh,
                 onComplete = { isSucess, message ->
                 initMissionScreen()
