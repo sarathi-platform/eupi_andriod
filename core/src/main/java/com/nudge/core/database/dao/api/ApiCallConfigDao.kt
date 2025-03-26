@@ -12,6 +12,10 @@ interface ApiCallConfigDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     fun insert(apiCallConfigEntity: ApiCallConfigEntity)
 
-    @Query("DELETE FROM $ApiCallConfigTable")
-    fun deleteApiCallConfigTable()
+    @Query("DELETE FROM $ApiCallConfigTable where userId=:userId")
+    fun deleteApiCallConfigTable(userId: String)
+
+    @Query("Select * FROM $ApiCallConfigTable where userId=:userId and screenName=:screenName order by apiOrder ")
+    fun getApiCallConfigForScreen(screenName: String, userId: String): List<ApiCallConfigEntity>
+
 }

@@ -16,6 +16,7 @@ import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.DataLoadingTriggerType
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
@@ -232,7 +233,11 @@ class MissionScreenViewModel @Inject constructor(
 
         // To Delete events for version 1 to 2 sync migration
             syncMigrationUseCase.deleteEventsAfter1To2Migration()
-            fetchAllDataUseCase.invoke(isRefresh = isRefresh, onComplete = { isSucess, message ->
+            fetchAllDataUseCase.invoke(
+                screenName = "MissionScreen",
+                dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH,
+                isRefresh = isRefresh,
+                onComplete = { isSucess, message ->
                 initMissionScreen()
             })
 

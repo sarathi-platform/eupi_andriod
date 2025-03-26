@@ -1,6 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
-import com.nudge.core.enums.ActivityTypeEnum
+import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
@@ -11,10 +11,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLiveliho
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
@@ -33,6 +29,7 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchTranslationConfigUseCase: FetchTranslationConfigUseCase,
     val languageConfigUseCase: LanguageConfigUseCase,
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
+    val apiCallConfigRepository: IApiCallConfigRepository,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -41,95 +38,104 @@ class FetchAllDataUseCase @Inject constructor(
         "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase
     )
 
-    suspend fun fetchAllDataFromServer(
-        screenName: String,
-        triggerType: DataLoadingTriggerType,
-        customData: Map<String, Any>
-    ) {
-
-    }
-
-
     suspend fun invoke(
+        screenName: String,
+        dataLoadingTriggerType: DataLoadingTriggerType,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
         //api config list using order  and then check with apiUseCaseList
+        apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
 
-        apiUseCaseList[""].invoke()
 
-        fetchUserDetailUseCase.invoke()
-
-        if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            fetchMissionDataUseCase.getAllMissionList()
-            livelihoodUseCase.invoke()
-            contentDownloaderUseCase.livelihoodContentDownload()
-            fetchContentDataFromNetworkUseCase.invoke()
-            languageConfigUseCase.invoke()
-            fetchCasteConfigNetworkUseCase.invoke()
-            if (!isRefresh) {
-                fetchAppConfigFromNetworkUseCase.invoke()
-            }
-            coreSharedPrefs.setDataLoaded(true)
-            onComplete(true, BLANK_STRING)
-            CoroutineScope(Dispatchers.IO).launch {
-                contentDownloaderUseCase.contentDownloader()
-            }
-            fetchTranslationConfigUseCase.invoke()
-
-        } else {
-            onComplete(true, BLANK_STRING)
+            apiUseCaseList[it.apiName]?.invoke(screenName, dataLoadingTriggerType, mapOf())
         }
+
+
+//        fetchUserDetailUseCase.invoke()
+//
+//        if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
+//            fetchMissionDataUseCase.getAllMissionList()
+// //           livelihoodUseCase.invoke()
+//            contentDownloaderUseCase.livelihoodContentDownload()
+//            fetchContentDataFromNetworkUseCase.invoke()
+//            languageConfigUseCase.invoke()
+//            fetchCasteConfigNetworkUseCase.invoke()
+//            if (!isRefresh) {
+//                fetchAppConfigFromNetworkUseCase.invoke()
+//            }
+//            coreSharedPrefs.setDataLoaded(true)
+//            onComplete(true, BLANK_STRING)
+//            CoroutineScope(Dispatchers.IO).launch {
+//                contentDownloaderUseCase.contentDownloader()
+//            }
+//            fetchTranslationConfigUseCase.invoke()
+//
+//        } else {
+//            onComplete(true, BLANK_STRING)
+//        }
+        onComplete(true, BLANK_STRING)
     }
 
     suspend fun fetchMissionRelatedData(
         missionId: Int,
         programId: Int,
+        screenName: String,
+        dataLoadingTriggerType: DataLoadingTriggerType,
         isRefresh: Boolean,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
     ) {
-        if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
-                missionId = missionId,
-                programId
-            ) == 0
-        ) {
+        apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
 
-            fetchMissionDataUseCase.invoke(missionId, programId)
-            fetchSurveyDataFromNetworkUseCase.invoke(missionId)
-            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
-            val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
-            if (!isRefresh) {
-                fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
-                if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
 
-                    fetchLivelihoodOptionNetworkUseCase.invoke()
-                }
-                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))
-                    || activityTypes.contains(ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH))
-                ) {
-                    formUseCase.invoke(missionId)
-                    moneyJournalUseCase.invoke()
-                }
-            }
-
-            if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
-
-                livelihoodUseCase.invoke()
-            }
-            fetchContentDataFromNetworkUseCase.invoke()
-            CoroutineScope(Dispatchers.IO).launch {
-                contentDownloaderUseCase.contentDownloader()
-                contentDownloaderUseCase.surveyRelateContentDownlaod()
-
-            }
-            fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
-            onComplete(true, BLANK_STRING)
-
-        } else {
-            onComplete(true, BLANK_STRING)
-
+            apiUseCaseList[it.apiName]?.invoke(
+                screenName,
+                dataLoadingTriggerType,
+                mapOf("MissionId" to missionId, "ProgramId" to programId)
+            )
         }
-
+//        if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
+//                missionId = missionId,
+//                programId
+//            ) == 0
+//        ) {
+//
+//            fetchMissionDataUseCase.invoke(missionId, programId)
+//            fetchSurveyDataFromNetworkUseCase.invoke(missionId)
+//            fetchSectionStatusFromNetworkUsecase.invoke(missionId)
+//            val activityTypes = fetchMissionDataUseCase.getActivityTypesForMission(missionId)
+//            if (!isRefresh) {
+//                fetchSurveyAnswerFromNetworkUseCase.invoke(missionId)
+//                if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+//
+//                    fetchLivelihoodOptionNetworkUseCase.invoke()
+//                }
+//                if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))
+//                    || activityTypes.contains(ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH))
+//                ) {
+//                    formUseCase.invoke(missionId)
+//                    moneyJournalUseCase.invoke()
+//                }
+//            }
+//
+//            if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
+//
+//                livelihoodUseCase.invoke()
+//            }
+//            fetchContentDataFromNetworkUseCase.invoke()
+//            CoroutineScope(Dispatchers.IO).launch {
+//                contentDownloaderUseCase.contentDownloader()
+//                contentDownloaderUseCase.surveyRelateContentDownlaod()
+//
+//            }
+//            fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
+//            onComplete(true, BLANK_STRING)
+//
+//        } else {
+//            onComplete(true, BLANK_STRING)
+//
+//        }
+        onComplete(true, BLANK_STRING)
     }
 
 
@@ -145,8 +151,9 @@ class FetchAllDataUseCase @Inject constructor(
     }
 }
 
-enum class DataLoadingTriggerType(
+
+enum class DataLoadingTriggerType {
     PULL_TO_REFRESH,
     LOAD_SERVER_DATA,
     FRESH_LOGIN
-)
+}

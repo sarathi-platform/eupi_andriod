@@ -15,6 +15,6 @@ data class ApiCallConfigEntity(
     @ColumnInfo("triggerPoint") val triggerPoint: String,
     @ColumnInfo("apiType") val apiType: String,
     @ColumnInfo("moduleName") val moduleName: String,
-    @ColumnInfo("order") val order: Int,
+    @ColumnInfo("apiOrder") val apiOrder: Int,
     @ColumnInfo("isAsyncCall") val isAsyncCall: Boolean
 )
