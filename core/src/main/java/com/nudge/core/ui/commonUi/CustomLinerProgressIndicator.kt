@@ -36,8 +36,8 @@ fun CustomLinearProgressIndicator(
     progressState: CustomProgressState = rememberCustomProgressState(),
     color: Color = progressIndicatorColor,
     progressTrackColor: Color = trackColor,
-    strokeCap: StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap
-
+    strokeCap: StrokeCap = ProgressIndicatorDefaults.LinearStrokeCap,
+    progressBarModifier: Modifier = Modifier
 ) {
 
     val progress = remember(progressState.key.value.get()) {
@@ -58,7 +58,8 @@ fun CustomLinearProgressIndicator(
                 .weight(1f)
                 .height(dimen_8_dp)
                 .padding(top = 1.dp)
-                .clip(RoundedCornerShape(14.dp)),
+                .clip(RoundedCornerShape(14.dp))
+                .then(progressBarModifier),
             color = color,
             trackColor = progressTrackColor,
             progress = progress.value,
