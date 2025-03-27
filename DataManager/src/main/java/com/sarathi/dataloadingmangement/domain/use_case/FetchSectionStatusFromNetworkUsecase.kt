@@ -2,6 +2,8 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.enums.ApiStatus
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.GET_SECTION_STATUS
@@ -40,15 +42,48 @@ class FetchSectionStatusFromNetworkUsecase @Inject constructor(val sectionReposi
                                     sectionStatus = apiResponse.data!!
                                 )
                             }
+                            updateApiCallStatus(
+                                screenName = screenName,
+                                moduleName = moduleName,
+                                triggerType = triggerType,
+                                status = ApiStatus.SUCCESS.name,
+                                customData = customData,
+                                errorMsg = BLANK_STRING
+                            )
+                        } else {
+                            updateApiCallStatus(
+                                screenName = screenName,
+                                moduleName = moduleName,
+                                triggerType = triggerType,
+                                status = ApiStatus.FAILED.name,
+                                customData = customData,
+                                errorMsg = apiResponse.message
+                            )
                         }
                 }
             }
         } catch (apiException: ApiException) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = apiException.stackTraceToString()
+            )
             throw apiException
         } catch (ex: Exception) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = ex.stackTraceToString()
+            )
             throw ex
         }
-        return true
+        return false
     }
 
     override fun getApiEndpoint(): String {

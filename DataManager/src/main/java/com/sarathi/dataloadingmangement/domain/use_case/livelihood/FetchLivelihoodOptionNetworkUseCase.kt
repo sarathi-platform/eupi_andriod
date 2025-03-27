@@ -3,10 +3,12 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_FETCH_LIVELIHOOD_OPTION
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepository
 import javax.inject.Inject
@@ -17,39 +19,84 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
 ) : BaseApiCallNetworkUseCase() {
 
-    private suspend fun getSubjectLivelihoodMapping (activityId: Int): Boolean {
-        val apiResponse = repository.getLivelihoodOptionNetwork(
-            activityId = activityId,
-        )
-        if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
-                SUCCESS,
-                true
+    private suspend fun getSubjectLivelihoodMapping(
+        activityId: Int,
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        moduleName: String,
+        customData: Map<String, Any>
+    ): Boolean {
+        try {
+            val apiResponse = repository.getLivelihoodOptionNetwork(
+                activityId = activityId,
             )
-        ) {
-            val subjectLivelihoodMappingEntities = mutableListOf<SubjectLivelihoodMappingEntity>()
-            apiResponse.data?.let { subjectLivelihoodMappingDetail ->
-                subjectLivelihoodMappingDetail.forEach { subjectLivelihoodMapping ->
+            if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
+                    SUCCESS,
+                    true
+                )
+            ) {
+                val subjectLivelihoodMappingEntities =
+                    mutableListOf<SubjectLivelihoodMappingEntity>()
+                apiResponse.data?.let { subjectLivelihoodMappingDetail ->
+                    subjectLivelihoodMappingDetail.forEach { subjectLivelihoodMapping ->
 
-                    subjectLivelihoodMapping.livelihoodDTO.forEach {
-                        subjectLivelihoodMappingEntities.add(
-                            SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
-                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                subjectId = subjectLivelihoodMapping.didiId,
-                                livelihoodId = it.programLivelihoodId,
-                                status = 1,
-                                type = it.order,
-                                livelihoodType = it.type ?: BLANK_STRING
+                        subjectLivelihoodMapping.livelihoodDTO.forEach {
+                            subjectLivelihoodMappingEntities.add(
+                                SubjectLivelihoodMappingEntity.getSubjectLivelihoodMappingEntity(
+                                    userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                                    subjectId = subjectLivelihoodMapping.didiId,
+                                    livelihoodId = it.programLivelihoodId,
+                                    status = 1,
+                                    type = it.order,
+                                    livelihoodType = it.type ?: BLANK_STRING
+                                )
                             )
-                        )
+                        }
                     }
+                    repository.saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntities)
                 }
-                repository.saveAllSubjectLivelihoodDetails(subjectLivelihoodMappingEntities)
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.SUCCESS.name,
+                    customData = customData,
+                    errorMsg = BLANK_STRING
+                )
                 return true
+            } else {
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = customData,
+                    errorMsg = apiResponse.message
+                )
+                return false
             }
-        } else {
-            return true
+        } catch (apiException: ApiException) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = apiException.stackTraceToString()
+            )
+
+            throw apiException
+        } catch (ex: Exception) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = ex.stackTraceToString()
+            )
+            throw ex
         }
-        return false
     }
 
     override suspend fun invoke(
@@ -71,13 +118,17 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
             if (!repository.isLivelihoodAlreadyFetched()) {
                 var getActivityIdForLivelihood = repository.getActivityIdForLivelihood()
                 getSubjectLivelihoodMapping(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    customData = customData,
                     activityId = getActivityIdForLivelihood,
                 )
             }
         } catch (ex: Exception) {
             throw ex
         }
-        return true
+        return false
     }
 
     override fun getApiEndpoint(): String {
