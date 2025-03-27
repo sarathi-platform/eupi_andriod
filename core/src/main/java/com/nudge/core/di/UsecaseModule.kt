@@ -4,6 +4,7 @@ import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
 import com.nudge.core.data.repository.SyncMigrationRepository
+import com.nudge.core.data.repository.api.ApiJournalDatabaseRepositoryImpl
 import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.usecase.FetchAppConfigFromCacheOrDbUsecase
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -21,11 +22,13 @@ class UsecaseModule {
     @Provides
     fun provideFetchAppConfigFromNetwork(
         appConfigNetworkRepositoryImpl: AppConfigNetworkRepositoryImpl,
-        appConfigDatabaseRepositoryImpl: AppConfigDatabaseRepositoryImpl
+        appConfigDatabaseRepositoryImpl: AppConfigDatabaseRepositoryImpl,
+        apiJournalDatabaseRepositoryImpl: ApiJournalDatabaseRepositoryImpl
     ): FetchAppConfigFromNetworkUseCase {
         return FetchAppConfigFromNetworkUseCase(
             apiConfigNetworkRepository = appConfigNetworkRepositoryImpl,
-            apiConfigDatabaseRepository = appConfigDatabaseRepositoryImpl
+            apiConfigDatabaseRepository = appConfigDatabaseRepositoryImpl,
+            apiJournalDatabaseRepository = apiJournalDatabaseRepositoryImpl
         )
     }
 

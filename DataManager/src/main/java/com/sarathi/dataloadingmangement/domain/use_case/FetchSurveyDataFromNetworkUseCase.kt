@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.api.IApiJournalDatabaseRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
 import com.nudge.core.utils.CoreLogger
@@ -19,8 +20,8 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     private val repository: ISurveyDownloadRepository,
     private val sharedPrefs: CoreSharedPrefs,
     private val activityConfigDao: ActivityConfigDao,
+    private val apiJournalDatabaseRepository: IApiJournalDatabaseRepository,
 ) : BaseApiCallNetworkUseCase() {
-
     override suspend operator fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,

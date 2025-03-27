@@ -1,13 +1,13 @@
 package com.nudge.core.di
 
 import com.nudge.core.apiService.CoreApiService
-import com.nudge.core.data.repository.ApiCallConfigRepositoryImpl
 import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepositoryImpl
 import com.nudge.core.data.repository.SyncMigrationRepository
 import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
+import com.nudge.core.data.repository.api.ApiCallConfigRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao

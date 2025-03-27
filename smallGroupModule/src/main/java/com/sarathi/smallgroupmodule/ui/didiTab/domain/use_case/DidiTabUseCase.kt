@@ -3,7 +3,7 @@ package com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case
 import com.nudge.core.CoreDispatchers
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
-import com.nudge.core.data.repository.IApiCallConfigRepository
+import com.nudge.core.data.repository.api.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase

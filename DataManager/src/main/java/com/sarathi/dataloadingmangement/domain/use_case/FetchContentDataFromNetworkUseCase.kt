@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.api.ApiJournalDatabaseRepositoryImpl
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
@@ -15,6 +16,7 @@ import javax.inject.Inject
 class FetchContentDataFromNetworkUseCase @Inject constructor(
     private val repository: IContentRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
+    private val apiJournalDatabaseRepository: ApiJournalDatabaseRepositoryImpl,
 ) : BaseApiCallNetworkUseCase() {
 
     override suspend operator fun invoke(

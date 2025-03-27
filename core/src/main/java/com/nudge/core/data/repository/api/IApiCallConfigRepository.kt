@@ -1,4 +1,4 @@
-package com.nudge.core.data.repository
+package com.nudge.core.data.repository.api
 
 import com.nudge.core.database.entities.api.ApiCallConfigEntity
 

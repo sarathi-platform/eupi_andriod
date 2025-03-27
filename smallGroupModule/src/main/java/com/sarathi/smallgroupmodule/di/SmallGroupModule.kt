@@ -1,6 +1,7 @@
 package com.sarathi.smallgroupmodule.di
 
-import com.nudge.core.data.repository.IApiCallConfigRepository
+import com.nudge.core.data.repository.api.IApiCallConfigRepository
+import com.nudge.core.data.repository.api.IApiJournalDatabaseRepository
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
@@ -70,7 +71,8 @@ class SmallGroupModule {
         fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository,
         fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository,
         contentDownloaderUseCase: ContentDownloaderUseCase,
-        apiCallConfigRepository: IApiCallConfigRepository
+        apiCallConfigRepository: IApiCallConfigRepository,
+        apiJournalDatabaseRepository: IApiJournalDatabaseRepository
     ): DidiTabUseCase {
         return DidiTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
@@ -78,19 +80,25 @@ class SmallGroupModule {
                 fetchDidiDetailsFromDbRepository
             ),
             fetchDidiDetailsFromNetworkUseCase = FetchDidiDetailsFromNetworkUseCase(
-                fetchDidiDetailsFromNetworkRepository
+                fetchDidiDetailsFromNetworkRepository,
+                apiJournalDatabaseRepository = apiJournalDatabaseRepository
             ),
             fetchSmallGroupListsFromDbUseCase = FetchSmallGroupListsFromDbUseCase(
                 fetchSmallGroupListFromDbRepository
             ),
             fetchSmallGroupFromNetworkUseCase = FetchSmallGroupFromNetworkUseCase(
-                fetchSmallGroupDetailsFromNetworkRepository
+                fetchSmallGroupDetailsFromNetworkRepository,
+                apiJournalDatabaseRepository = apiJournalDatabaseRepository
+
             ),
             fetchSmallGroupAttendanceHistoryFromNetworkUseCase = FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
-                fetchSmallGroupAttendanceHistoryFromNetworkRepository
+                fetchSmallGroupAttendanceHistoryFromNetworkRepository,
+                apiJournalDatabaseRepository = apiJournalDatabaseRepository
+
             ),
             contentDownloaderUseCase = contentDownloaderUseCase,
-            apiCallConfigRepository = apiCallConfigRepository
+            apiCallConfigRepository = apiCallConfigRepository,
+
         )
     }
 

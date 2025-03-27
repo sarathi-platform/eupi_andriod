@@ -9,6 +9,7 @@ import com.nudge.core.ApiCallJournalTable
 data class ApiCallJournalEntity(
     @PrimaryKey(autoGenerate = true) @ColumnInfo("id") val id: Int,
     @ColumnInfo("userId") val userId: String,
+    @ColumnInfo("apiName") val apiName: String,
     @ColumnInfo("apiUrl") val apiUrl: String,
     @ColumnInfo("status") val status: String,
     @ColumnInfo("moduleName") val moduleName: String,
@@ -16,7 +17,40 @@ data class ApiCallJournalEntity(
     @ColumnInfo("requestBody") val requestBody: String?,
     @ColumnInfo("triggerPoint") val triggerPoint: String,
     @ColumnInfo("errorMsg") val errorMsg: String?,
-    @ColumnInfo("retryCount") val retryCount: Int,
-    @ColumnInfo("createdDate") val createdDate: Int,
-    @ColumnInfo("modifiedDate") val modifiedDate: Int
-)
+    @ColumnInfo("retryCount") val retryCount: Int?,
+    @ColumnInfo("createdDate") val createdDate: Long,
+    @ColumnInfo("modifiedDate") val modifiedDate: Long
+) {
+    companion object {
+        fun getApiCallJournalEntity(
+            userId: String,
+            apiName: String,
+            apiUrl: String,
+            status: String,
+            moduleName: String,
+            screenName: String,
+            requestBody: String?,
+            triggerPoint: String,
+            errorMsg: String?,
+            retryCount: Int?,
+            createdDate: Long,
+            modifiedDate: Long
+        ): ApiCallJournalEntity {
+            return ApiCallJournalEntity(
+                id = 0,
+                userId = userId,
+                apiName = apiName,
+                apiUrl = apiUrl,
+                status = status,
+                moduleName = moduleName,
+                screenName = screenName,
+                requestBody = requestBody,
+                triggerPoint = triggerPoint,
+                errorMsg = errorMsg,
+                retryCount = retryCount,
+                createdDate = createdDate,
+                modifiedDate = modifiedDate
+            )
+        }
+    }
+}

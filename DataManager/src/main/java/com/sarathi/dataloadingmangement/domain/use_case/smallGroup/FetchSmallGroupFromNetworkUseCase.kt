@@ -3,15 +3,16 @@ package com.sarathi.dataloadingmangement.domain.use_case.smallGroup
 import com.nudge.core.DEFAULT_SUCCESS_CODE
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.api.IApiJournalDatabaseRepository
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_SMALL_GROUP_MAPPING
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import javax.inject.Inject
 
 class FetchSmallGroupFromNetworkUseCase @Inject constructor(
-    private val fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
+    private val fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository,
+    private val apiJournalDatabaseRepository: IApiJournalDatabaseRepository,
 ) : BaseApiCallNetworkUseCase() {
-
     override suspend fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,

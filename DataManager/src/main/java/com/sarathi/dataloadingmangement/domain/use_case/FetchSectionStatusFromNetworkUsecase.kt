@@ -2,14 +2,17 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.api.ApiJournalDatabaseRepositoryImpl
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.GET_SECTION_STATUS
 import com.sarathi.dataloadingmangement.repository.ISectionStatusRepository
 import javax.inject.Inject
 
-class FetchSectionStatusFromNetworkUsecase @Inject constructor(val sectionRepository: ISectionStatusRepository) :
-    BaseApiCallNetworkUseCase() {
+class FetchSectionStatusFromNetworkUsecase @Inject constructor(
+    val sectionRepository: ISectionStatusRepository,
+    private val apiJournalDatabaseRepository: ApiJournalDatabaseRepositoryImpl,
+) : BaseApiCallNetworkUseCase() {
 
     override suspend fun invoke(
         screenName: String,
@@ -34,8 +37,8 @@ class FetchSectionStatusFromNetworkUsecase @Inject constructor(val sectionReposi
                                 )
                             }
                         }
+                    }
                 }
-            }
         } catch (apiException: ApiException) {
             throw apiException
         } catch (ex: Exception) {

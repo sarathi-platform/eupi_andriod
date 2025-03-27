@@ -4,15 +4,20 @@ import com.nudge.core.SUCCESS
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.constants.SUB_PATH_GET_V3_CONFIG_LANGUAGE
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.api.ApiJournalDatabaseRepositoryImpl
 import com.nudge.core.data.repository.language.FetchLanguageRepositoryImpl
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.language.LanguageConfigModel
 import com.nudge.core.network.ApiException
+import com.nudge.core.preference.CoreSharedPrefs
 import javax.inject.Inject
 
-class LanguageConfigUseCase @Inject constructor(private val languageRepositoryImpl: FetchLanguageRepositoryImpl) :
-    BaseApiCallNetworkUseCase() {
+class LanguageConfigUseCase @Inject constructor(
+    private val languageRepositoryImpl: FetchLanguageRepositoryImpl,
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val apiJournalDatabaseRepository: ApiJournalDatabaseRepositoryImpl,
+) : BaseApiCallNetworkUseCase() {
 
 
     suspend fun invoke(): Boolean {

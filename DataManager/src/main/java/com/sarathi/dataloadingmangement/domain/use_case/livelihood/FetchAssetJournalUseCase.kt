@@ -2,6 +2,8 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.api.ApiJournalDatabaseRepositoryImpl
+import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_ASSETS_JOURNAL_DETAILS
@@ -9,8 +11,11 @@ import com.sarathi.dataloadingmangement.repository.liveihood.AssetJournalNetwork
 import javax.inject.Inject
 
 
-class FetchAssetJournalUseCase @Inject constructor(private val assetJournalNetworkRepositoryImpl: AssetJournalNetworkRepositoryImpl) :
-    BaseApiCallNetworkUseCase() {
+class FetchAssetJournalUseCase @Inject constructor(
+    private val assetJournalNetworkRepositoryImpl: AssetJournalNetworkRepositoryImpl,
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val apiJournalDatabaseRepository: ApiJournalDatabaseRepositoryImpl,
+) : BaseApiCallNetworkUseCase() {
 
     override suspend fun invoke(
         screenName: String,

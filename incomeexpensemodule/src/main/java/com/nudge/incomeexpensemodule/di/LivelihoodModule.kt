@@ -1,6 +1,6 @@
 package com.nudge.incomeexpensemodule.di
 
-import com.nudge.core.data.repository.IApiCallConfigRepository
+import com.nudge.core.data.repository.api.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase

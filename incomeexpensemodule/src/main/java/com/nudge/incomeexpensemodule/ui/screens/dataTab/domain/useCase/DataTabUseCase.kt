@@ -2,7 +2,7 @@ package com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
-import com.nudge.core.data.repository.IApiCallConfigRepository
+import com.nudge.core.data.repository.api.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
