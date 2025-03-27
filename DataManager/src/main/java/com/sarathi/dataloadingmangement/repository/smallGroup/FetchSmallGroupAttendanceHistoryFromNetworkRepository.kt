@@ -6,7 +6,7 @@ import com.sarathi.dataloadingmangement.network.response.DidiAttendanceDetail
 
 interface FetchSmallGroupAttendanceHistoryFromNetworkRepository {
 
-    suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int)
+    suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int): Boolean
 
     suspend fun saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse: AttendanceHistoryResponse)
 

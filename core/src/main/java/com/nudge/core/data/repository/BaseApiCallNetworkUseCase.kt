@@ -1,4 +1,6 @@
-package com.sarathi.dataloadingmangement.domain.use_case
+package com.nudge.core.data.repository
+
+import com.nudge.core.constants.DataLoadingTriggerType
 
 import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.json

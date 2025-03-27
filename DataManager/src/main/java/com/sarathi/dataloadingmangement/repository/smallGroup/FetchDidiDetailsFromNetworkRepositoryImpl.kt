@@ -27,7 +27,7 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     private val TAG = FetchDidiDetailsFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchDidiDetailsFromNetwork() {
+    override suspend fun fetchDidiDetailsFromNetwork(): Boolean {
         try {
             val userId = corePrefRepo.getUserName().toInt()
             val response = dataLoadingApiService.getDidisFromNetwork(userId = userId)
@@ -44,7 +44,7 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
                     saveDidiDetailsToDb(it)
 
                 } ?: throw NullPointerException("Data is null")
-
+                return true
             } else {
                 updateApiStatus(
                     apiEndPoint = SUBPATH_GET_DIDI_LIST,
@@ -52,6 +52,7 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
                     errorMessage = response.message,
                     errorCode = DEFAULT_ERROR_CODE
                 )
+                return false
             }
         } catch (ex: Exception) {
             updateApiStatus(
@@ -62,7 +63,7 @@ class FetchDidiDetailsFromNetworkRepositoryImpl @Inject constructor(
             )
             Log.e(TAG, "fetchDidiDetailsFromNetwork -> exception: ${ex.message}", ex)
         }
-
+        return false
     }
 
     override suspend fun saveDidiDetailsToDb(beneficiaryApiResponse: BeneficiaryApiResponse) {

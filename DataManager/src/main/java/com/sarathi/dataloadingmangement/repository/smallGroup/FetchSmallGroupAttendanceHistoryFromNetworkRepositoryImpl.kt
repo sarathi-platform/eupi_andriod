@@ -48,8 +48,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     private val TAG =
         FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int) {
-
+    override suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int): Boolean {
         try {
             val userId = coreSharedPrefs.getUserNameInInt()
             val request = AttendanceHistoryRequest.getRequest(smallGroupId, userId)
@@ -65,8 +64,8 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                     attendanceHistoryResponseList.forEach { attendanceHistoryResponse ->
                         saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse)
                     }
-
                 }
+                return true
             } else {
                 updateApiStatus(
                     apiEndPoint = SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK,
@@ -74,6 +73,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                     errorMessage = response.message,
                     errorCode = DEFAULT_ERROR_CODE
                 )
+                return false
             }
         } catch (ex: Exception) {
             updateApiStatus(
@@ -90,6 +90,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                 stackTrace = true
             )
         }
+        return false
 
     }
 

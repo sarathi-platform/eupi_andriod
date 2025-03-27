@@ -8,6 +8,7 @@ import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.ApiCallConfigRepositoryImpl
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
+import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.CasteListDao
@@ -15,6 +16,7 @@ import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
+import com.nudge.core.database.dao.api.ApiCallConfigDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.helper.TranslationHelper
@@ -1784,4 +1786,16 @@ class DataLoadingModule {
     ): MissionFilterUtils {
         return MissionFilterUtils(coreSharedPrefs, livelihoodListFromDbUseCase, translationHelper)
     }
+
+    @Provides
+    @Singleton
+    fun providesApiCallConfigRepository(
+        apiCallConfigDao: ApiCallConfigDao,
+        coreSharedPrefs: CoreSharedPrefs,
+    ): IApiCallConfigRepository {
+        return ApiCallConfigRepositoryImpl(
+            apiCallConfigDao, coreSharedPrefs
+        )
+    }
+
 }

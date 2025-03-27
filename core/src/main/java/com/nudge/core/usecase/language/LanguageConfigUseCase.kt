@@ -1,6 +1,9 @@
 package com.nudge.core.usecase.language
 
 import com.nudge.core.SUCCESS
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.constants.SUB_PATH_GET_V3_CONFIG_LANGUAGE
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.language.FetchLanguageRepositoryImpl
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.model.ApiResponseModel
@@ -8,7 +11,10 @@ import com.nudge.core.model.response.language.LanguageConfigModel
 import com.nudge.core.network.ApiException
 import javax.inject.Inject
 
-class LanguageConfigUseCase @Inject constructor(private val languageRepositoryImpl: FetchLanguageRepositoryImpl) {
+class LanguageConfigUseCase @Inject constructor(private val languageRepositoryImpl: FetchLanguageRepositoryImpl) :
+    BaseApiCallNetworkUseCase() {
+
+
     suspend fun invoke(): Boolean {
         try {
             val apiResponse = languageRepositoryImpl.getLanguageV3FromNetwork()
@@ -27,6 +33,17 @@ class LanguageConfigUseCase @Inject constructor(private val languageRepositoryIm
         } catch (ex: Exception) {
             throw ex
         }
+    }
+
+    override suspend fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
+        if (!super.invoke(screenName, triggerType, customData)) {
+            return false
+        }
+        return invoke()
     }
 
     suspend fun fetchLanguageAPI(): ApiResponseModel<LanguageConfigModel>? {
@@ -96,5 +113,9 @@ class LanguageConfigUseCase @Inject constructor(private val languageRepositoryIm
                 )
             )
         )
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUB_PATH_GET_V3_CONFIG_LANGUAGE
     }
 }
