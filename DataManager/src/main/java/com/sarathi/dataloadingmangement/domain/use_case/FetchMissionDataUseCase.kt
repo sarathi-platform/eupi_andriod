@@ -18,12 +18,14 @@ class FetchMissionDataUseCase @Inject constructor(
     override suspend fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,
+        moduleName: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
-            if (!super.invoke(screenName, triggerType, customData)) {
+            if (!super.invoke(screenName, triggerType, moduleName, customData)) {
                 return false
             }
+
             val missionId = customData["MissionId"] as Int
             val programId = customData["ProgramId"] as Int
 

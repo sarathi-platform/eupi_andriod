@@ -41,6 +41,7 @@ class FetchAllDataUseCase @Inject constructor(
     suspend fun invoke(
         screenName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
+        moduleName: String,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
@@ -48,7 +49,12 @@ class FetchAllDataUseCase @Inject constructor(
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
 
 
-            apiUseCaseList[it.apiName]?.invoke(screenName, dataLoadingTriggerType, mapOf())
+            apiUseCaseList[it.apiName]?.invoke(
+                screenName = screenName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf(),
+                moduleName = moduleName
+            )
         }
 
 
@@ -81,6 +87,7 @@ class FetchAllDataUseCase @Inject constructor(
         missionId: Int,
         programId: Int,
         screenName: String,
+        moduleName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
         isRefresh: Boolean,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
@@ -89,9 +96,10 @@ class FetchAllDataUseCase @Inject constructor(
 
 
             apiUseCaseList[it.apiName]?.invoke(
-                screenName,
-                dataLoadingTriggerType,
-                mapOf("MissionId" to missionId, "ProgramId" to programId)
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf("MissionId" to missionId, "ProgramId" to programId),
             )
         }
 //        if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
