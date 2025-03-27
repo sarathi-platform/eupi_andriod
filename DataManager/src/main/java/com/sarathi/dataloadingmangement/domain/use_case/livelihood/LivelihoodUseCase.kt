@@ -1,8 +1,8 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.sarathi.dataloadingmangement.SUCCESS
-import com.sarathi.dataloadingmangement.domain.use_case.BaseApiCallNetworkUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.DataLoadingTriggerType
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.network.ApiException

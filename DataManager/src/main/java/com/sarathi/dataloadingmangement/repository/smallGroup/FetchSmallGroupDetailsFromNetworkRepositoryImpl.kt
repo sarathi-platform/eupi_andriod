@@ -30,7 +30,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     private val TAG = FetchSmallGroupDetailsFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchSmallGroupDetails() {
+    override suspend fun fetchSmallGroupDetails(): Boolean {
         try {
             val userId = coreSharedPrefs.getUserName().toInt()
             val smallGroupApiRequest = SmallGroupApiRequest(userList = listOf(userId))
@@ -49,7 +49,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                     )
                     saveSmallGroupMapping(sgMapping)
                 } ?: throw NullPointerException("Data is null")
-
+                return true
             } else {
                 updateApiStatus(
                     apiEndPoint = SUBPATH_GET_SMALL_GROUP_MAPPING,
@@ -57,6 +57,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                     errorMessage = response.message,
                     errorCode = DEFAULT_ERROR_CODE
                 )
+                return false
             }
         } catch (ex: Exception) {
             updateApiStatus(
@@ -72,8 +73,7 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                 ex
             )
         }
-
-
+        return false
     }
 
     override suspend fun saveSmallGroupMapping(smallGroupMapping: List<SmallGroupMappingResponseModel>) {

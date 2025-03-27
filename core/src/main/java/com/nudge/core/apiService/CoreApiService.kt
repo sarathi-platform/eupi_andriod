@@ -1,5 +1,9 @@
 package com.nudge.core.apiService
 
+import com.nudge.core.constants.SUB_PATH_FETCH_TRANSLATIONS
+import com.nudge.core.constants.SUB_PATH_GET_CONFIG_CASTE
+import com.nudge.core.constants.SUB_PATH_GET_V3_CONFIG_LANGUAGE
+import com.nudge.core.constants.SUB_PATH_REGISTRY_SERVICE_PROPERTY
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.CasteModel
 import com.nudge.core.model.request.AppConfigApiRequest
@@ -11,18 +15,18 @@ import retrofit2.http.POST
 import retrofit2.http.Query
 
 interface CoreApiService {
-    @POST("/registry-service/property")
+    @POST(SUB_PATH_REGISTRY_SERVICE_PROPERTY)
     suspend fun fetchAppConfig(@Body appConfigApiRequest: AppConfigApiRequest): ApiResponseModel<HashMap<String, String>>
 
     // Get CasteList
-    @GET("/read-api/config/caste/get")
+    @GET(SUB_PATH_GET_CONFIG_CASTE)
     suspend fun getCasteList(): ApiResponseModel<List<CasteModel>>
 
 
-    @GET("/registry-service/translations/fetch")
+    @GET(SUB_PATH_FETCH_TRANSLATIONS)
     suspend fun fetchTranslationConfigData(@Query("stateId") stateId: Int): ApiResponseModel<List<TranslationModel>>
 
-    @GET("/read-api/config/language/get/v3")
+    @GET(SUB_PATH_GET_V3_CONFIG_LANGUAGE)
     suspend fun languageConfigV3(@Query("userId") userId: Int?): ApiResponseModel<LanguageConfigModel>
 
 }

@@ -1,11 +1,14 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
 import android.net.Uri
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_FORM_DETAILS
 import com.sarathi.dataloadingmangement.network.request.FormDetailRequest
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
 import javax.inject.Inject
@@ -14,7 +17,7 @@ class FormUseCase @Inject constructor(
     private val repository: FormRepositoryImpl,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val downloaderManager: DownloaderManager
-) {
+) : BaseApiCallNetworkUseCase() {
     private suspend fun getFormDetailFromApi(formDetailRequest: FormDetailRequest): Boolean {
         val apiResponse = repository.getFromDetailFromNetwork(
             activityId = formDetailRequest.activityId,
@@ -45,8 +48,17 @@ class FormUseCase @Inject constructor(
         return false
     }
 
-    suspend fun invoke(missionId: Int): Boolean {
+    override suspend fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
+            //TODO need to add MissionId
+            val missionId = customData["MissionId"] as Int
             repository.getActivityConfigUiModel(missionId)?.forEach { config ->
                 getFormDetailFromApi(
                     FormDetailRequest(
@@ -125,6 +137,10 @@ class FormUseCase @Inject constructor(
 
     fun getFormEFileName(pdfName: String): String {
         return repository.getFormEFileName(pdfName)
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUBPATH_GET_FORM_DETAILS
     }
 
 }
