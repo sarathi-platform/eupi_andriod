@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.sarathi.dataloadingmangement.SUCCESS
@@ -16,12 +17,13 @@ class LivelihoodUseCase @Inject constructor(
     override suspend operator fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,
+        moduleName: String,
         customData: Map<String, Any>
     ): Boolean {
 
 
         try {
-            if (!super.invoke(screenName, triggerType, customData)) {
+            if (!super.invoke(screenName, triggerType, moduleName, customData)) {
                 return false
             }
             val apiResponse = coreLivelihoodRepositoryImpl.getLivelihoodConfigFromNetwork()
@@ -30,14 +32,48 @@ class LivelihoodUseCase @Inject constructor(
                     coreLivelihoodRepositoryImpl.deleteLivelihoodCoreDataForUser()
                     saveLivelihoodConfigInDb(it)
                 }
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = "Completed",
+                    customData = customData,
+                    errorMsg = BLANK_STRING
+                )
                 return true
             } else {
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = "Failed",
+                    customData = customData,
+                    errorMsg = apiResponse.message
+                )
+
                 return false
             }
 
         } catch (apiException: ApiException) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = "Failed",
+                customData = customData,
+                errorMsg = apiException.stackTraceToString()
+            )
+
             throw apiException
         } catch (ex: Exception) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = "Failed",
+                customData = customData,
+                errorMsg = ex.stackTraceToString()
+            )
             throw ex
         }
 

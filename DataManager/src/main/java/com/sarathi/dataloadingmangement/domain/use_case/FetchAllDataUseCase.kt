@@ -51,28 +51,21 @@ class FetchAllDataUseCase @Inject constructor(
     suspend fun invoke(
         screenName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
+        moduleName: String,
         customData: Map<String, Any>,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
-        if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
-            //api config list using order  and then check with apiUseCaseList
-            fetchMissionDataUseCase.getAllMissionList()
-            apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name)
-                .forEach {
-                    apiUseCaseList[it.apiName]?.invoke(
-                        screenName,
-                        dataLoadingTriggerType,
-                        customData
-                    )
-                }
-            CoroutineScope(Dispatchers.IO).launch {
-                contentDownloaderUseCase.livelihoodContentDownload()
-            }
-            CoroutineScope(Dispatchers.IO).launch {
-                contentDownloaderUseCase.contentDownloader()
-            }
-            coreSharedPrefs.setDataLoaded(true)
+        //api config list using order  and then check with apiUseCaseList
+        apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
+
+
+            apiUseCaseList[it.apiName]?.invoke(
+                screenName = screenName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf(),
+                moduleName = moduleName
+            )
         }
         onComplete(true, BLANK_STRING)
 
@@ -98,12 +91,14 @@ class FetchAllDataUseCase @Inject constructor(
 //        } else {
 //            onComplete(true, BLANK_STRING)
 //        }
+        onComplete(true, BLANK_STRING)
     }
 
     suspend fun fetchMissionRelatedData(
         missionId: Int,
         programId: Int,
         screenName: String,
+        moduleName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
         isRefresh: Boolean,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
@@ -112,9 +107,10 @@ class FetchAllDataUseCase @Inject constructor(
 
 
             apiUseCaseList[it.apiName]?.invoke(
-                screenName,
-                dataLoadingTriggerType,
-                mapOf("MissionId" to missionId, "ProgramId" to programId)
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf("MissionId" to missionId, "ProgramId" to programId),
             )
         }
 

@@ -20,10 +20,17 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
     override suspend operator fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,
+        moduleName: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
-            if (!super.invoke(screenName, triggerType, customData)) {
+            if (!super.invoke(
+                    screenName = screenName,
+                    triggerType = triggerType,
+                    moduleName = moduleName,
+                    customData = customData,
+                )
+            ) {
                 return false
             }
             val contentEntities = mutableListOf<Content>()

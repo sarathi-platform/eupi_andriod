@@ -647,7 +647,9 @@ open class TaskScreenViewModel @Inject constructor(
                     )
                     initTaskScreen(taskUiModel) // Move this out of the lambda block once the above method is removed
                 }
-                })
+                },
+                moduleName = "MAT"
+            )
         }
     }
 

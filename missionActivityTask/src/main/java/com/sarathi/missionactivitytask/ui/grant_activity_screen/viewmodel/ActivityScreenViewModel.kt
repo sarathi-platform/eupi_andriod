@@ -104,11 +104,14 @@ class ActivityScreenViewModel @Inject constructor(
                 programId = programId,
                 screenName = "ActivityScreen",
                 dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH,
+                moduleName = "MAT",
                 isRefresh = isRefresh,
+                onComplete =
                 { isSuccess, successMsg ->
 
                     initActivityScreen()
-                })
+                }
+            )
 
         }
 

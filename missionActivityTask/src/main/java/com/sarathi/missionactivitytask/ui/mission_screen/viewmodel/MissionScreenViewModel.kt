@@ -245,7 +245,9 @@ class MissionScreenViewModel @Inject constructor(
                 isRefresh = isRefresh,
                 onComplete = { isSucess, message ->
                 initMissionScreen()
-            })
+                },
+                moduleName = "MAT"
+            )
 
         }
     }
