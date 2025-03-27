@@ -4,7 +4,6 @@ import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.database.entities.language.LanguageEntity
-import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
@@ -47,46 +46,14 @@ class FetchUserDetailUseCase @Inject constructor(
                     )
                     repository.saveUserDetails(userApiResponse)
                 }
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.SUCCESS.name,
-                    customData = customData,
-                    errorMsg = BLANK_STRING
-                )
                 return true
             } else {
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
-                    customData = customData,
-                    errorMsg = apiResponse.message
-                )
                 return false
             }
 
         } catch (apiException: ApiException) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = apiException.stackTraceToString()
-            )
             throw apiException
         } catch (ex: Exception) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = ex.stackTraceToString()
-            )
             throw ex
         }
     }

@@ -2,9 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.network.ApiException
@@ -37,11 +35,7 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
             val missionId = customData["MissionId"] as Int
             repository.getActivityConfig(missionId = missionId)?.forEach {
                 callSurveAnsweryApi(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    customData = customData,
-                    surveyRequest = GetSurveyAnswerRequest(
+                    GetSurveyAnswerRequest(
                         referenceId = sharedPrefs.getStateId(),
                         surveyId = it.surveyId,
                         mobileNumber = sharedPrefs.getMobileNo(),
@@ -57,64 +51,21 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
         } catch (ex: Exception) {
             throw ex
         }
-        return false
+        return true
     }
 
 
-    private suspend fun callSurveAnsweryApi(
-        surveyRequest: GetSurveyAnswerRequest,
-        screenName: String,
-        triggerType: DataLoadingTriggerType,
-        moduleName: String,
-        customData: Map<String, Any>
-    ): Boolean {
-        try {
-            val apiResponse = repository.getSurveyAnswerFromNetwork(surveyRequest)
-            if (apiResponse.status.equals(SUCCESS_CODE, true)) {
-                apiResponse.data?.let { surveyApiResponse ->
-                    repository.saveSurveyAnswerToDb(surveyApiResponse)
-                }
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.SUCCESS.name,
-                    customData = customData,
-                    errorMsg = BLANK_STRING
-                )
+    private suspend fun callSurveAnsweryApi(surveyRequest: GetSurveyAnswerRequest): Boolean {
+        val apiResponse = repository.getSurveyAnswerFromNetwork(surveyRequest)
+        if (apiResponse.status.equals(SUCCESS_CODE, true)) {
+            apiResponse.data?.let { surveyApiResponse ->
+                repository.saveSurveyAnswerToDb(surveyApiResponse)
                 return true
-            } else {
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
-                    customData = customData,
-                    errorMsg = apiResponse.message
-                )
-                return false
             }
-        } catch (apiException: ApiException) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = apiException.stackTraceToString()
-            )
-            throw apiException
-        } catch (ex: Exception) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = ex.stackTraceToString()
-            )
-            throw ex
+        } else {
+            return true
         }
+        return false
     }
 
     override fun getApiEndpoint(): String {

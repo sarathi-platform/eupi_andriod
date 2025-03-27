@@ -3,14 +3,11 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import android.net.Uri
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
-import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.FormEntity
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
-import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_FORM_DETAILS
 import com.sarathi.dataloadingmangement.network.request.FormDetailRequest
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
@@ -21,76 +18,34 @@ class FormUseCase @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val downloaderManager: DownloaderManager
 ) : BaseApiCallNetworkUseCase() {
-    private suspend fun getFormDetailFromApi(
-        formDetailRequest: FormDetailRequest, screenName: String,
-        triggerType: DataLoadingTriggerType,
-        moduleName: String,
-        customData: Map<String, Any>
-    ): Boolean {
-        try {
-            val apiResponse = repository.getFromDetailFromNetwork(
-                activityId = formDetailRequest.activityId,
-                surveyId = formDetailRequest.surveyId,
-                fromType = formDetailRequest.formType
+    private suspend fun getFormDetailFromApi(formDetailRequest: FormDetailRequest): Boolean {
+        val apiResponse = repository.getFromDetailFromNetwork(
+            activityId = formDetailRequest.activityId,
+            surveyId = formDetailRequest.surveyId,
+            fromType = formDetailRequest.formType
+        )
+        if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
+                SUCCESS,
+                true
             )
-            if (apiResponse.status.equals(SUCCESS_CODE, true) || apiResponse.status.equals(
-                    SUCCESS,
-                    true
-                )
-            ) {
-                val formEntities = mutableListOf<FormEntity>()
-                apiResponse.data?.let { formDetail ->
-                    formDetail.forEach { form ->
-                        formEntities.add(
-                            FormEntity.getFormEntity(
-                                userId = coreSharedPrefs.getUniqueUserIdentifier(),
-                                formDetailResponse = form
-                            )
+        ) {
+            val formEntities = mutableListOf<FormEntity>()
+            apiResponse.data?.let { formDetail ->
+                formDetail.forEach { form ->
+                    formEntities.add(
+                        FormEntity.getFormEntity(
+                            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+                            formDetailResponse = form
                         )
-                    }
-                    repository.saveAllFormDetails(formEntities)
+                    )
                 }
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.SUCCESS.name,
-                    customData = customData,
-                    errorMsg = BLANK_STRING
-                )
+                repository.saveAllFormDetails(formEntities)
                 return true
-            } else {
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
-                    customData = customData,
-                    errorMsg = apiResponse.message
-                )
-                return false
             }
-        } catch (apiException: ApiException) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = apiException.stackTraceToString()
-            )
-            throw apiException
-        } catch (ex: Exception) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = ex.stackTraceToString()
-            )
-            throw ex
+        } else {
+            return true
         }
+        return false
     }
 
     override suspend fun invoke(
@@ -113,11 +68,7 @@ class FormUseCase @Inject constructor(
             val missionId = customData["MissionId"] as Int
             repository.getActivityConfigUiModel(missionId)?.forEach { config ->
                 getFormDetailFromApi(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    customData = customData,
-                    formDetailRequest = FormDetailRequest(
+                    FormDetailRequest(
                         activityId = config.activityId,
                         surveyId = config.surveyId,
                         formType = "Form_E"
@@ -127,7 +78,7 @@ class FormUseCase @Inject constructor(
         } catch (ex: Exception) {
             throw ex
         }
-        return false
+        return true
     }
 
 

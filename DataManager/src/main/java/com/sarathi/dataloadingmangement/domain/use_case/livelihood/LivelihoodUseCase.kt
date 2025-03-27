@@ -3,7 +3,6 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
-import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
@@ -37,7 +36,7 @@ class LivelihoodUseCase @Inject constructor(
                     screenName = screenName,
                     moduleName = moduleName,
                     triggerType = triggerType,
-                    status = ApiStatus.SUCCESS.name,
+                    status = "Completed",
                     customData = customData,
                     errorMsg = BLANK_STRING
                 )
@@ -47,7 +46,7 @@ class LivelihoodUseCase @Inject constructor(
                     screenName = screenName,
                     moduleName = moduleName,
                     triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
+                    status = "Failed",
                     customData = customData,
                     errorMsg = apiResponse.message
                 )
@@ -60,7 +59,7 @@ class LivelihoodUseCase @Inject constructor(
                 screenName = screenName,
                 moduleName = moduleName,
                 triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
+                status = "Failed",
                 customData = customData,
                 errorMsg = apiException.stackTraceToString()
             )
@@ -71,7 +70,7 @@ class LivelihoodUseCase @Inject constructor(
                 screenName = screenName,
                 moduleName = moduleName,
                 triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
+                status = "Failed",
                 customData = customData,
                 errorMsg = ex.stackTraceToString()
             )

@@ -9,7 +9,6 @@ import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
 import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.domain.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
@@ -17,7 +16,6 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
-    val fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase,
     val fetchMissionDataUseCase: FetchMissionDataUseCase,
     val fetchContentDataFromNetworkUseCase: FetchContentDataFromNetworkUseCase,
     val fetchSurveyDataFromNetworkUseCase: FetchSurveyDataFromNetworkUseCase,
@@ -39,7 +37,6 @@ class FetchAllDataUseCase @Inject constructor(
 
     val apiUseCaseList: Map<String, BaseApiCallNetworkUseCase> = mapOf(
         "SUBPATH_USER_VIEW" to fetchUserDetailUseCase,
-        "SUB_PATH_GET_ACTIVITY_DETAILS" to fetchMissionActivityDetailDataUseCase,
         "SUB_PATH_GET_MISSION_DETAILS" to fetchMissionDataUseCase,
         "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase,
         "SUB_PATH_CONTENT_MANAGER" to fetchContentDataFromNetworkUseCase,
@@ -167,7 +164,7 @@ class FetchAllDataUseCase @Inject constructor(
     }
 
     suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
-        return fetchMissionActivityDetailDataUseCase.fetchActivityInfo(missionId, activityId)
+        return fetchMissionDataUseCase.fetchActivityInfo(missionId, activityId)
     }
 }
 

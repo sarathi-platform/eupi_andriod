@@ -6,11 +6,9 @@ import androidx.room.RoomDatabase
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.analytics.mixpanel.MixPanelAnalyticsProvider
 import com.nudge.core.data.repository.ApiCallConfigRepositoryImpl
-import com.nudge.core.data.repository.ApiCallJournalRepositoryImpl
 import com.nudge.core.data.repository.BaselineV1CheckRepository
 import com.nudge.core.data.repository.BaselineV1CheckRepositoryImpl
 import com.nudge.core.data.repository.IApiCallConfigRepository
-import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.CasteListDao
@@ -19,7 +17,6 @@ import com.nudge.core.database.dao.EventStatusDao
 import com.nudge.core.database.dao.EventsDao
 import com.nudge.core.database.dao.ImageStatusDao
 import com.nudge.core.database.dao.api.ApiCallConfigDao
-import com.nudge.core.database.dao.api.ApiCallJournalDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.helper.TranslationHelper
@@ -72,7 +69,6 @@ import com.sarathi.dataloadingmangement.data.dao.revamp.MissionLivelihoodConfigE
 import com.sarathi.dataloadingmangement.data.dao.smallGroup.SmallGroupDidiMappingDao
 import com.sarathi.dataloadingmangement.data.database.NudgeGrantDatabase
 import com.sarathi.dataloadingmangement.domain.DataLoadingUseCase
-import com.sarathi.dataloadingmangement.domain.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.ContentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.DeleteAllGrantDataUseCase
@@ -81,7 +77,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.DocumentUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchContentDataFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
-import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionActivityDetailDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchMoneyJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSectionStatusFromNetworkUsecase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyAnswerFromNetworkUseCase
@@ -154,7 +150,6 @@ import com.sarathi.dataloadingmangement.repository.IDocumentEventRepository
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.IFormEventRepository
 import com.sarathi.dataloadingmangement.repository.IMATStatusEventRepository
-import com.sarathi.dataloadingmangement.repository.IMissionActivityDetailRepository
 import com.sarathi.dataloadingmangement.repository.IMissionRepository
 import com.sarathi.dataloadingmangement.repository.ISectionStatusRepository
 import com.sarathi.dataloadingmangement.repository.ISurveyAnswerEventRepository
@@ -164,7 +159,6 @@ import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
 import com.sarathi.dataloadingmangement.repository.ISurveySaveRepository
 import com.sarathi.dataloadingmangement.repository.ITaskStatusRepository
 import com.sarathi.dataloadingmangement.repository.MATStatusEventRepositoryImpl
-import com.sarathi.dataloadingmangement.repository.MissionActivityDetailRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MissionRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopEventWriterRepository
 import com.sarathi.dataloadingmangement.repository.MoneyJournalForPopEventWriterRepositoryImpl
@@ -466,7 +460,6 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
-        missionActivityDetailRepository: MissionActivityDetailRepositoryImpl,
         missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
@@ -474,8 +467,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs
     ): DataLoadingUseCase {
         return DataLoadingUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionActivityDetailDataUseCase(
-                missionActivityDetailRepository
+            fetchMissionDataFromNetworkUseCase = FetchMissionDataUseCase(
+                missionRepositoryImpl
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,
@@ -486,62 +479,14 @@ class DataLoadingModule {
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
                 coreSharedPrefs = coreSharedPrefs
-            ),
-            fetchMissionDataUseCase = FetchMissionDataUseCase(missionRepositoryImpl)
+            )
         )
 
     }
 
     @Provides
     @Singleton
-    fun provideMissionActivityDetailRepository(
-        missionDao: MissionDao,
-        activityDao: ActivityDao,
-        taskDao: TaskDao,
-        activityConfigDao: ActivityConfigDao,
-        activityLanguageDao: ActivityLanguageDao,
-        attributeValueReferenceDao: AttributeValueReferenceDao,
-        contentConfigDao: ContentConfigDao,
-        missionLanguageAttributeDao: MissionLanguageAttributeDao,
-        subjectAttributeDao: SubjectAttributeDao,
-        programmeDao: ProgrammeDao,
-        uiConfigDao: UiConfigDao,
-        apiService: DataLoadingApiService,
-        sharedPrefs: CoreSharedPrefs,
-        grantConfigDao: GrantConfigDao,
-        formUiConfigDao: FormUiConfigDao,
-        surveyConfigEntityDao: SurveyConfigEntityDao,
-        missionConfigEntityDao: MissionConfigEntityDao,
-        missionLivelihoodConfigEntityDao: MissionLivelihoodConfigEntityDao,
-        livelihoodDao: LivelihoodDao
-    ): IMissionActivityDetailRepository {
-        return MissionActivityDetailRepositoryImpl(
-            apiInterface = apiService,
-            missionActivityDao = activityDao,
-            activityConfigDao = activityConfigDao,
-            uiConfigDao = uiConfigDao,
-            activityLanguageDao = activityLanguageDao,
-            taskDao = taskDao,
-            programmeDao = programmeDao,
-            subjectAttributeDao = subjectAttributeDao,
-            attributeValueReferenceDao = attributeValueReferenceDao,
-            missionDao = missionDao,
-            contentConfigDao = contentConfigDao,
-            missionLanguageAttributeDao = missionLanguageAttributeDao,
-            sharedPrefs = sharedPrefs,
-            grantConfigDao = grantConfigDao,
-            formUiConfigDao = formUiConfigDao,
-            surveyConfigEntityDao = surveyConfigEntityDao,
-            missionConfigEntityDao = missionConfigEntityDao,
-            missionLivelihoodConfigEntityDao = missionLivelihoodConfigEntityDao,
-            livelihoodDao = livelihoodDao
-        )
-    }
-
-
-    @Provides
-    @Singleton
-    fun provideMissionRepositoryImpl(
+    fun provideMissionRepository(
         missionDao: MissionDao,
         activityDao: ActivityDao,
         taskDao: TaskDao,
@@ -712,8 +657,7 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchAllDataUseCase(
         surveyRepo: SurveyDownloadRepository,
-        missonActivityDetailRepository: MissionActivityDetailRepositoryImpl,
-        fetchMissionDataUseCase: FetchMissionDataUseCase,
+        missionRepositoryImpl: MissionRepositoryImpl,
         contentRepositoryImpl: ContentRepositoryImpl,
         repository: IContentDownloader,
         downloaderManager: DownloaderManager,
@@ -734,8 +678,8 @@ class DataLoadingModule {
         apiCallConfigRepositoryImpl: ApiCallConfigRepositoryImpl
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
-            fetchMissionActivityDetailDataUseCase = FetchMissionActivityDetailDataUseCase(
-                missonActivityDetailRepository
+            fetchMissionDataUseCase = FetchMissionDataUseCase(
+                missionRepositoryImpl
             ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
@@ -759,8 +703,7 @@ class DataLoadingModule {
             languageConfigUseCase = languageConfigUseCase,
             fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
             fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase,
-            apiCallConfigRepository = apiCallConfigRepositoryImpl,
-            fetchMissionDataUseCase = fetchMissionDataUseCase
+            apiCallConfigRepository = apiCallConfigRepositoryImpl
         )
     }
 
@@ -1852,18 +1795,6 @@ class DataLoadingModule {
     ): IApiCallConfigRepository {
         return ApiCallConfigRepositoryImpl(
             apiCallConfigDao, coreSharedPrefs
-        )
-    }
-
-    @Provides
-    @Singleton
-    fun providesApiCallJournalRepository(
-        apiCallJournalJournalDao: ApiCallJournalDao,
-        coreSharedPrefs: CoreSharedPrefs,
-    ): IApiCallJournalRepository {
-        return ApiCallJournalRepositoryImpl(
-            coreSharedPrefs = coreSharedPrefs,
-            apiCallJournalJournalDao = apiCallJournalJournalDao
         )
     }
 

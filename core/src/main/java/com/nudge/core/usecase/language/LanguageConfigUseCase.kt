@@ -1,13 +1,11 @@
 package com.nudge.core.usecase.language
 
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.SUCCESS
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.constants.SUB_PATH_GET_V3_CONFIG_LANGUAGE
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.language.FetchLanguageRepositoryImpl
 import com.nudge.core.database.entities.language.LanguageEntity
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.model.response.language.LanguageConfigModel
 import com.nudge.core.network.ApiException
@@ -17,11 +15,7 @@ class LanguageConfigUseCase @Inject constructor(private val languageRepositoryIm
     BaseApiCallNetworkUseCase() {
 
 
-    suspend fun invoke(
-        screenName: String = BLANK_STRING,
-        triggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
-        moduleName: String = BLANK_STRING,
-    ): Boolean {
+    suspend fun invoke(): Boolean {
         try {
             val apiResponse = languageRepositoryImpl.getLanguageV3FromNetwork()
             if (apiResponse.status.equals(SUCCESS, true)) {
@@ -29,55 +23,14 @@ class LanguageConfigUseCase @Inject constructor(private val languageRepositoryIm
                     languageRepositoryImpl.deleteLanguageDataFromDB()
                     languageRepositoryImpl.saveLanguageDataToDB(it.languageList)
                 }
-                if (screenName.isNotBlank() && moduleName.isNotBlank()) {
-                    updateApiCallStatus(
-                        screenName = screenName,
-                        moduleName = moduleName,
-                        triggerType = triggerType,
-                        status = ApiStatus.SUCCESS.name,
-                        customData = mapOf(),
-                        errorMsg = BLANK_STRING
-                    )
-                }
-
                 return true
             } else {
-                if (screenName.isNotBlank() && moduleName.isNotBlank()) {
-                    updateApiCallStatus(
-                        screenName = screenName,
-                        moduleName = moduleName,
-                        triggerType = triggerType,
-                        status = ApiStatus.FAILED.name,
-                        customData = mapOf(),
-                        errorMsg = apiResponse.message
-                    )
-                }
                 return false
             }
 
         } catch (apiException: ApiException) {
-            if (screenName.isNotBlank() && moduleName.isNotBlank()) {
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
-                    customData = mapOf(),
-                    errorMsg = apiException.stackTraceToString()
-                )
-            }
             throw apiException
         } catch (ex: Exception) {
-            if (screenName.isNotBlank() && moduleName.isNotBlank()) {
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
-                    customData = mapOf(),
-                    errorMsg = ex.stackTraceToString()
-                )
-            }
             throw ex
         }
     }
@@ -97,11 +50,7 @@ class LanguageConfigUseCase @Inject constructor(private val languageRepositoryIm
         ) {
             return false
         }
-        return invoke(
-            screenName = screenName,
-            triggerType = triggerType,
-            moduleName = moduleName
-        )
+        return invoke()
     }
 
     suspend fun fetchLanguageAPI(): ApiResponseModel<LanguageConfigModel>? {

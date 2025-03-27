@@ -171,7 +171,6 @@ class DataTabScreenViewModel @Inject constructor(
         onEvent(LoaderEvent.UpdateLoaderState(true))
         ioViewModelScope {
             dataTabUseCase.invoke(
-                moduleName = "IncomeExpanseModule",
                 screenName = "DataTabScreen",
                 dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
                 isRefresh = isRefresh,

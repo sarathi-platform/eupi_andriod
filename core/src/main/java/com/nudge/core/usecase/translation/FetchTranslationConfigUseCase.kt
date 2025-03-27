@@ -1,13 +1,11 @@
 package com.nudge.core.usecase.translation
 
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.SUCCESS
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.constants.SUB_PATH_FETCH_TRANSLATIONS
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.translation.FetchTranslationRepositoryImpl
 import com.nudge.core.database.entities.traslation.TranslationConfigEntity
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.network.ApiException
 import javax.inject.Inject
 
@@ -34,46 +32,14 @@ class FetchTranslationConfigUseCase @Inject constructor(private val translationR
                 apiResponse.data?.let {
                     translationRepositoryImpl.saveTranslationDataToDB(it)
                 }
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.SUCCESS.name,
-                    customData = customData,
-                    errorMsg = BLANK_STRING
-                )
                 return true
             } else {
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.FAILED.name,
-                    customData = customData,
-                    errorMsg = apiResponse.message
-                )
                 return false
             }
 
         } catch (apiException: ApiException) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = apiException.stackTraceToString()
-            )
             throw apiException
         } catch (ex: Exception) {
-            updateApiCallStatus(
-                screenName = screenName,
-                moduleName = moduleName,
-                triggerType = triggerType,
-                status = ApiStatus.FAILED.name,
-                customData = customData,
-                errorMsg = ex.stackTraceToString()
-            )
             throw ex
         }
     }
