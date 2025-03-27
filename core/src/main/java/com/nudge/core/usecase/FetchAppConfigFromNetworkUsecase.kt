@@ -18,9 +18,16 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
     override suspend fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,
+        moduleName: String,
         customData: Map<String, Any>
     ): Boolean {
-        if (!super.invoke(screenName, triggerType, customData)) {
+        if (!super.invoke(
+                screenName = screenName,
+                triggerType = triggerType,
+                moduleName = moduleName,
+                customData = customData,
+            )
+        ) {
             return false
         }
         val propertiesName = customData["propertiesName"] as List<String>
