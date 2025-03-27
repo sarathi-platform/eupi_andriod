@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.preference.CoreSharedPrefs.Companion.PREF_STATE_ID
 import com.nudge.core.utils.CoreLogger
@@ -8,6 +10,7 @@ import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.dao.ActivityConfigDao
 import com.sarathi.dataloadingmangement.model.survey.request.SurveyRequest
 import com.sarathi.dataloadingmangement.network.ApiException
+import com.sarathi.dataloadingmangement.network.SUBPATH_FETCH_SURVEY_FROM_NETWORK
 import com.sarathi.dataloadingmangement.repository.ISurveyDownloadRepository
 import javax.inject.Inject
 
@@ -16,9 +19,19 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
     private val repository: ISurveyDownloadRepository,
     private val sharedPrefs: CoreSharedPrefs,
     private val activityConfigDao: ActivityConfigDao,
-) {
-    suspend operator fun invoke(missionId: Int): Boolean {
+) : BaseApiCallNetworkUseCase() {
+
+    override suspend operator fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
+            //TODO need to add MissionId
+            val missionId = customData["MissionId"] as Int
             activityConfigDao.getSurveyIds(missionId, sharedPrefs.getUniqueUserIdentifier())
                 .forEach { surveyId ->
                 callSurveyApi(
@@ -62,5 +75,9 @@ class FetchSurveyDataFromNetworkUseCase @Inject constructor(
             return true
         }
         return false
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUBPATH_FETCH_SURVEY_FROM_NETWORK
     }
 }

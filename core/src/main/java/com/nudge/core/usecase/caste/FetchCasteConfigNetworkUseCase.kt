@@ -6,6 +6,9 @@ import com.nudge.core.DEFAULT_ERROR_CODE
 import com.nudge.core.DEFAULT_SUCCESS_CODE
 import com.nudge.core.SUBPATH_GET_CASTE_LIST
 import com.nudge.core.SUCCESS
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.constants.SUB_PATH_GET_CONFIG_CASTE
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.caste.CasteConfigRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
@@ -22,11 +25,24 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
     private val casteConfigRepositoryImpl: CasteConfigRepositoryImpl,
     private val apiStatusDao: ApiStatusDao,
     private val coreSharedPrefs: CoreSharedPrefs,
-) {
-    suspend operator fun invoke() {
+) : BaseApiCallNetworkUseCase() {
+
+    override suspend fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
+        if (!super.invoke(screenName, triggerType, customData)) {
+            return false
+        }
+        return invoke()
+    }
+
+
+    suspend operator fun invoke(): Boolean {
         try {
             if (!isNeedToCallApi(SUBPATH_GET_CASTE_LIST)) {
-                return
+                return false
             }
             val casteList = arrayListOf<CasteModel>()
             val casteEntityList = arrayListOf<CasteEntity>()
@@ -52,16 +68,18 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                         casteList.addAll(casteApiResponse.data)
                     }
                 }
+                coreSharedPrefs.savePref("caste_list", casteList.json())
+                return true
             } else {
+                coreSharedPrefs.savePref("caste_list", casteList.json())
                 updateApiStatus(
                     SUBPATH_GET_CASTE_LIST,
                     status = ApiStatus.FAILED.ordinal,
                     casteApiResponse.message,
                     DEFAULT_ERROR_CODE
                 )
+                return false
             }
-            coreSharedPrefs.savePref("caste_list", casteList.json())
-
         } catch (apiException: ApiException) {
             updateApiStatus(
                 SUBPATH_GET_CASTE_LIST,
@@ -118,6 +136,10 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
 
     suspend fun getCasteIdValue(casteId: Int): String? {
         return casteConfigRepositoryImpl.getCasteIdValue(casteId = casteId) ?: BLANK_STRING
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUB_PATH_GET_CONFIG_CASTE
     }
 
 }

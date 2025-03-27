@@ -12,6 +12,7 @@ import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.TabsCore
 import com.nudge.core.WEEK_DURATION_RANGE
+import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
@@ -169,12 +170,16 @@ class DataTabScreenViewModel @Inject constructor(
     private fun loadAddDataForDataTab(isRefresh: Boolean) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         ioViewModelScope {
-            dataTabUseCase.invoke(isRefresh) { isSuccess, successMsg ->
-                if (isSuccess)
-                    initDataTab()
-                else
-                    onEvent(LoaderEvent.UpdateLoaderState(false))
-            }
+            dataTabUseCase.invoke(
+                screenName = "DataTabScreen",
+                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+                isRefresh = isRefresh,
+                onComplete = { isSuccess, message ->
+                    if (isSuccess)
+                        initDataTab()
+                    else
+                        onEvent(LoaderEvent.UpdateLoaderState(false))
+                })
         }
     }
 

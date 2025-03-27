@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -11,6 +13,9 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLiveliho
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
@@ -34,23 +39,42 @@ class FetchAllDataUseCase @Inject constructor(
 ) {
 
     val apiUseCaseList: Map<String, BaseApiCallNetworkUseCase> = mapOf(
+        "SUBPATH_USER_VIEW" to fetchUserDetailUseCase,
         "SUB_PATH_GET_MISSION_DETAILS" to fetchMissionDataUseCase,
-        "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase
+        "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase,
+        "SUB_PATH_CONTENT_MANAGER" to fetchContentDataFromNetworkUseCase,
+        "SUB_PATH_GET_V3_CONFIG_LANGUAGE" to languageConfigUseCase,
+        "SUB_PATH_GET_CONFIG_CASTE" to fetchCasteConfigNetworkUseCase,
+        "SUB_PATH_REGISTRY_SERVICE_PROPERTY" to fetchAppConfigFromNetworkUseCase,
     )
 
     suspend fun invoke(
         screenName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
-        //api config list using order  and then check with apiUseCaseList
-        apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
-
-
-            apiUseCaseList[it.apiName]?.invoke(screenName, dataLoadingTriggerType, mapOf())
+        if (isRefresh || !coreSharedPrefs.isDataLoaded()) {
+            //api config list using order  and then check with apiUseCaseList
+            fetchMissionDataUseCase.getAllMissionList()
+            apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name)
+                .forEach {
+                    apiUseCaseList[it.apiName]?.invoke(
+                        screenName,
+                        dataLoadingTriggerType,
+                        customData
+                    )
+                }
+            CoroutineScope(Dispatchers.IO).launch {
+                contentDownloaderUseCase.livelihoodContentDownload()
+            }
+            CoroutineScope(Dispatchers.IO).launch {
+                contentDownloaderUseCase.contentDownloader()
+            }
+            coreSharedPrefs.setDataLoaded(true)
         }
-
+        onComplete(true, BLANK_STRING)
 
 //        fetchUserDetailUseCase.invoke()
 //
@@ -74,7 +98,6 @@ class FetchAllDataUseCase @Inject constructor(
 //        } else {
 //            onComplete(true, BLANK_STRING)
 //        }
-        onComplete(true, BLANK_STRING)
     }
 
     suspend fun fetchMissionRelatedData(
@@ -94,6 +117,7 @@ class FetchAllDataUseCase @Inject constructor(
                 mapOf("MissionId" to missionId, "ProgramId" to programId)
             )
         }
+
 //        if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
 //                missionId = missionId,
 //                programId
@@ -152,8 +176,3 @@ class FetchAllDataUseCase @Inject constructor(
 }
 
 
-enum class DataLoadingTriggerType {
-    PULL_TO_REFRESH,
-    LOAD_SERVER_DATA,
-    FRESH_LOGIN
-}

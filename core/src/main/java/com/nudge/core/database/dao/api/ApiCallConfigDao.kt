@@ -15,7 +15,11 @@ interface ApiCallConfigDao {
     @Query("DELETE FROM $ApiCallConfigTable where userId=:userId")
     fun deleteApiCallConfigTable(userId: String)
 
-    @Query("Select * FROM $ApiCallConfigTable where userId=:userId and screenName=:screenName order by apiOrder ")
-    fun getApiCallConfigForScreen(screenName: String, userId: String): List<ApiCallConfigEntity>
+    @Query("Select * FROM $ApiCallConfigTable where userId=:userId and screenName=:screenName  and triggerPoint=:triggerPoint order by apiOrder ")
+    fun getApiCallConfigForScreen(
+        screenName: String,
+        userId: String,
+        triggerPoint: String
+    ): List<ApiCallConfigEntity>
 
 }

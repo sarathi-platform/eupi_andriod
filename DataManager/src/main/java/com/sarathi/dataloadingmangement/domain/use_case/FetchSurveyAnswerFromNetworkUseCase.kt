@@ -1,9 +1,12 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.model.survey.request.GetSurveyAnswerRequest
 import com.sarathi.dataloadingmangement.network.ApiException
+import com.sarathi.dataloadingmangement.network.SUBPATH_SURVEY_ANSWERS
 import com.sarathi.dataloadingmangement.repository.ISurveySaveNetworkRepository
 import javax.inject.Inject
 
@@ -11,9 +14,18 @@ import javax.inject.Inject
 class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
     private val repository: ISurveySaveNetworkRepository,
     private val sharedPrefs: CoreSharedPrefs,
-) {
-    suspend operator fun invoke(missionId: Int): Boolean {
+) : BaseApiCallNetworkUseCase() {
+    override suspend fun invoke(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
+            if (!super.invoke(screenName, triggerType, customData)) {
+                return false
+            }
+            //TODO need to add MissionId
+            val missionId = customData["MissionId"] as Int
             repository.getActivityConfig(missionId = missionId)?.forEach {
                 callSurveAnsweryApi(
                     GetSurveyAnswerRequest(
@@ -47,6 +59,11 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
             return true
         }
         return false
+    }
+
+    override fun getApiEndpoint(): String {
+        return SUBPATH_SURVEY_ANSWERS
+
     }
 
 }
