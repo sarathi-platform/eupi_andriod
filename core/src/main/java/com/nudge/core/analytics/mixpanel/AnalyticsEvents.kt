@@ -61,7 +61,8 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     BLOB_UPLOAD_FAILED_EVENT_COUNT("blob_upload_failed_event_count"),
     TOTAL_EVENT_COUNT("total_event_count"),
 
-    TOTAL_DELETED_EVENT_COUNT("total_deleted_event_count")
+    TOTAL_DELETED_EVENT_COUNT("total_deleted_event_count"),
+    BUILD_ENVIRONMENT_NAME("build_environment_name")
 
 }
 
