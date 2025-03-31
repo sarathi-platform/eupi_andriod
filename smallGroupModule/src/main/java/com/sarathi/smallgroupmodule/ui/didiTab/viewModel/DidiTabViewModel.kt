@@ -91,6 +91,7 @@ class DidiTabViewModel @Inject constructor(
                 screenName = "DidiTabScreen",
                 dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
                 isRefresh = isRefresh,
+                moduleName = "DidiTab",
                 onComplete = { isSuccess, message ->
                     if (isSuccess) {
                         initDidiTab()

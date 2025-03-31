@@ -37,12 +37,18 @@ class DataTabUseCase @Inject constructor(
 
     suspend fun invoke(
         screenName: String,
+        moduleName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true
     ) {
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
-            apiUseCaseList[it.apiName]?.invoke(screenName, dataLoadingTriggerType, mapOf())
+            apiUseCaseList[it.apiName]?.invoke(
+                screenName = screenName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf(),
+                moduleName = moduleName
+            )
         }
         //Todo handle commented code
 //        try {

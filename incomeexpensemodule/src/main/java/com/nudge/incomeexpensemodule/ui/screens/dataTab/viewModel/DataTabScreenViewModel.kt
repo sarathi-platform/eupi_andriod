@@ -174,6 +174,7 @@ class DataTabScreenViewModel @Inject constructor(
                 screenName = "DataTabScreen",
                 dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
                 isRefresh = isRefresh,
+                moduleName = "DataTab",
                 onComplete = { isSuccess, message ->
                     if (isSuccess)
                         initDataTab()
