@@ -282,12 +282,13 @@ class ConditionsUtils {
             if (isFromForm)
                 condition = condition?.distinctBy { Pair(it.sourceQuestion, it.expression) }
 
-            val response = responseMap[sourceQuestion.questionId]
 
             if (condition.isNullOrEmpty())
                 break
 
             if (condition.size == 1) {
+                val response = responseMap[sourceQuestion.questionId]
+
                 val result = evaluateSingleCondition(
                     sourceQuestion = sourceQuestion,
                     response = response,
@@ -320,7 +321,6 @@ class ConditionsUtils {
 
                 val result = evaluateMultipleCondition(
                     sourceQuestion = sourceQuestion,
-                    response = response,
                     conditions = condition,
                     conditionOperator = conditionOperator,
                     sourceQuestionType = sourceQuestionType
@@ -436,7 +436,6 @@ class ConditionsUtils {
      */
     private fun evaluateMultipleCondition(
         sourceQuestion: QuestionUiModel,
-        response: List<Int>?,
         conditions: List<Conditions>,
         conditionOperator: String?,
         sourceQuestionType: String
@@ -448,7 +447,7 @@ class ConditionsUtils {
         return conditions.fold(
             evaluateSingleCondition(
                 sourceQuestion,
-                response,
+                response = responseMap[conditions.first().sourceQuestion],
                 conditions = conditions.first(),
                 sourceQuestionType
             )
@@ -457,7 +456,7 @@ class ConditionsUtils {
                 Operator.AND -> {
                     acc && evaluateSingleCondition(
                         sourceQuestion,
-                        response,
+                        responseMap[condition.sourceQuestion],
                         conditions = condition,
                         sourceQuestionType
                     )
@@ -466,7 +465,7 @@ class ConditionsUtils {
                 Operator.OR -> {
                     acc || evaluateSingleCondition(
                         sourceQuestion,
-                        response,
+                        responseMap[condition.sourceQuestion],
                         conditions = condition,
                         sourceQuestionType
                     )
