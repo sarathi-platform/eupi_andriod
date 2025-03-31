@@ -282,12 +282,12 @@ class ConditionsUtils {
             if (isFromForm)
                 condition = condition?.distinctBy { Pair(it.sourceQuestion, it.expression) }
 
+            val response = responseMap[sourceQuestion.questionId]
 
             if (condition.isNullOrEmpty())
                 break
 
             if (condition.size == 1) {
-                val response = responseMap[sourceQuestion.questionId]
 
                 val result = evaluateSingleCondition(
                     sourceQuestion = sourceQuestion,
