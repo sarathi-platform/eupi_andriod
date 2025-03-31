@@ -46,7 +46,11 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
     }
 
 
-    suspend operator fun invoke(): Boolean {
+    suspend operator fun invoke(
+        screenName: String = BLANK_STRING,
+        triggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+        moduleName: String = BLANK_STRING,
+    ): Boolean {
         try {
             if (!isNeedToCallApi(SUBPATH_GET_CASTE_LIST)) {
                 return false
@@ -76,6 +80,16 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                     }
                 }
                 coreSharedPrefs.savePref("caste_list", casteList.json())
+                if (screenName.isNotBlank() && moduleName.isNotBlank()) {
+                    updateApiCallStatus(
+                        screenName = screenName,
+                        moduleName = moduleName,
+                        triggerType = triggerType,
+                        status = ApiStatus.SUCCESS.name,
+                        customData = mapOf(),
+                        errorMsg = BLANK_STRING
+                    )
+                }
                 return true
             } else {
                 coreSharedPrefs.savePref("caste_list", casteList.json())
@@ -85,6 +99,16 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                     casteApiResponse.message,
                     DEFAULT_ERROR_CODE
                 )
+                if (screenName.isNotBlank() && moduleName.isNotBlank()) {
+                    updateApiCallStatus(
+                        screenName = screenName,
+                        moduleName = moduleName,
+                        triggerType = triggerType,
+                        status = ApiStatus.FAILED.name,
+                        customData = mapOf(),
+                        errorMsg = casteApiResponse.message
+                    )
+                }
                 return false
             }
         } catch (apiException: ApiException) {
@@ -94,6 +118,16 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                 apiException.message ?: BLANK_STRING,
                 apiException.getStatusCode()
             )
+            if (screenName.isNotBlank() && moduleName.isNotBlank()) {
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = mapOf(),
+                    errorMsg = apiException.stackTraceToString()
+                )
+            }
             throw apiException
         } catch (ex: Exception) {
             updateApiStatus(
@@ -107,6 +141,16 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                 msg = "invoke: ApiException -> ${ex.message}",
                 ex = ex,
             )
+            if (screenName.isNotBlank() && moduleName.isNotBlank()) {
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = mapOf(),
+                    errorMsg = ex.stackTraceToString()
+                )
+            }
             throw ex
         }
     }

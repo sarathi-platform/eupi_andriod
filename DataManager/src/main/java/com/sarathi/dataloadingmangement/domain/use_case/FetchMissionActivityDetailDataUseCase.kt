@@ -2,19 +2,18 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
-import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.network.ApiException
-import com.sarathi.dataloadingmangement.network.SUB_PATH_GET_MISSION_DETAILS
-import com.sarathi.dataloadingmangement.repository.IMissionRepository
-import kotlinx.coroutines.flow.Flow
+import com.sarathi.dataloadingmangement.network.SUB_PATH_GET_ACTIVITY_DETAILS
+import com.sarathi.dataloadingmangement.repository.IMissionActivityDetailRepository
 import javax.inject.Inject
 
-class FetchMissionDataUseCase @Inject constructor(
-    private val repository: IMissionRepository,
+class FetchMissionActivityDetailDataUseCase @Inject constructor(
+    private val repository: IMissionActivityDetailRepository,
 ) : BaseApiCallNetworkUseCase() {
 
     override suspend fun invoke(
@@ -53,65 +52,53 @@ class FetchMissionDataUseCase @Inject constructor(
                         )
                     }
                 }
-
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.SUCCESS.name,
+                    customData = customData,
+                    errorMsg = BLANK_STRING
+                )
 
                 return true
 
             } else {
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = customData,
+                    errorMsg = apiResponse.message
+                )
                 return false
             }
 
         } catch (apiException: ApiException) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = apiException.stackTraceToString()
+            )
             throw apiException
         } catch (ex: Exception) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = ex.stackTraceToString()
+            )
             throw ex
         }
     }
 
 
-    suspend fun isMissionLoaded(missionId: Int, programId: Int): Int {
-        return repository.isMissionLoaded(missionId, programId)
-    }
-
-    suspend fun setMissionLoaded(missionId: Int, programId: Int) {
-        return repository.setMissionLoaded(missionId, programId)
-    }
-
-    suspend fun getAllMissionList(): Boolean {
-        try {
-
-            val apiResponse = repository.fetchMissionListFromServer()
-            if (apiResponse.status.equals(SUCCESS, true)) {
-                apiResponse.data?.let { missionApiResponse ->
-
-                    missionApiResponse.forEach { programme ->
-                        repository.saveProgrammeToDb(programme)
-
-                        repository.saveMissionToDB(programme.missions, programme.id)
-                        programme.missions.forEach { mission ->
-                            repository.saveMissionsActivityToDB(
-                                missionId = mission.id,
-                                activities = mission.activities
-                            )
-                        }
-                    }
-                    return true
-                }
-            } else {
-                return false
-            }
-
-        } catch (apiException: ApiException) {
-            throw apiException
-        } catch (ex: Exception) {
-            throw ex
-        }
-        return false
-    }
-
-    fun getAllMission(): Flow<List<MissionUiModel>> {
-        return repository.getAllMission()
-    }
     suspend fun fetchMissionInfo(missionId: Int): MissionInfoUIModel? {
         return repository.fetchMissionInfo(missionId)
     }
@@ -124,7 +111,7 @@ class FetchMissionDataUseCase @Inject constructor(
         repository.getActivityTypesForMission(missionId = missionId)
 
     override fun getApiEndpoint(): String {
-        return SUB_PATH_GET_MISSION_DETAILS
+        return SUB_PATH_GET_ACTIVITY_DETAILS
     }
 
 }
