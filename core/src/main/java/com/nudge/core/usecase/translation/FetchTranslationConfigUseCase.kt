@@ -5,14 +5,18 @@ import com.nudge.core.SUCCESS
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.constants.SUB_PATH_FETCH_TRANSLATIONS
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.data.repository.translation.FetchTranslationRepositoryImpl
 import com.nudge.core.database.entities.traslation.TranslationConfigEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.network.ApiException
 import javax.inject.Inject
 
-class FetchTranslationConfigUseCase @Inject constructor(private val translationRepositoryImpl: FetchTranslationRepositoryImpl) :
-    BaseApiCallNetworkUseCase() {
+class FetchTranslationConfigUseCase @Inject constructor(
+    private val translationRepositoryImpl: FetchTranslationRepositoryImpl,
+    apiCallJournalRepository: IApiCallJournalRepository
+) :
+    BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     override suspend fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,

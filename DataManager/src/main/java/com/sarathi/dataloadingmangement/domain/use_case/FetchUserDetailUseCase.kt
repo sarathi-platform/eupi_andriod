@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.nudge.core.analytics.AnalyticsManager
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.database.entities.language.LanguageEntity
 import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -14,8 +15,9 @@ import javax.inject.Inject
 
 class FetchUserDetailUseCase @Inject constructor(
     private val repository: IUserDetailRepository,
-    private val analyticsManager: AnalyticsManager
-) : BaseApiCallNetworkUseCase() {
+    private val analyticsManager: AnalyticsManager,
+    apiCallJournalRepository: IApiCallJournalRepository
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
 
     override suspend operator fun invoke(
         screenName: String,

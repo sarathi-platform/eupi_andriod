@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
@@ -14,8 +15,8 @@ import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 class FetchMissionDataUseCase @Inject constructor(
-    private val repository: IMissionRepository,
-) : BaseApiCallNetworkUseCase() {
+    private val repository: IMissionRepository, apiCallJournalRepository: IApiCallJournalRepository,
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     override suspend fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,

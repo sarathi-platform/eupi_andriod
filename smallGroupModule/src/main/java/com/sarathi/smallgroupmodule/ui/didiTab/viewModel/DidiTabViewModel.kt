@@ -88,7 +88,6 @@ class DidiTabViewModel @Inject constructor(
         onEvent(LoaderEvent.UpdateLoaderState(true))
         ioViewModelScope {
             didiTabUseCase.invoke(
-                moduleName = "SmallGroupModule",
                 screenName = "DidiTabScreen",
                 dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
                 isRefresh = isRefresh,

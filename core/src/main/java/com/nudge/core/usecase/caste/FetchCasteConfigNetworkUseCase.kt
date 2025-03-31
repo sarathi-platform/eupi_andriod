@@ -9,6 +9,7 @@ import com.nudge.core.SUCCESS
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.constants.SUB_PATH_GET_CONFIG_CASTE
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.data.repository.caste.CasteConfigRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
@@ -25,7 +26,8 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
     private val casteConfigRepositoryImpl: CasteConfigRepositoryImpl,
     private val apiStatusDao: ApiStatusDao,
     private val coreSharedPrefs: CoreSharedPrefs,
-) : BaseApiCallNetworkUseCase() {
+    apiCallJournalRepository: IApiCallJournalRepository,
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
 
     override suspend fun invoke(
         screenName: String,

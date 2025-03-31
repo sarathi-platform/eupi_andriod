@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
@@ -17,7 +18,8 @@ import javax.inject.Inject
 class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
     private val repository: FetchLivelihoodOptionRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
-) : BaseApiCallNetworkUseCase() {
+    apiCallJournalRepository: IApiCallJournalRepository,
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
 
     private suspend fun getSubjectLivelihoodMapping(
         activityId: Int,

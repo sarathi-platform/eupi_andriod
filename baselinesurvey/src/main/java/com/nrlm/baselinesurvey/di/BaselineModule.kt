@@ -133,6 +133,7 @@ import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.GetSurveyeeLis
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.MoveSurveyeeToThisWeekUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.SurveyeeScreenUseCase
 import com.nrlm.baselinesurvey.ui.surveyee_screen.domain.use_case.UpdateActivityStatusUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.data.repository.caste.CasteConfigRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.dao.EventDependencyDao
@@ -509,6 +510,8 @@ object BaselineModule {
         casteConfigRepositoryImpl: CasteConfigRepositoryImpl,
         apiStatusDao: ApiStatusDao,
         coreSharedPrefs: CoreSharedPrefs,
+        apiCallJournalRepository: IApiCallJournalRepository
+
     ): FetchDataUseCase {
         return FetchDataUseCase(
             fetchSurveyeeListFromNetworkUseCase = FetchSurveyeeListFromNetworkUseCase(repository),
@@ -523,7 +526,8 @@ object BaselineModule {
             casteConfigNetworkUseCase = FetchCasteConfigNetworkUseCase(
                 casteConfigRepositoryImpl = casteConfigRepositoryImpl,
                 apiStatusDao = apiStatusDao,
-                coreSharedPrefs = coreSharedPrefs
+                coreSharedPrefs = coreSharedPrefs,
+                apiCallJournalRepository = apiCallJournalRepository
             ),
             saveLanguageConfigUseCase = SaveLanguageConfigUseCase(splashScreenRepository)
         )
