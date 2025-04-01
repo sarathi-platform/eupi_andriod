@@ -447,7 +447,7 @@ class ConditionsUtils {
         return conditions.fold(
             evaluateSingleCondition(
                 sourceQuestion,
-                response = responseMap[conditions.first().sourceQuestion],
+                response = responseMap[conditions.firstOrNull()?.sourceQuestion],
                 conditions = conditions.first(),
                 sourceQuestionType
             )
