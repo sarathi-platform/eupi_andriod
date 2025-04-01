@@ -180,7 +180,7 @@ class FormResponseSummaryViewModel @Inject constructor(
                     .filter { savedAnswer ->
                         savedAnswer.referenceId != BLANK_STRING && formQuestionIdList.contains(
                             savedAnswer.questionId
-                        )
+                        ) && savedAnswer.optionItems.isNotEmpty()
                     }
                     .groupBy { savedAnswer -> Pair(savedAnswer.referenceId, savedAnswer.formId) }
                     .filter { it.key.second == formId }
