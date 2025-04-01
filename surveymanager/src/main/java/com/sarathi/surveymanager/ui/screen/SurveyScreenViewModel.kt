@@ -126,7 +126,7 @@ class SurveyScreenViewModel @Inject constructor(
                 return@apply
             }
 
-            delay(5000)
+            delay(500)
             this.forEach {
                 runValidationCheck(it.questionId) { isValid, message ->
                     try {
