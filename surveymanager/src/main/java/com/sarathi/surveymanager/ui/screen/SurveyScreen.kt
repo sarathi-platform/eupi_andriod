@@ -119,6 +119,7 @@ fun SurveyScreen(
                 grantType = activityType,
                 maxHeight = maxHeight,
                 onAnswerSelect = { questionUiModel ->
+                    viewModel.fieldValidationAndMessageMap.clear()
                     viewModel.updateQuestionResponseMap(questionUiModel)
                     viewModel.runConditionCheck(questionUiModel)
                     viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
