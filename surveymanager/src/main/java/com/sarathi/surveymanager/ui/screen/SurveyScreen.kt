@@ -4,6 +4,7 @@ package com.sarathi.surveymanager.ui.screen
 
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
@@ -17,6 +18,7 @@ import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.surveymanager.R
+import kotlinx.coroutines.launch
 
 @Composable
 fun SurveyScreen(
@@ -39,6 +41,7 @@ fun SurveyScreen(
     onFormTypeQuestionClicked: (sectionId: Int, surveyId: Int, formId: Int, taskId: Int, activityId: Int, activityConfigId: Int, missionId: Int, subjectType: String, referenceId: String) -> Unit,
     onViewFormSummaryClicked: (taskId: Int, surveyId: Int, sectionId: Int, formId: Int, activityConfigId: Int) -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     BaseSurveyScreen(
         viewModel = viewModel,
         navController = navController,
@@ -66,28 +69,30 @@ fun SurveyScreen(
             }
         },
         onAnswerSelect = { questionUiModel ->
-            viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
-                viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                    Triple(
-                        isValid, message, if (QuestionType.userInputQuestionTypeList.contains(
-                                questionUiModel.type.toLowerCase()
-                            )
-                        ) (questionUiModel.options?.firstOrNull()?.selectedValue
-                            ?: com.nudge.core.BLANK_STRING) else null
-                    )
-            }
-            viewModel.saveSingleAnswerIntoDb(questionUiModel)
-            viewModel.updateTaskStatus(taskId)
-            viewModel.updateSectionStatus(
-                missionId,
-                surveyId,
-                sectionId,
-                taskId,
-                SurveyStatusEnum.INPROGRESS.name,
-                callBack = {
-                    //No Implementation required here.
+            coroutineScope.launch {
+                viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
+                    viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
+                        Triple(
+                            isValid, message, if (QuestionType.userInputQuestionTypeList.contains(
+                                    questionUiModel.type.toLowerCase()
+                                )
+                            ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                                ?: com.nudge.core.BLANK_STRING) else null
+                        )
                 }
-            )
+                viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                viewModel.updateTaskStatus(taskId)
+                viewModel.updateSectionStatus(
+                    missionId,
+                    surveyId,
+                    sectionId,
+                    taskId,
+                    SurveyStatusEnum.INPROGRESS.name,
+                    callBack = {
+                        //No Implementation required here.
+                    }
+                )
+            }
         },
         onSubmitButtonClick = {
             if (viewModel.isNoSection.value) {
@@ -101,7 +106,7 @@ fun SurveyScreen(
                 SurveyStatusEnum.COMPLETED.name
             ) {
                 if (viewModel.isNoSection.value) {
-                navController.popBackStack()
+                    navController.popBackStack()
                     navController.popBackStack()
                 } else {
                     navController.popBackStack()
@@ -119,34 +124,37 @@ fun SurveyScreen(
                 grantType = activityType,
                 maxHeight = maxHeight,
                 onAnswerSelect = { questionUiModel ->
-                    viewModel.updateQuestionResponseMap(questionUiModel)
-                    viewModel.runConditionCheck(questionUiModel)
-                    viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                            Triple(
-                                isValid,
-                                message,
-                                if (QuestionType.userInputQuestionTypeList.contains(
-                                        questionUiModel.type.toLowerCase()
-                                    )
-                                ) (questionUiModel.options?.firstOrNull()?.selectedValue
-                                    ?: com.nudge.core.BLANK_STRING) else null
-                            )
+                    coroutineScope.launch {
+                        viewModel.updateQuestionResponseMap(questionUiModel)
+                        viewModel.runConditionCheck(questionUiModel)
+                        viewModel.runValidationCheck(questionId = questionUiModel.questionId) { isValid, message ->
+                            viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
+                                Triple(
+                                    isValid,
+                                    message,
+                                    if (QuestionType.userInputQuestionTypeList.contains(
+                                            questionUiModel.type.toLowerCase()
+                                        )
+                                    ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                                        ?: com.nudge.core.BLANK_STRING) else null
+                                )
+                        }
+
+                        viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                        viewModel.updateMissionFilter()
+                        viewModel.updateTaskStatus(taskId)
+                        viewModel.updateSectionStatus(
+                            missionId,
+                            surveyId,
+                            sectionId,
+                            taskId,
+                            SurveyStatusEnum.INPROGRESS.name,
+                            callBack = {
+                                //No Implementation required here.
+                            }
+                        )
                     }
 
-                    viewModel.saveSingleAnswerIntoDb(questionUiModel)
-                    viewModel.updateMissionFilter()
-                    viewModel.updateTaskStatus(taskId)
-                    viewModel.updateSectionStatus(
-                        missionId,
-                        surveyId,
-                        sectionId,
-                        taskId,
-                        SurveyStatusEnum.INPROGRESS.name,
-                        callBack = {
-                            //No Implementation required here.
-                        }
-                    )
                 },
                 onViewSummaryClicked = { questionUiModel ->
                     onViewFormSummaryClicked(
