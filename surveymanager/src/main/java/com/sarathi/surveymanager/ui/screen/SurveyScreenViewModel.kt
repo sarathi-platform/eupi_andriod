@@ -30,6 +30,7 @@ import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -125,6 +126,7 @@ class SurveyScreenViewModel @Inject constructor(
                 return@apply
             }
 
+            delay(5000)
             this.forEach {
                 runValidationCheck(it.questionId) { isValid, message ->
                     try {
