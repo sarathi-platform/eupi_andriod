@@ -229,7 +229,7 @@ class AddEventViewModel @Inject constructor(
         _livelihoodAssetDropdownValue.addAll(
             if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
                 assetTypeList.filter {
-                    !it.type.lowercase().contains("kid")
+                    !it.type.lowercase().contains("kid") || !it.type.lowercase().contains("chick")
                 }.map {
                     ValuesDto(
                         it.id,
@@ -254,7 +254,7 @@ class AddEventViewModel @Inject constructor(
             _livelihoodChildAssetDropdownValue.clear()
             _livelihoodChildAssetDropdownValue.addAll(
                 assetTypeList.filter {
-                    it.type.lowercase().contains("kid")
+                    it.type.lowercase().contains("kid") || it.type.lowercase().contains("chick")
                 }.map {
                     ValuesDto(
                         it.id,
