@@ -92,6 +92,7 @@ import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.SingleImageComponent
+import com.sarathi.surveymanager.ui.component.SingleSelectGridComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -585,6 +586,35 @@ fun QuestionUiContent(
                     },
                     questionDetailExpanded = {
 
+                    }
+                )
+            }
+
+            QuestionType.SingleSelectGrid.name -> {
+                SingleSelectGridComponent(
+                    content = question.contentEntities,
+                    questionIndex = index,
+                    questionDisplay = question.questionDisplay,
+                    isRequiredField = question.isMandatory,
+                    maxCustomHeight = maxHeight,
+                    showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    optionUiModelList = question.options.value(),
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
+                    onAnswerSelection = { questionIndex, optionItemIndex ->
+                        question.options?.forEachIndexed { index, _ ->
+                            question.options?.get(index)?.isSelected = false
+                        }
+                        question.options?.get(optionItemIndex)?.isSelected = true
+                        onAnswerSelect(question)
                     }
                 )
             }
