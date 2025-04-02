@@ -733,10 +733,15 @@ fun NavGraphBuilder.MatNavigation(
                         )
                     }
                 },
-                navController = navController, message = it.arguments?.getString(
-                    ARG_ACTIVITY_MASSAGE
-                ) ?: BLANK_STRING,
-                activityRoutePath = it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING,
+                navController = navController,
+                message = addSlashInString(
+                    it.arguments?.getString(
+                        ARG_ACTIVITY_MASSAGE
+                    ) ?: BLANK_STRING
+                ),
+                activityRoutePath = addSlashInString(
+                    it.arguments?.getString(ARG_ACTIVITY_NAME) ?: BLANK_STRING
+                ),
                 isFromActivitySuccess = it.arguments?.getBoolean(ARG_IS_FROM_ACTIVITY) ?: false
 
             )
@@ -1348,8 +1353,14 @@ fun navigateToActivityCompletionScreen(
     isFromActivity: Boolean = false,
     activityRoutePath: String = BLANK_STRING
 ) {
-    var activityNameWithNullable = if (!TextUtils.isEmpty(activityRoutePath)) activityRoutePath else null
-    navController.navigate("$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/$activityMsg/$isFromActivity/$activityNameWithNullable")
+    removeSlashFromString(activityMsg)
+    var activityNameWithNullable =
+        if (!TextUtils.isEmpty(activityRoutePath)) activityRoutePath else null
+    navController.navigate(
+        "$ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME/${
+            removeSlashFromString(activityMsg)
+        }/$isFromActivity/${removeSlashFromString(activityNameWithNullable ?: BLANK_STRING)}"
+    )
 }
 
 fun navigateToLivelihoodDropDownScreen(
