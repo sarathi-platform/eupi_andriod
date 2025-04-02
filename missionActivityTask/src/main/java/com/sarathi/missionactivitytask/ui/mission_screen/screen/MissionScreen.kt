@@ -39,7 +39,6 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
@@ -200,10 +199,9 @@ fun MissionScreen(
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             LoadingDataComponent(
                 title = "Mission Screen",
-                subTitle = BLANK_STRING,
-                isVisible = true,
+                apiStatus = viewModel.allApiStatus.value,
+                isVisible = viewModel.isShowLoadingDataComponent.value,
                 progressState = viewModel.progressState,
-                isMultipleDataDownloading = false
             ) {}
             if (isSearch) {
                 Column(

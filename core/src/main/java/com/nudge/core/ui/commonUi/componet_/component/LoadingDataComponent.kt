@@ -105,7 +105,12 @@ fun LoadingDataComponent(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(dimen_6_dp)
+                    .padding(
+                        start = dimen_6_dp,
+                        end = dimen_6_dp,
+                        top = dimen_10_dp,
+                        bottom = dimen_6_dp
+                    )
             ) {
                 Row {
                     Column(

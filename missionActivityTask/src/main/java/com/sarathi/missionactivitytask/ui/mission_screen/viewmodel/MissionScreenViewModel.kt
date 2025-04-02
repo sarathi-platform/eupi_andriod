@@ -71,8 +71,10 @@ class MissionScreenViewModel @Inject constructor(
 
     private var baseCurrentApiCount = 0 // only count api survey count
     private var TOTAL_API_CALL = 0
-    var completedApi = mutableStateOf(0f)
-    var failedApi = mutableStateOf(0f)
+    var completedApiCount = mutableStateOf(0f)
+    var isShowLoadingDataComponent = mutableStateOf(true)
+    var allApiStatus = mutableStateOf(ApiStatus.INPROGRESS)
+    var failedApiCount = mutableStateOf(0f)
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
 
 
@@ -237,8 +239,8 @@ class MissionScreenViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
-        completedApi.value = 0f
-        failedApi.value = 0f
+        completedApiCount.value = 0f
+        failedApiCount.value = 0f
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
 
@@ -267,17 +269,41 @@ class MissionScreenViewModel @Inject constructor(
         }
     }
 
-    suspend fun updateProgress(apiUrl: String) {
+    private suspend fun updateProgress(apiUrl: String) {
         val apiStatusData = fetchAllDataUseCase.getApiStatus(
-            screenName = "MissionScreen", moduleName = "MAT", apiUrl
+            screenName = "MissionScreen",
+            moduleName = "MAT",
+            apiUrl = apiUrl
         )
-        if (apiStatusData.status.equals(ApiStatus.SUCCESS.name)) {
-            completedApi.value = completedApi.value.inc()
+
+        // Increment counters based on API status
+        if (apiStatusData.status == ApiStatus.SUCCESS.name) {
+            completedApiCount.value = completedApiCount.value.inc()
         } else {
-            failedApi.value = failedApi.value.inc()
+            failedApiCount.value = failedApiCount.value.inc()
         }
-        progressState.updateProgress(completedApi.value.toFloat() / TOTAL_API_CALL.toFloat())
-        progressState.updateProgressText("${completedApi.value}/$TOTAL_API_CALL")
+        // Update progress bar and progress text
+        val progress = completedApiCount.value.toFloat() / TOTAL_API_CALL.toFloat()
+        progressState.updateProgress(progress)
+        progressState.updateProgressText("${completedApiCount.value}/$TOTAL_API_CALL")
+
+        // Handle completion and failure scenarios
+        when {
+            completedApiCount.value.toInt() == TOTAL_API_CALL -> {
+                isShowLoadingDataComponent.value = false
+                allApiStatus.value = ApiStatus.SUCCESS
+            }
+
+            failedApiCount.value > 1 -> {
+                isShowLoadingDataComponent.value = true
+                allApiStatus.value = ApiStatus.FAILED
+            }
+
+            else -> {
+                isShowLoadingDataComponent.value =
+                    !isShowLoadingDataComponent.value // Toggle loading visibility
+            }
+        }
     }
 
     private fun collectMissionListFromFlow() {
@@ -383,4 +409,5 @@ class MissionScreenViewModel @Inject constructor(
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.MissionScreen
     }
+
 }
