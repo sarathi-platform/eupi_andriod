@@ -1,5 +1,7 @@
 package com.nudge.core.data.repository
 
+import com.nudge.core.database.entities.api.ApiCallJournalEntity
+
 interface IApiCallJournalRepository {
     suspend fun addApiCall(
         screenName: String,
@@ -18,5 +20,11 @@ interface IApiCallJournalRepository {
         status: String,
         errorMsg: String
     )
+
+    suspend fun getApiCallStatus(
+        screenName: String,
+        moduleName: String,
+        apiUrl: String
+    ): ApiCallJournalEntity
 
 }

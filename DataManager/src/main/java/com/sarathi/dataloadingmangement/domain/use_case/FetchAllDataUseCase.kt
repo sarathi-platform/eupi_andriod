@@ -3,6 +3,8 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallConfigRepository
+import com.nudge.core.data.repository.IApiCallJournalRepository
+import com.nudge.core.database.entities.api.ApiCallJournalEntity
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
@@ -34,6 +36,7 @@ class FetchAllDataUseCase @Inject constructor(
     val languageConfigUseCase: LanguageConfigUseCase,
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     val apiCallConfigRepository: IApiCallConfigRepository,
+    val apiCallJournalRepository: IApiCallJournalRepository,
     private val coreSharedPrefs: CoreSharedPrefs
 ) {
 
@@ -54,8 +57,14 @@ class FetchAllDataUseCase @Inject constructor(
         moduleName: String,
         customData: Map<String, Any>,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
-        isRefresh: Boolean = true
+        isRefresh: Boolean = true,
+        totalNumberOfApi: (screenName: String, screenTotalApi: Int) -> Unit,
+        apiPerStatus: suspend (apiName: String) -> Unit
     ) {
+        totalNumberOfApi(
+            screenName,
+            apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).size
+        )
         //api config list using order  and then check with apiUseCaseList
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
 
@@ -66,6 +75,7 @@ class FetchAllDataUseCase @Inject constructor(
                 customData = mapOf(),
                 moduleName = moduleName
             )
+            apiPerStatus(it.apiUrls)
         }
         onComplete(true, BLANK_STRING)
 
@@ -168,6 +178,18 @@ class FetchAllDataUseCase @Inject constructor(
 
     suspend fun fetchActivityInfo(missionId: Int, activityId: Int): ActivityInfoUIModel? {
         return fetchMissionActivityDetailDataUseCase.fetchActivityInfo(missionId, activityId)
+    }
+
+    suspend fun getApiStatus(
+        screenName: String,
+        moduleName: String,
+        apiUrl: String
+    ): ApiCallJournalEntity {
+        return apiCallJournalRepository.getApiCallStatus(
+            screenName = screenName,
+            moduleName = moduleName,
+            apiUrl = apiUrl
+        )
     }
 }
 

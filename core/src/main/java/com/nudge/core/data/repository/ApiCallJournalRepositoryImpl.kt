@@ -52,6 +52,18 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getApiCallStatus(
+        screenName: String,
+        moduleName: String,
+        apiUrl: String
+    ): ApiCallJournalEntity {
+        return apiCallJournalJournalDao.getApiCallStatus(
+            screenName = screenName,
+            moduleName = moduleName,
+            apiUrl = apiUrl
+        )
+    }
+
 
     private suspend fun isApiCallAlreadyExist(apiUrl: String, requestPayload: String): Boolean {
         return apiCallJournalJournalDao.isApiCallAlreadyExist(

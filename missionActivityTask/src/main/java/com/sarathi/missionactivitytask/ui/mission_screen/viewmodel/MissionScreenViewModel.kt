@@ -7,12 +7,15 @@ import com.nudge.core.ALL_MISSION_FILTER_VALUE
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.TabsCore
 import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.ui.commonUi.CustomProgressState
+import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
@@ -68,6 +71,10 @@ class MissionScreenViewModel @Inject constructor(
 
     private var baseCurrentApiCount = 0 // only count api survey count
     private var TOTAL_API_CALL = 0
+    var completedApi = mutableStateOf(0f)
+    var failedApi = mutableStateOf(0f)
+    val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -230,6 +237,8 @@ class MissionScreenViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
+        completedApi.value = 0f
+        failedApi.value = 0f
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
 
@@ -244,12 +253,31 @@ class MissionScreenViewModel @Inject constructor(
                 dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = isRefresh,
                 onComplete = { isSucess, message ->
-                initMissionScreen()
+                    initMissionScreen()
+                },
+                totalNumberOfApi = { screenName, screenTotalApi ->
+                    TOTAL_API_CALL = screenTotalApi
+                },
+                apiPerStatus = { apiName ->
+                    updateProgress(apiUrl = apiName)
                 },
                 moduleName = "MAT"
             )
 
         }
+    }
+
+    suspend fun updateProgress(apiUrl: String) {
+        val apiStatusData = fetchAllDataUseCase.getApiStatus(
+            screenName = "MissionScreen", moduleName = "MAT", apiUrl
+        )
+        if (apiStatusData.status.equals(ApiStatus.SUCCESS.name)) {
+            completedApi.value = completedApi.value.inc()
+        } else {
+            failedApi.value = failedApi.value.inc()
+        }
+        progressState.updateProgress(completedApi.value.toFloat() / TOTAL_API_CALL.toFloat())
+        progressState.updateProgressText("${completedApi.value}/$TOTAL_API_CALL")
     }
 
     private fun collectMissionListFromFlow() {

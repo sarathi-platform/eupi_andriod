@@ -34,12 +34,12 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
         ) {
             return false
         }
-        val propertiesName = customData["propertiesName"] as List<String>
+//        val propertiesName = customData["propertiesName"] as List<String>
         return invoke(
-            propertiesName = propertiesName,
-            screenName = screenName,
+            propertiesName = AppConfigKeysEnum.values().map { it.name },
             triggerType = triggerType,
             moduleName = moduleName,
+            screenName = screenName,
             customData = customData
         )
     }

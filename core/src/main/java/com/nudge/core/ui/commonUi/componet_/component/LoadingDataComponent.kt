@@ -62,9 +62,9 @@ fun LoadingDataComponent(
     isVisible: Boolean = false,
     apiStatus: ApiStatus = ApiStatus.INPROGRESS,
     isMultipleDataDownloading: Boolean = false,
+    progressState: CustomProgressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING),
     onViewDetailsClick: () -> Unit
 ) {
-    val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
     val isViewVisible = remember { mutableStateOf(isVisible) }
     AnimatedVisibility(
         visible = isViewVisible.value,

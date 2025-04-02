@@ -44,7 +44,7 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
         ) {
             return false
         }
-        return invoke()
+        return invoke(screenName = screenName, triggerType = triggerType, moduleName = moduleName)
     }
 
 
