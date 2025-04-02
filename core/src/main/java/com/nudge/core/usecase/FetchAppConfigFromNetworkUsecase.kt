@@ -8,14 +8,16 @@ import com.nudge.core.constants.SUB_PATH_REGISTRY_SERVICE_PROPERTY
 import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigNetworkRepository
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.AppConfigKeysEnum
 import javax.inject.Inject
 
 class FetchAppConfigFromNetworkUseCase @Inject constructor(
     val apiConfigNetworkRepository: AppConfigNetworkRepository,
-    val apiConfigDatabaseRepository: AppConfigDatabaseRepository
-) : BaseApiCallNetworkUseCase() {
+    val apiConfigDatabaseRepository: AppConfigDatabaseRepository,
+    apiCallJournalRepository: IApiCallJournalRepository
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
 
     override suspend fun invoke(
         screenName: String,

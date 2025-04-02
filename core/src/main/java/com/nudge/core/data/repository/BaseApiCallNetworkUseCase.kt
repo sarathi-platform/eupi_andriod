@@ -1,16 +1,14 @@
 package com.nudge.core.data.repository
 
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
-
-import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.json
 import javax.inject.Inject
 
-abstract class BaseApiCallNetworkUseCase {
-    abstract fun getApiEndpoint(): String
-
-    @Inject
-    lateinit var apiCallJournalRepository: IApiCallJournalRepository
+open class BaseApiCallNetworkUseCase @Inject constructor(val apiCallJournalRepository: IApiCallJournalRepository) {
+    open fun getApiEndpoint(): String {
+        return BLANK_STRING
+    }
 
     open suspend fun invoke(
         screenName: String,
@@ -40,6 +38,7 @@ abstract class BaseApiCallNetworkUseCase {
         status: String,
         errorMsg: String
     ) {
+
         apiCallJournalRepository.updateApiCallStatus(
             screenName = screenName,
             moduleName = moduleName,

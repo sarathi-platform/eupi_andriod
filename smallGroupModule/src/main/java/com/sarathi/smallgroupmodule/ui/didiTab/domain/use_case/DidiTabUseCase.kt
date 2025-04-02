@@ -28,17 +28,17 @@ class DidiTabUseCase @Inject constructor(
 
     suspend fun invoke(
         screenName: String,
-        moduleName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
-        isRefresh: Boolean = true
+        isRefresh: Boolean = true,
+        moduleName: String
     ) {
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
             apiUseCaseList[it.apiName]?.invoke(
-                screenName,
-                dataLoadingTriggerType,
-                moduleName,
-                mapOf()
+                screenName = screenName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf(),
+                moduleName = moduleName
             )
         }
         //Todo handle commented code

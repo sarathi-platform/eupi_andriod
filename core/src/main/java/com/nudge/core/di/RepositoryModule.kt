@@ -1,7 +1,6 @@
 package com.nudge.core.di
 
 import com.nudge.core.apiService.CoreApiService
-import com.nudge.core.data.repository.ApiCallConfigRepositoryImpl
 import com.nudge.core.data.repository.AppConfigDatabaseRepository
 import com.nudge.core.data.repository.AppConfigDatabaseRepositoryImpl
 import com.nudge.core.data.repository.AppConfigNetworkRepository
@@ -11,7 +10,6 @@ import com.nudge.core.data.repository.SyncMigrationRepositoryImpl
 import com.nudge.core.database.dao.ApiConfigDao
 import com.nudge.core.database.dao.EventDependencyDao
 import com.nudge.core.database.dao.EventsDao
-import com.nudge.core.database.dao.api.ApiCallConfigDao
 import com.nudge.core.preference.CorePrefRepo
 import com.nudge.core.preference.CoreSharedPrefs
 import dagger.Module
@@ -61,15 +59,14 @@ class RepositoryModule {
         )
     }
 
-    @Singleton
-    @Provides
-    fun provideAppConfigRepositoryImpl(
-        apiCallConfigDao: ApiCallConfigDao,
-        coreSharedPrefs: CoreSharedPrefs
-    ): ApiCallConfigRepositoryImpl {
-        return ApiCallConfigRepositoryImpl(
-            apiCallConfigDao = apiCallConfigDao,
-            coreSharedPrefs = coreSharedPrefs,
-        )
-    }
+//    @Provides
+//    @Singleton
+//    fun providesApiCallJournalRepository(
+//        apiCallJournalDao: ApiCallJournalDao,
+//        coreSharedPrefs: CoreSharedPrefs,
+//    ): IApiCallJournalRepository {
+//        return ApiCallJournalRepositoryImpl(
+//            apiCallJournalDao, coreSharedPrefs
+//        )
+//    }
 }

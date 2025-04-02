@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case.livelihood
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
@@ -13,8 +14,9 @@ import com.sarathi.dataloadingmangement.repository.liveihood.ICoreLivelihoodRepo
 import javax.inject.Inject
 
 class LivelihoodUseCase @Inject constructor(
-    private val coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository
-) : BaseApiCallNetworkUseCase() {
+    private val coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository,
+    apiCallJournalRepository: IApiCallJournalRepository
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     override suspend operator fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,

@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import android.net.Uri
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -19,8 +20,9 @@ import javax.inject.Inject
 class FormUseCase @Inject constructor(
     private val repository: FormRepositoryImpl,
     private val coreSharedPrefs: CoreSharedPrefs,
-    private val downloaderManager: DownloaderManager
-) : BaseApiCallNetworkUseCase() {
+    private val downloaderManager: DownloaderManager,
+    apiCallJournalRepository: IApiCallJournalRepository
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     private suspend fun getFormDetailFromApi(
         formDetailRequest: FormDetailRequest, screenName: String,
         triggerType: DataLoadingTriggerType,

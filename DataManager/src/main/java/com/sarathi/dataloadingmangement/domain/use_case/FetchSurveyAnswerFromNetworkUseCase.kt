@@ -2,6 +2,7 @@ package com.sarathi.dataloadingmangement.domain.use_case
 
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -15,8 +16,8 @@ import javax.inject.Inject
 
 class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
     private val repository: ISurveySaveNetworkRepository,
-    private val sharedPrefs: CoreSharedPrefs,
-) : BaseApiCallNetworkUseCase() {
+    private val sharedPrefs: CoreSharedPrefs, apiCallJournalRepository: IApiCallJournalRepository,
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     override suspend fun invoke(
         screenName: String,
         triggerType: DataLoadingTriggerType,

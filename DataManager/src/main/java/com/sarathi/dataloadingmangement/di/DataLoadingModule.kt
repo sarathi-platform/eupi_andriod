@@ -466,28 +466,30 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchDataUseCaseUseCase(
         surveyRepo: SurveyDownloadRepository,
-        missionActivityDetailRepository: MissionActivityDetailRepositoryImpl,
-        missionRepositoryImpl: MissionRepositoryImpl,
+        fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase,
         contentRepositoryImpl: ContentRepositoryImpl,
         activityConfigDao: ActivityConfigDao,
         fetchSurveyDataFromDB: FetchSurveyDataFromDB,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        fetchMissionDataUseCase: FetchMissionDataUseCase,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): DataLoadingUseCase {
         return DataLoadingUseCase(
-            fetchMissionDataFromNetworkUseCase = FetchMissionActivityDetailDataUseCase(
-                missionActivityDetailRepository
-            ),
+            fetchMissionDataFromNetworkUseCase = fetchMissionActivityDetailDataUseCase,
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,
                 activityConfigDao = activityConfigDao,
-                sharedPrefs = coreSharedPrefs
+                sharedPrefs = coreSharedPrefs,
+                apiCallJournalRepository = apiCallJournalRepository
             ),
             fetchSurveyDataFromDB = fetchSurveyDataFromDB,
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
-                contentRepositoryImpl,
-                coreSharedPrefs = coreSharedPrefs
+                repository = contentRepositoryImpl,
+
+                coreSharedPrefs = coreSharedPrefs,
+                apiCallJournalRepository = apiCallJournalRepository
             ),
-            fetchMissionDataUseCase = FetchMissionDataUseCase(missionRepositoryImpl)
+            fetchMissionDataUseCase = fetchMissionDataUseCase
         )
 
     }
@@ -690,12 +692,14 @@ class DataLoadingModule {
     fun provideFormUseCase(
         repository: FormRepositoryImpl,
         downloaderManager: DownloaderManager,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): FormUseCase {
         return FormUseCase(
             repository = repository,
             downloaderManager = downloaderManager,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 
@@ -731,23 +735,29 @@ class DataLoadingModule {
         languageConfigUseCase: LanguageConfigUseCase,
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
         fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
-        apiCallConfigRepositoryImpl: ApiCallConfigRepositoryImpl
+        apiCallJournalRepository: IApiCallJournalRepository,
+        apiCallConfigRepository: IApiCallConfigRepository
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionActivityDetailDataUseCase = FetchMissionActivityDetailDataUseCase(
-                missonActivityDetailRepository
+                missonActivityDetailRepository, apiCallJournalRepository
             ),
             fetchContentDataFromNetworkUseCase = FetchContentDataFromNetworkUseCase(
                 contentRepositoryImpl,
-                coreSharedPrefs = coreSharedPrefs
+                coreSharedPrefs = coreSharedPrefs, apiCallJournalRepository
             ),
             fetchSurveyDataFromNetworkUseCase = FetchSurveyDataFromNetworkUseCase(
                 repository = surveyRepo,
                 activityConfigDao = activityConfigDao,
-                sharedPrefs = coreSharedPrefs
+                sharedPrefs = coreSharedPrefs,
+                apiCallJournalRepository = apiCallJournalRepository
             ),
             contentDownloaderUseCase = ContentDownloaderUseCase(repository, downloaderManager),
-            fetchUserDetailUseCase = FetchUserDetailUseCase(userDetailRepository, analyticsManager),
+            fetchUserDetailUseCase = FetchUserDetailUseCase(
+                userDetailRepository,
+                analyticsManager,
+                apiCallJournalRepository
+            ),
             fetchSurveyAnswerFromNetworkUseCase = fetchSurveyAnswerFromNetworkUseCase,
             coreSharedPrefs = coreSharedPrefs,
             formUseCase = formUseCase,
@@ -759,7 +769,7 @@ class DataLoadingModule {
             languageConfigUseCase = languageConfigUseCase,
             fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
             fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase,
-            apiCallConfigRepository = apiCallConfigRepositoryImpl,
+            apiCallConfigRepository = apiCallConfigRepository,
             fetchMissionDataUseCase = fetchMissionDataUseCase
         )
     }
@@ -880,9 +890,14 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchSurveyAnswerFromNetworkUseCase(
         repository: ISurveySaveNetworkRepository,
+        apiCallJournalRepository: IApiCallJournalRepository,
         coreSharedPrefs: CoreSharedPrefs
     ): FetchSurveyAnswerFromNetworkUseCase {
-        return FetchSurveyAnswerFromNetworkUseCase(repository, coreSharedPrefs)
+        return FetchSurveyAnswerFromNetworkUseCase(
+            repository,
+            coreSharedPrefs,
+            apiCallJournalRepository = apiCallJournalRepository
+        )
     }
 
     @Provides
@@ -1035,9 +1050,13 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideFetchDidiDetailsFromNetworkUseCase(
-        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository
+        fetchDidiDetailsFromNetworkRepository: FetchDidiDetailsFromNetworkRepository,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): FetchDidiDetailsFromNetworkUseCase {
-        return FetchDidiDetailsFromNetworkUseCase(fetchDidiDetailsFromNetworkRepository)
+        return FetchDidiDetailsFromNetworkUseCase(
+            fetchDidiDetailsFromNetworkRepository,
+            apiCallJournalRepository
+        )
     }
 
     @Provides
@@ -1059,18 +1078,24 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideFetchSmallGroupFromNetworkUseCase(
-        fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository
+        fetchSmallGroupDetailsFromNetworkRepository: FetchSmallGroupDetailsFromNetworkRepository,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): FetchSmallGroupFromNetworkUseCase {
-        return FetchSmallGroupFromNetworkUseCase(fetchSmallGroupDetailsFromNetworkRepository)
+        return FetchSmallGroupFromNetworkUseCase(
+            fetchSmallGroupDetailsFromNetworkRepository,
+            apiCallJournalRepository
+        )
     }
 
     @Provides
     @Singleton
     fun provideFetchSmallGroupAttendanceHistoryFromNetworkUseCase(
-        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository
+        fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): FetchSmallGroupAttendanceHistoryFromNetworkUseCase {
         return FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
-            fetchSmallGroupAttendanceHistoryFromNetworkRepository
+            fetchSmallGroupAttendanceHistoryFromNetworkRepository,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 
@@ -1178,8 +1203,11 @@ class DataLoadingModule {
 
     @Provides
     @Singleton
-    fun provideFetchMoneyJournalUseCase(moneyJournalNetworkRepository: MoneyJournalNetworkRepository) =
-        FetchMoneyJournalUseCase(moneyJournalNetworkRepository)
+    fun provideFetchMoneyJournalUseCase(
+        moneyJournalNetworkRepository: MoneyJournalNetworkRepository,
+        apiCallJournalRepository: IApiCallJournalRepository
+    ) =
+        FetchMoneyJournalUseCase(moneyJournalNetworkRepository, apiCallJournalRepository)
 
     @Provides
     @Singleton
@@ -1288,10 +1316,12 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun provideLivelihoodUseCase(
-        coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository
+        coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): LivelihoodUseCase {
         return LivelihoodUseCase(
-            coreLivelihoodRepositoryImpl
+            coreLivelihoodRepositoryImpl,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 
@@ -1364,10 +1394,12 @@ class DataLoadingModule {
     @Singleton
     fun provideSaveLivelihoodOptionUseCase(
         repository: FetchLivelihoodOptionRepositoryImpl,
+        apiCallJournalRepository: IApiCallJournalRepository,
         coreSharedPrefs: CoreSharedPrefs
     ): FetchLivelihoodOptionNetworkUseCase {
         return FetchLivelihoodOptionNetworkUseCase(
             repository = repository,
+            apiCallJournalRepository = apiCallJournalRepository,
             coreSharedPrefs = coreSharedPrefs
         )
     }
@@ -1709,10 +1741,12 @@ class DataLoadingModule {
     @Provides
     @Singleton
     fun providesFetchSectionStatusFromNetworkUsecase(
-        sectionRepository: ISectionStatusRepository
+        sectionRepository: ISectionStatusRepository,
+        apiCallJournalRepository: IApiCallJournalRepository
     ): FetchSectionStatusFromNetworkUsecase {
         return FetchSectionStatusFromNetworkUsecase(
-            sectionRepository = sectionRepository
+            sectionRepository = sectionRepository,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 
@@ -1866,5 +1900,6 @@ class DataLoadingModule {
             apiCallJournalJournalDao = apiCallJournalJournalDao
         )
     }
+
 
 }

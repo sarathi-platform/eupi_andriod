@@ -44,10 +44,10 @@ class DataTabUseCase @Inject constructor(
     ) {
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
             apiUseCaseList[it.apiName]?.invoke(
-                screenName,
-                dataLoadingTriggerType,
-                moduleName,
-                mapOf()
+                screenName = screenName,
+                triggerType = dataLoadingTriggerType,
+                customData = mapOf(),
+                moduleName = moduleName
             )
         }
         //Todo handle commented code
