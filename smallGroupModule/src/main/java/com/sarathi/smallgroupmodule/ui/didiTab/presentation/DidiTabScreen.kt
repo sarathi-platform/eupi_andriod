@@ -44,6 +44,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.TabsCore
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
+import com.nudge.core.isAllowedCharacterInput
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
@@ -224,6 +225,7 @@ fun DidiTabScreen(
                                         .weight(1.0f)
                                         .fillMaxWidth()
                                         .height(dimen_40_dp),
+                                    enabled = !didiTabViewModel.selectedFilters.isNullOrEmpty(),
                                     buttonTitle = didiTabViewModel.getString(R.string.clear_button_label),
                                     icon = null,
                                     borderColor = eventTextColor
@@ -266,6 +268,9 @@ fun DidiTabScreen(
                         placeholderString = didiTabViewModel.getString(R.string.search_filter_placeholder),
                         showFilter = false,
                         onFilterSelected = {},
+                        searchValidation = { searchQuery ->
+                            isAllowedCharacterInput(searchQuery)
+                        },
                         onSearchValueChange = { searchQuery ->
                             isSearchActive.value = searchQuery.isNotEmpty()
                             didiTabViewModel.onEvent(

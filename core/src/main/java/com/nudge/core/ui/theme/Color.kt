@@ -161,3 +161,5 @@ val textColorBrown = Color(0xFF361911)
 val textColorGreyLight = Color(0xFF8B909E)
 val lokosInfoCardBgColor = Color(0xFFFEF8DE)
 val lokosInfoCardBorderColor = Color(0xFFE1D1AC)
+
+val disabledButtonTextColor = Color(0xFF969AA7)

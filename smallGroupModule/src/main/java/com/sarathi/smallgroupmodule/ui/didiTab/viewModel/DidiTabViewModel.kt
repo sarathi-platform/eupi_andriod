@@ -101,6 +101,7 @@ class DidiTabViewModel @Inject constructor(
             is CommonEvents.OnVerificationStatusFilterSelected -> {
                 if (event.selectedFilter == null) {
                     selectedFilters.clear()
+                    onEvent(CommonEvents.OnVerificationFilterApplied(selectedFilters))
                     return
                 }
 
