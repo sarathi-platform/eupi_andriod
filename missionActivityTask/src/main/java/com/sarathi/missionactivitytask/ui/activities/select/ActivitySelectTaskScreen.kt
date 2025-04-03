@@ -27,11 +27,13 @@ import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.Divider
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
@@ -62,7 +64,6 @@ import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.buttonTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
-import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_1_dp
@@ -72,6 +73,7 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
+import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
@@ -97,9 +99,12 @@ import com.sarathi.missionactivitytask.ui.components.ShowDidiImageDialog
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
+import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
 import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.OptionCard
 import com.sarathi.surveymanager.ui.component.RadioOptionTypeComponent
+import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
+import com.sarathi.surveymanager.ui.screen.getOptionsValueDto
 
 @Composable
 fun ActivitySelectTaskScreen(
@@ -108,8 +113,8 @@ fun ActivitySelectTaskScreen(
     missionId: Int,
     activityName: String,
     activityId: Int,
-    programId:Int,
-        onSettingClick: () -> Unit
+    programId: Int,
+    onSettingClick: () -> Unit
 ) {
 
     BackHandler {
@@ -138,7 +143,7 @@ fun ActivitySelectTaskScreen(
             selectActivityTaskScreenContentForGroup(groupKey, viewModel)
         },
 
-    )
+        )
 
     LaunchedEffect(key1 = viewModel.taskUiList.value) {
         viewModel.onEvent(InitDataEvent.InitActivitySelectTaskScreenState(missionId, activityId))
@@ -470,16 +475,16 @@ fun SelectActivityCard(
         }
 
 
-            if (subtitle2?.value?.isNotBlank() == true) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = dimen_16_dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    SubContainerView(subtitle2)
-                }
+        if (subtitle2?.value?.isNotBlank() == true) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = dimen_16_dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                SubContainerView(subtitle2)
             }
+        }
         if (subtitle3?.value?.isNotBlank() == true || subtitle4?.value?.isNotBlank() == true) {
             Column(
                 modifier = Modifier
@@ -541,7 +546,7 @@ fun DisplaySelectedOption(
         translationHelper.stringResource(R.string.not_available)
     } else {
         questionUiModel?.options?.filter { it.isSelected == true }?.map { it.description }
-            ?.joinToString(",").toString()
+            ?.joinToString(", ").toString()
     }
     if (!options.isNullOrEmpty()) {
         Row(
@@ -610,6 +615,7 @@ fun DisplaySelectedOption(
 }
 
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun OptionsUI(
     referenceId: Int?,
@@ -639,6 +645,7 @@ private fun OptionsUI(
                         optionItemEntityState = it,
                         isTaskMarkedNotAvailable = taskMarkedNotAvailable,
                         selectedValue = selectedValue,
+                        isIconRequired = !it.firstOrNull()?.optionImage.isNullOrEmpty(),
                         isActivityCompleted = isActivityCompleted,
                     ) { selectedIndex, optionValue, optionId ->
                         questionUiModel.options?.let { options ->
@@ -715,9 +722,60 @@ private fun OptionsUI(
                     )
                 }
 
+                QuestionType.MultiSelectDropDown.name.lowercase() -> {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimen_10_dp, vertical = dimen_10_dp)
+                    ) {
+                        TypeMultiSelectedDropDownComponent(
+                            content = questionUiModel.contentEntities,
+                            questionIndex = 0,
+                            title = BLANK_STRING,
+                            isMandatory = questionUiModel.isMandatory,
+                            sources = getOptionsValueDto(questionUiModel.options ?: listOf()),
+                            isEditAllowed = !isActivityCompleted,
+                            maxCustomHeight = dimen_60_dp,
+                            showCardView = false,
+                            isQuestionNumberVisible = false,
+                            optionStateMap = questionUiModel.options?.map {
+                                Pair(
+                                    it.optionId!!,
+                                    true
+                                )
+                            }?.toMap() ?: emptyMap(),
+                            showSearchBar = true,
+                            navigateToMediaPlayerScreen = {},
+                            onAnswerSelection = { selectedItems ->
+                                if (!isActivityCompleted) {
+                                    val selectedOptions =
+                                        selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
+                                    questionUiModel.options?.forEach { options ->
+                                        if (selectedOptions.find { it == options.description.toString() } != null) {
+                                            options.isSelected = true
+                                        } else {
+                                            options.isSelected = false
+                                        }
+                                    }
+                                    onAnswerSelection(
+                                        selectedItems,
+                                        questionUiModel.options?.firstOrNull()?.optionId.value()
+                                    )
+                                } else {
+                                    showCustomToast(
+                                        context,
+                                        translationHelper.getString(
+                                            com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
+                                        )
+                                    )
+                                }
+                            }
+                        )
+                    }
                 }
-
             }
+
+        }
     }
     CustomVerticalSpacer()
     if (isNotAvailableButtonEnable && !TextUtils.isEmpty(secondaryButtonTitle)) {

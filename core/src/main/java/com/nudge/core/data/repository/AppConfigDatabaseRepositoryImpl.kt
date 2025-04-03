@@ -109,6 +109,12 @@ class AppConfigDatabaseRepositoryImpl @Inject constructor(
                 data[AppConfigKeysEnum.SYNC_CONSUMER_BAR_VISIBILITY.name].toBoolean()
             )
         }
+        if (data.containsKey(AppConfigKeysEnum.V2TheameEnable.name)) {
+            coreSharedPrefs.savePref(
+                AppConfigKeysEnum.V2TheameEnable.name,
+                data[AppConfigKeysEnum.V2TheameEnable.name].toBoolean()
+            )
+        }
         if (data.containsKey(AppConfigKeysEnum.APP_UPDATE_CONFIG.name)) {
             data[AppConfigKeysEnum.APP_UPDATE_CONFIG.name]?.let {
                 val configModel = it.fromJson<AppUpdateConfigModel?>()

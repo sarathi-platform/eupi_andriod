@@ -54,6 +54,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.enums.SurveyFlow
 import com.nudge.core.isOnline
 import com.nudge.core.ui.commonUi.ButtonComponentWithVisibility
+import com.nudge.core.ui.commonUi.CustomButtonVisibilityState
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.ModelBottomSheetDescriptionContentComponent
 import com.nudge.core.ui.commonUi.customVerticalSpacer
@@ -303,7 +304,7 @@ fun SectionScreen(
             onSearchValueChange = { },
             onBottomUI = {
                 ButtonComponentWithVisibility(
-                    showButtonComponentState = showBottomButtonState,
+                    showButtonComponentState = CustomButtonVisibilityState(true),
                     buttonTitle = stringResource(R.string.complete_survey),
                     isActive = sectionScreenViewModel.isButtonEnable.value,
                     onClick = {

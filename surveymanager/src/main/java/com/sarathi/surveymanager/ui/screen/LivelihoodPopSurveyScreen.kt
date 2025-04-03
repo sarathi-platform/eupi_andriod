@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.navigation.NavController
@@ -21,6 +22,7 @@ import com.nudge.core.ui.theme.uncheckedTrackColor
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.util.constants.QuestionType
+import kotlinx.coroutines.launch
 
 @Composable
 fun LivelihoodPopSurveyScreen(
@@ -39,6 +41,7 @@ fun LivelihoodPopSurveyScreen(
     totalSubmittedAmount: Int,
     onSettingClick: () -> Unit
 ) {
+    val coroutineScope = rememberCoroutineScope()
     BaseSurveyScreen(
         viewModel = viewModel,
         navController = navController,
@@ -72,26 +75,27 @@ fun LivelihoodPopSurveyScreen(
                 sanctionedAmount = sanctionedAmount,
                 totalSubmittedAmount = totalSubmittedAmount,
                 onAnswerSelect = { questionUiModel ->
+                    coroutineScope.launch {
+                        viewModel.updateQuestionResponseMap(questionUiModel)
+                        viewModel.runConditionCheck(questionUiModel)
 
-                    viewModel.updateQuestionResponseMap(questionUiModel)
-                    viewModel.runConditionCheck(questionUiModel)
+                        viewModel.runValidationCheck(questionUiModel.questionId) { isValid, message ->
+                            viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
+                                Triple(
+                                    isValid,
+                                    message,
+                                    if (QuestionType.userInputQuestionTypeList.contains(
+                                            questionUiModel.type.toLowerCase()
+                                        )
+                                    ) (questionUiModel.options?.firstOrNull()?.selectedValue
+                                        ?: BLANK_STRING) else null
+                                )
+                        }
 
-                    viewModel.runValidationCheck(questionUiModel.questionId) { isValid, message ->
-                        viewModel.fieldValidationAndMessageMap[questionUiModel.questionId] =
-                            Triple(
-                                isValid,
-                                message,
-                                if (QuestionType.userInputQuestionTypeList.contains(
-                                        questionUiModel.type.toLowerCase()
-                                    )
-                                ) (questionUiModel.options?.firstOrNull()?.selectedValue
-                                    ?: BLANK_STRING) else null
-                            )
+                        viewModel.saveSingleAnswerIntoDb(questionUiModel)
+                        viewModel.updateMissionFilter()
+                        viewModel.updateTaskStatus(taskId)
                     }
-
-                    viewModel.saveSingleAnswerIntoDb(questionUiModel)
-                    viewModel.updateMissionFilter()
-                    viewModel.updateTaskStatus(taskId)
                 },
                 activityType = activityType,
                 maxHeight = maxHeight
