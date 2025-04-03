@@ -377,29 +377,34 @@ class AddEventViewModel @Inject constructor(
             val event = getLivelihoodEventFromName(eventType)
             val localTransactionId = UUID.randomUUID().toString()
 
-            validateAndAddEvent(
-                transactionId = transactionId,
-                subjectId = subjectId,
-                event = event,
-                selectedAssetId = selectedAssetTypeId.value,
-                localTransactionId = localTransactionId
-            )
             if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
-                event.assetJournalEntryFlowType = EntryFlowTypeEnum.OUTFLOW
+                listOf(
+                    EntryFlowTypeEnum.INFLOW to selectedAssetTypeId.value,
+                    EntryFlowTypeEnum.OUTFLOW to selectedChildAssetTypeId.value
+                )
+                    .forEach { (flowType, assetId) ->
+                        event.assetJournalEntryFlowType = flowType
+                        validateAndAddEvent(
+                            transactionId = transactionId,
+                            subjectId = subjectId,
+                            event = event,
+                            selectedAssetId = assetId,
+                            localTransactionId = localTransactionId
+                        )
+                    }
+            } else {
                 validateAndAddEvent(
                     transactionId = transactionId,
                     subjectId = subjectId,
                     event = event,
-                    selectedAssetId = selectedChildAssetTypeId.value,
+                    selectedAssetId = selectedAssetTypeId.value,
                     localTransactionId = localTransactionId
                 )
             }
 
-            withContext(mainDispatcher)
-            {
+            withContext(mainDispatcher) {
                 onComplete()
             }
-
         }
     }
 
@@ -410,11 +415,7 @@ class AddEventViewModel @Inject constructor(
         selectedAssetId: Int,
         localTransactionId: String
     ) {
-        if (eventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name
-            && event.assetJournalEntryFlowType == EntryFlowTypeEnum.OUTFLOW_INFLOW
-        ) {
-            event.assetJournalEntryFlowType = EntryFlowTypeEnum.INFLOW
-        }
+
         val createdDateTime = getCurrentTimeInMillis()
         val modifiedDate = getCurrentTimeInMillis()
         val mTransactionId =
