@@ -14,7 +14,7 @@ class FetchAppConfigFromNetworkUseCase @Inject constructor(
 
     suspend operator fun invoke(
         propertiesName: List<String> = AppConfigKeysEnum.values().map { it.name },
-        onApiSuccess: () -> Unit = {}
+        onApiSuccess: suspend () -> Unit = {}
     ): Boolean {
         try {
             val apiResponse = apiConfigNetworkRepository.getAppConfigFromNetwork(propertiesName)
