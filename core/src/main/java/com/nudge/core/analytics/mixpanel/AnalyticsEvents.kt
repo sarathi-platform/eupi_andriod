@@ -24,6 +24,7 @@ enum class AnalyticsEvents(val eventName: String) {
     EXPORT_LOG_FILE("export_log_file"),
     APP_CONFIG_LOG_FILE("app_config_log_file"),
     CATCHED_EXCEPTION("catch_exception"),
+    SQL_INJECTION("sql_injection"),
     DATA_SYNC_EVENT_PROGRESS("data_sync_event_progress"),
     IMAGE_SYNC_EVENT_PROGRESS("image_sync_event_progress"),
     OLD_DELETE_EVENT_COUNT("old_event_delete_count"),
@@ -49,6 +50,9 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     EXCEPTION_MESSAGE("exception_message"),
     STACK_TRACE("stack_trace"),
     EXCEPTION("exception"),
+
+    SQL_INJECTION_STATUS("sql_injection_status"),
+    SQL_INJECTION_MESSAGE("sql_injection_message"),
 
     OPEN_EVENT_COUNT("open_event_count"),
     PRODUCER_IN_PROGRESS_EVENT_COUNT("producer_in_progress_event_count"),

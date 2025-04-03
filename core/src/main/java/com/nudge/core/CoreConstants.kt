@@ -23,6 +23,7 @@ const val APP_CONFIG_TABLE = "app_config"
 const val TRANSLATION_CONFIG_TABLE_NAME = "translation_config_table"
 const val LANGUAGE_TABLE_NAME = "language_table"
 const val CASTE_TABLE = "caste_table"
+const val REMOTE_QUERY_AUDIT_TRAIL_TABLE_NAME = "remote_query_edit_trail_table"
 
 // Sync DB Properties
 const val SYNC_MANAGER_DATABASE = "SyncManagerDatabase"
@@ -88,6 +89,8 @@ const val MULTIPART_FORM_DATA = "multipart/form-data"
 const val MULTIPART_IMAGE_PARAM_NAME = "files"
 
 const val SUCCESS = "SUCCESS"
+const val FAILED = "FAILED"
+const val OPEN = "OPEN"
 const val FAIL = "FAIL"
 
 const val SUCCESS_CODE = "200"
@@ -275,3 +278,11 @@ const val APP_UPDATE_FLEXIBLE = "FLEXIBLE"
 const val IS_IN_APP_UPDATE = "isInAppUpdate"
 const val APP_REDIRECT_LINK = "redirectLink"
 const val LATEST_VERSION_CODE = "latestVersionCode"
+
+const val INPROGRESS = "INPROGRESS"
+const val INVALID_OPERATION_MESSAGE = "Invalid operationType:"
+
+const val LOGGING_TYPE_DEBUG: String = "DEBUG"
+const val LOGGING_TYPE_EXCEPTION: String = "EXCEPTION"
+
+const val REMOTE_QUERY_CONFIG_EXECUTION_LEVEL_GLOBAL = "GLOBAL"
