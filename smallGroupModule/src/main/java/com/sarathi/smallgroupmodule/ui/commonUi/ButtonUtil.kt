@@ -49,6 +49,7 @@ import com.nudge.core.R
 import com.nudge.core.ui.theme.NotoSans
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.disabledButtonTextColor
 import com.nudge.core.ui.theme.greyBorder
 import com.nudge.core.ui.theme.languageItemActiveBg
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
@@ -246,12 +247,14 @@ fun ButtonOutline(
     buttonTitle: String = BLANK_STRING,
     icon: ImageVector? = Icons.Default.Add,
     borderColor: Color = greyBorder,
+    enabled: Boolean = true,
     onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = {
             onClick()
         },
+        enabled = enabled,
         border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
             .fillMaxWidth()
@@ -268,7 +271,7 @@ fun ButtonOutline(
             Icon(
                 it,
                 contentDescription = "Add Button",
-                tint = blueDark,
+                tint = if (enabled) blueDark else disabledButtonTextColor,
                 modifier = Modifier
                     .absolutePadding(top = 0.dp, right = 2.dp)
                     .size(22.dp)
@@ -276,7 +279,7 @@ fun ButtonOutline(
             }
             Text(
                 text = buttonTitle,
-                color = blueDark,
+                color = if (enabled) blueDark else disabledButtonTextColor,
                 style = mediumTextStyle,
                 textAlign = TextAlign.Center,
                 modifier = Modifier

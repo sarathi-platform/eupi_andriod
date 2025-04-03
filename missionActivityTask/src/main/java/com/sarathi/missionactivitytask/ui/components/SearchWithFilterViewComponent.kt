@@ -61,6 +61,7 @@ fun SearchWithFilterViewComponent(
     filterIconSelected: Int = R.drawable.ic_search_filter_selected,
     filterIconUnSelected: Int = R.drawable.ic_search_filter_unselected,
     onFilterSelected: (Boolean) -> Unit,
+    searchValidation: (String) -> Boolean = { true },
     onSearchValueChange: (String) -> Unit
 ) {
     var searchString by remember {
@@ -84,8 +85,10 @@ fun SearchWithFilterViewComponent(
                 CustomOutlineTextField(
                     value = searchString,
                     onValueChange = {
-                        searchString = it
-                        onSearchValueChange(it)
+                        if (searchValidation(it)) {
+                            searchString = it
+                            onSearchValueChange(it)
+                        }
                     },
                     placeholder = {
                         Text(

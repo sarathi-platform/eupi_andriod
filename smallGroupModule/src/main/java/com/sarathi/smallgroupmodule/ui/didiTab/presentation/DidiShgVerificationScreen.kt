@@ -27,7 +27,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.toSize
 import androidx.compose.ui.window.Dialog
@@ -41,13 +40,13 @@ import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
 import com.nudge.core.SPOUSE_LABEL
 import com.nudge.core.getShgMemberNameWithId
 import com.nudge.core.helper.LocalTranslationHelper
-import com.nudge.core.ui.commonUi.AlertDialogComponent
 import com.nudge.core.ui.commonUi.ContentWithImage
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.DropDownComponent
 import com.nudge.core.ui.commonUi.ImageProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
 import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
+import com.nudge.core.ui.commonUi.componet_.component.ShowCustomDialog
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_24_dp
@@ -125,16 +124,18 @@ fun DidiShgVerificationScreen(
     }
 
     if (showAlertDialog.value) {
-        AlertDialogComponent(
-            onDismissRequest = { showAlertDialog.value = false },
-            onConfirmation = {
+        ShowCustomDialog(
+            title = viewModel.getString(R.string.alert_dialog_title_text),
+            message = "Data is not saved, are you sure you want to continue?",
+            negativeButtonTitle = viewModel.getString(R.string.cancel_text),
+            positiveButtonTitle = viewModel.getString(R.string.confirm),
+            onNegativeButtonClick = {
+                showAlertDialog.value = false
+            },
+            onPositiveButtonClick = {
                 showAlertDialog.value = false
                 navController.navigateUp()
-            },
-            dialogTitle = stringResource(R.string.alert_dialog_title_text),
-            dialogText = "Data is not saved, are you sure you want to continue?",
-            confirmButtonText = stringResource(R.string.confirm),
-            dismissButtonText = stringResource(R.string.cancel_text)
+            }
         )
     }
 
