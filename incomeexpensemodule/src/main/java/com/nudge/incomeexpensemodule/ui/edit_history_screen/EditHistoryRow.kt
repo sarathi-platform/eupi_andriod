@@ -21,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import coil.compose.AsyncImage
@@ -44,6 +43,7 @@ import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_1_dp
 import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
+import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.dividerColor
@@ -110,10 +110,15 @@ fun EditHistoryRow(
                             data2 = getEventValue(savedEvent = nextSavedEvent),
                         ),
                         data2 = " ${currentSavedEvent?.eventValue ?: BLANK_STRING}",
-                        data3 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_a_FORMAT)
                     )
+                    Spacer(modifier = Modifier.height(dimen_4_dp))
+                    TextDataRowView(
+                        data1 = "Update Time: ",
+                        data2 = currentHistoryData.modifiedDate.getDate(DD_mmm_hh_mm_a_FORMAT)
+                    )
+                    Spacer(modifier = Modifier.height(dimen_4_dp))
                     Divider()
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(dimen_4_dp))
                     TextDataRowView(
                         data1 = translationHelper.stringResource(R.string.asset_type),
                         data2 = if (!TextUtils.isEmpty(currentSavedEvent?.assetTypeValue))
@@ -124,16 +129,20 @@ fun EditHistoryRow(
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
                             data2 = getAssetTypeValue(savedEvent = nextSavedEvent),
-                        ),
-                        data3 = if (getLivelihoodEventFromName(currentHistoryData.livelihoodEventType).moneyJournalEntryFlowType != null) formatToIndianRupee(
-                            "${currentSavedEvent?.amount}"
-                        ) else BLANK_STRING,
-                        data3TextColor = dataChangeTextColor(
-                            data1 = getEventAmount(currentSavedEvent),
-                            data2 = getEventAmount(nextSavedEvent),
                         )
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(dimen_4_dp))
+                    TextDataRowView(
+                        data1 = "Amount: ",
+                        data2textColor = dataChangeTextColor(
+                            data1 = getEventAmount(currentSavedEvent),
+                            data2 = getEventAmount(nextSavedEvent),
+                        ),
+                        data2 = if (getLivelihoodEventFromName(currentHistoryData.livelihoodEventType).moneyJournalEntryFlowType != null) formatToIndianRupee(
+                            "${currentSavedEvent?.amount}"
+                        ) else BLANK_STRING,
+                    )
+                    Spacer(modifier = Modifier.height(dimen_4_dp))
                     TextDataRowView(
                         data1 = translationHelper.stringResource(
                             R.string.increse_in_number
@@ -144,7 +153,7 @@ fun EditHistoryRow(
                         ),
                         data2 = " ${currentSavedEvent?.assetCount}"
                     )
-                    Spacer(modifier = Modifier.height(4.dp))
+                    Spacer(modifier = Modifier.height(dimen_4_dp))
                     TextDataRowViewWithIcon(
                         data1 = translationHelper.stringResource(R.string.event_date),
                         data2 = " ${currentHistoryData.date.getDate(DD_MMM_YYYY_FORMAT)}",
@@ -170,7 +179,7 @@ fun EditHistoryRow(
                 circleDiameter = 10,
                 borderWidth = 2f
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dimen_8_dp))
             for (i in 1..17) {
                 androidx.compose.material.Divider(
                     color = dividerColor,
