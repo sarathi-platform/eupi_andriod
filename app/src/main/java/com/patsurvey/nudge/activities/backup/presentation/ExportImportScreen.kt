@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -58,6 +59,9 @@ fun ExportImportScreen(
             }
 
         }
+    LaunchedEffect(Unit) {
+        viewModel.getAllEventForUser()
+    }
     val settingConfig = CommonSettingScreenConfig(
         isSyncEnable = false,
         mobileNumber = viewModel.getMobileNumber(),
@@ -75,7 +79,13 @@ fun ExportImportScreen(
             BaselineLogger.d("ExportImportScreen","${settingOptionModel.tag} :: ${settingOptionModel.title} Click")
             viewModel.selectedTag.value = settingOptionModel.tag
             when(settingOptionModel.tag){
-                SettingTagEnum.LOAD_SERVER_DATA.name,
+                SettingTagEnum.LOAD_SERVER_DATA.name -> {
+                    if (viewModel.isEventPending()) {
+                        viewModel.showConfirmationDialog.value = true
+                    } else {
+                        loadServerDataClick(viewModel, navController)
+                    }
+                }
                 SettingTagEnum.REGENERATE_EVENTS.name,
                 SettingTagEnum.APP_CONFIG.name -> {
                     viewModel.showConfirmationDialog.value = true
@@ -132,35 +142,7 @@ fun ExportImportScreen(
 
                 when (viewModel.selectedTag.value) {
                     SettingTagEnum.LOAD_SERVER_DATA.name -> {
-                        viewModel.exportLocalDatabase(isNeedToShare = false) {
-                            viewModel.clearLocalDatabase {
-                                viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
-                                viewModel.showConfirmationDialog.value = false
-                                viewModel.loadServerDataAnalytic()
-
-                                if (viewModel.loggedInUserType.value == UPCM_USER) {
-                                    navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
-                                        launchSingleTop = true
-                                    }
-                                } else {
-                                    when (navController.graph.route) {
-                                        NudgeNavigationGraph.ROOT -> navController.navigate(
-                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                        )
-
-                                        NudgeNavigationGraph.HOME -> navController.navigate(
-                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                        )
-
-                                        NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
-                                            AuthScreen.VILLAGE_SELECTION_SCREEN.route
-                                        )
-
-                                        else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
-                                    }
-                                }
-                            }
-                        }
+                        loadServerDataClick(viewModel, navController)
                     }
 
                     SettingTagEnum.REGENERATE_EVENTS.name -> {
@@ -201,6 +183,42 @@ fun ExportImportScreen(
     }
 
 
+}
+
+
+private fun loadServerDataClick(
+    viewModel: ExportImportViewModel,
+    navController: NavController
+) {
+    viewModel.exportLocalDatabase(isNeedToShare = false) {
+        viewModel.clearLocalDatabase {
+            viewModel.onEvent(LoaderEvent.UpdateLoaderState(false))
+            viewModel.showConfirmationDialog.value = false
+            viewModel.loadServerDataAnalytic()
+
+            if (viewModel.loggedInUserType.value == UPCM_USER) {
+                navController.navigate(NudgeNavigationGraph.HOME_SUB_GRAPH) {
+                    launchSingleTop = true
+                }
+            } else {
+                when (navController.graph.route) {
+                    NudgeNavigationGraph.ROOT -> navController.navigate(
+                        AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                    )
+
+                    NudgeNavigationGraph.HOME -> navController.navigate(
+                        AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                    )
+
+                    NudgeNavigationGraph.HOME_SUB_GRAPH -> navController.navigate(
+                        AuthScreen.VILLAGE_SELECTION_SCREEN.route
+                    )
+
+                    else -> navController.navigate(NudgeNavigationGraph.LOGOUT_GRAPH)
+                }
+            }
+        }
+    }
 }
 
 private fun findTitleAndMessageForDialog(selectedTag: String): Tuple4<Int, Int, Int, Int> {

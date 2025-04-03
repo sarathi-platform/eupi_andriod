@@ -531,7 +531,7 @@
     <string name="fetched_successfully">Data fetched successfully</string>
     <string name="regenerate_event_file">Regenerate event file</string>
     <string name="load_server_data">Load server data</string>
-    <string name="are_you_sure_you_want_to_load_data_from_server">Nwng server ni data load khai na muchung o de? Omo khai khe sync wngya data bo kwmawi thang mano.</string>
+    <string name="are_you_sure_you_want_to_load_data_from_server">Sync ungjakya data rok tongkho nini phone o. Nini data kma ui mano. Nwng kubui kubui de khlai na muchung kho?</string>
     <string name="didi_verified_by_bpc">Didi verified by BPC</string>
     <string name="recover_old_data">Recover Old Data</string>
     <string name="this_language_is_not_available_for_selection">This language is not available for Selection</string>

@@ -23,6 +23,7 @@ import com.nudge.core.SYNC_MANAGER_DATABASE
 import com.nudge.core.ZIP_MIME_TYPE
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.compression.ZipFileCompression
+import com.nudge.core.database.entities.Events
 import com.nudge.core.exportDatabase
 import com.nudge.core.getFirstName
 import com.nudge.core.importDbFile
@@ -33,6 +34,8 @@ import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
+import com.nudge.core.utils.SyncType
+import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
 import com.nudge.core.usecase.FetchRemoteQueryFromNetworkUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
@@ -58,6 +61,7 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
+    val syncManagerUseCase: SyncManagerUseCase,
     private val remoteQueryExecutionUseCase: RemoteQueryExecutionUseCase,
     private val fetchRemoteQueryFromNetworkUseCase: FetchRemoteQueryFromNetworkUseCase
 ) : BaseViewModel() {
@@ -72,6 +76,9 @@ class ExportImportViewModel @Inject constructor(
     val applicationId = mutableStateOf(BLANK_STRING)
     val loaderState: State<LoaderState> get() = _loaderState
     val loggedInUserType = mutableStateOf(BLANK_STRING)
+    private val _eventList = mutableStateOf<List<Events>>(emptyList())
+    val eventList: State<List<Events>> get() = _eventList
+    val isPendingEvent = mutableStateOf(false)
 
     init {
         mAppContext = NudgeCore.getAppContext()
@@ -272,6 +279,17 @@ class ExportImportViewModel @Inject constructor(
                 onApiSuccess()
             }
         }
+    }
+
+    fun getAllEventForUser() {
+        CoroutineScope(CoreDispatchers.ioDispatcher).launch {
+            isPendingEvent.value =
+                syncManagerUseCase.fetchEventsFromDBUseCase.getPendingEventCount(SyncType.SYNC_ALL.ordinal) > 0
+        }
+    }
+
+    fun isEventPending(): Boolean {
+        return isPendingEvent.value
     }
 
     private suspend fun checkAndRunRemoteQueryExecution() {
