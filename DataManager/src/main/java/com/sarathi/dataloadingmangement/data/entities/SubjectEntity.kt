@@ -6,6 +6,7 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.SUBJECT_TABLE
 import com.sarathi.dataloadingmangement.model.response.DidiDetailList
@@ -91,7 +92,32 @@ data class SubjectEntity(
     @SerializedName("voName")
     @Expose
     @ColumnInfo(name = "voName")
-    var voName: String = BLANK_STRING
+    var voName: String = BLANK_STRING,
+
+    @SerializedName("shgVerificationStatus")
+    @Expose
+    @ColumnInfo("shgVerificationStatus")
+    var shgVerificationStatus: String?,
+
+    @SerializedName("shgVerificationDate")
+    @Expose
+    @ColumnInfo("shgVerificationDate")
+    var shgVerificationDate: Long?,
+
+    @SerializedName("shgName")
+    @Expose
+    @ColumnInfo(name = "shgName")
+    var shgName: String?,
+
+    @SerializedName("shgCode")
+    @Expose
+    @ColumnInfo(name = "shgCode")
+    var shgCode: String?,
+
+    @SerializedName("shgMemberId")
+    @Expose
+    @ColumnInfo(name = "shgMemberId")
+    var shgMemberId: String?
 
 ) {
 
@@ -119,7 +145,13 @@ data class SubjectEntity(
                 voName = didiDetailList.voName.value(),
                 casteId = didiDetailList.casteId.value(),
                 ableBodied = didiDetailList.ableBodied.value(),
-                crpImageLocalPath = crpImageLocalPath ?: BLANK_STRING
+                crpImageLocalPath = crpImageLocalPath ?: BLANK_STRING,
+                shgVerificationStatus = didiDetailList.shgVerificationStatus
+                    ?: SHG_VERIFICATION_STATUS_NOT_VERIFIED,
+                shgVerificationDate = didiDetailList.shgVerificationDate,
+                shgName = didiDetailList.shgName,
+                shgCode = didiDetailList.shgCode,
+                shgMemberId = didiDetailList.shgMemberId
             )
 
         }
@@ -127,6 +159,15 @@ data class SubjectEntity(
     }
 
 }
+
+data class ShgVerificationDataModel(
+    val subjectId: Int,
+    val shgVerificationStatus: String? = null,
+    val shgVerificationDate: Long? = null,
+    val shgName: String? = null,
+    val shgMemberId: String? = null,
+    val shgCode: String? = null
+)
 
 fun SubjectEntity.getSubtitle(): String {
     return "#${this.houseNo}, ${this.dadaName}"

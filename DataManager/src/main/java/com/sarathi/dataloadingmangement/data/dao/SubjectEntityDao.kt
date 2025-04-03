@@ -46,5 +46,15 @@ interface SubjectEntityDao {
         subjectId: Int
     ): List<SubjectEntityWithLivelihoodMappingUiModel>
 
+    @Query("UPDATE subject_table SET shgVerificationStatus = :shgVerificationStatus, shgVerificationDate = :shgVerificationDate, shgName = :shgName, shgCode = :shgCode, shgMemberId = :shgMemberId where subjectId = :subjectId and userId = :userId")
+    fun updateShgVerificationStatus(
+        subjectId: Int,
+        userId: String,
+        shgVerificationStatus: String,
+        shgVerificationDate: Long,
+        shgName: String,
+        shgCode: String,
+        shgMemberId: String
+    )
 }
 

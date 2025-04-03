@@ -39,6 +39,7 @@ val dimen_45_dp = 45.dp
 val dimen_48_dp = 48.dp
 val dimen_44_dp = 44.dp
 
+val dimen_58_dp = 58.dp
 val dimen_56_dp = 56.dp
 val dimen_50_dp = 50.dp
 val dimen_60_dp = 60.dp

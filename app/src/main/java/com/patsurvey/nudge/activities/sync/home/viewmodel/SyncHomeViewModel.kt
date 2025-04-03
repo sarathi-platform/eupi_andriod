@@ -40,6 +40,7 @@ import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.openShareSheet
 import com.nudge.core.preference.CorePrefRepo
+import com.nudge.core.utils.ConnectionMonitorV2
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
@@ -47,7 +48,6 @@ import com.patsurvey.nudge.MyApplication
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.sync.home.domain.use_case.SyncEventDetailUseCase
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.NudgeLogger
 import com.patsurvey.nudge.utils.roundOffDecimalFloat

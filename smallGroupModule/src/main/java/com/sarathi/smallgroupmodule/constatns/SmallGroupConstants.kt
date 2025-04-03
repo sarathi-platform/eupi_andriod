@@ -8,5 +8,8 @@ object SmallGroupConstants {
     const val HISTORY_SUMMARY_MAX_ITEM_COUNT_IN_COLLAPSE_MODE = 2
 
     const val PERCENTAGE_SIGN = "%"
+    const val ARG_SUBJECT_ID = "arg_subject_id"
+    const val ARG_SUBJECT_NAME = "arg_subject_name"
+    const val ARG_VILLAGE_NAME = "arg_village_name"
 
 }

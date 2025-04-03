@@ -78,5 +78,9 @@ Do you want to mark all absent</string>
     </plurals>
     <string name="attendance_already_marked">Attendance already marked for the date: %1$d </string>
     <string name="attendance_submitted_msg">Attendance has been submitted</string>
+    <string name="select_didi">Select Didi</string>
+    <string name="select_shg">Select SHG</string>
+    <string name="lokos_data">Lokos Data</string>
+    <string name="confirm">Confirm</string>
 
 </resources>

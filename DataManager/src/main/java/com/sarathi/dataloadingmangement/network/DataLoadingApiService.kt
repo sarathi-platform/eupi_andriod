@@ -1,6 +1,9 @@
 package com.sarathi.dataloadingmangement.network
 
 import com.nudge.core.model.ApiResponseModel
+import com.nudge.core.model.response.LokOsStateCodeResponseModel
+import com.nudge.core.model.response.ShgDetailsFromLokOsResponseModel
+import com.nudge.core.model.response.VillageDetailsFromLokOsResponseModel
 import com.sarathi.dataloadingmangement.KEY_HEADER_MOBILE
 import com.sarathi.dataloadingmangement.KEY_HEADER_TYPE
 import com.sarathi.dataloadingmangement.domain.ActivityRequest
@@ -97,5 +100,22 @@ interface DataLoadingApiService {
     @POST(GET_SECTION_STATUS)
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun getSectionStatus(@Body sectionStatusRequest: SectionStatusRequest): ApiResponseModel<List<SectionStatusResponseModel>>
+
+    @GET(SUBPATH_FETCH_STATE_CODE)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun getStateCodesFromLokOS(): ApiResponseModel<List<LokOsStateCodeResponseModel>>
+
+    @GET(SUBPATH_FETCH_VILLAGE_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchVillageDetailsFromLokOS(@Query("villageId") villageId: Long): ApiResponseModel<VillageDetailsFromLokOsResponseModel>
+
+    @GET(SUBPATH_FETCH_SHG_DETAILS)
+    @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
+    suspend fun fetchShgDetailsFromLokOS(
+        @Query("stateCode") stateCode: String,
+        @Query("shgCode") shgCode: String
+    ): ApiResponseModel<ShgDetailsFromLokOsResponseModel>
+
+
 
 }

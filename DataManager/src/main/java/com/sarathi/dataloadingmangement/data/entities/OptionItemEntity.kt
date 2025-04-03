@@ -7,6 +7,7 @@ import androidx.room.TypeConverters
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.model.uiModel.ValuesDto
 import com.sarathi.dataloadingmangement.OPTION_TABLE
 import com.sarathi.dataloadingmangement.data.converters.ConditionsDtoConvertor
 import com.sarathi.dataloadingmangement.data.converters.ValuesDtoConverter
@@ -14,7 +15,6 @@ import com.sarathi.dataloadingmangement.model.survey.response.ConditionsDto
 import com.sarathi.dataloadingmangement.model.survey.response.ContentList
 import com.sarathi.dataloadingmangement.model.survey.response.ContentListConverter
 import com.sarathi.dataloadingmangement.model.survey.response.OptionsItem
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 
 @Entity(tableName = OPTION_TABLE)
 data class OptionItemEntity(

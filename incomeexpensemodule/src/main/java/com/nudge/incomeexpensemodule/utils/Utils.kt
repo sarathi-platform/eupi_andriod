@@ -2,12 +2,12 @@ package com.nudge.incomeexpensemodule.utils
 
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.newMediumTextStyle
 import com.nudge.core.ui.theme.redOffline
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventSummaryUiModel
 
 fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {

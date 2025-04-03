@@ -37,6 +37,7 @@ import com.sarathi.dataloadingmangement.model.events.SaveAttendanceEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveDocumentEventDto
 import com.sarathi.dataloadingmangement.model.events.SaveFormAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.SectionStatusUpdateEventDto
+import com.sarathi.dataloadingmangement.model.events.ShgVerificationEventPayloadModel
 import com.sarathi.dataloadingmangement.model.events.TrainingTypeActivitySaveAnswerEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateActivityStatusEventDto
 import com.sarathi.dataloadingmangement.model.events.UpdateMissionStatusEventDto
@@ -155,6 +156,9 @@ class EventWriterRepositoryImpl @Inject constructor(
                 requestPayload = (eventItem as DeleteLivelihoodEvent).json()
             }
 
+            EventName.SHG_VERIFICATION_EVENT -> {
+                requestPayload = (eventItem as ShgVerificationEventPayloadModel).json()
+            }
 
             else -> {
                 requestPayload = BLANK_STRING

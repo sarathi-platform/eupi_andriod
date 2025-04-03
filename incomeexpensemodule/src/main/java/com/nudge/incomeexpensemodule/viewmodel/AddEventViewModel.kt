@@ -14,6 +14,7 @@ import com.nudge.core.getDate
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.response.Validation
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.commonUi.MAXIMUM_RANGE
 import com.nudge.core.value
@@ -30,7 +31,6 @@ import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.enums.LivelihoodTypeEnum
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.ProductAssetUiModel

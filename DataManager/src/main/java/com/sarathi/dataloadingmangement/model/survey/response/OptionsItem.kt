@@ -3,6 +3,7 @@ package com.sarathi.dataloadingmangement.model.survey.response
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.model.uiModel.ValuesDto
 
 data class OptionsItem(
     @SerializedName("weight")

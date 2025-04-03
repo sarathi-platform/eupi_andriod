@@ -7,8 +7,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.LazyColumnWithVerticalPadding
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.missionactivitytask.R
@@ -24,8 +27,12 @@ import com.sarathi.smallgroupmodule.ui.theme.dimen_100_dp
 fun DidiSubTab(
     modifier: Modifier = Modifier,
     didiTabViewModel: DidiTabViewModel,
-    didiList: List<SubjectEntity>
+    didiList: List<SubjectEntity>,
+    onShgVerifyClick: (subjectEntity: SubjectEntity) -> Unit,
 ) {
+
+    val isOnline = didiTabViewModel.isOnline.collectAsState(true)
+    val context = LocalContext.current
 
     if (didiList.isNotEmpty()) {
         Row(Modifier.fillMaxWidth()) {
@@ -50,9 +57,20 @@ fun DidiSubTab(
 
         itemsIndexed(didiList) { index, item ->
 
-            DidiTabCard(subjectEntity = item) {
-
-            }
+            DidiTabCard(
+                subjectEntity = item,
+                onShgVerifyClick = {
+                    if (isOnline.value) {
+                        onShgVerifyClick(it)
+                    } else {
+                        showCustomToast(
+                            context,
+                            didiTabViewModel.getString(R.string.shg_verification_offline_message)
+                        )
+                    }
+                },
+                onClick = {}
+            )
         }
         item {
             Spacer(

@@ -2,15 +2,22 @@ package com.sarathi.smallgroupmodule.ui.didiTab.viewModel
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import com.nudge.core.SHG_VERIFICATION_STATUS_NOT_VERIFIED
+import com.nudge.core.SHG_VERIFICATION_STATUS_VERIFIED
+import com.nudge.core.SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.model.uiModel.ValuesDto
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.utils.ConnectionMonitorV2
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.smallgroupmodule.R
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -19,8 +26,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DidiTabViewModel @Inject constructor(
-    val didiTabUseCase: DidiTabUseCase
+    val didiTabUseCase: DidiTabUseCase,
+    val connectionMonitor: ConnectionMonitorV2,
 ) : BaseViewModel() {
+
+    val isOnline = connectionMonitor.isConnected
 
     private val _totalDidiCount: MutableState<Int> = mutableStateOf(0)
     val totalCount: State<Int> get() = _totalDidiCount
@@ -48,6 +58,13 @@ class DidiTabViewModel @Inject constructor(
         mutableStateOf(false)
 
     val isSearchListEmpty = mutableStateOf(false)
+    val isFilterApplied = mutableStateOf(false)
+
+    val filterValues = ArrayList<ValuesDto>()
+
+    val finalFilterValue = mutableStateOf<List<ValuesDto>>(emptyList())
+
+    val selectedFilters = mutableStateListOf<ValuesDto>()
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -66,7 +83,9 @@ class DidiTabViewModel @Inject constructor(
                     1 -> {
                         searchBySmallGroup(event.searchQuery)
                     }
-
+                    -1 -> {
+                        searchFilter(event.searchQuery)
+                    }
                     else -> {
                         searchByDidis(event.searchQuery)
                     }
@@ -78,9 +97,63 @@ class DidiTabViewModel @Inject constructor(
                     isLoaderVisible = event.showLoader
                 )
             }
+
+            is CommonEvents.OnVerificationStatusFilterSelected -> {
+                if (event.selectedFilter == null) {
+                    selectedFilters.clear()
+                    return
+                }
+
+                if (selectedFilters.contains(event.selectedFilter)) {
+                    selectedFilters.remove(event.selectedFilter)
+                } else {
+                    selectedFilters.add(event.selectedFilter!!)
+                }
+            }
+
+            is CommonEvents.OnVerificationFilterApplied -> {
+                _filteredDidiList.value = if (event.selectedFilters.isNotEmpty()) {
+                    val filteredList = ArrayList<SubjectEntity>()
+                    event.selectedFilters.forEach { selectedFilterItem ->
+                        if (selectedFilterItem.originalName?.equals("SHG Verified", true) == true) {
+                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED || it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND })
+                        }
+                        if (selectedFilterItem.originalName?.equals(
+                                "SHG Not Verified",
+                                true
+                            ) == true
+                        ) {
+                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED })
+                        }
+                        if (selectedFilterItem.originalName?.equals(
+                                "Aadhar Verified",
+                                true
+                            ) == true
+                        ) {
+//                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED || it.shgVerificationStatus == SHG_VERIFICATION_STATUS_VERIFIED_ID_NOT_FOUND })
+                        }
+                        if (selectedFilterItem.originalName?.equals(
+                                "Aadhar Not Verified",
+                                true
+                            ) == true
+                        ) {
+//                            filteredList.addAll(didiList.value.filter { it.shgVerificationStatus == SHG_VERIFICATION_STATUS_NOT_VERIFIED })
+                        }
+                    }
+                    filteredList.sortedBy { it.subjectName.toLowerCase() }
+                } else {
+                    didiList.value.sortedBy { it.subjectName.toLowerCase() }
+                }
+            }
+
         }
+    }
 
-
+    private fun searchFilter(searchQuery: String) {
+        finalFilterValue.value = if (searchQuery.isNotEmpty())
+            filterValues.filter { it.value.lowercase().contains(searchQuery.lowercase()) }
+        else
+            filterValues
     }
 
     private fun loadAllDataForDidiTab(isRefresh: Boolean) {
@@ -94,7 +167,42 @@ class DidiTabViewModel @Inject constructor(
                 }
             }
             isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
+            createFilterListForLanguage()
         }
+    }
+
+    private fun createFilterListForLanguage() {
+        filterValues.clear()
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = translationHelper.getString(R.string.shg_verified_filter_item_label),
+                originalName = "SHG Verified"
+            )
+        )
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = translationHelper.getString(R.string.shg_not_verified_filter_item_label),
+                originalName = "SHG Not Verified"
+            )
+        )
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = translationHelper.getString(R.string.aadhar_verified_filter_item_label),
+                originalName = "Aadhar Verified"
+            )
+        )
+        filterValues.add(
+            ValuesDto(
+                id = 1,
+                value = translationHelper.getString(R.string.aadhar_not_verified_filter_item_label),
+                originalName = "Aadhar Not Verified"
+            )
+        )
+
+        finalFilterValue.value = filterValues
     }
 
 

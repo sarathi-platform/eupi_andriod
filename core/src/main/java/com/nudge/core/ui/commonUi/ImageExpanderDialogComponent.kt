@@ -1,4 +1,4 @@
-package com.sarathi.surveymanager.ui.description_component.presentation
+package com.nudge.core.ui.commonUi
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,11 +30,11 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil.compose.rememberImagePainter
+import com.nudge.core.R
 import com.nudge.core.ui.theme.greyTransparentColor
 import com.nudge.core.ui.theme.lightGrayTranslucent
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
-import com.sarathi.surveymanager.R
 
 @Composable
 fun ImageExpanderDialogComponent(imagePath: String, onCloseClick: () -> Unit) {

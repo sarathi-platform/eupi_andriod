@@ -24,3 +24,7 @@ const val GET_SECTION_STATUS = "/survey-service/getSectionStatus"
 const val SUBPATH_GET_LIVELIHOOD_SAVE_EVENT =
     "/livelihood-service/livelihood/livelihood-event/{doerId}"
 const val SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK = "didi-service/smallgroup/attendance-history"
+
+const val SUBPATH_FETCH_STATE_CODE = "/read-api/loks/state/detail"
+const val SUBPATH_FETCH_VILLAGE_DETAILS = "read-api/loks/village-info"
+const val SUBPATH_FETCH_SHG_DETAILS = "/read-api/loks/profile/shg"

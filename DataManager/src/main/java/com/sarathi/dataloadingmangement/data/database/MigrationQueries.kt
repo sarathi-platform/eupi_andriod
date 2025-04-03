@@ -20,6 +20,7 @@ import com.sarathi.dataloadingmangement.SECTION_STATUS_TABLE_NAME
 import com.sarathi.dataloadingmangement.SOURCE_TARGET_QUESTION_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_EVENT_MAPPING_TABLE_NAME
 import com.sarathi.dataloadingmangement.SUBJECT_LIVELIHOOD_MAPPING_TABLE_NAME
+import com.sarathi.dataloadingmangement.SUBJECT_TABLE
 import com.sarathi.dataloadingmangement.SURVEY_CONFIG_TABLE_NAME
 import com.sarathi.dataloadingmangement.SURVEY_TABLE
 
@@ -309,4 +310,19 @@ object MigrationQueries {
 
     val ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID =
         "ALTER TABLE $MISSION_LIVELIHOOD_CONFIG_TABLE_NAME ADD COLUMN programLivelihoodReferenceId TEXT"
+
+    val ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_VERIFICATION_STATUS =
+        "ALTER TABLE $SUBJECT_TABLE ADD COLUMN shgVerificationStatus TEXT"
+
+    val ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_VERIFICATION_DATE =
+        "ALTER TABLE $SUBJECT_TABLE ADD COLUMN shgVerificationDate INTEGER"
+
+    val ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_NAME =
+        "ALTER TABLE $SUBJECT_TABLE ADD COLUMN shgName TEXT"
+
+    val ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_CODE =
+        "ALTER TABLE $SUBJECT_TABLE ADD COLUMN shgCode TEXT"
+
+    val ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_MEMBER_IDE =
+        "ALTER TABLE $SUBJECT_TABLE ADD COLUMN shgMemberId TEXT"
 }

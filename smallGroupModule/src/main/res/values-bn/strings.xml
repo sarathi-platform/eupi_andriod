@@ -69,6 +69,7 @@
     </plurals>
     <string name="data_change_not_allow">"You can not change the date of the submitted Small Group Meeting attendance.\n If the date is incorrect, then please delete the entry and enter new attendance."</string>
     <string name="attendance_submitted_msg">Attendance has been submitted</string>
+    <string name="confirm">Confirm</string>
 
     <plurals name="submit">
         <item quantity="one">জমা দিন</item>

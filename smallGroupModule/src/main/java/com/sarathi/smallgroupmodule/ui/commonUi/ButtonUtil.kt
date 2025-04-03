@@ -244,14 +244,15 @@ fun CustomButton(
 fun ButtonOutline(
     modifier: Modifier = Modifier,
     buttonTitle: String = BLANK_STRING,
-    icon: ImageVector = Icons.Default.Add,
+    icon: ImageVector? = Icons.Default.Add,
+    borderColor: Color = greyBorder,
     onClick: () -> Unit
 ) {
     OutlinedButton(
         onClick = {
             onClick()
         },
-        border = BorderStroke(1.dp, greyBorder),
+        border = BorderStroke(1.dp, borderColor),
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 0.dp)
@@ -263,14 +264,16 @@ fun ButtonOutline(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center,
         ) {
+            icon?.let {
             Icon(
-                icon,
+                it,
                 contentDescription = "Add Button",
                 tint = blueDark,
                 modifier = Modifier
                     .absolutePadding(top = 0.dp, right = 2.dp)
                     .size(22.dp)
             )
+            }
             Text(
                 text = buttonTitle,
                 color = blueDark,

@@ -1,4 +1,4 @@
-package com.patsurvey.nudge.utils
+package com.nudge.core.utils
 
 import android.content.Context
 import android.net.ConnectivityManager

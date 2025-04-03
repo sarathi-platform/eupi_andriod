@@ -3,7 +3,7 @@ package com.sarathi.dataloadingmangement.model.events
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.nudge.core.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.nudge.core.model.uiModel.ValuesDto
 
 data class SaveAnswerEventOptionItemDto(
     @SerializedName("optionId")

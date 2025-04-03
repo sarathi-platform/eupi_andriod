@@ -34,6 +34,7 @@ import com.nudge.core.getImagePathFromString
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.defaultCardElevation
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_14_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_4_dp
 import com.nudge.core.ui.theme.dimen_56_dp
@@ -176,13 +177,13 @@ fun ImageCardWithBottomContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(white)
-                .padding(dimen_10_dp)
+                .padding(vertical = dimen_10_dp)
                 .then(modifier)
         ) {
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = dimen_4_dp),
+                    .padding(horizontal = dimen_14_dp),
                 horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {

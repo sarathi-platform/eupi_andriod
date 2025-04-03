@@ -95,7 +95,20 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "do_you_want_to_exit_the_app", "exit", "cancel",
             "refresh_failed_please_try_again", "app_name", "not_able_to_load",
             "no_didi_s_assigned_to_you", "search_didi", "search_by_small_groups",
-            "total_didis"
+            "total_didis",
+            "shg_verification_offline_message",
+            "verify_shg_button_text",
+            "shg_name_label",
+            "shg_verified_status_text",
+            "id_not_found_status_label",
+            "filters_title",
+            "clear_button_label",
+            "apply_button_label",
+            "search_filter_placeholder",
+            "shg_verified_filter_item_label",
+            "shg_not_verified_filter_item_label",
+            "aadhar_verified_filter_item_label",
+            "aadhar_not_verified_filter_item_label"
         )
     ),
 
@@ -222,6 +235,25 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "select_first_livelihood_for_didi",
             "select_second_livelihood_for_didi"
         )
-    )
+    ),
+    DidiShgVerificationScreen(
+        "DidiShgVerificationScreen", listOf(
+            "submit",
+            "select_shg", "select_didi", "cancel",
+            "husband_name_label",
+            "father_name_label_text",
+            "husband_father_name_label_text",
+            "member_code_label",
+            "shg_name_label_text",
+            "didi_name_lable_text",
+            "caste_label_text",
+            "village_label_text",
+            "panchayat_label_text",
+            "lokos_data",
+            "select_didi_dropdown_label",
+            "select_shg_dropdown_label",
+            "verify_shg_screen_title"
+        )
+    ),
 
 }

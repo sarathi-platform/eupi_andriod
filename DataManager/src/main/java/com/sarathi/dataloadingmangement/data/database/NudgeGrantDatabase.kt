@@ -78,6 +78,11 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MON
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_CODE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_MEMBER_IDE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_NAME
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_VERIFICATION_DATE
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_VERIFICATION_STATUS
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_MODIFIED_DATE
@@ -149,7 +154,7 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodCo
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 7
+const val NUDGE_GRANT_DATABASE_VERSION = 8
 
 @Database(
     entities = [
@@ -382,6 +387,22 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE,
                         ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY,
                         ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID
+                    )
+                )
+            }
+        }
+
+        val NUDGE_GRANT_DATABASE_MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_7_8")
+                migration(
+                    db,
+                    listOf(
+                        ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_VERIFICATION_STATUS,
+                        ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_VERIFICATION_DATE,
+                        ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_NAME,
+                        ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_CODE,
+                        ALTER_SUBJECT_TABLE_ADD_COLUMN_SHG_MEMBER_IDE
                     )
                 )
             }

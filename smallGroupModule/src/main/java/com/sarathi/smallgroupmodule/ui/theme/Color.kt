@@ -21,6 +21,9 @@ val greyButtonColor = Color(0xFFF2F4F8)
 val otpBorderColor = Color(0xFFBFBFBF)
 val greenOnline = Color(0xFF439A86)
 val redOffline = Color(0xFFD32505)
+val verifiedTextColor = Color(0xFF439A86)
+val verifiedBgColor = Color(0xFFF6F8FF)
+
 
 val greenActiveIcon = Color(0xFF02B5C6)
 
@@ -134,3 +137,5 @@ val tabBgColor = Color(0xFFDCE2FF)
 val uncheckedTrackColor = Color(0xFFC0C6CE)
 
 val dateRangeFieldColor = Color(0xFFD9D9D9)
+val orangeLight = Color(0xFFEF8D18)
+val gary_light = Color(0xFF8F9291)
