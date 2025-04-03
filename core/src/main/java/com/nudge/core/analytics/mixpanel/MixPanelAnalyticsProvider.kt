@@ -45,14 +45,12 @@ class MixPanelAnalyticsProvider @Inject constructor(
     override fun setUserDetail(
         distinctId: String,
         name: String,
-        userType: String,
-        buildEnvironment: String
+        userType: String
     ) {
         mixpanelAPI?.let {
             it.identify(distinctId)
             it.people?.set("name", name)
             it.people?.set("userType", userType)
-            it.people?.set("build_environment", buildEnvironment)
         }
     }
 }

@@ -20,10 +20,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -49,6 +51,7 @@ import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_20_dp
+import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
@@ -89,6 +92,7 @@ import com.sarathi.surveymanager.ui.component.InputComponent
 import com.sarathi.surveymanager.ui.component.QuestionComponent
 import com.sarathi.surveymanager.ui.component.RadioQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.SingleImageComponent
+import com.sarathi.surveymanager.ui.component.SingleSelectGridComponent
 import com.sarathi.surveymanager.ui.component.SubContainerView
 import com.sarathi.surveymanager.ui.component.ToggleQuestionBoxComponent
 import com.sarathi.surveymanager.ui.component.ToolBarWithMenuComponent
@@ -200,41 +204,48 @@ fun BaseSurveyScreen(
             )
         },
         onContentUI = {
-            BoxWithConstraints(
-                modifier = Modifier
-                    .scrollable(
-                        state = rememberScrollableState {
-                            scope.launch {
-                                val toDown = it <= 0
-                                if (toDown) {
-                                    if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
-                                        innerState.scrollBy(-it)
-                                    } else {
-                                        outerState.scrollBy(-it)
+            if (viewModel.loaderState.value.isLoaderVisible) {
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(modifier = Modifier.size(dimen_24_dp))
+                }
+            } else {
+                BoxWithConstraints(
+                    modifier = Modifier
+                        .scrollable(
+                            state = rememberScrollableState {
+                                scope.launch {
+                                    val toDown = it <= 0
+                                    if (toDown) {
+                                        if (outerState.run { firstVisibleItemIndex == layoutInfo.totalItemsCount - 1 }) {
+                                            innerState.scrollBy(-it)
+                                        } else {
+                                            outerState.scrollBy(-it)
+                                        }
                                     }
                                 }
-                            }
-                            it
-                        },
-                        Orientation.Vertical,
-                    )
-                    .fillMaxHeight()
-            ) {
-                LazyColumn(
-                    state = outerState,
-                    modifier = Modifier
-                        .heightIn(maxHeight)
-                        .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
+                                it
+                            },
+                            Orientation.Vertical,
+                        )
+                        .fillMaxHeight()
                 ) {
-                    if (!grantType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
+                    LazyColumn(
+                        state = outerState,
+                        modifier = Modifier
+                            .heightIn(maxHeight)
+                            .padding(start = dimen_16_dp, end = dimen_16_dp, bottom = dimen_56_dp),
+                    ) {
+                        if (!grantType.equals(ActivityTypeEnum.BASIC.name, ignoreCase = true)) {
+                            item { CustomVerticalSpacer() }
+                        }
+
+                        surveyQuestionContent(maxHeight)
+
                         item { CustomVerticalSpacer() }
                     }
-
-                    surveyQuestionContent(maxHeight)
-
-                    item { CustomVerticalSpacer() }
                 }
             }
+
         },
         onSettingClick = onSettingClick
     )
@@ -575,6 +586,35 @@ fun QuestionUiContent(
                     },
                     questionDetailExpanded = {
 
+                    }
+                )
+            }
+
+            QuestionType.SingleSelectGrid.name -> {
+                SingleSelectGridComponent(
+                    content = question.contentEntities,
+                    questionIndex = index,
+                    questionDisplay = question.questionDisplay,
+                    isRequiredField = question.isMandatory,
+                    maxCustomHeight = maxHeight,
+                    showCardView = showCardView,
+                    isQuestionNumberVisible = isQuestionNumberVisible,
+                    isEditAllowed = !viewModel.isActivityCompleted.value,
+                    optionUiModelList = question.options.value(),
+                    navigateToMediaPlayerScreen = { contentList ->
+                        handleContentClick(
+                            viewModel = viewModel,
+                            context = context,
+                            navigateToMediaPlayerScreen = { navigateToMediaPlayerScreen(it) },
+                            contentList = contentList
+                        )
+                    },
+                    onAnswerSelection = { questionIndex, optionItemIndex ->
+                        question.options?.forEachIndexed { index, _ ->
+                            question.options?.get(index)?.isSelected = false
+                        }
+                        question.options?.get(optionItemIndex)?.isSelected = true
+                        onAnswerSelect(question)
                     }
                 )
             }

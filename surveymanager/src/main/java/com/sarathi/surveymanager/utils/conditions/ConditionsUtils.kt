@@ -199,6 +199,7 @@ class ConditionsUtils {
             QuestionType.SingleSelectDropDown.name,
             QuestionType.ToggleGrid.name,
             QuestionType.RadioButton.name,
+            QuestionType.SingleSelectGrid.name,
             QuestionType.Toggle.name,
             QuestionType.DropDown.name,
             QuestionType.MultiSelect.name,
@@ -288,6 +289,7 @@ class ConditionsUtils {
                 break
 
             if (condition.size == 1) {
+
                 val result = evaluateSingleCondition(
                     sourceQuestion = sourceQuestion,
                     response = response,
@@ -320,7 +322,6 @@ class ConditionsUtils {
 
                 val result = evaluateMultipleCondition(
                     sourceQuestion = sourceQuestion,
-                    response = response,
                     conditions = condition,
                     conditionOperator = conditionOperator,
                     sourceQuestionType = sourceQuestionType
@@ -365,6 +366,7 @@ class ConditionsUtils {
             QuestionType.NumericField.name,
             QuestionType.SingleSelectDropDown.name,
             QuestionType.RadioButton.name,
+            QuestionType.SingleSelectGrid.name,
             QuestionType.Toggle.name,
             QuestionType.DropDown.name,
             -> {
@@ -436,7 +438,6 @@ class ConditionsUtils {
      */
     private fun evaluateMultipleCondition(
         sourceQuestion: QuestionUiModel,
-        response: List<Int>?,
         conditions: List<Conditions>,
         conditionOperator: String?,
         sourceQuestionType: String
@@ -448,7 +449,7 @@ class ConditionsUtils {
         return conditions.fold(
             evaluateSingleCondition(
                 sourceQuestion,
-                response,
+                response = responseMap[conditions.firstOrNull()?.sourceQuestion],
                 conditions = conditions.first(),
                 sourceQuestionType
             )
@@ -457,7 +458,7 @@ class ConditionsUtils {
                 Operator.AND -> {
                     acc && evaluateSingleCondition(
                         sourceQuestion,
-                        response,
+                        responseMap[condition.sourceQuestion],
                         conditions = condition,
                         sourceQuestionType
                     )
@@ -466,7 +467,7 @@ class ConditionsUtils {
                 Operator.OR -> {
                     acc || evaluateSingleCondition(
                         sourceQuestion,
-                        response,
+                        responseMap[condition.sourceQuestion],
                         conditions = condition,
                         sourceQuestionType
                     )

@@ -44,4 +44,8 @@ class StorageModule {
     @Singleton
     fun prodiveCasteListDao(db: CoreDatabase) = db.casteListDao()
 
+    @Provides
+    @Singleton
+    fun provideRemoteQueryAuditTrailEntityDao(db: CoreDatabase) =
+        db.remoteQueryAuditTrailEntityDao()
 }
