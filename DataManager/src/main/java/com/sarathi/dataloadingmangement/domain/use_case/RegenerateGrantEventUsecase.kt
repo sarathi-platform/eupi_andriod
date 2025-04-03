@@ -103,30 +103,64 @@ class RegenerateGrantEventUsecase @Inject constructor(
     private suspend fun writeSurveyAnswerEvents() {
         try {
             val surveyAnswers = regenerateGrantEventRepositoryImpl.getAllSurveyAnswerForUSer()
-                .distinctBy { it.referenceId }
-            surveyAnswers.forEach { surveyAnswer ->
-                val taskEntity =
-                    regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
-                val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
-                    surveyAnswer,
-                    taskEntity
-                )
-                surveyAnswerEventWriterUseCase.invoke(
-                    questionUiModels = questionUiModel,
-                    taskId = surveyAnswer.taskId,
-                    subjectId = surveyAnswer.subjectId,
-                    referenceId = surveyAnswer.referenceId,
-                    grantId = surveyAnswer.grantId,
-                    grantType = surveyAnswer.grantType,
-                    taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
-                    subjectType = subjectType,
-                    isFromRegenerate = true,
-                    activityId = activityConfig?.activityId.value(),
-                    activityReferenceId = activityConfig?.referenceId,
-                    activityReferenceType = activityConfig?.referenceType
-                )
+                .groupBy { it.referenceId }
+            // .distinctBy { it.referenceId }
+            surveyAnswers.entries.forEach {
 
             }
+            surveyAnswers.entries.forEach { surveyAnswerGroup ->
+                if (surveyAnswerGroup.key == BLANK_STRING) {
+                    surveyAnswerGroup.value.forEach { surveyAnswer ->
+                        val taskEntity =
+                            regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
+                        val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
+                            surveyAnswer,
+                            taskEntity
+                        )
+                        val filteredquestionModel =
+                            questionUiModel.filter { it.options?.any { it.isSelected == true } == true }
+                        surveyAnswerEventWriterUseCase.invoke(
+                            questionUiModels = filteredquestionModel,
+                            taskId = surveyAnswer.taskId,
+                            subjectId = surveyAnswer.subjectId,
+                            referenceId = surveyAnswer.referenceId,
+                            grantId = surveyAnswer.grantId,
+                            grantType = surveyAnswer.grantType,
+                            taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                            subjectType = subjectType,
+                            isFromRegenerate = true,
+                            activityId = activityConfig?.activityId.value(),
+                            activityReferenceId = activityConfig?.referenceId,
+                            activityReferenceType = activityConfig?.referenceType
+                        )
+                    }
+                } else {
+                    val surveyAnswer = surveyAnswerGroup.value.first()
+                    val taskEntity =
+                        regenerateGrantEventRepositoryImpl.getTaskEntity(surveyAnswer.taskId)
+                    val (questionUiModel, subjectType, activityConfig) = findQuestionUiListAndActivityConfig(
+                        surveyAnswer,
+                        taskEntity
+                    )
+                    val filteredquestionModel =
+                        questionUiModel.filter { it.options?.any { it.isSelected == true } == true }
+                    surveyAnswerEventWriterUseCase.invoke(
+                        questionUiModels = filteredquestionModel,
+                        taskId = surveyAnswer.taskId,
+                        subjectId = surveyAnswer.subjectId,
+                        referenceId = surveyAnswer.referenceId,
+                        grantId = surveyAnswer.grantId,
+                        grantType = surveyAnswer.grantType,
+                        taskLocalId = taskEntity?.localTaskId ?: BLANK_STRING,
+                        subjectType = subjectType,
+                        isFromRegenerate = true,
+                        activityId = activityConfig?.activityId.value(),
+                        activityReferenceId = activityConfig?.referenceId,
+                        activityReferenceType = activityConfig?.referenceType
+                    )
+                }
+            }
+
         } catch (exception: Exception) {
             Log.e("Regenerate", exception.localizedMessage)
         }

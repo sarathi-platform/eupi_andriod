@@ -33,6 +33,7 @@ fun TypeMultiSelectedDropDownComponent(
     hintText: String = stringResource(R.string.select),
     sources: List<ValuesDto>,
     optionStateMap: Map<Int, Boolean?> = mapOf(),
+    showSearchBar: Boolean = false,
     onDetailIconClicked: () -> Unit = {}, // Default empty lambda
     navigateToMediaPlayerScreen: (ContentList) -> Unit,
     onAnswerSelection: (selectValue: String) -> Unit,
@@ -61,6 +62,7 @@ fun TypeMultiSelectedDropDownComponent(
         showCardView = showCardView,
         isQuestionNumberVisible = isQuestionNumberVisible,
         enabledOptions = optionStateMap,
+        showSearchBar = showSearchBar,
         onDetailIconClicked = { onDetailIconClicked() },
         navigateToMediaPlayerScreen = { contentList ->
             navigateToMediaPlayerScreen(contentList)

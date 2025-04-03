@@ -4,9 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.data.prefs.PrefRepo
-import com.patsurvey.nudge.navigation.baseline.BSHomeNavScreen
 import com.patsurvey.nudge.navigation.selection.HomeNavScreen
 
 
@@ -16,7 +16,7 @@ fun RootNavigationGraph(navController: NavHostController,prefRepo: PrefRepo){
         route = NudgeNavigationGraph.ROOT,
         startDestination = NudgeNavigationGraph.AUTHENTICATION
     ){
-        authNavGraph(navController)
+        authNavGraph(navController, prefRepo.getPref(AppConfigKeysEnum.V2TheameEnable.name, false))
         composable(route = NudgeNavigationGraph.HOME) {
             HomeNavScreen(prefRepo = prefRepo)
         }

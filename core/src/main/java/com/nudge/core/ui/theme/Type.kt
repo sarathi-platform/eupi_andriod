@@ -63,6 +63,11 @@ val defaultTextStyle = TextStyle(
     fontWeight = FontWeight.SemiBold,
     fontSize = 16.sp
 )
+val textStyleMedium = TextStyle(
+    fontSize = 16.sp,
+    fontFamily = NotoSans,
+    fontWeight = FontWeight.Medium
+)
 
 val defaultTextSpanStyle = SpanStyle(
     fontFamily = NotoSans,

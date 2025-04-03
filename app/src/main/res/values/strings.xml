@@ -573,6 +573,12 @@
     <string name="data_is_not_available_for_sync_please_perform_some_action">Data is not available for Sync. Please perform some action before sync.</string>
     <string name="sync_data_first_message">Data sync is required before image sync\n</string>
     <string name="data">Data</string>
+
+    <string name="verify_otp">Verify OTP</string>
+    <string name="an_otp_has_been_sent_on">"An OTP has been sent on "</string>
+    <string name="verify">Verify</string>
+    <string name="mobile_number">Mobile number</string>
+    <string name="otp_is_invalid">OTP is invalid</string>
     <string name="app_update_cancel">Cancel</string>
     <string name="app_update">Update</string>
     <string name="update_available">Update Available</string>
