@@ -8,8 +8,8 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateMap
 import com.nudge.core.DEFAULT_FORM_ID
 import com.nudge.core.DEFAULT_ID
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.REMOTE_CONFIG_SHOW_QUESTION_INDEX_ENABLE
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.model.response.SurveyValidations
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toSafeInt
@@ -321,7 +321,10 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         )
     }
 
-    open fun runValidationCheck(questionId: Int, onValidationComplete: (Boolean, String) -> Unit) {
+    open suspend fun runValidationCheck(
+        questionId: Int,
+        onValidationComplete: (Boolean, String) -> Unit
+    ) {
 
         validationUseCase.validateExpressionEvaluator(
             validations = validations,
@@ -481,7 +484,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
         return conditionsUtils.runNoneOptionCheck(sourceQuestion)
     }
 
-    fun runConditionCheck(sourceQuestion: QuestionUiModel) {
+    suspend fun runConditionCheck(sourceQuestion: QuestionUiModel) {
         conditionsUtils.runConditionCheck(sourceQuestion)
         conditionsUtils.updateAutoCalculateQuestionValue(
             questionUiModel.value,
@@ -504,6 +507,7 @@ open class BaseSurveyScreenViewModel @Inject constructor(
                             selectedValue = BLANK_STRING
                         )
                     }
+                    fieldValidationAndMessageMap.remove(it.questionId)
                     runNoneOptionCheck(it)
                     if (saveSurveyAnswerUseCase.isAnswerAvailableInDb(
                             it,

@@ -23,5 +23,6 @@ enum class AppConfigKeysEnum(val shouldFetch: Boolean = true) {
     SHOW_QUESTION_INDEX,
     IS_DELETE_EVENT_ENABLED,
     DELETE_OLD_EVENT_THRESHOLD,
+    V2TheameEnable,
     SQL_QUERY_EXECUTOR(false);
 }
