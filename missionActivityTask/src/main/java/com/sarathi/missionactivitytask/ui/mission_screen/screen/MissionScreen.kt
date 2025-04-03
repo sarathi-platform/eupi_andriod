@@ -39,6 +39,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
@@ -200,7 +201,7 @@ fun MissionScreen(
             LoadingDataComponent(
                 title = "Mission Screen",
                 apiStatus = viewModel.allApiStatus.value,
-                isVisible = true,
+                isVisible = viewModel.allApiStatus.value != ApiStatus.SUCCESS || viewModel.allApiStatus.value != ApiStatus.IDEL,
                 progressState = viewModel.progressState,
             ) {}
             if (isSearch) {

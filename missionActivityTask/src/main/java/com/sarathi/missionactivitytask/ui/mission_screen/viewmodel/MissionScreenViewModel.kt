@@ -74,8 +74,7 @@ class MissionScreenViewModel @Inject constructor(
     private var baseCurrentApiCount = 0 // only count api survey count
     private var TOTAL_API_CALL = 0
     var completedApiCount = mutableStateOf(0f)
-    var isShowLoadingDataComponent = mutableStateOf(true)
-    var allApiStatus = mutableStateOf(ApiStatus.INPROGRESS)
+    var allApiStatus = mutableStateOf(ApiStatus.IDEL)
     var failedApiCount = mutableStateOf(0f)
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
 
@@ -251,6 +250,7 @@ class MissionScreenViewModel @Inject constructor(
             val customData: Map<String, Any> = mapOf(
                 "propertiesName" to AppConfigKeysEnum.values().map { it.name }
             )
+            allApiStatus.value = ApiStatus.INPROGRESS
             fetchAllDataUseCase.invoke(
                 customData = customData,
                 screenName = MISSION_SCREEN,
@@ -292,21 +292,23 @@ class MissionScreenViewModel @Inject constructor(
         // Handle completion and failure scenarios
         when {
             completedApiCount.value.toInt() == TOTAL_API_CALL -> {
-                isShowLoadingDataComponent.value = false
                 allApiStatus.value = ApiStatus.SUCCESS
             }
 
             failedApiCount.value > 1 -> {
-                isShowLoadingDataComponent.value = true
                 allApiStatus.value = ApiStatus.FAILED
             }
 
             else -> {
-                isShowLoadingDataComponent.value =
-                    !isShowLoadingDataComponent.value // Toggle loading visibility
+                allApiStatus.value = ApiStatus.INPROGRESS
             }
         }
     }
+
+    fun isShowLoadingDataComponent(): Boolean {
+        return allApiStatus.value == ApiStatus.INPROGRESS || allApiStatus.value == ApiStatus.FAILED
+    }
+
 
     private fun collectMissionListFromFlow() {
         viewModelScope.launch {
