@@ -28,6 +28,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_MODULE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -251,7 +253,7 @@ class MissionScreenViewModel @Inject constructor(
             )
             fetchAllDataUseCase.invoke(
                 customData = customData,
-                screenName = "MissionScreen",
+                screenName = MISSION_SCREEN,
                 dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = isRefresh,
                 onComplete = { isSucess, message ->
@@ -263,7 +265,7 @@ class MissionScreenViewModel @Inject constructor(
                 apiPerStatus = { apiName ->
                     updateProgress(apiUrl = apiName)
                 },
-                moduleName = "MAT"
+                moduleName = MAT_MODULE
             )
 
         }
@@ -271,13 +273,13 @@ class MissionScreenViewModel @Inject constructor(
 
     private suspend fun updateProgress(apiUrl: String) {
         val apiStatusData = fetchAllDataUseCase.getApiStatus(
-            screenName = "MissionScreen",
-            moduleName = "MAT",
+            screenName = MISSION_SCREEN,
+            moduleName = MAT_MODULE,
             apiUrl = apiUrl
         )
 
         // Increment counters based on API status
-        if (apiStatusData.status == ApiStatus.SUCCESS.name) {
+        if (apiStatusData?.status == ApiStatus.SUCCESS.name) {
             completedApiCount.value = completedApiCount.value.inc()
         } else {
             failedApiCount.value = failedApiCount.value.inc()

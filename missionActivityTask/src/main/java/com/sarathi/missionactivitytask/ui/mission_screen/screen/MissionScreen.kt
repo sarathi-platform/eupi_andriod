@@ -200,7 +200,7 @@ fun MissionScreen(
             LoadingDataComponent(
                 title = "Mission Screen",
                 apiStatus = viewModel.allApiStatus.value,
-                isVisible = viewModel.isShowLoadingDataComponent.value,
+                isVisible = true,
                 progressState = viewModel.progressState,
             ) {}
             if (isSearch) {

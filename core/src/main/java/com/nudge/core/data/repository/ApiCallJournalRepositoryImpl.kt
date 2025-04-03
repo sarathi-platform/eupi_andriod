@@ -56,7 +56,7 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
         screenName: String,
         moduleName: String,
         apiUrl: String
-    ): ApiCallJournalEntity {
+    ): ApiCallJournalEntity? {
         return apiCallJournalJournalDao.getApiCallStatus(
             screenName = screenName,
             moduleName = moduleName,

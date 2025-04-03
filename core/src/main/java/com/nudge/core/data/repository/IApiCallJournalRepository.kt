@@ -25,6 +25,6 @@ interface IApiCallJournalRepository {
         screenName: String,
         moduleName: String,
         apiUrl: String
-    ): ApiCallJournalEntity
+    ): ApiCallJournalEntity?
 
 }

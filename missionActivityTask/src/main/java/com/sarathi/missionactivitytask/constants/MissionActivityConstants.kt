@@ -67,5 +67,7 @@ object MissionActivityConstants {
     const val ARG_FORM_ID = "form_id"
 
     const val ARG_FROM_SCREEN = "from_screen"
+    const val MISSION_SCREEN = "MissionScreen"
+    const val MAT_MODULE = "MAT"
 
 }

@@ -72,7 +72,7 @@ class FetchAllDataUseCase @Inject constructor(
             apiUseCaseList[it.apiName]?.invoke(
                 screenName = screenName,
                 triggerType = dataLoadingTriggerType,
-                customData = mapOf(),
+                customData = customData,
                 moduleName = moduleName
             )
             apiPerStatus(it.apiUrls)
@@ -184,7 +184,7 @@ class FetchAllDataUseCase @Inject constructor(
         screenName: String,
         moduleName: String,
         apiUrl: String
-    ): ApiCallJournalEntity {
+    ): ApiCallJournalEntity? {
         return apiCallJournalRepository.getApiCallStatus(
             screenName = screenName,
             moduleName = moduleName,
