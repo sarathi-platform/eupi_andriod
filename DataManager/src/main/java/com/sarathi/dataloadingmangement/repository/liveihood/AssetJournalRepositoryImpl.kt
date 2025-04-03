@@ -34,7 +34,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
             assetId = eventData.assetType,
             createdDate = createdDate,
             eventId = eventData.eventId,
-            eventType = eventData.selectedEvent.name
+            eventType = eventData.selectedEvent.name,
+            localTransactionId = eventData.localTransactionId
 
         )
 
@@ -93,7 +94,8 @@ class AssetJournalRepositoryImpl @Inject constructor(
             assetId = eventData.assetType,
             modifiedDate = modifiedDateTIme,
             eventId = eventData.eventId,
-            eventType = eventData.selectedEvent.name
+            eventType = eventData.selectedEvent.name,
+            localTransactionId = eventData.localTransactionId ?: BLANK_STRING
         )
     }
 
@@ -177,5 +179,4 @@ class AssetJournalRepositoryImpl @Inject constructor(
         return inflowValue - outFlowValue
 
     }
-
 }

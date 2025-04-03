@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.model.response
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class LivelihoodSaveEventResponse(
     @SerializedName("transactionId")
@@ -37,4 +38,10 @@ data class LivelihoodSaveEventResponse(
     val modifiedDate: Long,
     @SerializedName("status")
     val status: Int,
+    @SerializedName("localTransactionId")
+    val localTransactionId: String,
+    @SerializedName("toAssetType")
+    val toAssetType: Int = -1,
+    @SerializedName("toAssetTypeValue")
+    val toAssetTypeValue: String = BLANK_STRING
 )

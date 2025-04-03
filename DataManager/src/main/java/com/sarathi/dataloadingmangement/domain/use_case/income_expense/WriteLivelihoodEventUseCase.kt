@@ -2,6 +2,8 @@ package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
 import com.nudge.core.enums.EventName
 import com.nudge.core.enums.EventType
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.events.incomeExpense.DeleteLivelihoodEvent
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IEventWriterRepository
@@ -24,13 +26,21 @@ class WriteLivelihoodEventUseCase @Inject constructor(
         createdDateTime: Long,
         modifiedDate: Long
     ) {
-        val livelihoodPayload =
-            subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
-                eventData,
-                currentDateTime = createdDateTime,
-                modifiedDateTime = modifiedDate
-            )
-        writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
+        if (!(eventData.selectedEvent
+                    == LivelihoodEventTypeDataCaptureMapping.AssetTransition
+                    && eventData.selectedEvent.assetJournalEntryFlowType
+                    == EntryFlowTypeEnum.INFLOW
+                    )
+        ) {
+            val livelihoodPayload =
+                subjectLivelihoodEventMappingRepository.getLivelihoodEventDto(
+                    eventData,
+                    currentDateTime = createdDateTime,
+                    modifiedDateTime = modifiedDate
+                )
+            writeEvent(livelihoodPayload, EventName.LIVELIHOOD_EVENT)
+
+        }
 
         eventData.selectedEvent.assetJournalEntryFlowType?.let {
 

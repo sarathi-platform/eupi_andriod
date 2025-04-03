@@ -29,7 +29,8 @@ data class MoneyJournalEntity(
     val modifiedDate: Long,
     val createdDate: Long,
     val eventId: Int?,
-    val eventType: String?
+    val eventType: String?,
+    val localTransactionId: String? // To identify the unique events for delete operation
 ) {
     companion object {
 
@@ -47,7 +48,8 @@ data class MoneyJournalEntity(
             dateFormat: String = DD_MMM_YYYY_FORMAT,
             createdDate: Long,
             eventId: Int? = null,
-            eventType: String? = null
+            eventType: String? = null,
+            localTransactionId: String?
         ): MoneyJournalEntity {
             return MoneyJournalEntity(
                 id = 0,
@@ -66,7 +68,8 @@ data class MoneyJournalEntity(
                 modifiedDate = System.currentTimeMillis(),
                 createdDate = createdDate,
                 eventId = eventId,
-                eventType = eventType
+                eventType = eventType,
+                localTransactionId = localTransactionId
 
             )
 
@@ -93,8 +96,8 @@ data class MoneyJournalEntity(
                 modifiedDate = moneyJournalApiResponse.modifiedDate,
                 createdDate = moneyJournalApiResponse.createdDate,
                 eventId = moneyJournalApiResponse.eventId,
-                eventType = moneyJournalApiResponse.eventType
-
+                eventType = moneyJournalApiResponse.eventType,
+                localTransactionId = moneyJournalApiResponse.localTransactionId
             )
 
         }

@@ -24,7 +24,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
         grantId: Int,
         grantType: String,
         subjectType: String,
-        subjectId: Int
+        subjectId: Int,
+        localTransactionId: String
     ) {
         val moneyJournalEntity = MoneyJournalEntity.getMoneyJournalEntity(
             coreSharedPrefs.getUniqueUserIdentifier(),
@@ -38,6 +39,7 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             subjectId,
             INFLOW,
             createdDate = System.currentTimeMillis(),
+            localTransactionId = localTransactionId
         )
         if (moneyJournalDao.isTransactionAlreadyExist(
                 userId = coreSharedPrefs.getUniqueUserIdentifier(), transactionId = referenceId
@@ -86,7 +88,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
     override suspend fun saveAndUpdateMoneyJournalTransaction(
         particular: String,
         eventData: LivelihoodEventScreenData,
-        createdData: Long
+        createdData: Long,
+        localTransactionId: String
     ) {
         val moneyJournalEntity = MoneyJournalEntity.getMoneyJournalEntity(
             coreSharedPrefs.getUniqueUserIdentifier(),
@@ -102,7 +105,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             dateFormat = "dd/MM/yyyy",
             createdDate = createdData,
             eventId = eventData.eventId,
-            eventType = eventData.eventValue
+            eventType = eventData.eventValue,
+            localTransactionId = localTransactionId
         )
         moneyJournalDao.insertMoneyJournalEntry(moneyJournalEntity)
 
@@ -155,7 +159,8 @@ class MoneyJournalRepositoryImpl @Inject constructor(
             status = 1,
             modifiedDate = modifiedDateTime,
             eventId = eventData.eventId,
-            eventType = eventData.selectedEvent.name
+            eventType = eventData.selectedEvent.name,
+            localTransactionId = eventData.localTransactionId ?: BLANK_STRING
         )
     }
 

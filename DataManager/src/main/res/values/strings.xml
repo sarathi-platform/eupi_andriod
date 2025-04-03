@@ -152,4 +152,6 @@
     <string name="income">Income</string>
     <string name="expense">Expense</string>
     <string name="date_of_event">Date of Event</string>
+    <string name="type_of_adult_asset">Adult Asset</string>
+    <string name="type_of_child_asset">Child Asset</string>
 </resources>

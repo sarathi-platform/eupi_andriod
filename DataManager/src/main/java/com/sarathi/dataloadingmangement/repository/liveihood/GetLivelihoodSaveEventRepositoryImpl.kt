@@ -46,11 +46,15 @@ class GetLivelihoodSaveEventRepositoryImpl @Inject constructor(
                             selectedEvent = getLivelihoodEventFromName(
                                 it.eventType ?: BLANK_STRING
                             ),
-                            livelihoodValue = it.livelihoodValue ?: BLANK_STRING
+                            livelihoodValue = it.livelihoodValue ?: BLANK_STRING,
+                            localTransactionId = it.localTransactionId ?: BLANK_STRING,
+                            toAssetType = it.toAssetType ?: -1,
+                            toAssetTypeValue = it.toAssetTypeValue ?: BLANK_STRING
                         ),
                         createdDate = it.createdDate,
                         modifiedDate = it.createdDate,
-                        status = it.status
+                        status = it.status,
+                        localTransactionId = it.localTransactionId ?: BLANK_STRING
 
                     )
                 )

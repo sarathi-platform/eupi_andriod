@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.model.events.incomeExpense
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 import com.sarathi.dataloadingmangement.data.entities.livelihood.AssetJournalEntity
 
 data class
@@ -37,6 +38,9 @@ SaveAssetJournalEventDto(
     val eventId: Int?,
     @SerializedName("eventType")
     val eventType: String?,
+    @SerializedName("localTransactionId")
+    val localTransactionId: String?
+
 
 ) {
     companion object {
@@ -58,7 +62,9 @@ SaveAssetJournalEventDto(
                 createdDate = assetJournalEntity.createdDate,
                 modifiedDate = assetJournalEntity.modifiedDate,
                 eventId = assetJournalEntity.eventId,
-                eventType = assetJournalEntity.eventType
+                eventType = assetJournalEntity.eventType,
+                localTransactionId = assetJournalEntity.localTransactionId ?: BLANK_STRING
+
 
             )
         }

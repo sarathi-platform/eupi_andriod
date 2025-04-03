@@ -83,6 +83,7 @@ fun AddEventScreen(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.isEventEdit.value = showDeleteButton
         viewModel.onEvent(InitDataEvent.InitAddEventState(subjectId, transactionId))
     }
     BackHandler {
@@ -222,58 +223,6 @@ fun AddEventScreen(
                             }
                         }
                     )
-
-                    //TODO @Anupam fix this before merge.
-//                SearchBarWithDropdownComponent<ValuesDto, AnnotatedString>(
-//                    title = TextProperties.getBasicTextProperties(text = buildAnnotatedString {
-//                        withStyle(
-//                            style = SpanStyle(
-//                                color = blueDark,
-//                                fontSize = 16.sp,
-//                                fontWeight = FontWeight.SemiBold,
-//                                fontFamily = NotoSans
-//                            )
-//                        ) {
-//                            append("Event")
-//                        }
-//
-//                        withStyle(
-//                            style = SpanStyle(
-//                                color = red,
-//                                fontSize = 14.sp,
-//                                fontWeight = FontWeight.SemiBold,
-//                                fontFamily = NotoSans
-//                            )
-//                        ) {
-//                            append("*")
-//                        }
-//                    }),
-//                    paddingValues = PaddingValues(dimen_0_dp),
-//                    contentPadding = PaddingValues(dimen_8_dp),
-//                    state = dropDownWithSearchState,
-//                    onGlobalPositioned = { coordinates ->
-//                        textFieldSize = coordinates.size.toSize()
-//                    },
-//                    onItemSelected = {
-//                        dropDownWithSearchState.hide()
-//                        dropDownWithSearchState.setSelectedItemValue(dropDownWithSearchState.getFilteredDropDownMenuItemListValue()[it].value)
-//                    },
-//                    onSearchQueryChanged = { searchQuery ->
-//                        dropDownWithSearchState.filterDropDownMenuItemList(dropDownWithSearchState.getDropDownMenuItemListStateValue()) {
-//                            it.value.contains(searchQuery.text, true)
-//                        }
-//                    }
-//                ) {
-//                    CustomTextViewComponent(
-//                        textProperties = TextProperties.getBasicTextProperties(text = it.value)
-//                            .copy(
-//                                modifier = Modifier
-//                                    .fillMaxWidth()
-//                                    .exposedDropdownSize(),
-//                                color = textColorDark
-//                            )
-//                    )
-//                }
                 }
 
 
@@ -412,6 +361,99 @@ fun AddEventScreen(
                         }
 
                     }
+
+                }
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_CHILD_ASSET].value()) {
+                    item {
+
+                        TypeDropDownComponent(
+                            isEditAllowed = true,
+                            title = viewModel.stringResource(
+                                R.string.type_of_child_asset
+                            ),
+                            selectedValue = viewModel.livelihoodChildAssetDropdownValue.find { it.id == viewModel.selectedChildAssetTypeId.value }?.value,
+                            isMandatory = true,
+                            sources = viewModel.livelihoodChildAssetDropdownValue,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.CHILD_ASSET_TYPE.name]?.first == false,
+                            onAnswerSelection = { selectedValue ->
+                                viewModel.selectedChildAssetTypeId.value = selectedValue.id
+                                viewModel.selectedAssetTypeId.value = -1
+                                resetAmountAssetType(viewModel)
+
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    fieldName = AddEventFieldEnum.CHILD_ASSET_TYPE.name,
+                                    transactionId = transactionId
+                                ) { isValid, message ->
+                                    viewModel.updateAssetVisibility(isValid)
+                                    viewModel.updateFieldValidationMessageAndMap(
+                                        key = AddEventFieldEnum.CHILD_ASSET_TYPE.name,
+                                        value = Pair(isValid, message)
+                                    )
+
+                                }
+                            }
+                        )
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.CHILD_ASSET_TYPE.name]?.second)) {
+                            Text(
+                                text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.CHILD_ASSET_TYPE.name]?.second
+                                    ?: BLANK_STRING,
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.CHILD_ASSET_TYPE.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
+                            )
+                        }
+                    }
+
+
+                }
+                if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.TYPE_OF_ADULT_ASSET].value()) {
+                    item {
+
+                        TypeDropDownComponent(
+                            isEditAllowed = true,
+                            title = viewModel.stringResource(
+                                R.string.type_of_adult_asset
+                            ),
+                            selectedValue = viewModel.livelihoodAssetDropdownValue.find { it.id == viewModel.selectedAssetTypeId.value }?.value,
+                            isMandatory = true,
+                            sources = viewModel.livelihoodAssetDropdownValue,
+                            isError = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ADULT_ASSET_TYPE.name]?.first == false,
+                            onAnswerSelection = { selectedValue ->
+                                viewModel.selectedAssetTypeId.value = selectedValue.id
+                                resetAmountAssetType(viewModel)
+
+                                viewModel.validateForm(
+                                    subjectId = subjectId,
+                                    fieldName = AddEventFieldEnum.ADULT_ASSET_TYPE.name,
+                                    transactionId = transactionId
+                                ) { isValid, message ->
+                                    viewModel.updateAssetVisibility(isValid)
+                                    viewModel.updateFieldValidationMessageAndMap(
+                                        key = AddEventFieldEnum.ADULT_ASSET_TYPE.name,
+                                        value = Pair(isValid, message)
+                                    )
+
+                                }
+                            }
+                        )
+                        if (!TextUtils.isEmpty(viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ADULT_ASSET_TYPE.name]?.second)) {
+                            Text(
+                                text = viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ADULT_ASSET_TYPE.name]?.second
+                                    ?: BLANK_STRING,
+                                modifier = Modifier.padding(horizontal = dimen_5_dp),
+                                style = quesOptionTextStyle.copy(
+                                    color =
+                                    if (viewModel.fieldValidationAndMessageMap.collectAsState().value[AddEventFieldEnum.ADULT_ASSET_TYPE.name]?.first == false)
+                                        redOffline else eventTextColor
+                                )
+                            )
+                        }
+                    }
+
 
                 }
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {

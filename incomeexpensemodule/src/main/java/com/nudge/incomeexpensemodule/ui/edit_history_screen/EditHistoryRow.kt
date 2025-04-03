@@ -53,6 +53,7 @@ import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.FileUtils
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
@@ -115,7 +116,11 @@ fun EditHistoryRow(
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
                         data1 = translationHelper.stringResource(R.string.asset_type),
-                        data2 = if (!TextUtils.isEmpty(currentSavedEvent?.assetTypeValue)) " ${currentSavedEvent?.assetTypeValue}" else "NA",
+                        data2 = if (!TextUtils.isEmpty(currentSavedEvent?.assetTypeValue))
+                            " ${
+                                if (currentSavedEvent?.selectedEvent?.name == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name)
+                                    currentSavedEvent?.toAssetTypeValue else currentSavedEvent?.assetTypeValue
+                            }" else "NA",
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetTypeValue(savedEvent = currentSavedEvent),
                             data2 = getAssetTypeValue(savedEvent = nextSavedEvent),

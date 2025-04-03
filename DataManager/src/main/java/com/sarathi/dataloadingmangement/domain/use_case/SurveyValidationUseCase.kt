@@ -151,7 +151,8 @@ class SurveyValidationUseCase @Inject constructor(
             ExpressionEvaluator.evaluateExpression(
                 completedExpression.value(),
                 selectionOption.selectedValue.value(),
-                validationRegex
+                validationRegex,
+                constantExpression = BLANK_STRING
             ),
             validationMessage
         )

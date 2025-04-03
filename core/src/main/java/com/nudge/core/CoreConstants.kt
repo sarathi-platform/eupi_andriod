@@ -278,6 +278,7 @@ const val APP_UPDATE_FLEXIBLE = "FLEXIBLE"
 const val IS_IN_APP_UPDATE = "isInAppUpdate"
 const val APP_REDIRECT_LINK = "redirectLink"
 const val LATEST_VERSION_CODE = "latestVersionCode"
+const val EXPRESSION_STRING_COMPARISON = "STRING_COMPARISON"
 
 const val INPROGRESS = "INPROGRESS"
 const val INVALID_OPERATION_MESSAGE = "Invalid operationType:"

@@ -28,7 +28,8 @@ data class AssetJournalEntity(
     val eventId: Int?,
     val eventType: String?,
     val modifiedDate: Long,
-    val createdDate: Long
+    val createdDate: Long,
+    val localTransactionId: String? // To identify the unique events for delete operation
 ) {
 
     companion object {
@@ -47,7 +48,8 @@ data class AssetJournalEntity(
             transactionFlow: String,
             createdDate: Long,
             eventId: Int,
-            eventType: String
+            eventType: String,
+            localTransactionId: String?
         ): AssetJournalEntity {
             return AssetJournalEntity(
                 id = 0,
@@ -67,7 +69,8 @@ data class AssetJournalEntity(
                 modifiedDate = System.currentTimeMillis(),
                 createdDate = createdDate,
                 eventId = eventId,
-                eventType = eventType
+                eventType = eventType,
+                localTransactionId = localTransactionId
             )
 
         }
@@ -94,7 +97,8 @@ data class AssetJournalEntity(
                 modifiedDate = assetJournalApiResponse.modifiedDate,
                 createdDate = assetJournalApiResponse.createdDate,
                 eventId = assetJournalApiResponse.eventId,
-                eventType = assetJournalApiResponse.eventType
+                eventType = assetJournalApiResponse.eventType,
+                localTransactionId = assetJournalApiResponse.localTransactionId
             )
         }
     }

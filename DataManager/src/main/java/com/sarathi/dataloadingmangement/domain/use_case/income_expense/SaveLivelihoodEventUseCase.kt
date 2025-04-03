@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.repository.IMoneyJournalRepository
@@ -17,19 +18,33 @@ class SaveLivelihoodEventUseCase @Inject constructor(
         eventData: LivelihoodEventScreenData,
         particular: String,
         createdDate: Long,
-        modifiedDate: Long
+        modifiedDate: Long,
+        isEventNeedToDelete: Boolean = false,
+        localTransactionId: String
     ) {
+        if (!(eventData.selectedEvent
+                    == LivelihoodEventTypeDataCaptureMapping.AssetTransition
+                    && eventData.selectedEvent.assetJournalEntryFlowType
+                    == EntryFlowTypeEnum.INFLOW
+                    )
+        ) {
+            subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
+                eventData,
+                currentDateTime = createdDate,
+                modifiedDateTime = modifiedDate,
+                localTransactionId = localTransactionId
+            )
+        }
 
-        subjectLivelihoodEventMappingRepository.addOrUpdateLivelihoodEvent(
-            eventData,
-            currentDateTime = createdDate,
-            modifiedDateTime = modifiedDate
-        )
+        if (eventData.selectedEvent.name != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name
+            || isEventNeedToDelete
+        ) {
 
-        assetJournalRepository.softDeleteAssetJournalEvent(
-            eventData.transactionId,
-            eventData.subjectId
-        )
+            assetJournalRepository.softDeleteAssetJournalEvent(
+                eventData.transactionId,
+                eventData.subjectId
+            )
+        }
         moneyJournalRepo.deleteMoneyJournalTransaction(
             transactionId = eventData.transactionId,
             eventData.subjectId
@@ -46,7 +61,8 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             moneyJournalRepo.saveAndUpdateMoneyJournalTransaction(
                 particular = particular,
                 eventData = eventData,
-                createdData = createdDate
+                createdData = createdDate,
+                localTransactionId = localTransactionId
             )
         }
 
@@ -73,7 +89,4 @@ class SaveLivelihoodEventUseCase @Inject constructor(
             moneyJournalRepo.deleteMoneyJournalTransaction(transactionId, subjectId)
         }
     }
-
-
-
 }

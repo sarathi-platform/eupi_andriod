@@ -37,4 +37,6 @@ data class AssetJournalApiResponse(
     val eventId: Int?,
     @SerializedName("eventType")
     val eventType: String?,
+    @SerializedName("localTransactionId")
+    val localTransactionId: String?,
 )

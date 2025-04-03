@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.model.events.incomeExpense
 
 import com.google.gson.annotations.SerializedName
+import com.nudge.core.BLANK_STRING
 
 data class SaveLivelihoodEventDto(
     @SerializedName("subjectId")
@@ -36,7 +37,13 @@ data class SaveLivelihoodEventDto(
     @SerializedName("status")
     val status: Int,
     @SerializedName("eventType")
-    val eventType: String
+    val eventType: String,
+    @SerializedName("localTransactionId")
+    val localTransactionId: String,
+    @SerializedName("toAssetType")
+    val toAssetType: Int = -1,
+    @SerializedName("toAssetTypeValue")
+    val toAssetTypeValue: String = BLANK_STRING
 ) {
 
 }

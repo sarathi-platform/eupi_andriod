@@ -19,7 +19,8 @@ class MoneyJournalForPopRepositoryImpl @Inject constructor(
         referenceType: String,
         subjectType: String,
         subjectId: Int,
-        transactionFlow: String
+        transactionFlow: String,
+        localTransactionId: String
     ): MoneyJournalEntity {
         var moneyJournalEntity = MoneyJournalEntity.getMoneyJournalEntity(
             coreSharedPrefs.getUniqueUserIdentifier(),
@@ -34,7 +35,8 @@ class MoneyJournalForPopRepositoryImpl @Inject constructor(
             transactionFlow,
             createdDate = System.currentTimeMillis(),
             eventId = referenceId,
-            eventType = referenceType
+            eventType = referenceType,
+            localTransactionId = localTransactionId
         )
         val existingTransactionCount = moneyJournalDao.isTransactionAlreadyExist(
             userId = coreSharedPrefs.getUniqueUserIdentifier(),

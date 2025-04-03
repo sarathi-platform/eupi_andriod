@@ -66,6 +66,7 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACT
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_COLUMN_REFERENCE_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_CONFIG_TABLE_ADD_MONEY_JOURNAL_CONFIG
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ACTIVITY_TABLE_ADD_ACTIVITY_ORDER
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ASSET_JOURNAL_ENTITY_ADD_LOCAL_TRANSACTION_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_ASSET_JOURNAL_TABLE_ADD_EVENT_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_COLUMN_ADD_VALIDATION
@@ -73,10 +74,12 @@ import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIV
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_LIVELIHOOD_TABLE_ADD_PROGRAM_LIVELIHOOD_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MISSION_TABLE_ADD_MISSION_ORDER
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_ENTITY_ADD_LOCAL_TRANSACTION_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_MONEY_JOURNAL_TABLE_ADD_EVENT_TYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_ENTITY_ADD_FORM_ORDER
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_QUESTION_TABLE_ADD_FORM_CONTENT
+import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_LIVELIHOOD_EVENT_MAPPING_ENTITY_ADD_LOCAL_TRANSACTION_ID
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_CREATED_DATE
 import com.sarathi.dataloadingmangement.data.database.MigrationQueries.ALTER_SURVEY_ANSWER_ENTITY_ADD_FORM_ID
@@ -149,7 +152,7 @@ import com.sarathi.dataloadingmangement.data.entities.revamp.MissionLivelihoodCo
 import com.sarathi.dataloadingmangement.data.entities.smallGroup.SmallGroupDidiMappingEntity
 import java.sql.SQLException
 
-const val NUDGE_GRANT_DATABASE_VERSION = 7
+const val NUDGE_GRANT_DATABASE_VERSION = 8
 
 @Database(
     entities = [
@@ -382,6 +385,20 @@ abstract class NudgeGrantDatabase : RoomDatabase() {
                         ALTER_SUBJECT_LIVELIHOOD_MAPPING_ADD_LIVELIHOODTYPE,
                         ALTER_LIVELIHOOD_TABLE_ADD_CATEGORY,
                         ALTER_MISSION_LIVELIHOOD_CONFIG_ENTITY_ADD_PROGRAM_LIVELIHOOD_REFERENCE_ID
+                    )
+                )
+            }
+        }
+
+        val NUDGE_GRANT_DATABASE_MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                CoreLogger.d(tag = "NudgeGrantDatabase", msg = "MIGRATION_6_7")
+                migration(
+                    db,
+                    listOf(
+                        ALTER_ASSET_JOURNAL_ENTITY_ADD_LOCAL_TRANSACTION_ID,
+                        ALTER_MONEY_JOURNAL_ENTITY_ADD_LOCAL_TRANSACTION_ID,
+                        ALTER_SUBJECT_LIVELIHOOD_EVENT_MAPPING_ENTITY_ADD_LOCAL_TRANSACTION_ID
                     )
                 )
             }
