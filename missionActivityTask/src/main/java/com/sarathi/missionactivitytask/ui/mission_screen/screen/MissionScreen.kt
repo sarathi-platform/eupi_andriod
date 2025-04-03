@@ -39,6 +39,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
@@ -46,6 +47,7 @@ import com.nudge.core.ui.commonUi.CustomFixedCountSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.FilterRowItem
+import com.nudge.core.ui.commonUi.componet_.component.LoadingDataComponent
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.commonUi.shimmer
 import com.nudge.core.ui.events.CommonEvents
@@ -196,6 +198,12 @@ fun MissionScreen(
             viewModel.refreshData()
         },
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
+            LoadingDataComponent(
+                title = "Mission Screen",
+                apiStatus = viewModel.allApiStatus.value,
+                isVisible = viewModel.allApiStatus.value != ApiStatus.SUCCESS || viewModel.allApiStatus.value != ApiStatus.IDEL,
+                progressState = viewModel.progressState,
+            ) {}
             if (isSearch) {
                 Column(
                     Modifier

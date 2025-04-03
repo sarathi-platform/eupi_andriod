@@ -770,7 +770,8 @@ class DataLoadingModule {
             fetchSectionStatusFromNetworkUsecase = fetchSectionStatusFromNetworkUsecase,
             fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase,
             apiCallConfigRepository = apiCallConfigRepository,
-            fetchMissionDataUseCase = fetchMissionDataUseCase
+            fetchMissionDataUseCase = fetchMissionDataUseCase,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 

@@ -16,7 +16,7 @@ class ApiCallConfigRepositoryImpl @Inject constructor(
         return apiCallConfigDao.getApiCallConfigForScreen(
             screenName = screenName,
             triggerPoint = dataLoadingTriggerType,
-            userId = coreSharedPrefs.getUniqueUserIdentifier()
+            // userId = coreSharedPrefs.getUniqueUserIdentifier()
 
         ).filter { it.triggerPoint.contains(dataLoadingTriggerType) }
     }

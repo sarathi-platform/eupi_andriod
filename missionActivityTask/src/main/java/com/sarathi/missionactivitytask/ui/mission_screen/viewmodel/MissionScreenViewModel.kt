@@ -7,12 +7,15 @@ import com.nudge.core.ALL_MISSION_FILTER_VALUE
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.TabsCore
 import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.ui.commonUi.CustomProgressState
+import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
@@ -25,6 +28,8 @@ import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_MODULE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.utils.event.SearchEvent
@@ -68,6 +73,11 @@ class MissionScreenViewModel @Inject constructor(
 
     private var baseCurrentApiCount = 0 // only count api survey count
     private var TOTAL_API_CALL = 0
+    var completedApiCount = mutableStateOf(0f)
+    var allApiStatus = mutableStateOf(ApiStatus.IDEL)
+    var failedApiCount = mutableStateOf(0f)
+    val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
+
 
     override fun <T> onEvent(event: T) {
         when (event) {
@@ -230,6 +240,8 @@ class MissionScreenViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
+        completedApiCount.value = 0f
+        failedApiCount.value = 0f
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
 
@@ -238,19 +250,65 @@ class MissionScreenViewModel @Inject constructor(
             val customData: Map<String, Any> = mapOf(
                 "propertiesName" to AppConfigKeysEnum.values().map { it.name }
             )
+            allApiStatus.value = ApiStatus.INPROGRESS
             fetchAllDataUseCase.invoke(
                 customData = customData,
-                screenName = "MissionScreen",
+                screenName = MISSION_SCREEN,
                 dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = isRefresh,
                 onComplete = { isSucess, message ->
-                initMissionScreen()
+                    initMissionScreen()
                 },
-                moduleName = "MAT"
+                totalNumberOfApi = { screenName, screenTotalApi ->
+                    TOTAL_API_CALL = screenTotalApi
+                },
+                apiPerStatus = { apiName ->
+                    updateProgress(apiUrl = apiName)
+                },
+                moduleName = MAT_MODULE
             )
 
         }
     }
+
+    private suspend fun updateProgress(apiUrl: String) {
+        val apiStatusData = fetchAllDataUseCase.getApiStatus(
+            screenName = MISSION_SCREEN,
+            moduleName = MAT_MODULE,
+            apiUrl = apiUrl
+        )
+
+        // Increment counters based on API status
+        if (apiStatusData?.status == ApiStatus.SUCCESS.name) {
+            completedApiCount.value = completedApiCount.value.inc()
+        } else {
+            failedApiCount.value = failedApiCount.value.inc()
+        }
+        // Update progress bar and progress text
+        val progress = completedApiCount.value.toFloat() / TOTAL_API_CALL.toFloat()
+        progressState.updateProgress(progress)
+        progressState.updateProgressText("${completedApiCount.value}/$TOTAL_API_CALL")
+
+        // Handle completion and failure scenarios
+        when {
+            completedApiCount.value.toInt() == TOTAL_API_CALL -> {
+                allApiStatus.value = ApiStatus.SUCCESS
+            }
+
+            failedApiCount.value > 1 -> {
+                allApiStatus.value = ApiStatus.FAILED
+            }
+
+            else -> {
+                allApiStatus.value = ApiStatus.INPROGRESS
+            }
+        }
+    }
+
+    fun isShowLoadingDataComponent(): Boolean {
+        return allApiStatus.value == ApiStatus.INPROGRESS || allApiStatus.value == ApiStatus.FAILED
+    }
+
 
     private fun collectMissionListFromFlow() {
         viewModelScope.launch {
@@ -355,4 +413,5 @@ class MissionScreenViewModel @Inject constructor(
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.MissionScreen
     }
+
 }
