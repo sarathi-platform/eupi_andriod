@@ -199,6 +199,7 @@ class ConditionsUtils {
             QuestionType.SingleSelectDropDown.name,
             QuestionType.ToggleGrid.name,
             QuestionType.RadioButton.name,
+            QuestionType.SingleSelectGrid.name,
             QuestionType.Toggle.name,
             QuestionType.DropDown.name,
             QuestionType.MultiSelect.name,
@@ -365,6 +366,7 @@ class ConditionsUtils {
             QuestionType.NumericField.name,
             QuestionType.SingleSelectDropDown.name,
             QuestionType.RadioButton.name,
+            QuestionType.SingleSelectGrid.name,
             QuestionType.Toggle.name,
             QuestionType.DropDown.name,
             -> {

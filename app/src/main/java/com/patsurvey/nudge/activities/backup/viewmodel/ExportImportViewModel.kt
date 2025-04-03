@@ -36,9 +36,11 @@ import com.nudge.core.uriFromFile
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.utils.SyncType
 import com.nudge.syncmanager.domain.usecase.SyncManagerUseCase
+import com.nudge.core.usecase.FetchRemoteQueryFromNetworkUseCase
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.SettingRepository
 import com.patsurvey.nudge.activities.backup.domain.use_case.ExportImportUseCase
+import com.patsurvey.nudge.activities.backup.domain.use_case.RemoteQueryExecutionUseCase
 import com.patsurvey.nudge.utils.NudgeCore
 import com.patsurvey.nudge.utils.UPCM_USER
 import com.sarathi.dataloadingmangement.NUDGE_GRANT_DATABASE
@@ -59,7 +61,9 @@ class ExportImportViewModel @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val regenerateGrantEventUsecase: RegenerateGrantEventUsecase,
     private val fetchAppConfigFromNetworkUseCase: FetchAppConfigFromNetworkUseCase,
-    val syncManagerUseCase: SyncManagerUseCase
+    val syncManagerUseCase: SyncManagerUseCase,
+    private val remoteQueryExecutionUseCase: RemoteQueryExecutionUseCase,
+    private val fetchRemoteQueryFromNetworkUseCase: FetchRemoteQueryFromNetworkUseCase
 ) : BaseViewModel() {
     var mAppContext: Context
 
@@ -116,30 +120,30 @@ class ExportImportViewModel @Inject constructor(
         }
     }
 
-    fun exportLocalDatabase(isNeedToShare:Boolean,onExportSuccess: (Uri) -> Unit) {
-        BaselineLogger.d("ExportImportViewModel","exportLocalDatabase -----")
-         try {
-             onEvent(LoaderEvent.UpdateLoaderState(true))
-             exportDatabase(
-                 appContext = mAppContext,
-                 applicationID = applicationId.value,
-                 mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
-                 databaseName = if (loggedInUserType.value == UPCM_USER) listOf(
-                     NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE,
-                     SYNC_MANAGER_DATABASE
-                 ) else listOf(NUDGE_DATABASE, SYNC_MANAGER_DATABASE),
-                 userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
-                 moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
-             ) {
-                 BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
-                 onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
-             }
+    fun exportLocalDatabase(isNeedToShare: Boolean, onExportSuccess: (Uri) -> Unit) {
+        BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase -----")
+        try {
+            onEvent(LoaderEvent.UpdateLoaderState(true))
+            exportDatabase(
+                appContext = mAppContext,
+                applicationID = applicationId.value,
+                mobileNo = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber(),
+                databaseName = if (loggedInUserType.value == UPCM_USER) listOf(
+                    NUDGE_BASELINE_DATABASE, NUDGE_GRANT_DATABASE,
+                    SYNC_MANAGER_DATABASE
+                ) else listOf(NUDGE_DATABASE, SYNC_MANAGER_DATABASE),
+                userName = getFirstName(exportImportUseCase.getUserDetailsExportUseCase.getUserName()),
+                moduleName = moduleNameAccToLoggedInUser(loggedInUserType.value)
+            ) {
+                BaselineLogger.d("ExportImportViewModel", "exportLocalDatabase : ${it.path}")
+                onExportLocalDbSuccess(isNeedToShare, it, onExportSuccess)
+            }
 
 
-         } catch (e: Exception) {
-             onEvent(LoaderEvent.UpdateLoaderState(false))
-             BaselineLogger.e("ExportImportViewModel", "exportLocalDatabase :${e.message}", e)
-         }
+        } catch (e: Exception) {
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+            BaselineLogger.e("ExportImportViewModel", "exportLocalDatabase :${e.message}", e)
+        }
 
     }
 
@@ -264,10 +268,13 @@ class ExportImportViewModel @Inject constructor(
 
 
     fun getMobileNumber() = exportImportUseCase.getUserDetailsExportUseCase.getUserMobileNumber()
+
     fun fetchAppConfig(onApiSuccess: () -> Unit) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
         CoroutineScope(CoreDispatchers.ioDispatcher + exceptionHandler).launch {
             fetchAppConfigFromNetworkUseCase.invoke {
+                fetchRemoteQueryFromNetworkUseCase.invoke()
+                checkAndRunRemoteQueryExecution()
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 onApiSuccess()
             }
@@ -283,5 +290,9 @@ class ExportImportViewModel @Inject constructor(
 
     fun isEventPending(): Boolean {
         return isPendingEvent.value
+    }
+
+    private suspend fun checkAndRunRemoteQueryExecution() {
+        remoteQueryExecutionUseCase.invoke()
     }
 }

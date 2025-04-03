@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.greenActiveIcon
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.white
@@ -38,7 +39,7 @@ fun RadioButtonOptionComponent(
         modifier = Modifier
             .fillMaxWidth()
             .clip(RoundedCornerShape(6.dp))
-            .padding(horizontal = 10.dp)
+            .padding(horizontal = dimen_3_dp)
             .then(modifier)
     ) {
         Box(
