@@ -124,7 +124,8 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 packageName = packageName,
                 applicationID = BuildConfig.APPLICATION_ID,
                 activity = this,
-                buildVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
+                buildVersion = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})",
+                buildEnvironment = BuildConfig.FLAVOR.uppercase(Locale.ENGLISH)
             )
         )
         appUpdateManager = AppUpdateManagerFactory.create(this)

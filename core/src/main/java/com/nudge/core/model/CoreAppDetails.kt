@@ -22,6 +22,7 @@ object CoreAppDetails {
         val packageName: String,
         val applicationID: String,
         val activity: Activity,
-        val buildVersion: String
+        val buildVersion: String,
+        val buildEnvironment: String
     )
 }
