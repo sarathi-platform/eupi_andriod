@@ -70,6 +70,7 @@ import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreenV2
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
 import com.patsurvey.nudge.activities.ui.socialmapping.ParticipatoryWealthRankingSurvey
 import com.patsurvey.nudge.activities.ui.socialmapping.WealthRankingScreen
+import com.patsurvey.nudge.activities.ui.state_screen.StateScreen
 import com.patsurvey.nudge.activities.ui.transect_walk.TransectWalkScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.FormPictureScreen
 import com.patsurvey.nudge.activities.ui.vo_endorsement.VoEndorsementStepScreen
@@ -722,6 +723,20 @@ fun NavGraphBuilder.settingNavGraph(navController: NavHostController, v2TheameEn
                 type = NavType.StringType
             })) {
             LanguageScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = it.arguments?.getString(ARG_PAGE_FROM) ?: BLANK_STRING
+            )
+        }
+
+        composable(
+            route = SettingScreens.STATE_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM) {
+                type = NavType.StringType
+            })
+        ) {
+            StateScreen(
                 navController = navController,
                 viewModel = hiltViewModel(),
                 modifier = Modifier.fillMaxSize(),

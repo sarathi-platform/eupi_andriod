@@ -36,6 +36,7 @@ import com.patsurvey.nudge.activities.ui.login.LoginScreenV2
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreen
 import com.patsurvey.nudge.activities.ui.login.OtpVerificationScreenV2
 import com.patsurvey.nudge.activities.ui.selectlanguage.LanguageScreen
+import com.patsurvey.nudge.activities.ui.state_screen.StateScreen
 import com.patsurvey.nudge.activities.video.FullscreenView
 import com.patsurvey.nudge.activities.video.VideoListScreen
 import com.patsurvey.nudge.utils.ARG_MOBILE_NUMBER
@@ -69,6 +70,22 @@ fun NavGraphBuilder.authNavGraph(navController: NavHostController, v2TheameEnabl
             )
 
         }
+
+        composable(
+            route = AuthScreen.State_SCREEN.route,
+            arguments = listOf(navArgument(ARG_PAGE_FROM) {
+                type = NavType.StringType
+            })
+        ) {
+            StateScreen(
+                navController = navController,
+                viewModel = hiltViewModel(),
+                modifier = Modifier.fillMaxSize(),
+                pageFrom = it.arguments?.getString(ARG_PAGE_FROM).toString()
+            )
+
+        }
+
         composable(
             route = AuthScreen.BUG_LOGGING_SCREEN.route
         ) {

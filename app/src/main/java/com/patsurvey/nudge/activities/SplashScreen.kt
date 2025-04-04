@@ -39,11 +39,12 @@ import com.nudge.core.ui.theme.dimen_48_dp
 import com.nudge.navigationmanager.graphs.AuthScreen
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
+import com.nudge.navigationmanager.routes.AUTH_STATE_SCREEN_ROUTE_NAME
 import com.patsurvey.nudge.R
 import com.patsurvey.nudge.activities.ui.splash.ConfigViewModel
 import com.patsurvey.nudge.activities.ui.theme.blueDark
 import com.patsurvey.nudge.activities.ui.theme.smallerTextStyle
-import com.patsurvey.nudge.navigation.ScreenRoutes
+import com.patsurvey.nudge.utils.ARG_FROM_HOME
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
 import com.patsurvey.nudge.utils.NudgeLogger
@@ -88,7 +89,8 @@ fun SplashScreen(
                 viewModel.checkAndAddLanguage()
                 delay(SPLASH_SCREEN_DURATION)
                 viewModel.showLoader.value = false
-                navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                //navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                navController.navigate(route = "$AUTH_STATE_SCREEN_ROUTE_NAME/$ARG_FROM_HOME")
             }
         } else {
             NudgeLogger.d(
@@ -142,7 +144,9 @@ fun SplashScreen(
                         "SplashScreen",
                         "LaunchedEffect(key1 = true) -> fetchLanguageDetails callback: -> isLoggedIn = false"
                     )
-                    navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                    //navController.navigate(ScreenRoutes.LOGIN_SCREEN.route)
+                    navController.navigate(route = "$AUTH_STATE_SCREEN_ROUTE_NAME/$ARG_FROM_HOME")
+
                 }
             }
         }

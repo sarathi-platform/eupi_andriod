@@ -1,8 +1,6 @@
 package com.patsurvey.nudge.activities.ui.login
 
 import android.annotation.SuppressLint
-import android.app.Activity
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -84,9 +82,9 @@ fun LoginScreenV2(
     RequestPermissions()
     setKeyboardToReadjust(activity)
     val networkErrorMessage = viewModel.networkErrorMessage.value
-    BackHandler {
-        (context as? Activity)?.finish()
-    }
+//    BackHandler {
+//        (context as? Activity)?.finish()
+//    }
     if (networkErrorMessage.isNotEmpty()) {
         snackState.addMessage(
             message = networkErrorMessage, isSuccess = false, isCustomIcon = false
