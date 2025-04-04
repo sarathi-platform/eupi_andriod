@@ -543,11 +543,12 @@
     <string name="sync_data_history">ডেটা সিঙ্ক ইতিহাস দেখুন</string>
     <string name="data">ডেটা</string>
     <string name="invalid_url">অবৈধ URL</string>
-    <string name="no_village_found">No Village Found</string>
+    <string name="no_village_found">কোন গ্রাম / পাড়া খুঁজে পাওয়া যায়নি</string>
 
     <string name="verify_otp">OTP ভেরিফাই করুন</string>
     <string name="an_otp_has_been_sent_on">এ OTP পাঠানো হয়েছে</string>
     <string name="verify">ভেরিফাই  করুন</string>
     <string name="mobile_number">মোবাইল নম্বর</string>
     <string name="otp_is_invalid">ভুল OTP</string>
+    <string name="assets">সম্পদ</string>
 </resources>
