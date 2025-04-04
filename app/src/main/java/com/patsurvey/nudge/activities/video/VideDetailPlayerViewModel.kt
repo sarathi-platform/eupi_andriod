@@ -33,7 +33,8 @@ class VideDetailPlayerViewModel @Inject constructor(
     var showLoader = mutableStateOf(true)
     val mediaItem = mutableStateOf(MediaItem.EMPTY)
 
-    private val _trainingVideo = MutableStateFlow(TrainingVideoEntity(id = -1, "", "", "" ,"", 0))
+    private val _trainingVideo =
+        MutableStateFlow(TrainingVideoEntity(id = -1, "", "", "", "", 0, ""))
     val trainingVideo: StateFlow<TrainingVideoEntity> get() = _trainingVideo
 
 

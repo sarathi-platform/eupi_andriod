@@ -3,9 +3,9 @@ package com.patsurvey.nudge.network.interfaces
 
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
-import com.nudge.core.model.CasteModel
 import com.nudge.core.KEY_HEADER_MOBILE
 import com.nudge.core.KEY_HEADER_TYPE
+import com.nudge.core.model.CasteModel
 import com.nudge.core.model.response.LastSyncResponseModel
 import com.patsurvey.nudge.activities.settings.TransactionIdRequest
 import com.patsurvey.nudge.activities.settings.TransactionIdResponse
@@ -39,6 +39,9 @@ import com.patsurvey.nudge.model.response.TolaApiResponse
 import com.patsurvey.nudge.model.response.TransactionResponseModel
 import com.patsurvey.nudge.model.response.UserDetailsResponse
 import com.patsurvey.nudge.model.response.WorkFlowResponse
+import com.sarathi.dataloadingmangement.network.SUB_PATH_CONTENT_MANAGER
+import com.sarathi.dataloadingmangement.network.request.ContentRequest
+import com.sarathi.dataloadingmangement.network.response.ContentResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
@@ -218,5 +221,8 @@ interface ApiService {
     @GET("/sync-server/lastSync/status")
     @Headers("$KEY_HEADER_TYPE:$KEY_HEADER_MOBILE")
     suspend fun fetchLastSyncStatus(@Query("mobile") mobileNumber: String): ApiResponseModel<LastSyncResponseModel>
+
+    @POST(SUB_PATH_CONTENT_MANAGER)
+    suspend fun fetchContentData(@Body contentMangerRequest: List<ContentRequest>): ApiResponseModel<List<ContentResponse>>
 
 }

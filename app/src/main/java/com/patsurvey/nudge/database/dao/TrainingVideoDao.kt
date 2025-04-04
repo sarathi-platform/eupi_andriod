@@ -19,6 +19,9 @@ interface TrainingVideoDao {
     @Query("SELECT * from $TRAINING_VIDEO_TABLE")
     fun getVideoList(): List<TrainingVideoEntity>
 
+    @Query("SELECT * from $TRAINING_VIDEO_TABLE where languageCode=:languageId")
+    fun getVideoLanguageList(languageId: String): List<TrainingVideoEntity>
+
     @Query("SELECT * from $TRAINING_VIDEO_TABLE where id = :id")
     fun getVideo(id: Int) : TrainingVideoEntity
 
@@ -27,5 +30,8 @@ interface TrainingVideoDao {
 
     @Query("Update $TRAINING_VIDEO_TABLE set isDownload = :videoStatus where id = :id")
     fun updateVideoDownloadStatus(id: Int, videoStatus: Int)
+
+    @Query("delete  from $TRAINING_VIDEO_TABLE")
+    fun deleteTrainingData()
 
 }
