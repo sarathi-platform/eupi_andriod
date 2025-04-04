@@ -10,12 +10,14 @@ import com.nudge.core.DIDI
 import com.nudge.core.LIVELIHOOD
 import com.nudge.core.NOT_DECIDED_LIVELIHOOD_ID
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.DialogEvents
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.state.DialogState
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
+import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetTaskUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -120,12 +122,17 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
     private fun onPrimaryLivelihoodTypeSelect(selectedLivelihoodType: String) {
         primaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
-        _primaryLivelihoodList.value = livelihoodUiList.filter {
+        _primaryLivelihoodList.value = getFilteredLivelihoodList(
+            livelihoodUiList,
+            selectedLivelihoodType,
+            LivelihoodTypeEnum.PRIMARY
+        )
+        /*livelihoodUiList.filter {
             it.livelihoodEntity.type.equals(
                 selectedLivelihoodType,
                 ignoreCase = true
             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-        }.map { it.copy(isSelected = false) }
+        }.map { it.copy(isSelected = false) }*/
         primaryLivelihoodType.value = selectedLivelihoodType
         checkButtonValidation()
     }
@@ -133,12 +140,17 @@ class LivelihoodPlaningViewModel @Inject constructor(
     private fun onSecondaryLivelihoodTypeSelect(selectedLivelihoodType: String) {
         secondaryLivelihoodId.value = DEFAULT_LIVELIHOOD_ID
 
-        _secondaryLivelihoodList.value = livelihoodUiList.filter {
-            it.livelihoodEntity.type.equals(
-                selectedLivelihoodType,
-                ignoreCase = true
-            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-        }.map { it.copy(isSelected = false) }
+        _secondaryLivelihoodList.value = getFilteredLivelihoodList(
+            livelihoodUiList,
+            selectedLivelihoodType,
+            LivelihoodTypeEnum.SECONDARY
+        )
+        /*livelihoodUiList.filter {
+        it.livelihoodEntity.type.equals(
+            selectedLivelihoodType,
+            ignoreCase = true
+        ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+    }.map { it.copy(isSelected = false) }*/
         secondaryLivelihoodType.value = selectedLivelihoodType
         checkButtonValidation()
     }
@@ -165,24 +177,32 @@ class LivelihoodPlaningViewModel @Inject constructor(
                             )
                         )
                         livelihoodUiList = mLivelihoodUiEntityList
-                        _livelihoodTypeList.value =
-                            LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
-                                livelihoodUiModelList = livelihoodList.distinctBy { it.type },
+                        _livelihoodTypeList.value = getFilteredLivelihoodTypeList(
+                            livelihoodList,
+                            subjectLivelihoodMapping,
+                            LivelihoodTypeEnum.PRIMARY
+                        )
+                        /*LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
+                            livelihoodUiModelList = livelihoodList.distinctBy { it.type },
 //Please change the logic from id to type
-                                selectedType = listOf(
-                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
-                                        .uppercase()
-                                )
+                            selectedType = listOf(
+                                subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodType.value()
+                                    .uppercase()
                             )
-                        _SecondarylivelihoodTypeList.value =
-                            LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
-                                livelihoodUiModelList = livelihoodList.distinctBy { it.type },
+                        )*/
+                        _SecondarylivelihoodTypeList.value = getFilteredLivelihoodTypeList(
+                            livelihoodList,
+                            subjectLivelihoodMapping,
+                            LivelihoodTypeEnum.SECONDARY
+                        )
+                        /*LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
+                            livelihoodUiModelList = livelihoodList.distinctBy { it.type },
 //Please change the logic from id to type
-                                selectedType = listOf(
-                                    subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
-                                        .uppercase()
-                                )
+                            selectedType = listOf(
+                                subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
+                                    .uppercase()
                             )
+                        )*/
                         primaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.PRIMARY.typeId }?.livelihoodId.value()
                         secondaryLivelihoodId.value = subjectLivelihoodMapping.find { it?.type==LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodId.value()
                         primaryLivelihoodType.value =
@@ -191,20 +211,37 @@ class LivelihoodPlaningViewModel @Inject constructor(
                         secondaryLivelihoodType.value =
                             subjectLivelihoodMapping.find { it?.type == LivelihoodTypeEnum.SECONDARY.typeId }?.livelihoodType.value()
                                 .uppercase()
-                        _primaryLivelihoodList.value = livelihoodUiList.filter {
+
+                        /*val (primaryLivelihoodNotDecided, primaryLivelihoodList) = livelihoodUiList.filter {
                             it.livelihoodEntity.type.equals(
                                 primaryLivelihoodType.value,
                                 ignoreCase = true
                             ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
                         }
                             .map { it.copy(isSelected = primaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
-                        _secondaryLivelihoodList.value = livelihoodUiList.filter {
-                            it.livelihoodEntity.type.equals(
-                                secondaryLivelihoodType.value,
-                                ignoreCase = true
-                            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
-                        }
-                            .map { it.copy(isSelected = secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
+                            .partition { it.id == NOT_DECIDED_LIVELIHOOD_ID }
+                        _primaryLivelihoodList.value = primaryLivelihoodList.sortedBy { it.livelihoodEntity.name.lowercase() } + primaryLivelihoodNotDecided*/
+
+                        _primaryLivelihoodList.value = getFilteredLivelihoodList(
+                            livelihoodUiList,
+                            primaryLivelihoodType.value,
+                            LivelihoodTypeEnum.PRIMARY
+                        )
+
+                        /* val (secondaryLivelihoodNotDecided, secondaryLivelihoodList) = livelihoodUiList.filter {
+                             it.livelihoodEntity.type.equals(secondaryLivelihoodType.value, ignoreCase = true) ||
+                                     it.id == NOT_DECIDED_LIVELIHOOD_ID
+                         }
+                             .map { it.copy(isSelected = secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId) }
+                             .partition { it.id == NOT_DECIDED_LIVELIHOOD_ID }
+
+                         _secondaryLivelihoodList.value = secondaryLivelihoodList.sortedBy { it.livelihoodEntity.name.lowercase() } + secondaryLivelihoodNotDecided*/
+
+                        _secondaryLivelihoodList.value = getFilteredLivelihoodList(
+                            livelihoodUiList,
+                            secondaryLivelihoodType.value,
+                            LivelihoodTypeEnum.SECONDARY
+                        )
                         checkButtonValidation()
 
                     }
@@ -340,6 +377,48 @@ class LivelihoodPlaningViewModel @Inject constructor(
 
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.LivelihoodDropDownScreen
+    }
+
+    fun getFilteredLivelihoodList(
+        livelihoodUiList: List<LivelihoodUiEntity>,
+        selectLivelihoodType: String,
+        livelihoodType: LivelihoodTypeEnum
+    ): List<LivelihoodUiEntity> {
+        val (notDecided, filteredLivelihoodList) = livelihoodUiList.filter {
+            it.livelihoodEntity.type.equals(
+                selectLivelihoodType,
+                ignoreCase = true
+            ) || it.id == NOT_DECIDED_LIVELIHOOD_ID
+        }
+            .map {
+                it.copy(
+                    isSelected = when (livelihoodType) {
+                        LivelihoodTypeEnum.PRIMARY -> primaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId
+                        LivelihoodTypeEnum.SECONDARY -> secondaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId
+                        else -> primaryLivelihoodId.value == it.livelihoodEntity.programLivelihoodId
+                    }
+                )
+            }
+            .partition { it.id == NOT_DECIDED_LIVELIHOOD_ID }
+        val livelihoodList =
+            filteredLivelihoodList.sortedBy { it.livelihoodEntity.name.lowercase() } + notDecided
+        return livelihoodList
+    }
+
+    fun getFilteredLivelihoodTypeList(
+        livelihoodList: List<LivelihoodModel>,
+        subjectLivelihoodMapping: List<SubjectLivelihoodMappingEntity>,
+        livelihoodType: LivelihoodTypeEnum
+    ): List<LivelihoodUiEntity> {
+        val (notDecided, filterLivelihoodType) = LivelihoodUiEntity.getLivelihoodUiTypeEntityList(
+            livelihoodUiModelList = livelihoodList.distinctBy { it.type },
+            selectedType = listOf(
+                subjectLivelihoodMapping.find { it?.type == livelihoodType.typeId }?.livelihoodType.value()
+                    .uppercase()
+            )
+        ).partition { it.id == NOT_DECIDED_LIVELIHOOD_ID }
+
+        return filterLivelihoodType.sortedBy { it.livelihoodEntity.name.lowercase() } + notDecided
     }
 
 }
