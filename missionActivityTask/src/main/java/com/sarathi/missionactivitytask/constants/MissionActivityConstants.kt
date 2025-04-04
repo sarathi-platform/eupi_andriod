@@ -68,6 +68,8 @@ object MissionActivityConstants {
 
     const val ARG_FROM_SCREEN = "from_screen"
     const val MISSION_SCREEN = "MissionScreen"
+    const val DIDI_TAB_SCREEN = "DidiTabScreen"
     const val MAT_MODULE = "MAT"
+    const val SMALL_GROUP_MODULE = "SmallGroup"
 
 }

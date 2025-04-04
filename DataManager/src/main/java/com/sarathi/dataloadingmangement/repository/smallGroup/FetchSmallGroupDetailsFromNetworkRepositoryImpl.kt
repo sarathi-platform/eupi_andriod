@@ -5,9 +5,12 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ERROR_CODE
 import com.nudge.core.DEFAULT_SUCCESS_CODE
 import com.nudge.core.SUCCESS_CODE
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.ApiCallJournalRepositoryImpl
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.toDate
@@ -25,12 +28,18 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
     private val coreSharedPrefs: CoreSharedPrefs,
     private val dataLoadingApiService: DataLoadingApiService,
     private val smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
-    private val apiStatusDao: ApiStatusDao
+    private val apiStatusDao: ApiStatusDao,
+    private val apiCallJournalRepository: ApiCallJournalRepositoryImpl
 ) : FetchSmallGroupDetailsFromNetworkRepository {
 
     private val TAG = FetchSmallGroupDetailsFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchSmallGroupDetails(): Boolean {
+    override suspend fun fetchSmallGroupDetails(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        moduleName: String,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
             val userId = coreSharedPrefs.getUserName().toInt()
             val smallGroupApiRequest = SmallGroupApiRequest(userList = listOf(userId))
@@ -49,6 +58,14 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                     )
                     saveSmallGroupMapping(sgMapping)
                 } ?: throw NullPointerException("Data is null")
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.SUCCESS.name,
+                    customData = customData,
+                    errorMsg = BLANK_STRING
+                )
                 return true
             } else {
                 updateApiStatus(
@@ -56,6 +73,14 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                     status = ApiStatus.FAILED.ordinal,
                     errorMessage = response.message,
                     errorCode = DEFAULT_ERROR_CODE
+                )
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = customData,
+                    errorMsg = response.message
                 )
                 return false
             }
@@ -66,14 +91,22 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
                 errorMessage = ex.message ?: BLANK_STRING,
                 errorCode = DEFAULT_ERROR_CODE
             )
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = ex.stackTraceToString()
+            )
             CoreLogger.e(
                 CoreAppDetails.getApplicationContext(),
                 TAG,
                 "fetchSmallGroupDetails -> exception = ${ex.message}",
                 ex
             )
+            throw ex
         }
-        return false
     }
 
     override suspend fun saveSmallGroupMapping(smallGroupMapping: List<SmallGroupMappingResponseModel>) {
@@ -122,5 +155,27 @@ class FetchSmallGroupDetailsFromNetworkRepositoryImpl @Inject constructor(
 
     override suspend fun isFetchSmallGroupDetailsAPIStatus(): ApiStatusEntity? {
         return apiStatusDao.getAPIStatus(apiEndpoint = SUBPATH_GET_DIDI_LIST)
+    }
+
+    suspend fun updateApiCallStatus(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        moduleName: String,
+        customData: Map<String, Any>,
+        status: String,
+        errorMsg: String
+    ) {
+
+        apiCallJournalRepository.updateApiCallStatus(
+            screenName = screenName,
+            moduleName = moduleName,
+            dataLoadingTriggerType = triggerType.name,
+            requestPayload = customData.json(),
+            apiUrl = getApiEndpoint(), status = status, errorMsg = errorMsg
+        )
+    }
+
+    fun getApiEndpoint(): String {
+        return SUBPATH_GET_SMALL_GROUP_MAPPING
     }
 }

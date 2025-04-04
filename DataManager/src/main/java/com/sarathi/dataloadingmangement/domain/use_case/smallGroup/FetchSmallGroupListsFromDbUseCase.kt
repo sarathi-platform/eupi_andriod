@@ -1,7 +1,7 @@
-package com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case
+package com.sarathi.dataloadingmangement.domain.use_case.smallGroup
 
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
-import com.sarathi.smallgroupmodule.ui.didiTab.domain.repository.FetchSmallGroupListFromDbRepository
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupListFromDbRepository
 import javax.inject.Inject
 
 class FetchSmallGroupListsFromDbUseCase @Inject constructor(

@@ -30,10 +30,13 @@ class FetchSmallGroupAttendanceHistoryFromNetworkUseCase @Inject constructor(
             ) {
                 return false
             }
-            //TODO need to confirmation added smallGroupId on customData
             val smallGroupId = customData["smallGroupId"] as Int
             return fetchSmallGroupAttendanceHistoryFromNetworkRepository.fetchSmallGroupAttendanceHistoryFromNetwork(
-                smallGroupId
+                screenName = screenName,
+                triggerType = triggerType,
+                moduleName = moduleName,
+                customData = customData,
+                smallGroupId = smallGroupId
             )
         } catch (apiException: ApiException) {
             throw apiException

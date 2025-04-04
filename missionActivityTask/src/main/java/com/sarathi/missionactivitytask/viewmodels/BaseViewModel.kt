@@ -8,9 +8,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.database.entities.api.ApiCallJournalEntity
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.model.CoreAppDetails
+import com.nudge.core.ui.commonUi.CustomProgressState
+import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -40,6 +44,13 @@ abstract class BaseViewModel : ViewModel() {
 
     @Inject
     lateinit var translationHelper: TranslationHelper
+
+    var TOTAL_API_CALL = -1
+    var allApiStatus = mutableStateOf(ApiStatus.IDEL)
+    var failedApiCount = mutableStateOf(0f)
+    val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
+    var completedApiCount = mutableStateOf(0f)
+
 
     abstract fun <T> onEvent(event: T)
 
@@ -122,5 +133,33 @@ abstract class BaseViewModel : ViewModel() {
     }
 
     open fun updateMissionFilter() {}
+
+    open fun updateProgress(apiStatusData: ApiCallJournalEntity?) {
+        // Increment counters based on API status
+        if (apiStatusData?.status == ApiStatus.SUCCESS.name) {
+            completedApiCount.value = completedApiCount.value.inc()
+        } else {
+            failedApiCount.value = failedApiCount.value.inc()
+        }
+        // Update progress bar and progress text
+        val progress = completedApiCount.value.toFloat() / TOTAL_API_CALL.toFloat()
+        progressState.updateProgress(progress)
+        progressState.updateProgressText("${completedApiCount.value}/$TOTAL_API_CALL")
+
+        // Handle completion and failure scenarios
+        when {
+            completedApiCount.value.toInt() == TOTAL_API_CALL -> {
+                allApiStatus.value = ApiStatus.SUCCESS
+            }
+
+            failedApiCount.value > 1 -> {
+                allApiStatus.value = ApiStatus.FAILED
+            }
+
+            else -> {
+                allApiStatus.value = ApiStatus.INPROGRESS
+            }
+        }
+    }
 
 }

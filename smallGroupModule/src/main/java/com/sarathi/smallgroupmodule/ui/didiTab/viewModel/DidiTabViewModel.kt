@@ -4,14 +4,18 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DIDI_TAB_SCREEN
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SMALL_GROUP_MODULE
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -20,7 +24,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DidiTabViewModel @Inject constructor(
-    val didiTabUseCase: DidiTabUseCase
+    val didiTabUseCase: DidiTabUseCase,
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
 
     private val _totalDidiCount: MutableState<Int> = mutableStateOf(0)
@@ -54,7 +59,7 @@ class DidiTabViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitDataState -> {
                 setTranslationConfig()
-                loadAllDataForDidiTab(false)
+                loadAllDataForDidiTab(false, DataLoadingTriggerType.FRESH_LOGIN)
             }
 
             is CommonEvents.SearchValueChangedEvent -> {
@@ -84,24 +89,64 @@ class DidiTabViewModel @Inject constructor(
 
     }
 
-    private fun loadAllDataForDidiTab(isRefresh: Boolean) {
+    private fun loadAllDataForDidiTab(
+        isRefresh: Boolean,
+        dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+    ) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
+        TOTAL_API_CALL = -1
+        completedApiCount.value = 0f
+        failedApiCount.value = 0f
         ioViewModelScope {
-            didiTabUseCase.invoke(
-                screenName = "DidiTabScreen",
-                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+            allApiStatus.value = ApiStatus.INPROGRESS
+            fetchAllDataUseCase.invoke(
+                customData = mapOf(),
+                screenName = DIDI_TAB_SCREEN,
+                dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = isRefresh,
-                moduleName = "DidiTab",
                 onComplete = { isSuccess, message ->
                     if (isSuccess) {
                         initDidiTab()
                     } else {
                         onEvent(LoaderEvent.UpdateLoaderState(false))
                     }
-                })
+                },
+                totalNumberOfApi = { screenName, screenTotalApi ->
+                    TOTAL_API_CALL = screenTotalApi
+                },
+                apiPerStatus = { apiName, requestPayload ->
+                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+                        screenName = DIDI_TAB_SCREEN,
+                        moduleName = SMALL_GROUP_MODULE,
+                        apiUrl = apiName,
+                        requestPayload = requestPayload
+                    )
+                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+                },
+                moduleName = SMALL_GROUP_MODULE
+            )
             isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
         }
+
     }
+//    private fun loadAllDataForDidiTab(isRefresh: Boolean) {
+//        onEvent(LoaderEvent.UpdateLoaderState(true))
+//        ioViewModelScope {
+//            didiTabUseCase.invoke(
+//                screenName = "DidiTabScreen",
+//                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+//                isRefresh = isRefresh,
+//                moduleName = "DidiTab",
+//                onComplete = { isSuccess, message ->
+//                    if (isSuccess) {
+//                        initDidiTab()
+//                    } else {
+//                        onEvent(LoaderEvent.UpdateLoaderState(false))
+//                    }
+//                })
+//            isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
+//        }
+//    }
 
 
     private fun initDidiTab() {
@@ -157,7 +202,7 @@ class DidiTabViewModel @Inject constructor(
     }
 
     override fun refreshData() {
-        loadAllDataForDidiTab(true)
+        loadAllDataForDidiTab(true, DataLoadingTriggerType.PULL_TO_REFRESH)
     }
     override fun getScreenName(): TranslationEnum {
         return TranslationEnum.DidiTabScreen

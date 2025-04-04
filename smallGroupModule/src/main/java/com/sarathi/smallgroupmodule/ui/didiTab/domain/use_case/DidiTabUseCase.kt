@@ -10,6 +10,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDeta
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupListsFromDbUseCase
 import javax.inject.Inject
 
 class DidiTabUseCase @Inject constructor(
@@ -41,6 +42,7 @@ class DidiTabUseCase @Inject constructor(
                 moduleName = moduleName
             )
         }
+
         //Todo handle commented code
 //        try {
 //            if (isRefresh || !coreSharedPrefs.isDidiTabDataLoaded()) {
@@ -49,7 +51,7 @@ class DidiTabUseCase @Inject constructor(
 //                val smallGroupList = fetchSmallGroupListsFromDbUseCase.invoke()
 //                delay(100)
 //                smallGroupList.forEach {
-//                    fetchSmallGroupAttendanceHistoryFromNetwork(it.smallGroupId)
+        //      fetchSmallGroupAttendanceHistoryFromNetwork(it.smallGroupId)
 //                }
 //                coreSharedPrefs.setDidiTabDataLoaded(true)
 //                withContext(CoreDispatchers.mainDispatcher) {
@@ -80,7 +82,7 @@ class DidiTabUseCase @Inject constructor(
     private fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int) {
         CoreDispatchers.ioCoroutineScope {
             //Todo handle commented code
-            //  fetchSmallGroupAttendanceHistoryFromNetworkUseCase.invoke(smallGroupId)
+            // fetchSmallGroupAttendanceHistoryFromNetworkUseCase.invoke(smallGroupId)
         }
     }
 

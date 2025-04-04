@@ -24,7 +24,8 @@ interface IApiCallJournalRepository {
     suspend fun getApiCallStatus(
         screenName: String,
         moduleName: String,
-        apiUrl: String
+        apiUrl: String,
+        requestPayload: String
     ): ApiCallJournalEntity?
 
 }

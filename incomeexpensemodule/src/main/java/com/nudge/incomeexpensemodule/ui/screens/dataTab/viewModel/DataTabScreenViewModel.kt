@@ -13,6 +13,7 @@ import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.TabsCore
 import com.nudge.core.WEEK_DURATION_RANGE
 import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
@@ -22,6 +23,7 @@ import com.nudge.core.model.uiModel.LivelihoodModel
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
@@ -37,6 +39,7 @@ import javax.inject.Inject
 class DataTabScreenViewModel @Inject constructor(
     private val dataTabUseCase: DataTabUseCase,
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
+    private val fetchAllDataUseCase: FetchAllDataUseCase,
 ) : BaseViewModel() {
 
     val tabs = listOf<SubTabs>(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab)
@@ -82,7 +85,7 @@ class DataTabScreenViewModel @Inject constructor(
         when (event) {
             is InitDataEvent.InitDataState -> {
                 setTranslationConfig()
-                loadAddDataForDataTab(isRefresh = false)
+                loadAddDataForDataTab(isRefresh = false, DataLoadingTriggerType.FRESH_LOGIN)
             }
 
             is LoaderEvent.UpdateLoaderState -> {
@@ -166,23 +169,60 @@ class DataTabScreenViewModel @Inject constructor(
             }
         }
     }
-
-    private fun loadAddDataForDataTab(isRefresh: Boolean) {
+    private fun loadAddDataForDataTab(
+        isRefresh: Boolean,
+        dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+    ) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
+        TOTAL_API_CALL = -1
+        completedApiCount.value = 0f
+        failedApiCount.value = 0f
         ioViewModelScope {
-            dataTabUseCase.invoke(
+            allApiStatus.value = ApiStatus.INPROGRESS
+            fetchAllDataUseCase.invoke(
+                customData = mapOf(),
                 screenName = "DataTabScreen",
-                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+                dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = isRefresh,
-                moduleName = "DataTab",
                 onComplete = { isSuccess, message ->
                     if (isSuccess)
                         initDataTab()
                     else
                         onEvent(LoaderEvent.UpdateLoaderState(false))
-                })
+                },
+                totalNumberOfApi = { screenName, screenTotalApi ->
+                    TOTAL_API_CALL = screenTotalApi
+                },
+                apiPerStatus = { apiName, requestPayload ->
+                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+                        screenName = "DataTabScreen",
+                        moduleName = "Income/Expanse",
+                        apiUrl = apiName,
+                        requestPayload = requestPayload
+                    )
+                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+                },
+                moduleName = "Income/Expanse"
+            )
         }
     }
+
+//    private fun loadAddDataForDataTab(isRefresh: Boolean) {
+//        onEvent(LoaderEvent.UpdateLoaderState(true))
+//        ioViewModelScope {
+//            dataTabUseCase.invoke(
+//                screenName = "DataTabScreen",
+//                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+//                isRefresh = isRefresh,
+//                moduleName = "DataTab",
+//                onComplete = { isSuccess, message ->
+//                    if (isSuccess)
+//                        initDataTab()
+//                    else
+//                        onEvent(LoaderEvent.UpdateLoaderState(false))
+//                })
+//        }
+//    }
 
     private fun initDataTab() {
         ioViewModelScope {
@@ -317,7 +357,7 @@ class DataTabScreenViewModel @Inject constructor(
 
     override fun refreshData() {
         super.refreshData()
-        loadAddDataForDataTab(isRefresh = true)
+        loadAddDataForDataTab(isRefresh = true, DataLoadingTriggerType.PULL_TO_REFRESH)
 
 
     }

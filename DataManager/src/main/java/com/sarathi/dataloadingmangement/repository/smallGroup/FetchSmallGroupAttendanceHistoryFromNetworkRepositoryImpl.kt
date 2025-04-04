@@ -5,6 +5,8 @@ import com.nudge.core.ATTENDANCE_PRESENT
 import com.nudge.core.ATTENDANCE_TAG_ID
 import com.nudge.core.DEFAULT_ERROR_CODE
 import com.nudge.core.DEFAULT_SUCCESS_CODE
+import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.database.dao.ApiStatusDao
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.nudge.core.enums.ApiStatus
@@ -12,6 +14,7 @@ import com.nudge.core.enums.AttributesType
 import com.nudge.core.enums.SubjectType
 import com.nudge.core.enums.ValueTypes
 import com.nudge.core.enums.ValueTypes.Companion.convertToDataType
+import com.nudge.core.json
 import com.nudge.core.model.CoreAppDetails
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.utils.CoreLogger
@@ -41,14 +44,19 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     private val subjectEntityDao: SubjectEntityDao,
     private val subjectAttributeDao: SubjectAttributeDao,
     private val attributeValueReferenceDao: AttributeValueReferenceDao,
-    private val apiStatusDao: ApiStatusDao
-
+    private val apiStatusDao: ApiStatusDao,
+    val apiCallJournalRepository: IApiCallJournalRepository
 ) : FetchSmallGroupAttendanceHistoryFromNetworkRepository {
 
     private val TAG =
         FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl::class.java.simpleName
 
-    override suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(smallGroupId: Int): Boolean {
+    override suspend fun fetchSmallGroupAttendanceHistoryFromNetwork(
+        smallGroupId: Int, screenName: String,
+        triggerType: DataLoadingTriggerType,
+        moduleName: String,
+        customData: Map<String, Any>
+    ): Boolean {
         try {
             val userId = coreSharedPrefs.getUserNameInInt()
             val request = AttendanceHistoryRequest.getRequest(smallGroupId, userId)
@@ -65,6 +73,14 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                         saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse)
                     }
                 }
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.SUCCESS.name,
+                    customData = customData,
+                    errorMsg = BLANK_STRING
+                )
                 return true
             } else {
                 updateApiStatus(
@@ -72,6 +88,14 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                     status = ApiStatus.FAILED.ordinal,
                     errorMessage = response.message,
                     errorCode = DEFAULT_ERROR_CODE
+                )
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = customData,
+                    errorMsg = response.message
                 )
                 return false
             }
@@ -89,8 +113,16 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                 ex = ex,
                 stackTrace = true
             )
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = ex.getLocalizedMessage()
+            )
+            throw ex
         }
-        return false
 
     }
 
@@ -287,5 +319,25 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
     override suspend fun isFetchSmallGroupAttendanceHistoryFromNetworkAPIStatus(): ApiStatusEntity? {
         return apiStatusDao.getAPIStatus(apiEndpoint = SUBPATH_GET_DIDI_LIST)
     }
+    suspend fun updateApiCallStatus(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        moduleName: String,
+        customData: Map<String, Any>,
+        status: String,
+        errorMsg: String
+    ) {
 
+        apiCallJournalRepository.updateApiCallStatus(
+            screenName = screenName,
+            moduleName = moduleName,
+            dataLoadingTriggerType = triggerType.name,
+            requestPayload = customData.json(),
+            apiUrl = getApiEndpoint(), status = status, errorMsg = errorMsg
+        )
+    }
+
+    fun getApiEndpoint(): String {
+        return SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
+    }
 }

@@ -109,6 +109,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.SurveyAnswerEventWriterU
 import com.sarathi.dataloadingmangement.domain.use_case.SurveyValidationUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchAssetUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchProductUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSavedEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
@@ -117,6 +118,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.income_expense.Livelihoo
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.RegenerateLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.SaveLivelihoodEventUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.income_expense.WriteLivelihoodEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
@@ -129,6 +131,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.AttendanceEve
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.dataloadingmangement.download_manager.DownloaderManager
 import com.sarathi.dataloadingmangement.network.DataLoadingApiService
 import com.sarathi.dataloadingmangement.repository.ContentDownloaderRepositoryImpl
@@ -736,7 +739,18 @@ class DataLoadingModule {
         fetchSectionStatusFromNetworkUsecase: FetchSectionStatusFromNetworkUsecase,
         fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
         apiCallJournalRepository: IApiCallJournalRepository,
-        apiCallConfigRepository: IApiCallConfigRepository
+        apiCallConfigRepository: IApiCallConfigRepository,
+        fetchDidiDetailsFromNetworkUseCase: FetchDidiDetailsFromNetworkUseCase,
+
+        fetchDidiDetailsWithLivelihoodMappingUseCase: FetchDidiDetailsWithLivelihoodMappingUseCase,
+        fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
+        fetchSubjectLivelihoodEventHistoryUseCase: FetchSubjectLivelihoodEventHistoryUseCase,
+        assetJournalUseCase: FetchAssetJournalUseCase,
+        fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
+        fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
+        fetchSmallGroupListsFromDbUseCase: FetchSmallGroupListsFromDbUseCase,
+        fetchSmallGroupFromNetworkUseCase: FetchSmallGroupFromNetworkUseCase,
+        fetchSmallGroupAttendanceHistoryFromNetworkUseCase: FetchSmallGroupAttendanceHistoryFromNetworkUseCase,
         ): FetchAllDataUseCase {
         return FetchAllDataUseCase(
             fetchMissionActivityDetailDataUseCase = FetchMissionActivityDetailDataUseCase(
@@ -771,7 +785,17 @@ class DataLoadingModule {
             fetchCasteConfigNetworkUseCase = fetchCasteConfigNetworkUseCase,
             apiCallConfigRepository = apiCallConfigRepository,
             fetchMissionDataUseCase = fetchMissionDataUseCase,
-            apiCallJournalRepository = apiCallJournalRepository
+            apiCallJournalRepository = apiCallJournalRepository,
+            fetchDidiDetailsWithLivelihoodMappingUseCase = fetchDidiDetailsWithLivelihoodMappingUseCase,
+            fetchSubjectIncomeExpenseSummaryUseCase = fetchSubjectIncomeExpenseSummaryUseCase,
+            fetchSubjectLivelihoodEventHistoryUseCase = fetchSubjectLivelihoodEventHistoryUseCase,
+            assetJournalUseCase = assetJournalUseCase,
+            fetchLivelihoodSaveEventUseCase = fetchLivelihoodSaveEventUseCase,
+            fetchDidiDetailsFromDbUseCase = fetchDidiDetailsFromDbUseCase,
+            fetchSmallGroupListsFromDbUseCase = fetchSmallGroupListsFromDbUseCase,
+            fetchSmallGroupFromNetworkUseCase = fetchSmallGroupFromNetworkUseCase,
+            fetchSmallGroupAttendanceHistoryFromNetworkUseCase = fetchSmallGroupAttendanceHistoryFromNetworkUseCase,
+            fetchDidiDetailsFromNetworkUseCase = fetchDidiDetailsFromNetworkUseCase
         )
     }
 
@@ -1038,13 +1062,15 @@ class DataLoadingModule {
         dataLoadingApiService: DataLoadingApiService,
         subjectEntityDao: SubjectEntityDao,
         apiStatusDao: ApiStatusDao,
-        downloaderManager: DownloaderManager
+        downloaderManager: DownloaderManager,
+        apiCallJournalRepository: ApiCallJournalRepositoryImpl
     ): FetchDidiDetailsFromNetworkRepository {
         return FetchDidiDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs, dataLoadingApiService,
             subjectEntityDao,
             apiStatusDao = apiStatusDao,
-            downloaderManager = downloaderManager
+            downloaderManager = downloaderManager,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 
@@ -1066,13 +1092,15 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         dataLoadingApiService: DataLoadingApiService,
         smallGroupDidiMappingDao: SmallGroupDidiMappingDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        apiCallJournalRepository: ApiCallJournalRepositoryImpl
     ): FetchSmallGroupDetailsFromNetworkRepository {
         return FetchSmallGroupDetailsFromNetworkRepositoryImpl(
             coreSharedPrefs,
             dataLoadingApiService,
             smallGroupDidiMappingDao,
-            apiStatusDao = apiStatusDao
+            apiStatusDao = apiStatusDao,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 
@@ -1108,7 +1136,8 @@ class DataLoadingModule {
         subjectEntityDao: SubjectEntityDao,
         subjectAttributeDao: SubjectAttributeDao,
         attributeValueReferenceDao: AttributeValueReferenceDao,
-        apiStatusDao: ApiStatusDao
+        apiStatusDao: ApiStatusDao,
+        apiCallJournalRepository: ApiCallJournalRepositoryImpl
     ): FetchSmallGroupAttendanceHistoryFromNetworkRepository {
         return FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl(
             coreSharedPrefs = coreSharedPrefs,
@@ -1116,7 +1145,8 @@ class DataLoadingModule {
             subjectEntityDao = subjectEntityDao,
             subjectAttributeDao = subjectAttributeDao,
             attributeValueReferenceDao = attributeValueReferenceDao,
-            apiStatusDao = apiStatusDao
+            apiStatusDao = apiStatusDao,
+            apiCallJournalRepository = apiCallJournalRepository
         )
     }
 

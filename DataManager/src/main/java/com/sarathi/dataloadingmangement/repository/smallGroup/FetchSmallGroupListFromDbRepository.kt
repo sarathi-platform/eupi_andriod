@@ -1,4 +1,4 @@
-package com.sarathi.smallgroupmodule.ui.didiTab.domain.repository
+package com.sarathi.dataloadingmangement.repository.smallGroup
 
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 

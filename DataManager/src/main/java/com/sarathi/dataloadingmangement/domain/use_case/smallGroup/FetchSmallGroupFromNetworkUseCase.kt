@@ -30,7 +30,12 @@ class FetchSmallGroupFromNetworkUseCase @Inject constructor(
             ) {
                 return false
             }
-            return fetchSmallGroupDetailsFromNetworkRepository.fetchSmallGroupDetails()
+            return fetchSmallGroupDetailsFromNetworkRepository.fetchSmallGroupDetails(
+                screenName = screenName,
+                triggerType = triggerType,
+                moduleName = moduleName,
+                customData = customData
+            )
         } catch (apiException: ApiException) {
             throw apiException
         } catch (ex: Exception) {

@@ -19,8 +19,6 @@ import com.nudge.core.NO_FILTER_VALUE
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.CoreAppDetails
-import com.nudge.core.ui.commonUi.CustomProgressState
-import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
@@ -144,7 +142,7 @@ open class TaskScreenViewModel @Inject constructor(
     private val _filterByValueKey: MutableState<String> = mutableStateOf(ALL)
     val filterByValueKey: State<String> get() = _filterByValueKey
 
-    val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
+    // val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING)
 
     var activityInfoUIModel = mutableStateOf(ActivityInfoUIModel.getDefaultValue())
 

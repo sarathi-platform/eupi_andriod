@@ -1,11 +1,17 @@
 package com.sarathi.dataloadingmangement.repository.smallGroup
 
+import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.database.entities.ApiStatusEntity
 import com.sarathi.dataloadingmangement.model.response.BeneficiaryApiResponse
 
 interface FetchDidiDetailsFromNetworkRepository {
 
-    suspend fun fetchDidiDetailsFromNetwork(): Boolean
+    suspend fun fetchDidiDetailsFromNetwork(
+        screenName: String,
+        triggerType: DataLoadingTriggerType,
+        moduleName: String,
+        customData: Map<String, Any>
+    ): Boolean
 
     suspend fun saveDidiDetailsToDb(beneficiaryApiResponse: BeneficiaryApiResponse)
     suspend fun isFetchDidiDetailsAPIStatus(): ApiStatusEntity?

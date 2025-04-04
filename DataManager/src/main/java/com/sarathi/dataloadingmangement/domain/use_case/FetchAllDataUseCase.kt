@@ -5,6 +5,7 @@ import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.database.entities.api.ApiCallJournalEntity
+import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
 import com.nudge.core.usecase.caste.FetchCasteConfigNetworkUseCase
@@ -12,10 +13,22 @@ import com.nudge.core.usecase.language.LanguageConfigUseCase
 import com.nudge.core.usecase.translation.FetchTranslationConfigUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.FetchMissionDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchLivelihoodSaveEventUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectIncomeExpenseSummaryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.income_expense.FetchSubjectLivelihoodEventHistoryUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchAssetJournalUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsFromDbUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchDidiDetailsWithLivelihoodMappingUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.FetchLivelihoodOptionNetworkUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.LivelihoodUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchDidiDetailsFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupFromNetworkUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
+import com.sarathi.dataloadingmangement.network.SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
+import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
@@ -37,18 +50,47 @@ class FetchAllDataUseCase @Inject constructor(
     val fetchCasteConfigNetworkUseCase: FetchCasteConfigNetworkUseCase,
     val apiCallConfigRepository: IApiCallConfigRepository,
     val apiCallJournalRepository: IApiCallJournalRepository,
-    private val coreSharedPrefs: CoreSharedPrefs
+    private val coreSharedPrefs: CoreSharedPrefs,
+
+    val fetchDidiDetailsFromNetworkUseCase: FetchDidiDetailsFromNetworkUseCase,
+    val fetchDidiDetailsWithLivelihoodMappingUseCase: FetchDidiDetailsWithLivelihoodMappingUseCase,
+    val fetchSubjectIncomeExpenseSummaryUseCase: FetchSubjectIncomeExpenseSummaryUseCase,
+    val fetchSubjectLivelihoodEventHistoryUseCase: FetchSubjectLivelihoodEventHistoryUseCase,
+    val assetJournalUseCase: FetchAssetJournalUseCase,
+    val fetchLivelihoodSaveEventUseCase: FetchLivelihoodSaveEventUseCase,
+
+
+    val fetchDidiDetailsFromDbUseCase: FetchDidiDetailsFromDbUseCase,
+    val fetchSmallGroupListsFromDbUseCase: FetchSmallGroupListsFromDbUseCase,
+    val fetchSmallGroupFromNetworkUseCase: FetchSmallGroupFromNetworkUseCase,
+    val fetchSmallGroupAttendanceHistoryFromNetworkUseCase: FetchSmallGroupAttendanceHistoryFromNetworkUseCase,
 ) {
 
     val apiUseCaseList: Map<String, BaseApiCallNetworkUseCase> = mapOf(
+        //Mission Screen ->
         "SUBPATH_USER_VIEW" to fetchUserDetailUseCase,
-        "SUB_PATH_GET_ACTIVITY_DETAILS" to fetchMissionActivityDetailDataUseCase,
+        //"SUB_PATH_GET_ACTIVITY_DETAILS" to fetchMissionActivityDetailDataUseCase,
         "SUB_PATH_GET_MISSION_DETAILS" to fetchMissionDataUseCase,
         "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase,
         "SUB_PATH_CONTENT_MANAGER" to fetchContentDataFromNetworkUseCase,
         "SUB_PATH_GET_V3_CONFIG_LANGUAGE" to languageConfigUseCase,
         "SUB_PATH_GET_CONFIG_CASTE" to fetchCasteConfigNetworkUseCase,
         "SUB_PATH_REGISTRY_SERVICE_PROPERTY" to fetchAppConfigFromNetworkUseCase,
+        "SUB_PATH_FETCH_TRANSLATIONS" to fetchTranslationConfigUseCase,
+
+        //Data Tab screen
+        "SUBPATH_GET_DIDI_LIST" to fetchDidiDetailsFromNetworkUseCase,
+        "SUBPATH_GET_LIVELIHOOD_SAVE_EVENT" to fetchLivelihoodSaveEventUseCase,
+        "SUBPATH_FETCH_LIVELIHOOD_OPTION" to fetchLivelihoodOptionNetworkUseCase,
+        "SUBPATH_GET_ASSETS_JOURNAL_DETAILS" to assetJournalUseCase,
+        "SUBPATH_GET_MONEY_JOURNAL_DETAILS" to moneyJournalUseCase,
+        "SUBPATH_GET_LIVELIHOOD_CONFIG" to livelihoodUseCase,
+
+        //Didi Tab Screen
+        "SUBPATH_GET_DIDI_LIST" to fetchDidiDetailsFromNetworkUseCase,
+        "SUBPATH_GET_SMALL_GROUP_MAPPING" to fetchSmallGroupFromNetworkUseCase,
+        "SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK" to fetchSmallGroupAttendanceHistoryFromNetworkUseCase
+
     )
 
     suspend fun invoke(
@@ -59,7 +101,7 @@ class FetchAllDataUseCase @Inject constructor(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true,
         totalNumberOfApi: (screenName: String, screenTotalApi: Int) -> Unit,
-        apiPerStatus: suspend (apiName: String) -> Unit
+        apiPerStatus: suspend (apiName: String, requestPayload: String) -> Unit
     ) {
         totalNumberOfApi(
             screenName,
@@ -67,16 +109,35 @@ class FetchAllDataUseCase @Inject constructor(
         )
         //api config list using order  and then check with apiUseCaseList
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
-
-
-            apiUseCaseList[it.apiName]?.invoke(
-                screenName = screenName,
-                triggerType = dataLoadingTriggerType,
-                customData = customData,
-                moduleName = moduleName
-            )
-            apiPerStatus(it.apiUrls)
+            if (screenName.equals(
+                    "DidiTabScreen",
+                    true
+                ) && apiUseCaseList[it.apiName]?.getApiEndpoint()
+                    ?.equals(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK) == true
+            ) {
+                val smallGroupList = fetchSmallGroupListsFromDbUseCase.invoke()
+                delay(100)
+                smallGroupList.forEach {
+                    fetchSmallGroupAttendanceHistoryFromNetworkUseCase.invoke(
+                        screenName = screenName,
+                        triggerType = dataLoadingTriggerType,
+                        customData = mapOf(
+                            "smallGroupId" to it.smallGroupId
+                        ),
+                        moduleName = moduleName
+                    )
+                }
+            } else {
+                apiUseCaseList[it.apiName]?.invoke(
+                    screenName = screenName,
+                    triggerType = dataLoadingTriggerType,
+                    customData = customData,
+                    moduleName = moduleName
+                )
+            }
+            apiPerStatus(it.apiUrls, customData.json())
         }
+        contentDownloaderUseCase.livelihoodContentDownload()
         onComplete(true, BLANK_STRING)
 
 //        fetchUserDetailUseCase.invoke()
@@ -101,7 +162,7 @@ class FetchAllDataUseCase @Inject constructor(
 //        } else {
 //            onComplete(true, BLANK_STRING)
 //        }
-        onComplete(true, BLANK_STRING)
+        // onComplete(true, BLANK_STRING)
     }
 
     suspend fun fetchMissionRelatedData(
@@ -183,12 +244,15 @@ class FetchAllDataUseCase @Inject constructor(
     suspend fun getApiStatus(
         screenName: String,
         moduleName: String,
-        apiUrl: String
+        apiUrl: String,
+        requestPayload: String
     ): ApiCallJournalEntity? {
         return apiCallJournalRepository.getApiCallStatus(
             screenName = screenName,
             moduleName = moduleName,
-            apiUrl = apiUrl
+            apiUrl = apiUrl,
+            requestPayload = requestPayload
+
         )
     }
 }

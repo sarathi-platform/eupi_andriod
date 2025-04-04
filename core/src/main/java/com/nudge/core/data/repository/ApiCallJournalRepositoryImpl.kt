@@ -55,12 +55,14 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
     override suspend fun getApiCallStatus(
         screenName: String,
         moduleName: String,
-        apiUrl: String
+        apiUrl: String,
+        requestPayload: String
     ): ApiCallJournalEntity? {
         return apiCallJournalJournalDao.getApiCallStatus(
             screenName = screenName,
             moduleName = moduleName,
-            apiUrl = apiUrl
+            apiUrl = apiUrl,
+            requestPayload = requestPayload
         )
     }
 

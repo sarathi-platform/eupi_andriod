@@ -30,7 +30,12 @@ class FetchDidiDetailsFromNetworkUseCase @Inject constructor(
             ) {
                 return false
             }
-            return fetchDidiDetailsFromNetworkRepository.fetchDidiDetailsFromNetwork()
+            return fetchDidiDetailsFromNetworkRepository.fetchDidiDetailsFromNetwork(
+                screenName = screenName,
+                triggerType = triggerType,
+                moduleName = moduleName,
+                customData = customData
+            )
         } catch (apiException: ApiException) {
             throw apiException
         } catch (ex: Exception) {

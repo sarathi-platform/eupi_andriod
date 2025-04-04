@@ -22,11 +22,12 @@ interface ApiCallJournalDao {
         uniqueUserIdentifier: String
     ): Int
 
-    @Query("Select * from api_call_journal_table where screenName=:screenName and moduleName=:moduleName  and  apiUrl=:apiUrl")
+    @Query("Select * from api_call_journal_table where screenName=:screenName and moduleName=:moduleName  and  apiUrl=:apiUrl and requestBody=:requestPayload")
     fun getApiCallStatus(
         screenName: String,
         moduleName: String,
-        apiUrl: String
+        apiUrl: String,
+        requestPayload: String
     ): ApiCallJournalEntity?
 
     @Query("update api_call_journal_table set status=:status, screenName=:screenName , triggerPoint=:triggerPoint, errorMsg=:errorMsg, moduleName=:moduleName  where apiUrl=:apiUrl and requestBody=:requestBody and userId=:userId ")

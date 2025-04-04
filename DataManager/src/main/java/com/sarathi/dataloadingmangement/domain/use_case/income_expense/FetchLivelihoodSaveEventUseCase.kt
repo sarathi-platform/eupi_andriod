@@ -3,6 +3,8 @@ package com.sarathi.dataloadingmangement.domain.use_case.income_expense
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallJournalRepository
+import com.nudge.core.enums.ApiStatus
+import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_LIVELIHOOD_SAVE_EVENT
@@ -35,14 +37,46 @@ class FetchLivelihoodSaveEventUseCase @Inject constructor(
                 apiResponse.data?.let {
                     getLivelihoodSaveEventRepositoryImpl.saveLivelihoodSaveEventIntoDb(it)
                 }
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.SUCCESS.name,
+                    customData = customData,
+                    errorMsg = BLANK_STRING
+                )
                 return true
             } else {
+                updateApiCallStatus(
+                    screenName = screenName,
+                    moduleName = moduleName,
+                    triggerType = triggerType,
+                    status = ApiStatus.FAILED.name,
+                    customData = customData,
+                    errorMsg = apiResponse.message
+                )
                 return false
             }
 
         } catch (apiException: ApiException) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = apiException.message ?: BLANK_STRING
+            )
             throw apiException
         } catch (ex: Exception) {
+            updateApiCallStatus(
+                screenName = screenName,
+                moduleName = moduleName,
+                triggerType = triggerType,
+                status = ApiStatus.FAILED.name,
+                customData = customData,
+                errorMsg = ex.message ?: BLANK_STRING
+            )
             throw ex
         }
     }
