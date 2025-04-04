@@ -241,7 +241,8 @@ class MissionScreenViewModel @Inject constructor(
         // To Delete events for version 1 to 2 sync migration
             syncMigrationUseCase.deleteEventsAfter1To2Migration()
             val customData: Map<String, Any> = mapOf(
-                "propertiesName" to AppConfigKeysEnum.values().map { it.name }
+                "SUB_PATH_REGISTRY_SERVICE_PROPERTY" to mapOf(
+                    "propertiesName" to AppConfigKeysEnum.values().map { it.name })
             )
             allApiStatus.value = ApiStatus.INPROGRESS
             fetchAllDataUseCase.invoke(

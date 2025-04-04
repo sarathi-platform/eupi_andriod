@@ -1,6 +1,7 @@
 package com.sarathi.dataloadingmangement.repository
 
 import com.nudge.core.database.dao.CasteListDao
+import com.nudge.core.database.dao.api.ApiCallJournalDao
 import com.nudge.core.database.dao.language.LanguageListDao
 import com.nudge.core.database.dao.translation.TranslationConfigDao
 import com.nudge.core.preference.CoreSharedPrefs
@@ -13,6 +14,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
     private val casteListDao: CasteListDao,
     private val languageListDao: LanguageListDao,
     private val translationConfigDao: TranslationConfigDao,
+    private val apiCallJournalDao: ApiCallJournalDao
 
 ) : IDeleteAllDataRepository {
     override suspend fun deleteAllDataFromDb() {
@@ -112,6 +114,7 @@ class DeleteAllDataRepositoryImpl @Inject constructor(
             casteListDao.deleteCasteTable()
             languageListDao.deleteAllLanguage()
             translationConfigDao.deleteTranslationConfigModelForUser(userId)
+            apiCallJournalDao.deleteApiCallJournalTable(userId)
         }
     }
 }

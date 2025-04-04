@@ -17,7 +17,13 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
         apiUrl: String
     ) {
 
-        if (!isApiCallAlreadyExist(apiUrl, requestPayload))
+        if (!isApiCallAlreadyExist(
+                apiUrl,
+                requestPayload,
+                screenName = screenName,
+                moduleName = moduleName
+            )
+        )
             apiCallJournalJournalDao.insert(
                 apiCallJournalEntity = ApiCallJournalEntity.getApiCallJournalEntity(
                     screenName = screenName,
@@ -45,10 +51,11 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
             screenName = screenName,
             moduleName = moduleName,
             triggerPoint = dataLoadingTriggerType,
-            userId = coreSharedPrefs.getUniqueUserIdentifier(),
             apiUrl = apiUrl,
             requestBody = requestPayload,
-            status = status, errorMsg = errorMsg
+            status = status,
+            errorMsg = errorMsg,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 
@@ -67,11 +74,16 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
     }
 
 
-    private suspend fun isApiCallAlreadyExist(apiUrl: String, requestPayload: String): Boolean {
+    private suspend fun isApiCallAlreadyExist(
+        apiUrl: String, requestPayload: String, screenName: String,
+        moduleName: String,
+    ): Boolean {
         return apiCallJournalJournalDao.isApiCallAlreadyExist(
             apiUrl,
             requestPayload,
-            coreSharedPrefs.getUniqueUserIdentifier()
+            moduleName = moduleName,
+            screenName = screenName,
+            uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
         ) > 0
     }
 }

@@ -25,12 +25,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.TabsCore
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.CustomSubTabLayout
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.componet_.component.LoadingDataComponent
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.defaultTextStyle
@@ -150,6 +152,12 @@ fun DidiTabScreen(
         },
         onRetry = {},
         onContentUI = { paddingValues, b, function ->
+            LoadingDataComponent(
+                title = "DataTabScreen",
+                apiStatus = didiTabViewModel.allApiStatus.value,
+                isVisible = didiTabViewModel.allApiStatus.value != ApiStatus.SUCCESS || didiTabViewModel.allApiStatus.value != ApiStatus.IDEL,
+                progressState = didiTabViewModel.progressState,
+            ) {}
             Box(
                 modifier = Modifier
                     .fillMaxSize()

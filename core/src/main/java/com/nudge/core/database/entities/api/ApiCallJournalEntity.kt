@@ -5,6 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.nudge.core.ApiCallJournalTable
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.enums.ApiStatus
 
 @Entity(tableName = ApiCallJournalTable)
 data class ApiCallJournalEntity(
@@ -34,7 +35,7 @@ data class ApiCallJournalEntity(
                 id = 0,
                 userId = userId,
                 apiUrl = apiUrl,
-                status = "InProgress",
+                status = ApiStatus.INPROGRESS.name,
                 moduleName = moduleName,
                 screenName = screenName,
                 requestBody = requestBody,

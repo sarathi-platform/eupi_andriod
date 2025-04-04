@@ -40,6 +40,7 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDurationDifferenceInDays
 import com.nudge.core.isOnline
@@ -54,6 +55,7 @@ import com.nudge.core.ui.commonUi.ShowDidiImageDialog
 import com.nudge.core.ui.commonUi.SimpleSearchComponent
 import com.nudge.core.ui.commonUi.TextProperties
 import com.nudge.core.ui.commonUi.ToolBarWithMenuComponent
+import com.nudge.core.ui.commonUi.componet_.component.LoadingDataComponent
 import com.nudge.core.ui.commonUi.rememberCustomBottomSheetScaffoldProperties
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -220,7 +222,12 @@ fun DataTabScreen(
                 },
                 onRetry = {},
                 onContentUI = { paddingValues, b, function ->
-
+                    LoadingDataComponent(
+                        title = "DataTabScreen",
+                        apiStatus = dataTabScreenViewModel.allApiStatus.value,
+                        isVisible = dataTabScreenViewModel.allApiStatus.value != ApiStatus.SUCCESS || dataTabScreenViewModel.allApiStatus.value != ApiStatus.IDEL,
+                        progressState = dataTabScreenViewModel.progressState,
+                    ) {}
                     Box(
                         modifier = Modifier
                             .fillMaxSize()

@@ -131,11 +131,16 @@ class FetchAllDataUseCase @Inject constructor(
                 apiUseCaseList[it.apiName]?.invoke(
                     screenName = screenName,
                     triggerType = dataLoadingTriggerType,
-                    customData = customData,
+                    customData = fetchApiRequestPacket(
+                        customData = customData, outerKey = it.apiName
+                    ),
                     moduleName = moduleName
                 )
             }
-            apiPerStatus(it.apiUrls, customData.json())
+            apiPerStatus(
+                it.apiUrls,
+                fetchApiRequestPacket(customData = customData, outerKey = it.apiName).json()
+            )
         }
         contentDownloaderUseCase.livelihoodContentDownload()
         onComplete(true, BLANK_STRING)
@@ -164,6 +169,22 @@ class FetchAllDataUseCase @Inject constructor(
 //        }
         // onComplete(true, BLANK_STRING)
     }
+
+    private fun fetchApiRequestPacket(
+        customData: Map<String, Any>,
+        outerKey: String
+    ): Map<String, Any> {
+        return when (outerKey) {
+            "SUB_PATH_REGISTRY_SERVICE_PROPERTY" -> {
+                getNestedValue(customData, outerKey, "propertiesName") ?: mapOf()
+            }
+
+            else -> {
+                mapOf()
+            }
+        }
+    }
+
 
     suspend fun fetchMissionRelatedData(
         missionId: Int,
@@ -255,6 +276,21 @@ class FetchAllDataUseCase @Inject constructor(
 
         )
     }
+
+    private fun getNestedValue(
+        customData: Map<String, Any>,
+        outerKey: String,
+        innerKey: String
+    ): Map<String, Any>? {
+        val outerMap = customData[outerKey] as? Map<String, Any>
+        val innerValue = outerMap?.get(innerKey)
+        return if (innerValue is List<*>) {
+            mapOf(innerKey to innerValue)
+        } else {
+            innerValue as? Map<String, Any>
+        }
+    }
+
 }
 
 

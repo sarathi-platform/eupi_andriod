@@ -1157,7 +1157,8 @@ class DataLoadingModule {
         coreSharedPrefs: CoreSharedPrefs,
         casteListDao: CasteListDao,
         translationConfigDao: TranslationConfigDao,
-        languageListDao: LanguageListDao
+        languageListDao: LanguageListDao,
+        apiCallJournalJournalDao: ApiCallJournalDao
 
     ): DeleteAllDataRepositoryImpl {
         return DeleteAllDataRepositoryImpl(
@@ -1165,7 +1166,8 @@ class DataLoadingModule {
             coreSharedPrefs = coreSharedPrefs,
             casteListDao = casteListDao,
             languageListDao = languageListDao,
-            translationConfigDao = translationConfigDao
+            translationConfigDao = translationConfigDao,
+            apiCallJournalDao = apiCallJournalJournalDao
         )
     }
 

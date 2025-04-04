@@ -17,8 +17,7 @@ import javax.inject.Inject
 class LanguageConfigUseCase @Inject constructor(
     private val languageRepositoryImpl: FetchLanguageRepositoryImpl,
     apiCallJournalRepository: IApiCallJournalRepository
-) :
-    BaseApiCallNetworkUseCase(apiCallJournalRepository) {
+) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
 
 
     suspend fun invoke(

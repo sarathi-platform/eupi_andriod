@@ -15,11 +15,13 @@ interface ApiCallJournalDao {
     @Query("DELETE FROM $ApiCallJournalTable where userId=:userId")
     suspend fun deleteApiCallJournalTable(userId: String)
 
-    @Query("Select Count(*) from api_call_journal_table where userId=:uniqueUserIdentifier and apiUrl=:apiUrl and requestBody=:requestPayload")
+    @Query("Select Count(*) from api_call_journal_table where userId=:uniqueUserIdentifier and apiUrl=:apiUrl and requestBody=:requestPayload and screenName=:screenName and moduleName=:moduleName")
     suspend fun isApiCallAlreadyExist(
         apiUrl: String,
         requestPayload: String,
-        uniqueUserIdentifier: String
+        uniqueUserIdentifier: String,
+        screenName: String,
+        moduleName: String,
     ): Int
 
     @Query("Select * from api_call_journal_table where screenName=:screenName and moduleName=:moduleName  and  apiUrl=:apiUrl and requestBody=:requestPayload")
