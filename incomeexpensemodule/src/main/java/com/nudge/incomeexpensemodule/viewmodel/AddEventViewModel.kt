@@ -159,6 +159,9 @@ class AddEventViewModel @Inject constructor(
                 }
 
             }
+            if (selectedLivelihoodId.value != -1) {
+                onLivelihoodSelect(selectedLivelihoodId.value, subjectId, transactionId)
+            }
             val livelihoodForDidi =
                 getSubjectLivelihoodMappingFromUseCase.invoke(subjectId = subjectId)
             if (livelihoodForDidi != null) {
