@@ -143,5 +143,6 @@
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">"आय/खर्च "</string>
     <string name="date_of_event">Date of Event</string>
+    <string name="decrese_in_number">Decrease in Number:</string>
 
 </resources>
