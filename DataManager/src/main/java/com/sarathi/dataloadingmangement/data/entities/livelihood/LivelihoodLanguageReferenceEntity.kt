@@ -7,7 +7,6 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.LIVELIHOOD_LANGUAGE_TABLE_NAME
-import com.sarathi.dataloadingmangement.model.response.LanguageReference
 
 @Entity(tableName = LIVELIHOOD_LANGUAGE_TABLE_NAME)
 data class LivelihoodLanguageReferenceEntity(
@@ -29,17 +28,19 @@ data class LivelihoodLanguageReferenceEntity(
 ) {
     companion object {
         fun getLivelihoodLanguageEntity(
-            languageReference: LanguageReference,
+            languageCode: String,
+            languageReferenceId: Int,
+            name: String,
             uniqueUserIdentifier: String,
             referenceType: String,
             referenceId: Int?
         ): LivelihoodLanguageReferenceEntity {
             return LivelihoodLanguageReferenceEntity(
                 id = 0,
-                referenceId = referenceId ?: languageReference.id ?: 0,
+                referenceId = referenceId ?: languageReferenceId ?: 0,
                 userId = uniqueUserIdentifier,
-                languageCode = languageReference.languageCode ?: BLANK_STRING,
-                name = languageReference.name ?: BLANK_STRING,
+                languageCode = languageCode ?: BLANK_STRING,
+                name = name ?: BLANK_STRING,
                 referenceType = referenceType
             )
         }
