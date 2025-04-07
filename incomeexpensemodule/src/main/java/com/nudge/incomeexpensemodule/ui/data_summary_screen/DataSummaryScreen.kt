@@ -884,7 +884,7 @@ private fun EventDetails(
 
 fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
     return if (item.livelihoodEventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
-        "${item.assetCount}"
+        "+ ${item.assetCount}"
     } else {
         if (item.assetJournalFlow?.toLowerCase()
                 ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
