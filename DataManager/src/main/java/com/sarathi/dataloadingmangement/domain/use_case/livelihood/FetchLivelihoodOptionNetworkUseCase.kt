@@ -62,7 +62,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.SUCCESS.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = BLANK_STRING
                 )
                 return true
@@ -72,7 +72,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.FAILED.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = apiResponse.message
                 )
                 return false
@@ -83,7 +83,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = apiException.stackTraceToString()
             )
 
@@ -94,7 +94,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.stackTraceToString()
             )
             throw ex
@@ -112,7 +112,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
-                    customData = customData,
+                    customData = mapOf(),
                 )
             ) {
                 return false
@@ -123,7 +123,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
                     screenName = screenName,
                     moduleName = moduleName,
                     triggerType = triggerType,
-                    customData = customData,
+                    customData = mapOf(),
                     activityId = getActivityIdForLivelihood,
                 )
             }

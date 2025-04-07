@@ -26,7 +26,7 @@ class FetchLivelihoodSaveEventUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
-                    customData = customData,
+                    customData = mapOf(),
                 )
             ) {
                 return false
@@ -42,7 +42,7 @@ class FetchLivelihoodSaveEventUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.SUCCESS.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = BLANK_STRING
                 )
                 return true
@@ -52,7 +52,7 @@ class FetchLivelihoodSaveEventUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.FAILED.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = apiResponse.message
                 )
                 return false
@@ -64,7 +64,7 @@ class FetchLivelihoodSaveEventUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = apiException.message ?: BLANK_STRING
             )
             throw apiException
@@ -74,7 +74,7 @@ class FetchLivelihoodSaveEventUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.message ?: BLANK_STRING
             )
             throw ex

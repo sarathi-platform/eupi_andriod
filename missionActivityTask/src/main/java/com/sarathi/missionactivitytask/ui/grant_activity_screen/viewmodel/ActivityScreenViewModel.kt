@@ -8,6 +8,7 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.TabsCore
 import com.nudge.core.constants.DataLoadingTriggerType
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
@@ -23,6 +24,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTas
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_MODULE
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import com.sarathi.missionactivitytask.viewmodels.BaseViewModel
@@ -72,6 +74,7 @@ class ActivityScreenViewModel @Inject constructor(
         }
     }
 
+
     private fun initActivityScreen() {
         CoroutineScope(Dispatchers.IO + exceptionHandler).launch {
 
@@ -98,20 +101,50 @@ class ActivityScreenViewModel @Inject constructor(
             withContext(mainDispatcher) {
                 missionInfoUIModel = missionDetails
             }
-
-            fetchAllDataUseCase.fetchMissionRelatedData(
-                missionId = missionId,
-                programId = programId,
-                screenName = "ActivityScreen",
-                dataLoadingTriggerType = DataLoadingTriggerType.PULL_TO_REFRESH,
-                moduleName = "MAT",
-                isRefresh = isRefresh,
-                onComplete =
-                { isSuccess, successMsg ->
-
-                    initActivityScreen()
-                }
+            totalApiCall.value = -1
+            completedApiCount.value = 0f
+            failedApiCount.value = 0f
+            onEvent(LoaderEvent.UpdateLoaderState(true))
+            val customData: Map<String, Any> = mapOf(
+                "MissionId" to missionId,
+                "ProgramId" to programId
             )
+            allApiStatus.value = ApiStatus.INPROGRESS
+            fetchAllDataUseCase.invoke(
+                customData = customData,
+                screenName = "ActivityScreen",
+                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+                isRefresh = isRefresh,
+                onComplete = { isSucess, message ->
+                    initActivityScreen()
+                },
+                totalNumberOfApi = { screenName, screenTotalApi ->
+                    totalApiCall.value = screenTotalApi
+                },
+                apiPerStatus = { apiName, requestPayload ->
+                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+                        screenName = "ActivityScreen",
+                        moduleName = MAT_MODULE,
+                        apiUrl = apiName,
+                        requestPayload = requestPayload
+                    )
+                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+                },
+                moduleName = MAT_MODULE
+            )
+
+//            fetchAllDataUseCase.fetchMissionRelatedData(
+//                missionId = missionId,
+//                programId = programId,
+//                screenName = "ActivityScreen",
+//                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+//                moduleName = "MAT",
+//                isRefresh = isRefresh,
+//                onComplete =
+//                { isSuccess, successMsg ->
+//                    initActivityScreen()
+//                }
+//            )
 
         }
 

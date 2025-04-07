@@ -16,5 +16,6 @@ data class ApiCallConfigEntity(
     @ColumnInfo("apiType") val apiType: String,
     @ColumnInfo("moduleName") val moduleName: String,
     @ColumnInfo("apiOrder") val apiOrder: Int,
-    @ColumnInfo("isAsyncCall") val isAsyncCall: Boolean
+    @ColumnInfo("isAsyncCall") val isAsyncCall: Boolean,
+    @ColumnInfo("isLoopingCall") val isLoopingCall: Boolean?
 )

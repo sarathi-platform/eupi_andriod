@@ -232,17 +232,15 @@ class MissionScreenViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
-        TOTAL_API_CALL = -1
+        totalApiCall.value = -1
         completedApiCount.value = 0f
         failedApiCount.value = 0f
         onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-
         // To Delete events for version 1 to 2 sync migration
             syncMigrationUseCase.deleteEventsAfter1To2Migration()
             val customData: Map<String, Any> = mapOf(
-                "SUB_PATH_REGISTRY_SERVICE_PROPERTY" to mapOf(
-                    "propertiesName" to AppConfigKeysEnum.values().map { it.name })
+                "propertiesName" to AppConfigKeysEnum.values().map { it.name }
             )
             allApiStatus.value = ApiStatus.INPROGRESS
             fetchAllDataUseCase.invoke(
@@ -254,7 +252,7 @@ class MissionScreenViewModel @Inject constructor(
                     initMissionScreen()
                 },
                 totalNumberOfApi = { screenName, screenTotalApi ->
-                    TOTAL_API_CALL = screenTotalApi
+                    totalApiCall.value = screenTotalApi
                 },
                 apiPerStatus = { apiName, requestPayload ->
                     val apiStatusData = fetchAllDataUseCase.getApiStatus(
@@ -300,7 +298,7 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
-        if (baseCurrentApiCount == TOTAL_API_CALL) {
+        if (baseCurrentApiCount == totalApiCall.value) {
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 callBack()

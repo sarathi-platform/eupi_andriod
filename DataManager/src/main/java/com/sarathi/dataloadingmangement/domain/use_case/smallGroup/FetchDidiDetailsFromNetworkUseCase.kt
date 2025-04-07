@@ -25,7 +25,7 @@ class FetchDidiDetailsFromNetworkUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
-                    customData = customData,
+                    customData = mapOf(),
                 )
             ) {
                 return false
@@ -34,7 +34,7 @@ class FetchDidiDetailsFromNetworkUseCase @Inject constructor(
                 screenName = screenName,
                 triggerType = triggerType,
                 moduleName = moduleName,
-                customData = customData
+                customData = mapOf()
             )
         } catch (apiException: ApiException) {
             throw apiException

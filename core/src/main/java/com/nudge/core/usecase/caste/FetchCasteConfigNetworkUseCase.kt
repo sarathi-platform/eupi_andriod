@@ -39,7 +39,7 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
                 screenName = screenName,
                 triggerType = triggerType,
                 moduleName = moduleName,
-                customData = customData,
+                customData = mapOf(),
             )
         ) {
             return false

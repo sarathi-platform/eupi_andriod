@@ -45,9 +45,9 @@ abstract class BaseViewModel : ViewModel() {
     @Inject
     lateinit var translationHelper: TranslationHelper
 
-    var TOTAL_API_CALL = -1
     var allApiStatus = mutableStateOf(ApiStatus.IDEL)
     var failedApiCount = mutableStateOf(0f)
+    var totalApiCall = mutableStateOf(-1)
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
     var completedApiCount = mutableStateOf(0f)
 
@@ -142,13 +142,13 @@ abstract class BaseViewModel : ViewModel() {
             failedApiCount.value = failedApiCount.value.inc()
         }
         // Update progress bar and progress text
-        val progress = completedApiCount.value.toFloat() / TOTAL_API_CALL.toFloat()
+        val progress = completedApiCount.value.toFloat() / totalApiCall.value.toFloat()
         progressState.updateProgress(progress)
-        progressState.updateProgressText("${completedApiCount.value}/$TOTAL_API_CALL")
+        progressState.updateProgressText("${completedApiCount.value.toInt()}/${totalApiCall.value}")
 
         // Handle completion and failure scenarios
         when {
-            completedApiCount.value.toInt() == TOTAL_API_CALL -> {
+            completedApiCount.value.toInt() == totalApiCall.value -> {
                 allApiStatus.value = ApiStatus.SUCCESS
             }
 

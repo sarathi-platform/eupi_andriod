@@ -24,7 +24,7 @@ class FetchMissionDataUseCase @Inject constructor(
         customData: Map<String, Any>
     ): Boolean {
         try {
-            if (!super.invoke(screenName, triggerType, moduleName, customData)) {
+            if (!super.invoke(screenName, triggerType, moduleName, mapOf())) {
                 return false
             }
             val apiResponse = repository.fetchMissionListFromServer()
@@ -46,7 +46,7 @@ class FetchMissionDataUseCase @Inject constructor(
                         moduleName = moduleName,
                         triggerType = triggerType,
                         status = ApiStatus.SUCCESS.name,
-                        customData = customData,
+                        customData = mapOf(),
                         errorMsg = BLANK_STRING
                     )
                     return true
@@ -57,7 +57,7 @@ class FetchMissionDataUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.FAILED.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = apiResponse.message
                 )
                 return false
@@ -69,7 +69,7 @@ class FetchMissionDataUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = apiException.stackTraceToString()
             )
             throw apiException
@@ -79,7 +79,7 @@ class FetchMissionDataUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.stackTraceToString()
             )
             throw ex

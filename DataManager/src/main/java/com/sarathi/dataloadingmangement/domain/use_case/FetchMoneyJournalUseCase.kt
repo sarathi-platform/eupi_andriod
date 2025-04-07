@@ -29,7 +29,7 @@ class FetchMoneyJournalUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
-                    customData = customData,
+                    customData = mapOf(),
                 )
             ) {
                 return false
@@ -44,7 +44,7 @@ class FetchMoneyJournalUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.SUCCESS.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = BLANK_STRING
                 )
                 return true
@@ -54,7 +54,7 @@ class FetchMoneyJournalUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.FAILED.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = apiResponse.message
                 )
                 return false
@@ -66,7 +66,7 @@ class FetchMoneyJournalUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = apiException.stackTraceToString()
             )
             throw apiException
@@ -76,7 +76,7 @@ class FetchMoneyJournalUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.stackTraceToString()
             )
             throw ex

@@ -26,7 +26,7 @@ class LivelihoodUseCase @Inject constructor(
 
 
         try {
-            if (!super.invoke(screenName, triggerType, moduleName, customData)) {
+            if (!super.invoke(screenName, triggerType, moduleName, mapOf())) {
                 return false
             }
             val apiResponse = coreLivelihoodRepositoryImpl.getLivelihoodConfigFromNetwork()
@@ -40,7 +40,7 @@ class LivelihoodUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.SUCCESS.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = BLANK_STRING
                 )
                 return true
@@ -50,7 +50,7 @@ class LivelihoodUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.FAILED.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = apiResponse.message
                 )
 
@@ -63,7 +63,7 @@ class LivelihoodUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = apiException.stackTraceToString()
             )
 
@@ -74,7 +74,7 @@ class LivelihoodUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.stackTraceToString()
             )
             throw ex

@@ -28,7 +28,7 @@ class FetchTranslationConfigUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
-                    customData = customData,
+                    customData = mapOf(),
                 )
             ) {
                 return false
@@ -43,7 +43,7 @@ class FetchTranslationConfigUseCase @Inject constructor(
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.SUCCESS.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = BLANK_STRING
                 )
                 return true
@@ -65,7 +65,7 @@ class FetchTranslationConfigUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = apiException.stackTraceToString()
             )
             throw apiException
@@ -75,7 +75,7 @@ class FetchTranslationConfigUseCase @Inject constructor(
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.stackTraceToString()
             )
             throw ex

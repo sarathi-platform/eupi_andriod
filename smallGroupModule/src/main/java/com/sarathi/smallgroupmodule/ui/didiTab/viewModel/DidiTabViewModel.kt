@@ -94,7 +94,7 @@ class DidiTabViewModel @Inject constructor(
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
         onEvent(LoaderEvent.UpdateLoaderState(true))
-        TOTAL_API_CALL = -1
+        totalApiCall.value = -1
         completedApiCount.value = 0f
         failedApiCount.value = 0f
         ioViewModelScope {
@@ -112,7 +112,7 @@ class DidiTabViewModel @Inject constructor(
                     }
                 },
                 totalNumberOfApi = { screenName, screenTotalApi ->
-                    TOTAL_API_CALL = screenTotalApi
+                    totalApiCall.value = screenTotalApi
                 },
                 apiPerStatus = { apiName, requestPayload ->
                     val apiStatusData = fetchAllDataUseCase.getApiStatus(
