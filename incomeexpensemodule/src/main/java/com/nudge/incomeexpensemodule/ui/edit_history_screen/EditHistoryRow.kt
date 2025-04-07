@@ -53,10 +53,12 @@ import com.nudge.core.ui.theme.redIconColor
 import com.nudge.core.ui.theme.smallTextStyle
 import com.nudge.core.ui.theme.white
 import com.nudge.core.utils.FileUtils
+import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventScreenData
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.SubjectLivelihoodEventHistoryUiModel
+import java.util.Locale
 
 
 @Composable
@@ -135,9 +137,15 @@ fun EditHistoryRow(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     TextDataRowView(
-                        data1 = translationHelper.stringResource(
-                            R.string.increse_in_number
-                        ),
+                        data1 = if (isAssetIncreasing(
+                                livelihoodEventType =
+                                currentHistoryData.livelihoodEventType,
+                                assetJournalFlow = getLivelihoodEventFromName(currentHistoryData.livelihoodEventType)
+                                    .assetJournalEntryFlowType?.name
+                            )
+                        )
+                            translationHelper.stringResource(R.string.increse_in_number)
+                        else translationHelper.stringResource(R.string.decrese_in_number),
                         data2textColor = dataChangeTextColor(
                             data1 = getAssetCount(currentSavedEvent),
                             data2 = getAssetCount(nextSavedEvent),
@@ -317,4 +325,13 @@ private fun getAssetCount(savedEvent: LivelihoodEventScreenData?): String =
 
 private fun getEventDate(eventData: SubjectLivelihoodEventHistoryUiModel?): String =
     eventData?.date?.toString()?.takeIf { it.isNotEmpty() && it.isNotBlank() } ?: "0"
+
+fun isAssetIncreasing(livelihoodEventType: String, assetJournalFlow: String?): Boolean {
+    return if (livelihoodEventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+        true
+    } else {
+        assetJournalFlow?.lowercase(Locale.ROOT)
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.lowercase(Locale.ROOT)) != true
+    }
+}
 
