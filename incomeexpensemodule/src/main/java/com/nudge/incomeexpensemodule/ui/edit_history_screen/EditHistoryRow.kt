@@ -331,7 +331,7 @@ fun isAssetIncreasing(livelihoodEventType: String, assetJournalFlow: String?): B
         true
     } else {
         assetJournalFlow?.lowercase(Locale.ROOT)
-            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.lowercase(Locale.ROOT)) != true
+            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.lowercase(Locale.ROOT)) == false
     }
 }
 
