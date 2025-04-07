@@ -64,6 +64,7 @@ import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.INFLOW
 import com.sarathi.dataloadingmangement.enums.AddEventFieldEnum
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventDataCaptureTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping.Companion.getLivelihoodEventFromName
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
@@ -459,13 +460,17 @@ fun AddEventScreen(
                 if (viewModel.questionVisibilityMap[LivelihoodEventDataCaptureTypeEnum.COUNT_OF_ASSET].value()) {
                     item {
                         val str =
-                            if (getLivelihoodEventFromName(viewModel.eventType).assetJournalEntryFlowType?.name?.equals(
-                                    INFLOW
-                                ) == true
-                            ) viewModel.stringResource(
-                                R.string.increase_in_number
-                            ) else viewModel.stringResource(
-                                R.string.decrease_in_number
+                            if (viewModel.eventType != LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+                                if (getLivelihoodEventFromName(viewModel.eventType).assetJournalEntryFlowType?.name?.equals(
+                                        INFLOW
+                                    ) == true
+                                ) viewModel.stringResource(
+                                    R.string.increase_in_number
+                                ) else viewModel.stringResource(
+                                    R.string.decrease_in_number
+                                )
+                            } else viewModel.stringResource(
+                                R.string.enter_child_asset_count
                             )
                         IncrementDecrementNumberComponent(
                             isMandatory = true,

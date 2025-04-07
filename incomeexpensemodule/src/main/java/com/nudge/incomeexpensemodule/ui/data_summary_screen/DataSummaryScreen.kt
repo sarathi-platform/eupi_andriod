@@ -138,6 +138,7 @@ import com.nudge.incomeexpensemodule.utils.SELECTED_LIVELIHOOD_ID
 import com.nudge.incomeexpensemodule.utils.findById
 import com.nudge.incomeexpensemodule.utils.getTextColor
 import com.sarathi.dataloadingmangement.enums.EntryFlowTypeEnum
+import com.sarathi.dataloadingmangement.enums.LivelihoodEventTypeDataCaptureMapping
 import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.LivelihoodEventUiModel
@@ -882,12 +883,16 @@ private fun EventDetails(
 }
 
 fun getAssetCountForEvent(item: SubjectLivelihoodEventSummaryUiModel): String {
-    return if (item.assetJournalFlow?.toLowerCase()
-            ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
-    ) {
-        "- ${item.assetCount}"
+    return if (item.livelihoodEventType == LivelihoodEventTypeDataCaptureMapping.AssetTransition.name) {
+        "${item.assetCount}"
     } else {
-        "+ ${item.assetCount}"
+        if (item.assetJournalFlow?.toLowerCase()
+                ?.equals(EntryFlowTypeEnum.OUTFLOW.name.toLowerCase()) == true
+        ) {
+            "- ${item.assetCount}"
+        } else {
+            "+ ${item.assetCount}"
+        }
     }
 }
 
@@ -925,7 +930,6 @@ private fun AddEventButton(
     viewModel: DataSummaryScreenViewModel,
     onAddEventButtonClicked: () -> Unit
 ) {
-    val context = LocalContext.current
     ButtonPositive(
         buttonTitle = viewModel.stringResource(R.string.add_event),
         isActive = true,
