@@ -7,7 +7,7 @@ data class Language(
     @SerializedName("description")
     val description: String,
     @SerializedName("language")
-    val language: String
+    var language: String
 )
 
 data class MissionLivelihoodMission(
