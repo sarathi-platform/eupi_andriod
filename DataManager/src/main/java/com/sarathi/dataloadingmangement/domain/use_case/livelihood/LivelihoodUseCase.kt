@@ -4,18 +4,22 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallJournalRepository
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.SUCCESS
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionActivityDetailDataUseCase
 import com.sarathi.dataloadingmangement.enums.LivelihoodLanguageReferenceType
 import com.sarathi.dataloadingmangement.model.response.LivelihoodResponse
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_LIVELIHOOD_CONFIG
 import com.sarathi.dataloadingmangement.repository.liveihood.ICoreLivelihoodRepository
+import java.util.Locale
 import javax.inject.Inject
 
 class LivelihoodUseCase @Inject constructor(
     private val coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository,
-    apiCallJournalRepository: IApiCallJournalRepository
+    apiCallJournalRepository: IApiCallJournalRepository,
+    private val fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase,
 ) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     override suspend operator fun invoke(
         screenName: String,
@@ -23,9 +27,22 @@ class LivelihoodUseCase @Inject constructor(
         moduleName: String,
         customData: Map<String, Any>
     ): Boolean {
-
-
         try {
+            val missionId: Int = if (customData["MissionId"] != null) {
+                customData["MissionId"] as? Int ?: -1
+            } else {
+                -1
+            }
+            val activityTypes =
+                fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
+            if (screenName == "ActivityScreen" && !activityTypes.contains(
+                    ActivityTypeEnum.LIVELIHOOD.name.lowercase(
+                        Locale.ENGLISH
+                    )
+                )
+            ) {
+                return false
+            }
             if (!super.invoke(screenName, triggerType, moduleName, mapOf())) {
                 return false
             }

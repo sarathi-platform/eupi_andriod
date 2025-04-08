@@ -23,11 +23,13 @@ import com.sarathi.contentmodule.media.MediaScreen
 import com.sarathi.contentmodule.media.PdfViewer
 import com.sarathi.contentmodule.ui.content_detail_screen.screen.ContentDetailScreen
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
+import com.sarathi.dataloadingmangement.ui.component.api_failed_screen.ApiFailedListScreen
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_COMPLETION_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SELECT_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ADD_IMAGE_SCREEN_SCREEN_ROUTE_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.API_FAILED_SCREEN_SCREEN_ROUTE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_CONFIG_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_ACTIVITY_MASSAGE
@@ -48,9 +50,11 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MA
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_COMPLETED
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MISSION_NAME
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_MODULE_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_PROGRAM_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_REFERENCE_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SANCTIONED_AMOUNT
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SCREEN_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SECTION_ID
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_NAME
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ARG_SUBJECT_TYPE
@@ -693,8 +697,32 @@ fun NavGraphBuilder.MatNavigation(
                 ) ?: 0,
             )
         }
+        composable(
+            route = MATHomeScreens.ApiFailedScreen.route, arguments = listOf(
+                navArgument(
+                    name = ARG_SCREEN_NAME
+                ) {
+                    type = NavType.StringType
+                },
+                navArgument(
+                    name = ARG_MODULE_NAME
+                ) {
+                    type = NavType.StringType
+                },
+            )
+        ) {
+            ApiFailedListScreen(
+                onSettingClick = onSettingIconClick,
+                navController = navController,
+                viewModel = hiltViewModel(),
+                screenName = it.arguments?.getString(ARG_SCREEN_NAME) ?: BLANK_STRING,
+                moduleName = it.arguments?.getString(ARG_MODULE_NAME) ?: BLANK_STRING
+            )
+        }
 
-        composable(route = MATHomeScreens.ActivityCompletionScreen.route, arguments = listOf(
+
+        composable(
+            route = MATHomeScreens.ActivityCompletionScreen.route, arguments = listOf(
             navArgument(
                 name = ARG_ACTIVITY_MASSAGE
             ) {
@@ -1388,6 +1416,14 @@ fun navigateToMediaPlayerScreen(
     contentTitle: String
 ) {
     navController.navigate("$MEDIA_PLAYER_SCREEN_ROUTE_NAME/$contentKey/$contentType/$contentTitle")
+}
+
+fun navigateToApiFailedScreen(
+    navController: NavController,
+    screenName: String,
+    moduleName: String,
+) {
+    navController.navigate("$API_FAILED_SCREEN_SCREEN_ROUTE_NAME/$screenName/$moduleName")
 }
 
 fun navigateToActivityScreen(

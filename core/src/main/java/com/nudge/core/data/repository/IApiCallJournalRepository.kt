@@ -28,4 +28,9 @@ interface IApiCallJournalRepository {
         requestPayload: String
     ): ApiCallJournalEntity?
 
+    suspend fun getFailedApiCallJournalEntity(
+        screenName: String,
+        moduleName: String
+    ): List<ApiCallJournalEntity>?
+
 }

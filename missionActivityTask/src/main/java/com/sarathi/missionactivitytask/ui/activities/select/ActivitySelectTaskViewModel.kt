@@ -10,7 +10,6 @@ import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.data.entities.ActivityTaskEntity
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchSurveyDataFromDB
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
@@ -46,7 +45,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     private val getActivityConfigUseCase: GetActivityConfigUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    //private val fetchAllDataUseCase: FetchAllDataUseCase,
     private val fetchDataUseCase: FetchSurveyDataFromDB,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val getActivityUseCase: GetActivityUseCase,
@@ -63,7 +62,7 @@ open class ActivitySelectTaskViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase,
+    //fetchAllDataUseCase,
     missionFilterUtils = missionFilterUtils,
     fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {

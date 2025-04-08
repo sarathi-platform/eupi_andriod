@@ -10,4 +10,8 @@ sealed class InitDataEvent {
     data class InitDataStateWithCallBack(val callBack: () -> Unit) : InitDataEvent()
     object InitFormQuestionScreenState : InitDataEvent()
     data class InitActivityListState(val missionId: Int) : InitDataEvent()
+    data class InitApiFailedScreenState(
+        val screenName: String,
+        val moduleName: String
+    ) : InitDataEvent()
 }

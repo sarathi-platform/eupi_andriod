@@ -7,6 +7,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,18 +19,21 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.nudge.core.BLANK_STRING
@@ -39,19 +43,21 @@ import com.nudge.core.ui.commonUi.CustomLinearProgressIndicator
 import com.nudge.core.ui.commonUi.CustomProgressState
 import com.nudge.core.ui.commonUi.CustomSpacer
 import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
+import com.nudge.core.ui.theme.black20
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
+import com.nudge.core.ui.theme.dimen_16_dp
 import com.nudge.core.ui.theme.dimen_18_dp
 import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_4_dp
-import com.nudge.core.ui.theme.dimen_5_dp
 import com.nudge.core.ui.theme.dimen_6_dp
-import com.nudge.core.ui.theme.greenDark
+import com.nudge.core.ui.theme.grayColor
 import com.nudge.core.ui.theme.greenOnline
 import com.nudge.core.ui.theme.redOffline
 import com.nudge.core.ui.theme.smallerTextStyleNormalWeight
 import com.nudge.core.ui.theme.smallestTextStyle
 import com.nudge.core.ui.theme.white
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -62,44 +68,65 @@ fun LoadingDataComponent(
     isVisible: Boolean = false,
     apiStatus: ApiStatus = ApiStatus.INPROGRESS,
     isMultipleDataDownloading: Boolean = false,
+    durationMillis: Int = 3000,
     progressState: CustomProgressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, BLANK_STRING),
     onViewDetailsClick: () -> Unit
 ) {
-    val isViewVisible = remember { mutableStateOf(isVisible) }
+    val allApiStatus by remember(apiStatus) { mutableStateOf(apiStatus) }
+    val startAnimation = remember { mutableStateOf(true) }
+
+    LaunchedEffect(allApiStatus) {
+        if (allApiStatus == ApiStatus.SUCCESS) {
+            delay(durationMillis.toLong())
+            startAnimation.value = false
+        }
+    }
+
     AnimatedVisibility(
-        visible = isViewVisible.value,
+        visible = startAnimation.value,
         modifier = Modifier.clipToBounds(),
         enter = expandVertically() + fadeIn(initialAlpha = 0.6f),
         exit = shrinkVertically() + fadeOut()
     ) {
         Box(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(dimen_6_dp)
+                .padding(horizontal = dimen_16_dp)
                 .background(
-                    when (apiStatus) {
+                    when (allApiStatus) {
                         ApiStatus.INPROGRESS -> white
                         ApiStatus.SUCCESS -> white
                         ApiStatus.FAILED -> redOffline
-                        else -> greenOnline
+                        else -> white
+                    }
+                )
+                .border(
+                    2.dp, color = when (allApiStatus) {
+                        ApiStatus.INPROGRESS -> grayColor
+                        ApiStatus.SUCCESS -> greenOnline
+                        ApiStatus.FAILED -> black20
+                        else -> blueDark
                     }
                 )
                 .then(modifier)
         ) {
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable {
-                        isViewVisible.value = false
-                    },
-                horizontalArrangement = Arrangement.End
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.icon_close),
-                    contentDescription = null,
+            if (allApiStatus != ApiStatus.INPROGRESS) {
+                Row(
                     modifier = Modifier
-                        .size(dimen_10_dp)
-                )
+                        .fillMaxWidth()
+                        .padding(end = dimen_10_dp, top = dimen_10_dp)
+                        .clickable {
+                            startAnimation.value = false
+                        },
+                    horizontalArrangement = Arrangement.End
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.icon_close),
+                        contentDescription = null,
+                        modifier = Modifier.size(dimen_10_dp),
+                        colorFilter = ColorFilter.tint(blueDark) // This will tint the image red
+                    )
+
+                }
             }
 
             Column(
@@ -117,7 +144,6 @@ fun LoadingDataComponent(
                         modifier = Modifier.weight(2f)
 
                     ) {
-
                         Text(
                             text = title,
                             style = smallerTextStyleNormalWeight,
@@ -136,82 +162,109 @@ fun LoadingDataComponent(
                             )
                         }
                     }
-                    if (apiStatus == ApiStatus.INPROGRESS || apiStatus == ApiStatus.FAILED) {
+                    if (allApiStatus == ApiStatus.INPROGRESS) {
                         CircularProgressIndicator(
                             modifier = Modifier
                                 .size(dimen_18_dp)
                                 .align(Alignment.CenterVertically)
                                 .padding(end = dimen_2_dp),
-                            color = white
+                            color = blueDark
                         )
                     }
-                    if (apiStatus == ApiStatus.SUCCESS) {
+                    if (allApiStatus == ApiStatus.SUCCESS) {
                         Image(
                             painter = painterResource(id = R.drawable.icon_check),
                             contentDescription = null,
                             modifier = Modifier
+                                .padding(vertical = dimen_10_dp)
                                 .size(dimen_18_dp)
                                 .align(Alignment.CenterVertically)
                         )
                     }
-
-
                     CustomSpacer()
                 }
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(white)
-                ) {
-                    Column(modifier = Modifier.fillMaxWidth()) {
-                        if (!isMultipleDataDownloading) {
-                            CustomLinearProgressIndicator(
-                                progressBarModifier = Modifier
-                                    .height(dimen_4_dp)
-                                    .padding(vertical = 1.dp)
-                                    .clip(RoundedCornerShape(14.dp)),
-                                progressState = progressState,
-                                color = greenOnline
-                            )
-                        } else {
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                            ) {
 
-                                Text(
-                                    text = "Multiple screens data Downloading Multiple screens data Downloading...",
-                                    style = smallerTextStyleNormalWeight,
-                                    color = greenDark,
-                                    maxLines = 1,
-                                    textAlign = TextAlign.Start,
-                                    overflow = TextOverflow.Ellipsis,
-                                    modifier = Modifier
-                                        .padding(horizontal = dimen_5_dp)
-                                        .weight(1f)
-
-                                )
-                                Text(
-                                    text = "View Details",
-                                    style = smallerTextStyleNormalWeight,
-                                    color = blueDark,
-                                    textAlign = TextAlign.End,
-                                    modifier = Modifier.clickable {
-                                        onViewDetailsClick()
-                                    }
-                                )
-                                Spacer(Modifier.size(dimen_2_dp))
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_arrow_forward_ios_24),
-                                    contentDescription = null,
-                                    modifier = Modifier
-                                        .size(dimen_10_dp)
-                                        .align(Alignment.CenterVertically)
-                                )
-
-
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    CustomLinearProgressIndicator(
+                        progressBarModifier = Modifier
+                            .height(dimen_4_dp)
+                            .padding(vertical = 1.dp)
+                            .clip(RoundedCornerShape(14.dp)),
+                        progressState = progressState,
+                        color = greenOnline
+                    )
+//                    if (!isMultipleDataDownloading) {
+//                        CustomLinearProgressIndicator(
+//                            progressBarModifier = Modifier
+//                                .height(dimen_4_dp)
+//                                .padding(vertical = 1.dp)
+//                                .clip(RoundedCornerShape(14.dp)),
+//                            progressState = progressState,
+//                            color = greenOnline
+//                        )
+//                    } else {
+//                        Row(
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                        ) {
+//                            Text(
+//                                text = "Multiple screens data Downloading Multiple screens data Downloading...",
+//                                style = smallerTextStyleNormalWeight,
+//                                color = greenDark,
+//                                maxLines = 1,
+//                                textAlign = TextAlign.Start,
+//                                overflow = TextOverflow.Ellipsis,
+//                                modifier = Modifier
+//                                    .padding(horizontal = dimen_5_dp)
+//                                    .weight(1f)
+//
+//                            )
+//                            Text(
+//                                text = "View Details",
+//                                style = smallerTextStyleNormalWeight,
+//                                color = blueDark,
+//                                textAlign = TextAlign.End,
+//                                modifier = Modifier.clickable {
+//                                    onViewDetailsClick()
+//                                }
+//                            )
+//                            Spacer(Modifier.size(dimen_2_dp))
+//                            Image(
+//                                painter = painterResource(id = R.drawable.ic_arrow_forward_ios_24),
+//                                contentDescription = null,
+//                                modifier = Modifier
+//                                    .size(dimen_10_dp)
+//                                    .align(Alignment.CenterVertically)
+//                            )
+//
+//
+//                        }
+//                    }
+                }
+                CustomSpacer()
+                if (allApiStatus == ApiStatus.FAILED) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "View Details",
+                            style = smallerTextStyleNormalWeight,
+                            color = blueDark,
+                            textDecoration = TextDecoration.Underline,
+                            textAlign = TextAlign.End,
+                            modifier = Modifier.clickable {
+                                onViewDetailsClick()
                             }
-                        }
+                        )
+                        Spacer(Modifier.size(dimen_2_dp))
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_arrow_forward_ios_24),
+                            contentDescription = null,
+                            modifier = Modifier
+                                .size(dimen_10_dp)
+                                .align(Alignment.CenterVertically)
+                        )
                     }
                 }
             }

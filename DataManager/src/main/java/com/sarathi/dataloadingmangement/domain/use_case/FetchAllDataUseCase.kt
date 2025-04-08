@@ -1,12 +1,11 @@
 package com.sarathi.dataloadingmangement.domain.use_case
 
+import android.util.Log
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.data.repository.IApiCallJournalRepository
-import com.nudge.core.database.entities.api.ApiCallConfigEntity
 import com.nudge.core.database.entities.api.ApiCallJournalEntity
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -29,15 +28,6 @@ import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGro
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
-import com.sarathi.dataloadingmangement.network.SUBPATH_FETCH_LIVELIHOOD_OPTION
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_FORM_DETAILS
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_LIVELIHOOD_CONFIG
-import com.sarathi.dataloadingmangement.network.SUBPATH_GET_MONEY_JOURNAL_DETAILS
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
@@ -124,49 +114,35 @@ class FetchAllDataUseCase @Inject constructor(
             apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name)
         val nonLoopingApiCount = apiCallList.filter { it.isLoopingCall != true }.size
         totalNumberOfApi(screenName, nonLoopingApiCount)
-
-        // Handle special cases for DidiTabScreen
-        if (screenName.equals("DidiTabScreen", true)) {
-            handleDidiTabScreen(
-                screenName,
-                dataLoadingTriggerType,
-                customData,
-                moduleName,
-                apiCallList,
-                apiPerStatus,
-                totalNumberOfApi
-            )
-        }
-        // Handle special cases for ActivityScreen
-        else if (screenName.equals("ActivityScreen", true)) {
-            handleActivityScreen(
-                screenName,
-                dataLoadingTriggerType,
-                customData,
-                moduleName,
-                apiCallList,
-                apiPerStatus
-            )
-        }
-        // Handle general cases
-        else {
             apiCallList.forEach { apiDetails ->
-                apiUseCaseList[apiDetails.apiName]?.invoke(
-                    screenName = screenName,
-                    triggerType = dataLoadingTriggerType,
-                    customData = customData,
-                    moduleName = moduleName
-                )
-                apiPerStatus(
-                    apiDetails.apiUrls,
-                    generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
-                )
-            }
+                try {
+                    apiUseCaseList[apiDetails.apiName]?.invoke(
+                        screenName = screenName,
+                        triggerType = dataLoadingTriggerType,
+                        customData = customData,
+                        moduleName = moduleName
+                    )
+
+                    apiPerStatus(
+                        apiDetails.apiUrls,
+                        generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
+                    )
+                } catch (e: retrofit2.HttpException) {
+                    Log.e("API Error", "HttpException occurred: ${e.message()}")
+                    apiPerStatus(
+                        apiUseCaseList[apiDetails.apiName]?.getApiEndpoint().toString(),
+                        generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
+                    )
+                    return@forEach
+                } catch (e: Exception) {
+                    Log.e("API Error", "Unexpected error occurred: ${e.message}")
+                    apiPerStatus(
+                        apiUseCaseList[apiDetails.apiName]?.getApiEndpoint().toString(),
+                        generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
+                    )
+                    return@forEach
+                }
         }
-
-        // Launch background tasks
-        launchContentDownloadTasks(screenName)
-
         onComplete(true, BLANK_STRING)
     }
 
@@ -177,249 +153,6 @@ class FetchAllDataUseCase @Inject constructor(
         }
     }
 
-
-    private suspend fun handleDidiTabScreen(
-        screenName: String,
-        dataLoadingTriggerType: DataLoadingTriggerType,
-        customData: Map<String, Any>,
-        moduleName: String,
-        apiCallList: List<ApiCallConfigEntity>,
-        apiPerStatus: suspend (apiName: String, requestPayload: String) -> Unit,
-        totalNumberOfApi: (screenName: String, screenTotalApi: Int) -> Unit,
-    ) {
-        val totalApiCount = apiCallList.filter { it.isLoopingCall != true }.size
-        totalNumberOfApi(screenName, totalApiCount)
-
-        apiCallList.forEach { apiDetails ->
-            if (apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-                    ?.equals(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK) == true
-            ) {
-                val smallGroupList = fetchSmallGroupListsFromDbUseCase.invoke()
-                totalNumberOfApi(
-                    screenName,
-                    apiCallList.filter { it.isLoopingCall != true }.size + smallGroupList.size
-                )
-                smallGroupList.forEach {
-                    apiUseCaseList[apiDetails.apiName]?.invoke(
-                        screenName = screenName,
-                        triggerType = dataLoadingTriggerType,
-                        customData = mapOf("smallGroupId" to it.smallGroupId),
-                        moduleName = moduleName
-                    )
-                    apiPerStatus(
-                        apiDetails.apiUrls,
-                        mapOf("smallGroupId" to it.smallGroupId).json()
-                    )
-                }
-            } else {
-                apiUseCaseList[apiDetails.apiName]?.invoke(
-                    screenName = screenName,
-                    triggerType = dataLoadingTriggerType,
-                    customData = customData,
-                    moduleName = moduleName
-                )
-                apiPerStatus(
-                    apiDetails.apiUrls,
-                    generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
-                )
-            }
-        }
-    }
-
-    private suspend fun handleActivityScreen(
-        screenName: String,
-        dataLoadingTriggerType: DataLoadingTriggerType,
-        customData: Map<String, Any>,
-        moduleName: String,
-        apiCallList: List<ApiCallConfigEntity>,
-        apiPerStatus: suspend (apiName: String, requestPayload: String) -> Unit
-    ) {
-        val missionId = customData["MissionId"] as Int
-        val activityTypes =
-            fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
-
-        apiCallList.forEach { apiDetails ->
-            when {
-                apiDetails.apiName.isRelevantForLivelihoodOptions(activityTypes) -> {
-                    apiUseCaseList[apiDetails.apiName]?.invoke(
-                        screenName = screenName,
-                        triggerType = dataLoadingTriggerType,
-                        customData = customData,
-                        moduleName = moduleName
-                    )
-                }
-
-                apiDetails.apiName.isRelevantForGrantOrLivelihoodPoP(activityTypes) -> {
-                    apiUseCaseList[apiDetails.apiName]?.invoke(
-                        screenName = screenName,
-                        triggerType = dataLoadingTriggerType,
-                        customData = customData,
-                        moduleName = moduleName
-                    )
-                }
-
-                else -> {
-                    apiUseCaseList[apiDetails.apiName]?.invoke(
-                        screenName = screenName,
-                        triggerType = dataLoadingTriggerType,
-                        customData = customData,
-                        moduleName = moduleName
-                    )
-                }
-            }
-            apiPerStatus(apiDetails.apiUrls, customData.json())
-        }
-    }
-
-    private fun String.isRelevantForLivelihoodOptions(activityTypes: List<String>): Boolean {
-        return this.equals(SUBPATH_FETCH_LIVELIHOOD_OPTION, true) ||
-                this.equals(SUBPATH_GET_LIVELIHOOD_CONFIG, true) ||
-                this.equals(SUBPATH_GET_FORM_DETAILS, true)
-    }
-
-    private fun String.isRelevantForGrantOrLivelihoodPoP(activityTypes: List<String>): Boolean {
-        return activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH)) ||
-                activityTypes.contains(ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH)) ||
-                this.equals(SUBPATH_GET_FORM_DETAILS, true) ||
-                this.equals(SUBPATH_GET_MONEY_JOURNAL_DETAILS, true)
-    }
-
-    private fun launchContentDownloadTasks(screenName: String) {
-        CoroutineScope(Dispatchers.IO).launch {
-            contentDownloaderUseCase.contentDownloader()
-            contentDownloaderUseCase.livelihoodContentDownload()
-            if (screenName.equals("ActivityScreen", true)) {
-                contentDownloaderUseCase.surveyRelateContentDownlaod()
-            }
-        }
-    }
-
-
-//    suspend fun invoke(
-//        screenName: String,
-//        dataLoadingTriggerType: DataLoadingTriggerType,
-//        moduleName: String,
-//        customData: Map<String, Any>,
-//        onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
-//        isRefresh: Boolean = true,
-//        totalNumberOfApi: (screenName: String, screenTotalApi: Int) -> Unit,
-//        apiPerStatus: suspend (apiName: String, requestPayload: String) -> Unit
-//    ) {
-//        totalNumberOfApi(
-//            screenName,
-//            apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name)
-//                .filter { it.isLoopingCall != true }.size
-//        )
-//        //api config list using order  and then check with apiUseCaseList
-//        apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name)
-//            .forEach { apiDetails ->
-//                if (screenName.equals(
-//                        "DidiTabScreen",
-//                        true
-//                    ) && apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                        ?.equals(SUBPATH_GET_ATTENDANCE_HISTORY_FROM_NETWORK) == true
-//                ) {
-//                    val smallGroupList = fetchSmallGroupListsFromDbUseCase.invoke()
-//                    totalNumberOfApi(
-//                        screenName,
-//                        apiCallConfigRepository.getApiCallList(
-//                            screenName,
-//                            dataLoadingTriggerType.name
-//                        ).filter { it.isLoopingCall != true }.size + smallGroupList.size
-//                    )
-//                    smallGroupList.forEach {
-//                        apiUseCaseList[apiDetails.apiName]?.invoke(
-//                            screenName = screenName,
-//                            triggerType = dataLoadingTriggerType,
-//                            customData = mapOf("smallGroupId" to it.smallGroupId),
-//                            moduleName = moduleName
-//                        )
-//                        apiPerStatus(
-//                            apiDetails.apiUrls,
-//                            mapOf("smallGroupId" to it.smallGroupId).json()
-//                        )
-//                    }
-//                } else if (screenName.equals(
-//                        "ActivityScreen",
-//                        true)
-//                                && (apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                            ?.equals(SUBPATH_FETCH_LIVELIHOOD_OPTION) == true) || apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                            ?.equals(SUBPATH_GET_LIVELIHOOD_CONFIG) == true ||
-//                                apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                                    ?.equals(SUBPATH_GET_FORM_DETAILS) == true
-//
-//                ) {
-//                    val misisonId=customData.get("MissionId") as Int
-//                    val activityTypes =
-//                        fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(misisonId)
-//                    if (activityTypes.contains(ActivityTypeEnum.LIVELIHOOD.name.lowercase(Locale.ENGLISH))) {
-//                        if (apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                                ?.equals(SUBPATH_FETCH_LIVELIHOOD_OPTION) == true
-//                        ) {
-//                            apiUseCaseList[apiDetails.apiName]?.invoke(
-//                                screenName = screenName,
-//                                triggerType = dataLoadingTriggerType,
-//                                customData = customData,
-//                                moduleName = moduleName
-//                            )
-//                        } else if (apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                                ?.equals(SUBPATH_GET_LIVELIHOOD_CONFIG) == true
-//                        ) {
-//                            apiUseCaseList[apiDetails.apiName]?.invoke(
-//                                screenName = screenName,
-//                                triggerType = dataLoadingTriggerType,
-//                                customData = customData,
-//                                moduleName = moduleName
-//                            )
-//                        }
-//                    } else if (activityTypes.contains(ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH))
-//                        || activityTypes.contains(
-//                            ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(
-//                                Locale.ENGLISH
-//                            )
-//                        )
-//                    ) {
-//                        if (apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                                ?.equals(SUBPATH_GET_FORM_DETAILS) == true
-//                        ) {
-//                            apiUseCaseList[apiDetails.apiName]?.invoke(
-//                                screenName = screenName,
-//                                triggerType = dataLoadingTriggerType,
-//                                customData = customData,
-//                                moduleName = moduleName
-//                            )
-//                        } else if (apiUseCaseList[apiDetails.apiName]?.getApiEndpoint()
-//                                ?.equals(SUBPATH_GET_MONEY_JOURNAL_DETAILS) == true
-//                        ) {
-//                            apiUseCaseList[apiDetails.apiName]?.invoke(
-//                                screenName = screenName,
-//                                triggerType = dataLoadingTriggerType,
-//                                customData = customData,
-//                                moduleName = moduleName)
-//                        }
-//                    }
-//                } else {
-//                    apiUseCaseList[apiDetails.apiName]?.invoke(
-//                        screenName = screenName,
-//                        triggerType = dataLoadingTriggerType,
-//                        customData =customData,
-//                        moduleName = moduleName
-//                    )
-//                }
-//                apiPerStatus(
-//                    apiDetails.apiUrls,
-//                    customData.json()
-//                )
-//            }
-//        CoroutineScope(Dispatchers.IO).launch {
-//            contentDownloaderUseCase.contentDownloader()
-//            contentDownloaderUseCase.livelihoodContentDownload()
-//            if (screenName.equals("ActivityScreen")) {
-//                contentDownloaderUseCase.surveyRelateContentDownlaod()
-//            }
-//        }
-//
-//        onComplete(true, BLANK_STRING)
 //
 ////        fetchUserDetailUseCase.invoke()
 ////
@@ -457,8 +190,6 @@ class FetchAllDataUseCase @Inject constructor(
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
     ) {
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
-
-
             apiUseCaseList[it.apiName]?.invoke(
                 screenName = screenName,
                 moduleName = moduleName,

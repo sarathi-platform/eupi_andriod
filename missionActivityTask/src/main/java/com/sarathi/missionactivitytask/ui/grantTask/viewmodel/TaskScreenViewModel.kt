@@ -24,7 +24,6 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.ALL
 import com.sarathi.dataloadingmangement.data.entities.ActivityConfigEntity
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUiConfigUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
@@ -72,7 +71,7 @@ open class TaskScreenViewModel @Inject constructor(
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val eventWriterUseCase: MATStatusEventWriterUseCase,
     private val getActivityUseCase: GetActivityUseCase,
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    //private val fetchAllDataUseCase: FetchAllDataUseCase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
     val missionFilterUtils: MissionFilterUtils
 ) : BaseViewModel() {

@@ -15,4 +15,7 @@ sealed class IncomeExpenseScreens(val route: String) {
         IncomeExpenseScreens(route = "${IncomeExpenseConstants.ADD_EVENT_SCREEN_ROUTE_NAME}/{${ARG_SUBJECT_ID}}/{${ARG_SUBJECT_NAME}}/{$ARG_TRANSACTION_ID}/{$ARG_SHOW_DELETE_BUTTON}")
     object EditHistoryScreen :
         IncomeExpenseScreens(route = "${IncomeExpenseConstants.EDIT_HISTORY_SCREEN_ROUTE_NAME}/{${ARG_TRANSACTION_ID}}")
+    object ApiFailedScreen :
+        IncomeExpenseScreens(route = "${IncomeExpenseConstants.API_FAILED_SCREEN_SCREEN_ROUTE_NAME}/{${IncomeExpenseConstants.ARG_SCREEN_NAME}}/{${IncomeExpenseConstants.ARG_MODULE_NAME}}")
+
 }

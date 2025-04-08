@@ -8,7 +8,6 @@ import com.nudge.core.CoreObserverManager
 import com.nudge.core.DEFAULT_LANGUAGE_CODE
 import com.nudge.core.TabsCore
 import com.nudge.core.constants.DataLoadingTriggerType
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
@@ -16,7 +15,8 @@ import com.nudge.core.value
 import com.sarathi.contentmodule.ui.content_screen.domain.usecase.FetchContentUseCase
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.NUMBER_ZERO
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.FetchMissionDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.FetchInfoUiModelUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.GetActivityUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
@@ -24,6 +24,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTas
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.ACTIVITY_SCREEN
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_MODULE
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
@@ -40,7 +41,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActivityScreenViewModel @Inject constructor(
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    //private val fetchAllDataUseCase: FetchAllDataUseCase,
     private val getActivityUseCase: GetActivityUseCase,
     private val fetchContentUseCase: FetchContentUseCase,
     private val taskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
@@ -48,7 +49,9 @@ class ActivityScreenViewModel @Inject constructor(
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val fetchInfoUiModelUseCase: FetchInfoUiModelUseCase,
-    private val missionFilterUtils: MissionFilterUtils
+    private val missionFilterUtils: MissionFilterUtils,
+    private val fetchMissionDataUseCase: FetchMissionDataUseCase,
+    private val contentDownloaderUseCase: ContentDownloaderUseCase
 ) : BaseViewModel() {
     var missionId: Int = 0
     var isMissionCompleted: Boolean = false
@@ -101,37 +104,52 @@ class ActivityScreenViewModel @Inject constructor(
             withContext(mainDispatcher) {
                 missionInfoUIModel = missionDetails
             }
-            totalApiCall.value = -1
-            completedApiCount.value = 0f
-            failedApiCount.value = 0f
             onEvent(LoaderEvent.UpdateLoaderState(true))
-            val customData: Map<String, Any> = mapOf(
-                "MissionId" to missionId,
-                "ProgramId" to programId
-            )
-            allApiStatus.value = ApiStatus.INPROGRESS
-            fetchAllDataUseCase.invoke(
-                customData = customData,
-                screenName = "ActivityScreen",
-                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
-                isRefresh = isRefresh,
-                onComplete = { isSucess, message ->
-                    initActivityScreen()
-                },
-                totalNumberOfApi = { screenName, screenTotalApi ->
-                    totalApiCall.value = screenTotalApi
-                },
-                apiPerStatus = { apiName, requestPayload ->
-                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
-                        screenName = "ActivityScreen",
-                        moduleName = MAT_MODULE,
-                        apiUrl = apiName,
-                        requestPayload = requestPayload
-                    )
-                    apiStatusData?.let { updateProgress(apiStatusData = it) }
-                },
-                moduleName = MAT_MODULE
-            )
+//            if (isRefresh || fetchMissionDataUseCase.isMissionLoaded(
+//                    missionId = missionId,
+//                    programId
+//                ) == 0
+//            ) {
+            if (true) {
+                val customData: Map<String, Any> = mapOf(
+                    "MissionId" to missionId,
+                    "ProgramId" to programId
+                )
+                loadAllData(
+                    screenName = ACTIVITY_SCREEN,
+                    moduleName = MAT_MODULE,
+                    customData = customData,
+                    dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    contentDownloaderUseCase.contentDownloader()
+                    contentDownloaderUseCase.surveyRelateContentDownlaod()
+                }
+                // fetchMissionDataUseCase.setMissionLoaded(missionId = missionId, programId)
+            }
+            onEvent(LoaderEvent.UpdateLoaderState(false))
+//            fetchAllDataUseCase.invoke(
+//                customData = customData,
+//                screenName = "ActivityScreen",
+//                dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+//                isRefresh = isRefresh,
+//                onComplete = { isSucess, message ->
+//                    initActivityScreen()
+//                },
+//                totalNumberOfApi = { screenName, screenTotalApi ->
+//                    totalApiCall.value = screenTotalApi
+//                },
+//                apiPerStatus = { apiName, requestPayload ->
+//                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+//                        screenName = "ActivityScreen",
+//                        moduleName = MAT_MODULE,
+//                        apiUrl = apiName,
+//                        requestPayload = requestPayload
+//                    )
+//                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+//                },
+//                moduleName = MAT_MODULE
+//            )
 
 //            fetchAllDataUseCase.fetchMissionRelatedData(
 //                missionId = missionId,

@@ -15,6 +15,9 @@ sealed class MATHomeScreens(val route: String) {
     object ActivityScreen :
         MATHomeScreens(route = "${MissionActivityConstants.ACTIVITY_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_MISSION_NAME}}/{${MissionActivityConstants.ARG_MISSION_COMPLETED}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 
+    object ApiFailedScreen :
+        MATHomeScreens(route = "${MissionActivityConstants.API_FAILED_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_SCREEN_NAME}}/{${MissionActivityConstants.ARG_MODULE_NAME}}")
+
     object GrantTaskScreen :
         MATHomeScreens(route = "${MissionActivityConstants.GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 
@@ -53,6 +56,7 @@ sealed class MATHomeScreens(val route: String) {
 
     object PdfViewerScreen :
         MATHomeScreens(route = "${MissionActivityConstants.PDF_VIEWER_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_FORM_PATH}}")
+
     object LivelihoodTaskScreen :
         MATHomeScreens(route = "${MissionActivityConstants.LIVELIHOOD_TASK_SCREEN_SCREEN_ROUTE_NAME}/{${MissionActivityConstants.ARG_MISSION_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_ID}}/{${MissionActivityConstants.ARG_ACTIVITY_NAME}}/{${MissionActivityConstants.ARG_PROGRAM_ID}}")
 

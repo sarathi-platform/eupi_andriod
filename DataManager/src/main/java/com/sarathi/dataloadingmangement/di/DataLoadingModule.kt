@@ -224,6 +224,7 @@ import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAtt
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepository
 import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupDetailsFromNetworkRepositoryImpl
+import com.sarathi.dataloadingmangement.repository.smallGroup.FetchSmallGroupListFromDbRepository
 import com.sarathi.dataloadingmangement.util.MissionFilterUtils
 import dagger.Module
 import dagger.Provides
@@ -696,13 +697,15 @@ class DataLoadingModule {
         repository: FormRepositoryImpl,
         downloaderManager: DownloaderManager,
         coreSharedPrefs: CoreSharedPrefs,
-        apiCallJournalRepository: IApiCallJournalRepository
+        apiCallJournalRepository: IApiCallJournalRepository,
+        fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase
     ): FormUseCase {
         return FormUseCase(
             repository = repository,
             downloaderManager = downloaderManager,
             coreSharedPrefs = coreSharedPrefs,
-            apiCallJournalRepository = apiCallJournalRepository
+            apiCallJournalRepository = apiCallJournalRepository,
+            fetchMissionActivityDetailDataUseCase = fetchMissionActivityDetailDataUseCase
         )
     }
 
@@ -1120,11 +1123,15 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchSmallGroupAttendanceHistoryFromNetworkUseCase(
         fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository,
-        apiCallJournalRepository: IApiCallJournalRepository
+        apiCallJournalRepository: IApiCallJournalRepository,
+        fetchSmallGroupListFromDbRepository: FetchSmallGroupListFromDbRepository,
+        coreSharedPrefs: CoreSharedPrefs
     ): FetchSmallGroupAttendanceHistoryFromNetworkUseCase {
         return FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
             fetchSmallGroupAttendanceHistoryFromNetworkRepository,
-            apiCallJournalRepository = apiCallJournalRepository
+            apiCallJournalRepository = apiCallJournalRepository,
+            fetchSmallGroupListFromDbRepository = fetchSmallGroupListFromDbRepository,
+            coreSharedPrefs = coreSharedPrefs
         )
     }
 
@@ -1238,9 +1245,14 @@ class DataLoadingModule {
     @Singleton
     fun provideFetchMoneyJournalUseCase(
         moneyJournalNetworkRepository: MoneyJournalNetworkRepository,
-        apiCallJournalRepository: IApiCallJournalRepository
+        apiCallJournalRepository: IApiCallJournalRepository,
+        fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase
     ) =
-        FetchMoneyJournalUseCase(moneyJournalNetworkRepository, apiCallJournalRepository)
+        FetchMoneyJournalUseCase(
+            moneyJournalNetworkRepository,
+            apiCallJournalRepository,
+            fetchMissionActivityDetailDataUseCase = fetchMissionActivityDetailDataUseCase
+        )
 
     @Provides
     @Singleton
@@ -1350,11 +1362,13 @@ class DataLoadingModule {
     @Singleton
     fun provideLivelihoodUseCase(
         coreLivelihoodRepositoryImpl: ICoreLivelihoodRepository,
-        apiCallJournalRepository: IApiCallJournalRepository
+        apiCallJournalRepository: IApiCallJournalRepository,
+        fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase
     ): LivelihoodUseCase {
         return LivelihoodUseCase(
             coreLivelihoodRepositoryImpl,
-            apiCallJournalRepository = apiCallJournalRepository
+            apiCallJournalRepository = apiCallJournalRepository,
+            fetchMissionActivityDetailDataUseCase = fetchMissionActivityDetailDataUseCase
         )
     }
 
@@ -1428,12 +1442,14 @@ class DataLoadingModule {
     fun provideSaveLivelihoodOptionUseCase(
         repository: FetchLivelihoodOptionRepositoryImpl,
         apiCallJournalRepository: IApiCallJournalRepository,
-        coreSharedPrefs: CoreSharedPrefs
+        coreSharedPrefs: CoreSharedPrefs,
+        fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase
     ): FetchLivelihoodOptionNetworkUseCase {
         return FetchLivelihoodOptionNetworkUseCase(
             repository = repository,
             apiCallJournalRepository = apiCallJournalRepository,
-            coreSharedPrefs = coreSharedPrefs
+            coreSharedPrefs = coreSharedPrefs,
+            fetchMissionActivityDetailDataUseCase = fetchMissionActivityDetailDataUseCase
         )
     }
 

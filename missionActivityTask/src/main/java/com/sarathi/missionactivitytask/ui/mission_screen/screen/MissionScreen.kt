@@ -2,7 +2,6 @@ package com.sarathi.missionactivitytask.ui.mission_screen.screen
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,7 +15,6 @@ import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -31,25 +29,22 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.ui.ShowLoadingEffect
 import com.nudge.core.ui.commonUi.CustomFixedCountSubTabLayoutWithCallBack
 import com.nudge.core.ui.commonUi.CustomHorizontalSpacer
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
 import com.nudge.core.ui.commonUi.FilterRowItem
 import com.nudge.core.ui.commonUi.componet_.component.LoadingDataComponent
 import com.nudge.core.ui.commonUi.customVerticalSpacer
-import com.nudge.core.ui.commonUi.shimmer
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.dimen_10_dp
@@ -66,6 +61,9 @@ import com.sarathi.dataloadingmangement.NUMBER_ZERO
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
 import com.sarathi.dataloadingmangement.ui.component.ShowCustomDialog
 import com.sarathi.missionactivitytask.R
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MAT_MODULE
+import com.sarathi.missionactivitytask.constants.MissionActivityConstants.MISSION_SCREEN
+import com.sarathi.missionactivitytask.navigation.navigateToApiFailedScreen
 import com.sarathi.missionactivitytask.ui.basic_content.component.BasicMissionCardV2
 import com.sarathi.missionactivitytask.ui.components.SearchWithFilterViewComponent
 import com.sarathi.missionactivitytask.ui.components.ToolBarWithMenuComponent
@@ -107,7 +105,7 @@ fun MissionScreen(
 
         })
     LaunchedEffect(key1 = Unit) {
-        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+        //viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     DisposableEffect(key1 = true) {
@@ -201,9 +199,15 @@ fun MissionScreen(
             LoadingDataComponent(
                 title = "Mission Screen",
                 apiStatus = viewModel.allApiStatus.value,
-                isVisible = viewModel.allApiStatus.value != ApiStatus.SUCCESS || viewModel.allApiStatus.value != ApiStatus.IDEL,
                 progressState = viewModel.progressState,
-            ) {}
+                onViewDetailsClick = {
+                    navigateToApiFailedScreen(
+                        navController = navController,
+                        screenName = MISSION_SCREEN,
+                        moduleName = MAT_MODULE
+                    )
+                }
+            )
             if (isSearch) {
                 Column(
                     Modifier
@@ -258,7 +262,7 @@ fun MissionScreen(
 
             }
             if (viewModel.loaderState.value.isLoaderVisible && viewModel.filterMissionList.collectAsState().value.isEmpty()) {
-                showLoadingEffect()
+                ShowLoadingEffect()
             } else {
                 Box(
                     modifier = Modifier
@@ -334,23 +338,3 @@ fun MissionScreen(
 
 
 }
-
-@Preview
-@Composable
-fun showLoadingEffect() {
-    Column {
-
-        repeat(4) {
-            Box(
-                modifier = Modifier
-                    .padding(vertical = 10.dp, horizontal = 10.dp)
-                    .shimmer()
-                    .fillMaxWidth()
-                    .height(100.dp)
-                    .padding(16.dp)
-                    .background(Color.LightGray, RoundedCornerShape(10.dp))
-            )
-        }
-    }
-}
-

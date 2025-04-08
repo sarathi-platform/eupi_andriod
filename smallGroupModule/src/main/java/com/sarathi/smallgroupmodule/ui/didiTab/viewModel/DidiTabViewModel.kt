@@ -4,12 +4,12 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.constants.DataLoadingTriggerType
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.helper.TranslationEnum
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
 import com.sarathi.dataloadingmangement.data.entities.SubjectEntity
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.SmallGroupSubTabUiModel
 import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
@@ -18,14 +18,19 @@ import com.sarathi.missionactivitytask.constants.MissionActivityConstants.DIDI_T
 import com.sarathi.missionactivitytask.constants.MissionActivityConstants.SMALL_GROUP_MODULE
 import com.sarathi.smallgroupmodule.ui.didiTab.domain.use_case.DidiTabUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
 class DidiTabViewModel @Inject constructor(
     val didiTabUseCase: DidiTabUseCase,
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    //private val fetchAllDataUseCase: FetchAllDataUseCase,
+    val coreSharedPrefs: CoreSharedPrefs,
+    val contentDownloaderUseCase: ContentDownloaderUseCase
 ) : BaseViewModel() {
 
     private val _totalDidiCount: MutableState<Int> = mutableStateOf(0)
@@ -93,39 +98,29 @@ class DidiTabViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        totalApiCall.value = -1
-        completedApiCount.value = 0f
-        failedApiCount.value = 0f
-        ioViewModelScope {
-            allApiStatus.value = ApiStatus.INPROGRESS
-            fetchAllDataUseCase.invoke(
-                customData = mapOf(),
-                screenName = DIDI_TAB_SCREEN,
-                dataLoadingTriggerType = dataLoadingTriggerType,
-                isRefresh = isRefresh,
-                onComplete = { isSuccess, message ->
-                    if (isSuccess) {
-                        initDidiTab()
-                    } else {
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                    }
-                },
-                totalNumberOfApi = { screenName, screenTotalApi ->
-                    totalApiCall.value = screenTotalApi
-                },
-                apiPerStatus = { apiName, requestPayload ->
-                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
-                        screenName = DIDI_TAB_SCREEN,
-                        moduleName = SMALL_GROUP_MODULE,
-                        apiUrl = apiName,
-                        requestPayload = requestPayload
-                    )
-                    apiStatusData?.let { updateProgress(apiStatusData = it) }
-                },
-                moduleName = SMALL_GROUP_MODULE
-            )
-            isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
+        //  if (dataLoadingTriggerType.name.equals(DataLoadingTriggerType.PULL_TO_REFRESH) || !coreSharedPrefs.isDidiTabDataLoaded()) {
+        if (true) {
+            onEvent(LoaderEvent.UpdateLoaderState(true))
+            ioViewModelScope {
+                loadAllData(
+                    screenName = DIDI_TAB_SCREEN,
+                    moduleName = SMALL_GROUP_MODULE,
+                    onComplete = { isSuccess, message ->
+                        if (isSuccess) {
+                            initDidiTab()
+                        } else {
+                            onEvent(LoaderEvent.UpdateLoaderState(false))
+                        }
+                    },
+                    dataLoadingTriggerType = dataLoadingTriggerType,
+                    customData = mapOf()
+                )
+                // coreSharedPrefs.setDidiTabDataLoaded(true)
+                CoroutineScope(Dispatchers.IO).launch {
+                    contentDownloaderUseCase.didiImagesForSmallGroupDownload()
+                }
+                isSubjectApiStatusFailed.value = didiTabUseCase.isApiStatusFailed()
+            }
         }
 
     }

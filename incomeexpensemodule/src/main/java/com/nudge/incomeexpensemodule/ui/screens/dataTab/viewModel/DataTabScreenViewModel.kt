@@ -9,21 +9,24 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.runtime.snapshots.SnapshotStateMap
+import androidx.lifecycle.viewModelScope
 import com.nudge.core.DEFAULT_DATE_RANGE_DURATION
 import com.nudge.core.TabsCore
 import com.nudge.core.WEEK_DURATION_RANGE
 import com.nudge.core.constants.DataLoadingTriggerType
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getCurrentTimeInMillis
 import com.nudge.core.getDayPriorCurrentTimeMillis
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.uiModel.LivelihoodModel
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.incomeexpensemodule.events.DataTabEvents
 import com.nudge.incomeexpensemodule.ui.screens.dataTab.domain.useCase.DataTabUseCase
+import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.DATA_TAB_SCREEN
+import com.nudge.incomeexpensemodule.utils.IncomeExpenseConstants.Income_Expanse_MODULE
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.livelihood.GetLivelihoodListFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.incomeExpense.IncomeExpenseSummaryUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.livelihood.DataTabScreenUiModel
@@ -32,6 +35,9 @@ import com.sarathi.dataloadingmangement.util.event.InitDataEvent
 import com.sarathi.dataloadingmangement.util.event.LoaderEvent
 import com.sarathi.dataloadingmangement.viewmodel.BaseViewModel
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -39,7 +45,9 @@ import javax.inject.Inject
 class DataTabScreenViewModel @Inject constructor(
     private val dataTabUseCase: DataTabUseCase,
     private val getLivelihoodListFromDbUseCase: GetLivelihoodListFromDbUseCase,
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    // private val fetchAllDataUseCase: FetchAllDataUseCase,,
+    private val coreSharedPrefs: CoreSharedPrefs,
+    private val contentDownloaderUseCase: ContentDownloaderUseCase
 ) : BaseViewModel() {
 
     val tabs = listOf<SubTabs>(SubTabs.All, SubTabs.NoEntryMonthTab, SubTabs.NoEntryWeekTab)
@@ -173,38 +181,61 @@ class DataTabScreenViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        totalApiCall.value = -1
-        completedApiCount.value = 0f
-        failedApiCount.value = 0f
-        ioViewModelScope {
-            allApiStatus.value = ApiStatus.INPROGRESS
-            fetchAllDataUseCase.invoke(
-                customData = mapOf(),
-                screenName = "DataTabScreen",
-                dataLoadingTriggerType = dataLoadingTriggerType,
-                isRefresh = isRefresh,
-                onComplete = { isSuccess, message ->
-                    if (isSuccess)
+        // if (dataLoadingTriggerType.name.equals(DataLoadingTriggerType.PULL_TO_REFRESH) || !coreSharedPrefs.isDataTabDataLoaded()) {
+        if (true) {
+            onEvent(LoaderEvent.UpdateLoaderState(true))
+            viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+                loadAllData(
+                    screenName = DATA_TAB_SCREEN,
+                    customData = mapOf(),
+                    onComplete = { isSuccess, successMsg ->
                         initDataTab()
-                    else
-                        onEvent(LoaderEvent.UpdateLoaderState(false))
-                },
-                totalNumberOfApi = { screenName, screenTotalApi ->
-                    totalApiCall.value = screenTotalApi
-                },
-                apiPerStatus = { apiName, requestPayload ->
-                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
-                        screenName = "DataTabScreen",
-                        moduleName = "Income/Expanse",
-                        apiUrl = apiName,
-                        requestPayload = requestPayload
-                    )
-                    apiStatusData?.let { updateProgress(apiStatusData = it) }
-                },
-                moduleName = "Income/Expanse"
-            )
+                    },
+                    moduleName = Income_Expanse_MODULE,
+                    dataLoadingTriggerType = dataLoadingTriggerType
+                )
+
+                // coreSharedPrefs.setDataTabDataLoaded(true)
+                CoroutineScope(Dispatchers.IO).launch {
+                    contentDownloaderUseCase.livelihoodContentDownload()
+                }
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
         }
+
+
+//        onEvent(LoaderEvent.UpdateLoaderState(true))
+//        totalApiCall.value = -1
+//        completedApiCount.value = 0f
+//        failedApiCount.value = 0f
+//        ioViewModelScope {
+//            allApiStatus.value = ApiStatus.INPROGRESS
+//            fetchAllDataUseCase.invoke(
+//                customData = mapOf(),
+//                screenName = DATA_TAB_SCREEN,
+//                dataLoadingTriggerType = dataLoadingTriggerType,
+//                isRefresh = isRefresh,
+//                onComplete = { isSuccess, message ->
+//                    if (isSuccess)
+//                        initDataTab()
+//                    else
+//                        onEvent(LoaderEvent.UpdateLoaderState(false))
+//                },
+//                totalNumberOfApi = { screenName, screenTotalApi ->
+//                    totalApiCall.value = screenTotalApi
+//                },
+//                apiPerStatus = { apiName, requestPayload ->
+//                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+//                        screenName = "DataTabScreen",
+//                        moduleName = "Income/Expanse",
+//                        apiUrl = apiName,
+//                        requestPayload = requestPayload
+//                    )
+//                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+//                },
+//                moduleName = "Income/Expanse"
+//            )
+//        }
     }
 
 //    private fun loadAddDataForDataTab(isRefresh: Boolean) {
@@ -304,8 +335,9 @@ class DataTabScreenViewModel @Inject constructor(
             else -> {
                 _filteredSubjectList.value = subjectList.value
             }
+            }
         }
-    }
+
 
     private fun updateCountMap() {
 

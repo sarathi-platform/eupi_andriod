@@ -72,7 +72,7 @@ class SmallGroupModule {
         fetchSmallGroupAttendanceHistoryFromNetworkRepository: FetchSmallGroupAttendanceHistoryFromNetworkRepository,
         contentDownloaderUseCase: ContentDownloaderUseCase,
         apiCallConfigRepository: IApiCallConfigRepository,
-        apiCallJournalRepository: IApiCallJournalRepository
+        apiCallJournalRepository: IApiCallJournalRepository,
     ): DidiTabUseCase {
         return DidiTabUseCase(
             coreSharedPrefs = coreSharedPrefs,
@@ -92,7 +92,9 @@ class SmallGroupModule {
             ),
             fetchSmallGroupAttendanceHistoryFromNetworkUseCase = FetchSmallGroupAttendanceHistoryFromNetworkUseCase(
                 fetchSmallGroupAttendanceHistoryFromNetworkRepository,
-                apiCallJournalRepository
+                apiCallJournalRepository = apiCallJournalRepository,
+                fetchSmallGroupListFromDbRepository = fetchSmallGroupListFromDbRepository,
+                coreSharedPrefs = coreSharedPrefs
             ),
             contentDownloaderUseCase = contentDownloaderUseCase,
             apiCallConfigRepository = apiCallConfigRepository

@@ -54,7 +54,7 @@ class GrantTaskScreenViewModel @Inject constructor(
     taskStatusUseCase,
     eventWriterUseCase,
     getActivityUseCase,
-    fetchAllDataUseCase,
+    //fetchAllDataUseCase,
     missionFilterUtils = missionFilterUtils,
     fetchInfoUiModelUseCase = fetchInfoUiModelUseCase
 ) {

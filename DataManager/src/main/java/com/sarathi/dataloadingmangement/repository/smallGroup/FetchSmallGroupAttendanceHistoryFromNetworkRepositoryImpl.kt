@@ -73,14 +73,14 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                         saveSmallGroupAttendanceHistoryToDb(attendanceHistoryResponse)
                     }
                 }
-                updateApiCallStatus(
-                    screenName = screenName,
-                    moduleName = moduleName,
-                    triggerType = triggerType,
-                    status = ApiStatus.SUCCESS.name,
-                    customData = customData,
-                    errorMsg = BLANK_STRING
-                )
+//                updateApiCallStatus(
+//                    screenName = screenName,
+//                    moduleName = moduleName,
+//                    triggerType = triggerType,
+//                    status = ApiStatus.SUCCESS.name,
+//                    customData = customData,
+//                    errorMsg = BLANK_STRING
+//                )
                 return true
             } else {
                 updateApiStatus(
@@ -94,7 +94,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                     moduleName = moduleName,
                     triggerType = triggerType,
                     status = ApiStatus.FAILED.name,
-                    customData = customData,
+                    customData = mapOf(),
                     errorMsg = response.message
                 )
                 return false
@@ -118,7 +118,7 @@ class FetchSmallGroupAttendanceHistoryFromNetworkRepositoryImpl @Inject construc
                 moduleName = moduleName,
                 triggerType = triggerType,
                 status = ApiStatus.FAILED.name,
-                customData = customData,
+                customData = mapOf(),
                 errorMsg = ex.getLocalizedMessage()
             )
             throw ex

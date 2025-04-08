@@ -40,7 +40,6 @@ import androidx.compose.ui.zIndex
 import androidx.navigation.NavHostController
 import com.example.incomeexpensemodule.R
 import com.nudge.core.BLANK_STRING
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.getDurationDifferenceInDays
 import com.nudge.core.isOnline
@@ -68,6 +67,7 @@ import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.value
 import com.nudge.incomeexpensemodule.events.DataTabEvents
+import com.nudge.incomeexpensemodule.navigation.navigateToApiFailedScreen
 import com.nudge.incomeexpensemodule.navigation.navigateToDataSummaryScreen
 import com.nudge.incomeexpensemodule.ui.AssetsDialog
 import com.nudge.incomeexpensemodule.ui.SubjectLivelihoodEventSummaryCard
@@ -225,9 +225,15 @@ fun DataTabScreen(
                     LoadingDataComponent(
                         title = "DataTabScreen",
                         apiStatus = dataTabScreenViewModel.allApiStatus.value,
-                        isVisible = dataTabScreenViewModel.allApiStatus.value != ApiStatus.SUCCESS || dataTabScreenViewModel.allApiStatus.value != ApiStatus.IDEL,
                         progressState = dataTabScreenViewModel.progressState,
-                    ) {}
+                        onViewDetailsClick = {
+                            navigateToApiFailedScreen(
+                                navController = navHostController,
+                                screenName = "DataTabScreen",
+                                moduleName = "Income/Expanse"
+                            )
+                        }
+                    )
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -344,7 +350,6 @@ fun DataTabScreen(
                                 )
                             }
                             if (!dataTabScreenViewModel.loaderState.value.isLoaderVisible && dataTabScreenViewModel.filteredDataTabScreenUiEntityList.value.isEmpty()) {
-
                                 Column(
                                     modifier = Modifier
                                         .fillMaxSize()

@@ -4,14 +4,17 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallJournalRepository
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.SUCCESS_CODE
 import com.sarathi.dataloadingmangement.data.entities.livelihood.SubjectLivelihoodMappingEntity
+import com.sarathi.dataloadingmangement.domain.use_case.FetchMissionActivityDetailDataUseCase
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_FETCH_LIVELIHOOD_OPTION
 import com.sarathi.dataloadingmangement.repository.liveihood.FetchLivelihoodOptionRepository
+import java.util.Locale
 import javax.inject.Inject
 
 
@@ -19,6 +22,7 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
     private val repository: FetchLivelihoodOptionRepository,
     private val coreSharedPrefs: CoreSharedPrefs,
     apiCallJournalRepository: IApiCallJournalRepository,
+    private val fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase
 ) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
 
     private suspend fun getSubjectLivelihoodMapping(
@@ -108,6 +112,21 @@ class FetchLivelihoodOptionNetworkUseCase @Inject constructor(
         customData: Map<String, Any>
     ): Boolean {
         try {
+            val missionId: Int = if (customData["MissionId"] != null) {
+                customData["MissionId"] as? Int ?: -1
+            } else {
+                -1
+            }
+            val activityTypes =
+                fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
+            if (screenName == "ActivityScreen" && !activityTypes.contains(
+                    ActivityTypeEnum.LIVELIHOOD.name.lowercase(
+                        Locale.ENGLISH
+                    )
+                )
+            ) {
+                return false
+            }
             if (!super.invoke(
                     screenName = screenName,
                     triggerType = triggerType,

@@ -7,19 +7,19 @@ import com.nudge.core.ALL_MISSION_FILTER_VALUE
 import com.nudge.core.CoreObserverManager
 import com.nudge.core.TabsCore
 import com.nudge.core.constants.DataLoadingTriggerType
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.AppConfigKeysEnum
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.TranslationEnum
 import com.nudge.core.model.FilterType
 import com.nudge.core.model.FilterUiModel
+import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.usecase.BaselineV1CheckUseCase
 import com.nudge.core.usecase.SyncMigrationUseCase
 import com.nudge.core.value
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.domain.use_case.ContentDownloaderUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.MATStatusEventWriterUseCase
 import com.sarathi.dataloadingmangement.domain.use_case.UpdateMissionActivityTaskStatusUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.MissionUiModel
@@ -47,13 +47,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
-    private val fetchAllDataUseCase: FetchAllDataUseCase,
+    // val fetchAllDataUseCase: FetchAllDataUseCase,
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
     private val baselineV1CheckUseCase: BaselineV1CheckUseCase,
     private val syncMigrationUseCase: SyncMigrationUseCase,
-    val missionFilterUtils: MissionFilterUtils
+    val missionFilterUtils: MissionFilterUtils,
+    val coreSharedPrefs: CoreSharedPrefs,
+    private val contentDownloaderUseCase: ContentDownloaderUseCase
 ) : BaseViewModel() {
     private val _missionList = MutableStateFlow<List<MissionUiModel>>(emptyList())
     val missionList: StateFlow<List<MissionUiModel>> get() = _missionList
@@ -230,47 +232,63 @@ class MissionScreenViewModel @Inject constructor(
 
     private fun loadAllData(
         isRefresh: Boolean,
-        dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+        dataLoadingTriggerType: DataLoadingTriggerType
     ) {
-        totalApiCall.value = -1
-        completedApiCount.value = 0f
-        failedApiCount.value = 0f
-        onEvent(LoaderEvent.UpdateLoaderState(true))
-        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-        // To Delete events for version 1 to 2 sync migration
-            syncMigrationUseCase.deleteEventsAfter1To2Migration()
+        //if (dataLoadingTriggerType.name.equals(DataLoadingTriggerType.PULL_TO_REFRESH) || !coreSharedPrefs.isDataLoaded()) {
+        if (true) {
+            onEvent(LoaderEvent.UpdateLoaderState(true))
             val customData: Map<String, Any> = mapOf(
                 "propertiesName" to AppConfigKeysEnum.values().map { it.name }
             )
-            allApiStatus.value = ApiStatus.INPROGRESS
-            fetchAllDataUseCase.invoke(
-                customData = customData,
-                screenName = MISSION_SCREEN,
-                dataLoadingTriggerType = dataLoadingTriggerType,
-                isRefresh = isRefresh,
-                onComplete = { isSucess, message ->
-                    initMissionScreen()
-                },
-                totalNumberOfApi = { screenName, screenTotalApi ->
-                    totalApiCall.value = screenTotalApi
-                },
-                apiPerStatus = { apiName, requestPayload ->
-                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
-                        screenName = MISSION_SCREEN,
-                        moduleName = MAT_MODULE,
-                        apiUrl = apiName,
-                        requestPayload = requestPayload
-                    )
-                    apiStatusData?.let { updateProgress(apiStatusData = it) }
-                },
-                moduleName = MAT_MODULE
-            )
+            viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+                syncMigrationUseCase.deleteEventsAfter1To2Migration()
+                loadAllData(
+                    screenName = MISSION_SCREEN,
+                    customData = customData,
+                    moduleName = MAT_MODULE,
+                    dataLoadingTriggerType = dataLoadingTriggerType
+                )
+                CoroutineScope(Dispatchers.IO).launch {
+                    contentDownloaderUseCase.contentDownloader()
+                }
+                // coreSharedPrefs.setDataLoaded(true)
+                onEvent(LoaderEvent.UpdateLoaderState(false))
+            }
         }
-    }
-    fun isShowLoadingDataComponent(): Boolean {
-        return allApiStatus.value == ApiStatus.INPROGRESS || allApiStatus.value == ApiStatus.FAILED
-    }
 
+
+//        onEvent(LoaderEvent.UpdateLoaderState(true))
+//        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+//        // To Delete events for version 1 to 2 sync migration
+//            syncMigrationUseCase.deleteEventsAfter1To2Migration()
+//            val customData: Map<String, Any> = mapOf(
+//                "propertiesName" to AppConfigKeysEnum.values().map { it.name }
+//            )
+//            allApiStatus.value = ApiStatus.INPROGRESS
+//            fetchAllDataUseCase.invoke(
+//                customData = customData,
+//                screenName = MISSION_SCREEN,
+//                dataLoadingTriggerType = dataLoadingTriggerType,
+//                isRefresh = isRefresh,
+//                onComplete = { isSucess, message ->
+//                    initMissionScreen()
+//                },
+//                totalNumberOfApi = { screenName, screenTotalApi ->
+//                    totalApiCall.value = screenTotalApi
+//                },
+//                apiPerStatus = { apiName, requestPayload ->
+//                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+//                        screenName = MISSION_SCREEN,
+//                        moduleName = MAT_MODULE,
+//                        apiUrl = apiName,
+//                        requestPayload = requestPayload
+//                    )
+//                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+//                },
+//                moduleName = MAT_MODULE
+//            )
+//        }
+    }
 
     private fun collectMissionListFromFlow() {
         viewModelScope.launch {

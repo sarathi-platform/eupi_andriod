@@ -43,4 +43,12 @@ interface ApiCallJournalDao {
         status: String,
         errorMsg: String
     )
+
+    @Query("Select * from api_call_journal_table where screenName=:screenName and moduleName=:moduleName  and  userId=:userId and status=:status")
+    fun getFailedApiCallJournalEntity(
+        screenName: String,
+        moduleName: String,
+        status: String,
+        userId: String,
+    ): List<ApiCallJournalEntity>?
 }

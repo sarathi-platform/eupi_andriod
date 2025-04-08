@@ -2,6 +2,7 @@ package com.nudge.core.data.repository
 
 import com.nudge.core.database.dao.api.ApiCallJournalDao
 import com.nudge.core.database.entities.api.ApiCallJournalEntity
+import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import javax.inject.Inject
 
@@ -70,6 +71,18 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
             moduleName = moduleName,
             apiUrl = apiUrl,
             requestPayload = requestPayload
+        )
+    }
+
+    override suspend fun getFailedApiCallJournalEntity(
+        screenName: String,
+        moduleName: String
+    ): List<ApiCallJournalEntity>? {
+        return apiCallJournalJournalDao.getFailedApiCallJournalEntity(
+            screenName = screenName,
+            moduleName = moduleName,
+            status = ApiStatus.FAILED.name,
+            userId = coreSharedPrefs.getUniqueUserIdentifier()
         )
     }
 

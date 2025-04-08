@@ -7,6 +7,7 @@ object MissionActivityConstants {
     const val ARG_CONTENT_TITLE = "content_title"
     const val MISSION_SCREEN_ROUTE_NAME = "mission_screen"
     const val ACTIVITY_SCREEN_SCREEN_ROUTE_NAME = "activity_screen"
+    const val API_FAILED_SCREEN_SCREEN_ROUTE_NAME = "api_failed_screen"
     const val GRANT_TASK_SCREEN_SCREEN_ROUTE_NAME = "grant_task_screen"
     const val SURVEY_TASK_SCREEN_ROUTE_NAME = "survey_task_screen"
     const val MEDIA_PLAYER_SCREEN_ROUTE_NAME = "media_player_screen"
@@ -67,8 +68,11 @@ object MissionActivityConstants {
     const val ARG_FORM_ID = "form_id"
 
     const val ARG_FROM_SCREEN = "from_screen"
+    const val ARG_SCREEN_NAME = "screen_name"
+    const val ARG_MODULE_NAME = "module_name"
     const val MISSION_SCREEN = "MissionScreen"
     const val DIDI_TAB_SCREEN = "DidiTabScreen"
+    const val ACTIVITY_SCREEN = "ActivityScreen"
     const val MAT_MODULE = "MAT"
     const val SMALL_GROUP_MODULE = "SmallGroup"
 

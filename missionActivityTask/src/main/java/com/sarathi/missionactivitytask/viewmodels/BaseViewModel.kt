@@ -8,6 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
 import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
+import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.database.entities.api.ApiCallJournalEntity
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.helper.TranslationEnum
@@ -18,6 +19,7 @@ import com.nudge.core.ui.commonUi.DEFAULT_PROGRESS_VALUE
 import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
+import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
 import com.sarathi.missionactivitytask.utils.LoaderState
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -36,6 +38,10 @@ abstract class BaseViewModel : ViewModel() {
 
     @Inject
     lateinit var analyticsEventUseCase: AnalyticsEventUseCase
+
+    @Inject
+    lateinit var fetchAllDataUseCase: FetchAllDataUseCase
+
     val isDidiImageDialogVisible = mutableStateOf(Triple(false, BLANK_STRING, Uri.EMPTY))
 
     val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
@@ -142,7 +148,7 @@ abstract class BaseViewModel : ViewModel() {
             failedApiCount.value = failedApiCount.value.inc()
         }
         // Update progress bar and progress text
-        val progress = completedApiCount.value.toFloat() / totalApiCall.value.toFloat()
+        val progress = completedApiCount.value / totalApiCall.value.toFloat()
         progressState.updateProgress(progress)
         progressState.updateProgressText("${completedApiCount.value.toInt()}/${totalApiCall.value}")
 
@@ -152,13 +158,48 @@ abstract class BaseViewModel : ViewModel() {
                 allApiStatus.value = ApiStatus.SUCCESS
             }
 
-            failedApiCount.value > 1 -> {
+            failedApiCount.value >= 1 -> {
                 allApiStatus.value = ApiStatus.FAILED
             }
 
             else -> {
                 allApiStatus.value = ApiStatus.INPROGRESS
             }
+        }
+    }
+
+    suspend fun loadAllData(
+        screenName: String,
+        moduleName: String,
+        customData: Map<String, Any>,
+        dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+    ) {
+        totalApiCall.value = -1
+        completedApiCount.value = 0f
+        failedApiCount.value = 0f
+        viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
+            allApiStatus.value = ApiStatus.INPROGRESS
+            fetchAllDataUseCase.invoke(
+                customData = customData,
+                screenName = screenName,
+                dataLoadingTriggerType = dataLoadingTriggerType,
+                isRefresh = false,
+                onComplete = { isSucess, message ->
+                },
+                totalNumberOfApi = { screenName, screenTotalApi ->
+                    totalApiCall.value = screenTotalApi
+                },
+                apiPerStatus = { apiName, requestPayload ->
+                    val apiStatusData = fetchAllDataUseCase.getApiStatus(
+                        screenName = screenName,
+                        moduleName = moduleName,
+                        apiUrl = apiName,
+                        requestPayload = requestPayload
+                    )
+                    apiStatusData?.let { updateProgress(apiStatusData = it) }
+                },
+                moduleName = moduleName
+            )
         }
     }
 

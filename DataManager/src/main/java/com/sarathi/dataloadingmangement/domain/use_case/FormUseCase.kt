@@ -4,6 +4,7 @@ import android.net.Uri
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallJournalRepository
+import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.ApiStatus
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.BLANK_STRING
@@ -15,13 +16,15 @@ import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_FORM_DETAILS
 import com.sarathi.dataloadingmangement.network.request.FormDetailRequest
 import com.sarathi.dataloadingmangement.repository.FormRepositoryImpl
+import java.util.Locale
 import javax.inject.Inject
 
 class FormUseCase @Inject constructor(
     private val repository: FormRepositoryImpl,
     private val coreSharedPrefs: CoreSharedPrefs,
     private val downloaderManager: DownloaderManager,
-    apiCallJournalRepository: IApiCallJournalRepository
+    apiCallJournalRepository: IApiCallJournalRepository,
+    private val fetchMissionActivityDetailDataUseCase: FetchMissionActivityDetailDataUseCase
 ) : BaseApiCallNetworkUseCase(apiCallJournalRepository) {
     private suspend fun getFormDetailFromApi(
         formDetailRequest: FormDetailRequest, screenName: String,
@@ -102,6 +105,21 @@ class FormUseCase @Inject constructor(
         customData: Map<String, Any>
     ): Boolean {
         try {
+            val missionId: Int = if (customData["MissionId"] != null) {
+                customData["MissionId"] as? Int ?: -1
+            } else {
+                -1
+            }
+            val activityTypes =
+                fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
+            if (screenName == "ActivityScreen" && !(activityTypes.contains(
+                    ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH)
+                ) || activityTypes.contains(
+                    ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH)
+                ))
+            ) {
+                return false
+            }
             if (!super.invoke(
                     screenName = screenName,
                     triggerType = triggerType,
@@ -111,8 +129,7 @@ class FormUseCase @Inject constructor(
             ) {
                 return false
             }
-            //TODO need to add MissionId
-            val missionId = customData["MissionId"] as Int
+            //val missionId = customData["MissionId"] as Int
             repository.getActivityConfigUiModel(missionId)?.forEach { config ->
                 getFormDetailFromApi(
                     screenName = screenName,
