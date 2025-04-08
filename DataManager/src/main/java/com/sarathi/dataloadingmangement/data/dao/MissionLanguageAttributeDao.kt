@@ -20,7 +20,7 @@ interface MissionLanguageAttributeDao {
 
     @Query(
         "select mission_language_table.description as title ,mission_livelihood_config_table.livelihoodOrder as livelihoodOrder, \n" +
-                "mission_livelihood_config_table.description as livelihoodType, mission_livelihood_config_table.programLivelihoodReferenceId \n" +
+                "mission_livelihood_config_table.livelihoodType as livelihoodType, mission_livelihood_config_table.programLivelihoodReferenceId \n" +
                 "from $MISSION_LANGUAGE_TABLE_NAME" +
                 " left join mission_livelihood_config_table on mission_language_table.missionId=mission_livelihood_config_table.missionId" +
                 "  and mission_livelihood_config_table.userId=:userId " +
