@@ -54,7 +54,10 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "are_you_sure_you_want_to_delete",
             "event_added_successfully",
             "no",
-            "yes"
+            "yes",
+            "type_of_adult_asset",
+            "type_of_child_asset",
+            "enter_child_asset_count"
         )
     ),
     DataSummaryScreen(
