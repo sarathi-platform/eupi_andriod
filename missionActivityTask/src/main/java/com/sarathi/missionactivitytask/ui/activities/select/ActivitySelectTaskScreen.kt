@@ -43,6 +43,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
 import androidx.compose.material.ModalBottomSheetValue
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
@@ -136,6 +137,7 @@ import com.sarathi.missionactivitytask.utils.event.InitDataEvent
 import com.sarathi.surveymanager.ui.component.OptionCard
 import com.sarathi.surveymanager.ui.component.RadioOptionTypeComponent
 import com.sarathi.surveymanager.ui.screen.getOptionsValueDto
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
@@ -170,13 +172,14 @@ fun ActivitySelectTaskScreen(
 
     val searchedOption = remember { mutableStateOf("") }
 
-    var filteredItems = mutableListOf<ValuesDto>()
+    var filteredItems =
+        remember(options.value) { mutableStateOf(getOptionsValueDto(options.value)) }
 
     Box {
 
         val selectedItems = remember { mutableStateListOf<ValuesDto>() }
 
-        var sourceItems = updateSourceItemsList(filteredItems, options)
+//        var sourceItems = updateSourceItemsList(filteredItems, options)
 
         ModalBottomSheetLayout(
             sheetState = sheetState,
@@ -214,15 +217,12 @@ fun ActivitySelectTaskScreen(
                                 value = searchedOption.value,
                                 onValueChange = { selectedValue ->
                                     searchedOption.value = selectedValue
-                                    filteredItems = getOptionsValueDto(options.value).filter {
-                                        it.value.contains(
+                                    filteredItems.value = getOptionsValueDto(options.value.filter {
+                                        it.description?.contains(
                                             searchedOption.value,
-                                            ignoreCase = true,
-                                        )
-                                    }.toMutableList()
-                                    sourceItems = updateSourceItemsList(filteredItems, options)
-                                    println("filteredItems: $filteredItems")
-                                    println("sourceItems: $sourceItems")
+                                            true
+                                        ) == true
+                                    })
                                 },
                                 textStyle = newMediumTextStyle.copy(blueDark),
                                 leadingIcon = {
@@ -244,7 +244,8 @@ fun ActivitySelectTaskScreen(
                                             null,
                                             modifier = Modifier.clickable {
                                                 searchedOption.value = BLANK_STRING
-                                                filteredItems.clear()
+                                                filteredItems.value =
+                                                    getOptionsValueDto(options.value)
                                             }
                                         )
                                     }
@@ -253,7 +254,7 @@ fun ActivitySelectTaskScreen(
                         }
                         when (viewModel.questionUiModel.value.entries.firstOrNull()?.value?.type?.lowercase()) {
                             QuestionType.MultiSelectDropDown.name.lowercase() -> {
-                                itemsIndexed(sourceItems) { index, item ->
+                                itemsIndexed(filteredItems.value) { index, item ->
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -270,7 +271,7 @@ fun ActivitySelectTaskScreen(
                                                     questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
                                                         item.isSelected
                                                 }
-                                                sourceItems.find { it == item }?.isSelected =
+                                                filteredItems.value.find { it == item }?.isSelected =
                                                     item.isSelected
                                             }
                                     ) {
@@ -295,7 +296,7 @@ fun ActivitySelectTaskScreen(
                                                     questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
                                                         item.isSelected
                                                 }
-                                                sourceItems.find { it == item }?.isSelected =
+                                                filteredItems.value.find { it == item }?.isSelected =
                                                     item.isSelected
                                             },
                                             colors = CheckboxDefaults.colors(
@@ -309,7 +310,7 @@ fun ActivitySelectTaskScreen(
                             }
 
                             QuestionType.SingleSelectDropDown.name.lowercase() -> {
-                                itemsIndexed(sourceItems) { index, item ->
+                                itemsIndexed(filteredItems.value) { index, item ->
                                     Row(
                                         verticalAlignment = Alignment.CenterVertically,
                                         horizontalArrangement = Arrangement.SpaceBetween,
@@ -324,16 +325,10 @@ fun ActivitySelectTaskScreen(
                                                     questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
                                                         true
                                                 }
-                                                sourceItems.onEach {
+                                                filteredItems.value.onEach {
                                                     it.isSelected = false
                                                 }
                                                 item.isSelected = true
-                                                println("onClick = " + sourceItems.map {
-                                                    Pair(
-                                                        it.value,
-                                                        it.isSelected
-                                                    )
-                                                })
                                             }
                                     ) {
                                         Text(
@@ -356,16 +351,10 @@ fun ActivitySelectTaskScreen(
                                                     questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
                                                         true
                                                 }
-                                                sourceItems.onEach {
+                                                filteredItems.value.onEach {
                                                     it.isSelected = false
                                                 }
                                                 item.isSelected = true
-                                                println("onClick = " + sourceItems.map {
-                                                    Pair(
-                                                        it.value,
-                                                        it.isSelected
-                                                    )
-                                                })
                                             },
                                             colors = RadioButtonDefaults.colors(
                                                 selectedColor = greenOnline,
@@ -411,9 +400,7 @@ fun ActivitySelectTaskScreen(
                                     )
                                     viewModel.collapseItemCard(selectedTaskId.value)
                                 }
-                                selectedTaskId.value = DEFAULT_ID
-                                headerTitle.value = BLANK_STRING
-                                options.value.clear()
+                                resetValue(selectedTaskId, headerTitle, options)
                                 sheetState.hide()
                             }
                         }
@@ -440,27 +427,36 @@ fun ActivitySelectTaskScreen(
                     selectActivityTaskScreenContent(
                         viewModel = viewModel,
                         onPrimaryButtonClick = { subjectName, taskId ->
-                            coroutineScope.launch {
-                                selectedTaskId.value = taskId
-                                headerTitle.value = subjectName
-                                options.value.clear()
-                                options.value.addAll(viewModel.questionUiModel.value[taskId]?.options.value())
-                                sheetState.show()
-                            }
-                        })
+                            showOptionsForTask(
+                                coroutineScope,
+                                selectedTaskId,
+                                taskId,
+                                headerTitle,
+                                subjectName,
+                                options,
+                                viewModel,
+                                filteredItems,
+                                sheetState
+                            )
+                        }
+                    )
                 },
                 taskScreenContentForGroup = { groupKey, _, _ ->
                     selectActivityTaskScreenContentForGroup(
                         groupKey,
                         viewModel,
                         onPrimaryButtonClick = { subjectName, taskId ->
-                            coroutineScope.launch {
-                                selectedTaskId.value = taskId
-                                headerTitle.value = subjectName
-                                options.value.clear()
-                                options.value.addAll(viewModel.questionUiModel.value[taskId]?.options.value())
-                                sheetState.show()
-                            }
+                            showOptionsForTask(
+                                coroutineScope,
+                                selectedTaskId,
+                                taskId,
+                                headerTitle,
+                                subjectName,
+                                options,
+                                viewModel,
+                                filteredItems,
+                                sheetState
+                            )
                         })
                 }
             )
@@ -476,15 +472,13 @@ fun ActivitySelectTaskScreen(
                     .fillMaxSize()
                     .padding(top = ((screenHeight / 4).dp - dimen_10_dp))
                     .zIndex(2f)
-                    .background(Color.Transparent), // Ensure it's above the sheet
+                    .background(Color.Transparent),
                 contentAlignment = Alignment.TopCenter
             ) {
                 IconButton(
                     onClick = {
                         coroutineScope.launch {
-                            selectedTaskId.value = DEFAULT_ID
-                            headerTitle.value = BLANK_STRING
-                            options.value.clear()
+                            resetValue(selectedTaskId, headerTitle, options)
                             sheetState.hide()
                         }
                     },
@@ -508,14 +502,35 @@ fun ActivitySelectTaskScreen(
     }
 }
 
-private fun updateSourceItemsList(
-    filteredItems: MutableList<ValuesDto>,
+private fun resetValue(
+    selectedTaskId: MutableState<Int>,
+    headerTitle: MutableState<String>,
     options: MutableState<MutableList<OptionsUiModel>>
-): List<ValuesDto> {
-    return if (filteredItems.isEmpty()) {
-        getOptionsValueDto(options.value)
-    } else {
-        filteredItems
+) {
+    selectedTaskId.value = DEFAULT_ID
+    headerTitle.value = BLANK_STRING
+    options.value.clear()
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+private fun showOptionsForTask(
+    coroutineScope: CoroutineScope,
+    selectedTaskId: MutableState<Int>,
+    taskId: Int,
+    headerTitle: MutableState<String>,
+    subjectName: String,
+    options: MutableState<MutableList<OptionsUiModel>>,
+    viewModel: ActivitySelectTaskViewModel,
+    filteredItems: MutableState<List<ValuesDto>>,
+    sheetState: ModalBottomSheetState
+) {
+    coroutineScope.launch {
+        selectedTaskId.value = taskId
+        headerTitle.value = subjectName
+        options.value.clear()
+        options.value.addAll(viewModel.questionUiModel.value[taskId]?.options.value())
+        filteredItems.value = getOptionsValueDto(options.value)
+        sheetState.show()
     }
 }
 
