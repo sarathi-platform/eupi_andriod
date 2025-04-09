@@ -165,7 +165,6 @@ class SurveySaveNetworkRepositoryImpl @Inject constructor(
                     conditions = option?.conditions
                 )
             )
-
         }
     }
 

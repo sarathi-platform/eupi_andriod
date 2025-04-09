@@ -119,7 +119,9 @@ class ActivityScreenViewModel @Inject constructor(
                     screenName = ACTIVITY_SCREEN,
                     moduleName = MAT_MODULE,
                     customData = customData,
-                    dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
+                    dataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN,
+                    onComplete = { isSuccess, successMsg ->
+                    }
                 )
                 CoroutineScope(Dispatchers.IO).launch {
                     contentDownloaderUseCase.contentDownloader()

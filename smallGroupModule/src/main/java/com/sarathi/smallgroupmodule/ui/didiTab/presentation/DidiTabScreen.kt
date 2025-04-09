@@ -25,7 +25,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
 import com.nudge.core.BLANK_STRING
 import com.nudge.core.TabsCore
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.enums.SubTabs
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.isOnline
@@ -154,8 +153,8 @@ fun DidiTabScreen(
         onContentUI = { paddingValues, b, function ->
             LoadingDataComponent(
                 title = "DataTabScreen",
-                apiStatus = didiTabViewModel.allApiStatus.value,
-                isVisible = didiTabViewModel.allApiStatus.value != ApiStatus.SUCCESS || didiTabViewModel.allApiStatus.value != ApiStatus.IDEL,
+                apiStatus = didiTabViewModel.apiStatusStateModel.value.apiStatus,
+                //   isVisible = didiTabViewModel.allApiStatus.value != ApiStatus.SUCCESS || didiTabViewModel.allApiStatus.value != ApiStatus.IDEAL,
                 progressState = didiTabViewModel.progressState,
             ) {}
             Box(

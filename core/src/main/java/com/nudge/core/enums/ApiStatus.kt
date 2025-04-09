@@ -1,5 +1,5 @@
 package com.nudge.core.enums
 
 enum class ApiStatus {
-    IDEL, INPROGRESS, SUCCESS, FAILED
+    IDEAL, INPROGRESS, SUCCESS, FAILED
 }

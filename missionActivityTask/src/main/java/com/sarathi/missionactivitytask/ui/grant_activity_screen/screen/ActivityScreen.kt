@@ -24,7 +24,6 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
-import com.nudge.core.enums.ApiStatus
 import com.nudge.core.isOnline
 import com.nudge.core.ui.ShowLoadingEffect
 import com.nudge.core.ui.commonUi.componet_.component.LoadingDataComponent
@@ -111,8 +110,7 @@ fun ActivityScreen(
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             LoadingDataComponent(
                 title = "Activity Screen",
-                apiStatus = viewModel.allApiStatus.value,
-                isVisible = viewModel.allApiStatus.value != ApiStatus.SUCCESS || viewModel.allApiStatus.value != ApiStatus.IDEL,
+                apiStatus = viewModel.apiStatusStateModel.value.apiStatus,
                 progressState = viewModel.progressState,
             ) {}
             Box(

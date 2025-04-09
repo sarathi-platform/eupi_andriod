@@ -105,7 +105,7 @@ fun MissionScreen(
 
         })
     LaunchedEffect(key1 = Unit) {
-        //viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
+        viewModel.onEvent(LoaderEvent.UpdateLoaderState(true))
         viewModel.onEvent(InitDataEvent.InitDataState)
     }
     DisposableEffect(key1 = true) {
@@ -186,7 +186,7 @@ fun MissionScreen(
         navController = navController,
         onBackIconClick = { navController.popBackStack() },
         isSearch = true,
-        isDataNotAvailable = viewModel.missionList.collectAsState(listOf()).value.isEmpty() && !viewModel.loaderState.value.isLoaderVisible,
+        //  isDataNotAvailable = viewModel.missionList.collectAsState(listOf()).value.isEmpty() && !viewModel.loaderState.value.isLoaderVisible,
         onSearchValueChange = { searchedTerm ->
             viewModel.onEvent(SearchEvent.PerformSearch(searchedTerm, true))
         },
@@ -198,7 +198,8 @@ fun MissionScreen(
         onContentUI = { paddingValues, isSearch, onSearchValueChanged ->
             LoadingDataComponent(
                 title = "Mission Screen",
-                apiStatus = viewModel.allApiStatus.value,
+                apiStatus = viewModel.apiStatusStateModel.value.apiStatus,
+                isVisible = viewModel.isLodderShow.value,
                 progressState = viewModel.progressState,
                 onViewDetailsClick = {
                     navigateToApiFailedScreen(

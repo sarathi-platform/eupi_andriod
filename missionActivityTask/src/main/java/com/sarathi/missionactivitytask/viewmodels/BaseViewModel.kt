@@ -20,6 +20,7 @@ import com.nudge.core.usecase.AnalyticsEventUseCase
 import com.nudge.core.utils.CoreLogger
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.domain.use_case.FetchAllDataUseCase
+import com.sarathi.dataloadingmangement.model.ApiStatusStateModel
 import com.sarathi.missionactivitytask.utils.LoaderState
 import com.sarathi.missionactivitytask.utils.event.LoaderEvent
 import kotlinx.coroutines.CoroutineDispatcher
@@ -50,12 +51,14 @@ abstract class BaseViewModel : ViewModel() {
 
     @Inject
     lateinit var translationHelper: TranslationHelper
+    var apiStatusStateModel = mutableStateOf(ApiStatusStateModel(ApiStatus.IDEAL, 0f, -1, 0f))
 
-    var allApiStatus = mutableStateOf(ApiStatus.IDEL)
-    var failedApiCount = mutableStateOf(0f)
-    var totalApiCall = mutableStateOf(-1)
+    //    var allApiStatus = mutableStateOf(ApiStatus.IDEAL)
+//    var failedApiCount = mutableStateOf(0f)
+//    var totalApiCall = mutableStateOf(-1)
+//    var completedApiCount = mutableStateOf(0f)
     val progressState = CustomProgressState(DEFAULT_PROGRESS_VALUE, com.nudge.core.BLANK_STRING)
-    var completedApiCount = mutableStateOf(0f)
+
 
 
     abstract fun <T> onEvent(event: T)
@@ -141,30 +144,35 @@ abstract class BaseViewModel : ViewModel() {
     open fun updateMissionFilter() {}
 
     open fun updateProgress(apiStatusData: ApiCallJournalEntity?) {
+        val state = apiStatusStateModel.value
+
         // Increment counters based on API status
         if (apiStatusData?.status == ApiStatus.SUCCESS.name) {
-            completedApiCount.value = completedApiCount.value.inc()
+            apiStatusStateModel.value = state.copy(
+                completedApiCount = state.completedApiCount.inc()
+            )
         } else {
-            failedApiCount.value = failedApiCount.value.inc()
+            apiStatusStateModel.value = state.copy(
+                failedApiCount = state.failedApiCount.inc()
+            )
         }
-        // Update progress bar and progress text
-        val progress = completedApiCount.value / totalApiCall.value.toFloat()
+        // Update progress
+        val progress =
+            apiStatusStateModel.value.completedApiCount / apiStatusStateModel.value.totalApiCall.toFloat()
         progressState.updateProgress(progress)
-        progressState.updateProgressText("${completedApiCount.value.toInt()}/${totalApiCall.value}")
+        progressState.updateProgressText("${apiStatusStateModel.value.completedApiCount.toInt()}/${apiStatusStateModel.value.totalApiCall}")
 
         // Handle completion and failure scenarios
-        when {
-            completedApiCount.value.toInt() == totalApiCall.value -> {
-                allApiStatus.value = ApiStatus.SUCCESS
-            }
+        apiStatusStateModel.value = when {
+            apiStatusStateModel.value.completedApiCount.toInt() == apiStatusStateModel.value.totalApiCall -> apiStatusStateModel.value.copy(
+                apiStatus = ApiStatus.SUCCESS
+            )
 
-            failedApiCount.value >= 1 -> {
-                allApiStatus.value = ApiStatus.FAILED
-            }
+            apiStatusStateModel.value.failedApiCount >= 1 -> apiStatusStateModel.value.copy(
+                apiStatus = ApiStatus.FAILED
+            )
 
-            else -> {
-                allApiStatus.value = ApiStatus.INPROGRESS
-            }
+            else -> apiStatusStateModel.value.copy(apiStatus = ApiStatus.INPROGRESS)
         }
     }
 
@@ -172,22 +180,23 @@ abstract class BaseViewModel : ViewModel() {
         screenName: String,
         moduleName: String,
         customData: Map<String, Any>,
+        onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         dataLoadingTriggerType: DataLoadingTriggerType = DataLoadingTriggerType.FRESH_LOGIN
     ) {
-        totalApiCall.value = -1
-        completedApiCount.value = 0f
-        failedApiCount.value = 0f
+        apiStatusStateModel.value = ApiStatusStateModel(ApiStatus.IDEAL, 0f, -1, 0f)
         viewModelScope.launch(Dispatchers.IO + exceptionHandler) {
-            allApiStatus.value = ApiStatus.INPROGRESS
+            apiStatusStateModel.value.apiStatus = ApiStatus.INPROGRESS
             fetchAllDataUseCase.invoke(
                 customData = customData,
                 screenName = screenName,
                 dataLoadingTriggerType = dataLoadingTriggerType,
                 isRefresh = false,
                 onComplete = { isSucess, message ->
+                    onComplete(isSucess, message)
                 },
                 totalNumberOfApi = { screenName, moduleName, requestBody, transactionId ->
-                    totalApiCall.value = fetchAllDataUseCase.getApiInProgressCount(
+                    apiStatusStateModel.value.totalApiCall =
+                        fetchAllDataUseCase.getApiInProgressCount(
                         screenName = screenName,
                         moduleName = moduleName,
                         customData = requestBody,

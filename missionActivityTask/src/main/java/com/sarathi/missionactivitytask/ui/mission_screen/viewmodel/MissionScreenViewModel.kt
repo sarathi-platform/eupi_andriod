@@ -47,7 +47,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MissionScreenViewModel @Inject constructor(
-    // val fetchAllDataUseCase: FetchAllDataUseCase,
     @ApplicationContext val context: Context,
     private val updateMissionActivityTaskStatusUseCase: UpdateMissionActivityTaskStatusUseCase,
     private val matStatusEventWriterUseCase: MATStatusEventWriterUseCase,
@@ -70,6 +69,7 @@ class MissionScreenViewModel @Inject constructor(
     val countMap: MutableMap<SubTabs, Int> = mutableMapOf()
 
     val filteredListLabel = mutableStateOf(BLANK_STRING)
+    val isLodderShow = mutableStateOf(false)
 
     private var baseCurrentApiCount = 0 // only count api survey count
 
@@ -234,8 +234,9 @@ class MissionScreenViewModel @Inject constructor(
         isRefresh: Boolean,
         dataLoadingTriggerType: DataLoadingTriggerType
     ) {
-        //if (dataLoadingTriggerType.name.equals(DataLoadingTriggerType.PULL_TO_REFRESH) || !coreSharedPrefs.isDataLoaded()) {
-        if (true) {
+        if (dataLoadingTriggerType == DataLoadingTriggerType.PULL_TO_REFRESH || !coreSharedPrefs.isDataLoaded()) {
+            isLodderShow.value = true
+            //    if (true) {
             onEvent(LoaderEvent.UpdateLoaderState(true))
             val customData: Map<String, Any> = mapOf(
                 "propertiesName" to AppConfigKeysEnum.values().map { it.name }
@@ -246,14 +247,21 @@ class MissionScreenViewModel @Inject constructor(
                     screenName = MISSION_SCREEN,
                     customData = customData,
                     moduleName = MAT_MODULE,
-                    dataLoadingTriggerType = dataLoadingTriggerType
+                    dataLoadingTriggerType = dataLoadingTriggerType,
+                    onComplete = { isSuccess, successMsg ->
+                        initMissionScreen()
+                        collectMissionListFromFlow()
+                    }
                 )
                 CoroutineScope(Dispatchers.IO).launch {
                     contentDownloaderUseCase.contentDownloader()
                 }
-                // coreSharedPrefs.setDataLoaded(true)
+                coreSharedPrefs.setDataLoaded(true)
                 onEvent(LoaderEvent.UpdateLoaderState(false))
             }
+        } else {
+            isLodderShow.value = false
+            onEvent(LoaderEvent.UpdateLoaderState(false))
         }
 
 
@@ -297,9 +305,7 @@ class MissionScreenViewModel @Inject constructor(
             { missionListFlow ->
                 _missionList.value = missionListFlow
                 checkAndUpdateDefaultTabAndCount()
-
                 onEvent(
-
                     CommonEvents.OnFilterUiModelSelected(
                         missionFilterUtils.getSelectedMissionFilterValue()
                     )
@@ -316,7 +322,7 @@ class MissionScreenViewModel @Inject constructor(
     }
 
     private suspend fun updateLoaderEvent(callBack: () -> Unit) {
-        if (baseCurrentApiCount == totalApiCall.value) {
+        if (baseCurrentApiCount == apiStatusStateModel.value.totalApiCall) {
             withContext(Dispatchers.Main) {
                 onEvent(LoaderEvent.UpdateLoaderState(false))
                 callBack()

@@ -73,7 +73,7 @@ fun LoadingDataComponent(
     onViewDetailsClick: () -> Unit
 ) {
     val allApiStatus by remember(apiStatus) { mutableStateOf(apiStatus) }
-    val startAnimation = remember { mutableStateOf(true) }
+    val startAnimation = remember(isVisible) { mutableStateOf(isVisible) }
 
     LaunchedEffect(allApiStatus) {
         if (allApiStatus == ApiStatus.SUCCESS) {
