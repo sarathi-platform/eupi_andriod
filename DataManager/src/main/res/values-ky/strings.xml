@@ -145,6 +145,7 @@
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">Ajemung/swbaimung</string>
     <string name="date_of_event">Samung ungmani Sal</string>
+    <string name="decrese_in_number">Decrease in Number:</string>
     <string name="type_of_adult_asset">Adult Asset</string>
     <string name="type_of_child_asset">Child Asset</string>
     <string name="enter_child_asset_count">Enter number of child assets to transition</string>

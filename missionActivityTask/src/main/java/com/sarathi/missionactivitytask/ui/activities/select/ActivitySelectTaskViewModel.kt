@@ -87,12 +87,14 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
+
     private fun initActivitySelectTaskScreen(missionId: Int, activityId: Int) {
 
         CoroutineScope(Dispatchers.IO).launch {
             withContext(CoreDispatchers.mainDispatcher) {
                 onEvent(LoaderEvent.UpdateLoaderState(true))
             }
+            getSurveyDetail()
             delay(100)
             taskUiList.value =
                 getTaskUseCase.getActiveTasks(missionId = missionId, activityId = activityId)
@@ -124,6 +126,16 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             expandedIds.remove(task.key)
         } else {
             expandedIds.add(task.key)
+        }
+    }
+
+    fun onExpandClicked(
+        taskId: Int
+    ) {
+        if (expandedIds.contains(taskId)) {
+            expandedIds.remove(taskId)
+        } else {
+            expandedIds.add(taskId)
         }
     }
 
@@ -291,6 +303,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             checkButtonValidation()
             updateProgress()
         }
+    }
+
+    fun collapseItemCard(taskId: Int) {
+        expandedIds.remove(taskId)
     }
 
 //    override fun getScreenName(): TranslationEnum {

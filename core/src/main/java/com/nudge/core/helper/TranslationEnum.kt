@@ -20,6 +20,7 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "completed_tab_title",
             "mission",
             "data",
+            "assets",
             "didis_item_text_plural",
             "progress_item_text",
             "didis_item_text_plural",

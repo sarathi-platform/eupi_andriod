@@ -5,9 +5,15 @@ import android.content.Context
 import android.net.Uri
 import android.text.TextUtils
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColor
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.core.updateTransition
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -17,52 +23,77 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.absolutePadding
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredHeight
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Checkbox
+import androidx.compose.material.CheckboxDefaults
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.ModalBottomSheetLayout
+import androidx.compose.material.ModalBottomSheetState
+import androidx.compose.material.ModalBottomSheetValue
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.rememberModalBottomSheetState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.nudge.core.ANIMATE_COLOR
 import com.nudge.core.BLANK_STRING
+import com.nudge.core.DEFAULT_ID
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.TRANSITION
-import com.nudge.core.customGridHeight
 import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
 import com.nudge.core.ui.commonUi.BasicCardView
 import com.nudge.core.ui.commonUi.CardArrow
 import com.nudge.core.ui.commonUi.CustomVerticalSpacer
+import com.nudge.core.ui.commonUi.componet_.component.ButtonPositive
 import com.nudge.core.ui.theme.blueDark
 import com.nudge.core.ui.theme.brownDark
 import com.nudge.core.ui.theme.buttonTextStyle
+import com.nudge.core.ui.theme.defaultTextStyle
 import com.nudge.core.ui.theme.dimen_0_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_16_dp
@@ -73,19 +104,22 @@ import com.nudge.core.ui.theme.dimen_2_dp
 import com.nudge.core.ui.theme.dimen_3_dp
 import com.nudge.core.ui.theme.dimen_56_dp
 import com.nudge.core.ui.theme.dimen_5_dp
-import com.nudge.core.ui.theme.dimen_60_dp
 import com.nudge.core.ui.theme.dimen_6_dp
 import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.greenOnline
+import com.nudge.core.ui.theme.greyBorderColor
 import com.nudge.core.ui.theme.languageItemInActiveBorderBg
 import com.nudge.core.ui.theme.lightGrayColor
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.newMediumTextStyle
+import com.nudge.core.ui.theme.placeholderGrey
 import com.nudge.core.ui.theme.questionTextStyle
 import com.nudge.core.ui.theme.textColorDark
 import com.nudge.core.ui.theme.white
 import com.nudge.core.ui.theme.yellowBg
 import com.nudge.core.value
+import com.sarathi.dataloadingmangement.model.survey.response.ValuesDto
+import com.sarathi.dataloadingmangement.model.uiModel.OptionsUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.QuestionUiModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardModel
 import com.sarathi.dataloadingmangement.model.uiModel.TaskCardSlots
@@ -93,19 +127,20 @@ import com.sarathi.dataloadingmangement.util.constants.QuestionType
 import com.sarathi.dataloadingmangement.util.constants.SurveyStatusEnum
 import com.sarathi.missionactivitytask.R
 import com.sarathi.missionactivitytask.ui.basic_content.component.ImageViewer
+import com.sarathi.missionactivitytask.ui.basic_content.component.PrimarySecondaryButtonView
 import com.sarathi.missionactivitytask.ui.basic_content.component.SubContainerView
 import com.sarathi.missionactivitytask.ui.components.CircularImageViewComponent
 import com.sarathi.missionactivitytask.ui.components.ShowDidiImageDialog
 import com.sarathi.missionactivitytask.ui.grantTask.screen.TaskScreen
 import com.sarathi.missionactivitytask.utils.StatusEnum
 import com.sarathi.missionactivitytask.utils.event.InitDataEvent
-import com.sarathi.surveymanager.constants.DELIMITER_MULTISELECT_OPTIONS
-import com.sarathi.surveymanager.ui.component.GridTypeComponent
 import com.sarathi.surveymanager.ui.component.OptionCard
 import com.sarathi.surveymanager.ui.component.RadioOptionTypeComponent
-import com.sarathi.surveymanager.ui.component.TypeMultiSelectedDropDownComponent
 import com.sarathi.surveymanager.ui.screen.getOptionsValueDto
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ActivitySelectTaskScreen(
     navController: NavController = rememberNavController(),
@@ -116,41 +151,391 @@ fun ActivitySelectTaskScreen(
     programId: Int,
     onSettingClick: () -> Unit
 ) {
+    val sheetState =
+        rememberModalBottomSheetState(ModalBottomSheetValue.Hidden, skipHalfExpanded = true)
+
+    val coroutineScope = rememberCoroutineScope()
+
+    val configuration = LocalConfiguration.current
+    val screenHeight = configuration.screenHeightDp
 
     BackHandler {
         navController.popBackStack()
     }
 
-    TaskScreen(
-        missionId = missionId,
-        activityId = activityId,
-        activityName = activityName,
-        onSettingClick = onSettingClick,
-        viewModel = viewModel,
-        onSecondaryButtonClick = {
+    val headerTitle = remember { mutableStateOf("") }
 
-        },
-        isSecondaryButtonEnable = false,
-        secondaryButtonText = BLANK_STRING,
-        isSecondaryButtonVisible = false,
-        taskList = emptyList(),
-        programId = programId,
-        navController = navController,
-        taskScreenContent = { _, _ ->
-            selectActivityTaskScreenContent(viewModel = viewModel)
-        },
-        taskScreenContentForGroup = { groupKey, _, _ ->
-            selectActivityTaskScreenContentForGroup(groupKey, viewModel)
-        },
+    val selectedTaskId = remember { mutableStateOf(-1) }
 
-        )
+    val options: MutableState<MutableList<OptionsUiModel>> =
+        remember { mutableStateOf(mutableListOf()) }
+
+    val searchedOption = remember { mutableStateOf("") }
+
+    var filteredItems =
+        remember(options.value) { mutableStateOf(getOptionsValueDto(options.value)) }
+
+    Box {
+
+        val selectedItems = remember { mutableStateListOf<ValuesDto>() }
+
+        ModalBottomSheetLayout(
+            sheetState = sheetState,
+            sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp),
+            sheetContent = {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(fraction = 0.6f)
+                        .background(Color.Transparent)
+
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = dimen_20_dp)
+                    ) {
+
+                        stickyHeader {
+                            Text(
+                                headerTitle.value,
+                                style = defaultTextStyle,
+                                color = blueDark,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .background(
+                                        white
+                                    )
+                                    .padding(vertical = dimen_20_dp)
+                            )
+                            OutlinedTextField(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .requiredHeight(50.dp)
+                                    .background(white),
+                                value = searchedOption.value,
+                                onValueChange = { selectedValue ->
+                                    searchedOption.value = selectedValue
+                                    filteredItems.value = getOptionsValueDto(options.value.filter {
+                                        it.description?.contains(
+                                            searchedOption.value,
+                                            true
+                                        ) == true
+                                    })
+                                },
+                                textStyle = newMediumTextStyle.copy(blueDark),
+                                leadingIcon = {
+                                    Icon(
+                                        imageVector = Icons.Outlined.Search,
+                                        contentDescription = null
+                                    )
+                                },
+                                placeholder = {
+                                    Text(
+                                        text = "Search",
+                                        style = newMediumTextStyle.copy(placeholderGrey),
+                                    )
+                                },
+                                trailingIcon = {
+                                    if (searchedOption.value.isNotEmpty()) {
+                                        Icon(
+                                            Icons.Default.Clear,
+                                            null,
+                                            modifier = Modifier.clickable {
+                                                searchedOption.value = BLANK_STRING
+                                                filteredItems.value =
+                                                    getOptionsValueDto(options.value)
+                                            }
+                                        )
+                                    }
+                                }
+                            )
+                        }
+                        when (viewModel.questionUiModel.value.entries.firstOrNull()?.value?.type?.lowercase()) {
+                            QuestionType.MultiSelectDropDown.name.lowercase() -> {
+                                itemsIndexed(filteredItems.value) { index, item ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .clickable {
+                                                if (selectedItems.contains(item)) {
+                                                    selectedItems.remove(item)
+                                                    item.isSelected = false
+                                                } else {
+                                                    selectedItems.add(item)
+                                                    item.isSelected = true
+                                                }
+                                                viewModel.questionUiModel.value[selectedTaskId.value]?.let { questionUiModel ->
+                                                    questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
+                                                        item.isSelected
+                                                }
+                                                filteredItems.value.find { it == item }?.isSelected =
+                                                    item.isSelected
+                                            }
+                                    ) {
+                                        Text(
+                                            item.value,
+                                            modifier = Modifier
+                                                .weight(0.9f),
+                                            style = mediumTextStyle.copy(color = textColorDark),
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+
+                                        Checkbox(
+                                            checked = item.isSelected.value(),
+                                            onCheckedChange = {
+                                                if (selectedItems.contains(item)) {
+                                                    selectedItems.remove(item)
+                                                } else {
+                                                    selectedItems.add(item)
+                                                }
+                                                item.isSelected = !item.isSelected.value()
+                                                viewModel.questionUiModel.value[selectedTaskId.value]?.let { questionUiModel ->
+                                                    questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
+                                                        item.isSelected
+                                                }
+                                                filteredItems.value.find { it == item }?.isSelected =
+                                                    item.isSelected
+                                            },
+                                            colors = CheckboxDefaults.colors(
+                                                checkedColor = greenOnline,
+                                                checkmarkColor = white,
+                                                uncheckedColor = greyBorderColor
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+
+                            QuestionType.SingleSelectDropDown.name.lowercase() -> {
+                                itemsIndexed(filteredItems.value) { index, item ->
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        horizontalArrangement = Arrangement.SpaceBetween,
+                                        modifier = Modifier
+                                            .clickable {
+                                                selectedItems.clear()
+                                                selectedItems.add(item)
+                                                viewModel.questionUiModel.value[selectedTaskId.value]?.let { questionUiModel ->
+                                                    questionUiModel?.options?.onEach {
+                                                        it.isSelected = false
+                                                    }
+                                                    questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
+                                                        true
+                                                }
+                                                filteredItems.value.onEach {
+                                                    it.isSelected = false
+                                                }
+                                                item.isSelected = true
+                                            }
+                                    ) {
+                                        Text(
+                                            item.value,
+                                            modifier = Modifier
+                                                .weight(0.9f),
+                                            style = mediumTextStyle.copy(color = textColorDark),
+                                            overflow = TextOverflow.Ellipsis
+                                        )
+
+                                        RadioButton(
+                                            selected = item.isSelected.value(),
+                                            onClick = {
+                                                selectedItems.clear()
+                                                selectedItems.add(item)
+                                                viewModel.questionUiModel.value[selectedTaskId.value]?.let { questionUiModel ->
+                                                    questionUiModel?.options?.onEach {
+                                                        it.isSelected = false
+                                                    }
+                                                    questionUiModel.options?.find { it.optionId == item.id }?.isSelected =
+                                                        true
+                                                }
+                                                filteredItems.value.onEach {
+                                                    it.isSelected = false
+                                                }
+                                                item.isSelected = true
+                                            },
+                                            colors = RadioButtonDefaults.colors(
+                                                selectedColor = greenOnline,
+                                                unselectedColor = greyBorderColor
+                                            )
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                Box(
+                    modifier = Modifier
+                        .padding(dimen_20_dp)
+                ) {
+                    ButtonPositive(
+                        buttonTitle = stringResource(id = R.string.submit),
+                        isActive = selectedItems.isNotEmpty(),
+                        isArrowRequired = true,
+                        onClick = {
+                            coroutineScope.launch {
+                                viewModel.filterList.value[selectedTaskId.value]?.let { task ->
+                                    task.set(
+                                        TaskCardSlots.TASK_STATUS.name,
+                                        TaskCardModel(
+                                            value = SurveyStatusEnum.COMPLETED.name,
+                                            label = BLANK_STRING,
+                                            icon = null
+                                        )
+                                    )
+                                    viewModel.questionUiModel.value[selectedTaskId.value]?.let {
+                                        viewModel.saveSingleAnswerIntoDb(
+                                            currentQuestionUiModel = it,
+                                            subjectType = viewModel.activityConfigUiModelWithoutSurvey?.subject.value(),
+                                            taskId = selectedTaskId.value
+                                        )
+                                    }
+                                    viewModel.updateMissionFilter()
+                                    viewModel.updateTasStatus(
+                                        taskId = selectedTaskId.value,
+                                        status = SurveyStatusEnum.COMPLETED.name
+                                    )
+                                    viewModel.collapseItemCard(selectedTaskId.value)
+                                }
+                                resetValue(selectedTaskId, headerTitle, options)
+                                sheetState.hide()
+                            }
+                        }
+                    )
+                }
+            }
+        ) {
+            TaskScreen(
+                missionId = missionId,
+                activityId = activityId,
+                activityName = activityName,
+                onSettingClick = onSettingClick,
+                viewModel = viewModel,
+                onSecondaryButtonClick = {
+
+                },
+                isSecondaryButtonEnable = false,
+                secondaryButtonText = BLANK_STRING,
+                isSecondaryButtonVisible = false,
+                taskList = emptyList(),
+                programId = programId,
+                navController = navController,
+                taskScreenContent = { _, _ ->
+                    selectActivityTaskScreenContent(
+                        viewModel = viewModel,
+                        onPrimaryButtonClick = { subjectName, taskId ->
+                            showOptionsForTask(
+                                coroutineScope,
+                                selectedTaskId,
+                                taskId,
+                                headerTitle,
+                                subjectName,
+                                options,
+                                viewModel,
+                                filteredItems,
+                                sheetState
+                            )
+                        }
+                    )
+                },
+                taskScreenContentForGroup = { groupKey, _, _ ->
+                    selectActivityTaskScreenContentForGroup(
+                        groupKey,
+                        viewModel,
+                        onPrimaryButtonClick = { subjectName, taskId ->
+                            showOptionsForTask(
+                                coroutineScope,
+                                selectedTaskId,
+                                taskId,
+                                headerTitle,
+                                subjectName,
+                                options,
+                                viewModel,
+                                filteredItems,
+                                sheetState
+                            )
+                        })
+                }
+            )
+        }
+
+        AnimatedVisibility(
+            visible = sheetState.isVisible,
+            enter = fadeIn() + slideInVertically { fullHeight -> fullHeight },
+            exit = fadeOut() + slideOutVertically { fullHeight -> fullHeight })
+        {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = ((screenHeight / 4).dp - dimen_10_dp))
+                    .zIndex(2f)
+                    .background(Color.Transparent),
+                contentAlignment = Alignment.TopCenter
+            ) {
+                IconButton(
+                    onClick = {
+                        coroutineScope.launch {
+                            resetValue(selectedTaskId, headerTitle, options)
+                            sheetState.hide()
+                        }
+                    },
+                    modifier = Modifier
+                        .size(48.dp)
+                        .background(Color.DarkGray, shape = CircleShape)
+                        .border(2.dp, Color.Transparent, CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Close,
+                        contentDescription = "Close",
+                        tint = Color.White
+                    )
+                }
+            }
+        }
+    }
 
     LaunchedEffect(key1 = viewModel.taskUiList.value) {
         viewModel.onEvent(InitDataEvent.InitActivitySelectTaskScreenState(missionId, activityId))
     }
 }
 
-fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskViewModel) {
+private fun resetValue(
+    selectedTaskId: MutableState<Int>,
+    headerTitle: MutableState<String>,
+    options: MutableState<MutableList<OptionsUiModel>>
+) {
+    selectedTaskId.value = DEFAULT_ID
+    headerTitle.value = BLANK_STRING
+    options.value.clear()
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+private fun showOptionsForTask(
+    coroutineScope: CoroutineScope,
+    selectedTaskId: MutableState<Int>,
+    taskId: Int,
+    headerTitle: MutableState<String>,
+    subjectName: String,
+    options: MutableState<MutableList<OptionsUiModel>>,
+    viewModel: ActivitySelectTaskViewModel,
+    filteredItems: MutableState<List<ValuesDto>>,
+    sheetState: ModalBottomSheetState
+) {
+    coroutineScope.launch {
+        selectedTaskId.value = taskId
+        headerTitle.value = subjectName
+        options.value.clear()
+        options.value.addAll(viewModel.questionUiModel.value[taskId]?.options.value())
+        filteredItems.value = getOptionsValueDto(options.value)
+        sheetState.show()
+    }
+}
+
+fun LazyListScope.selectActivityTaskScreenContent(
+    viewModel: ActivitySelectTaskViewModel,
+    onPrimaryButtonClick: (subjectName: String, taskId: Int) -> Unit,
+) {
     itemsIndexed(
         items = viewModel.filterList.value.entries.toList()
     ) { index, task ->
@@ -159,6 +544,9 @@ fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskV
             task = task,
             index = index,
             questionUIModel = viewModel.questionUiModel.value[task.key],
+            onPrimaryButtonClick = { subjectName: String ->
+                onPrimaryButtonClick(subjectName, task.key)
+            }
         )
         CustomVerticalSpacer()
     }
@@ -170,7 +558,8 @@ fun LazyListScope.selectActivityTaskScreenContent(viewModel: ActivitySelectTaskV
 
 fun LazyListScope.selectActivityTaskScreenContentForGroup(
     groupKey: String,
-    viewModel: ActivitySelectTaskViewModel
+    viewModel: ActivitySelectTaskViewModel,
+    onPrimaryButtonClick: (subjectName: String, taskId: Int) -> Unit,
 ) {
 
     itemsIndexed(
@@ -182,6 +571,9 @@ fun LazyListScope.selectActivityTaskScreenContentForGroup(
             index = index,
             groupKey = groupKey,
             questionUIModel = viewModel.questionUiModel.value[task.key],
+            onPrimaryButtonClick = { subjectName: String ->
+                onPrimaryButtonClick(subjectName, task.key)
+            }
         )
         CustomVerticalSpacer()
     }
@@ -216,7 +608,8 @@ fun ExpandableTaskCardRow(
     questionUIModel: QuestionUiModel?,
     index: Int,
     groupKey: String? = null,
-    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>
+    task: MutableMap.MutableEntry<Int, HashMap<String, TaskCardModel>>,
+    onPrimaryButtonClick: (subjectName: String) -> Unit
 ) {
     ExpandableTaskCard(
         title = task.value[TaskCardSlots.TASK_TITLE.name],
@@ -266,6 +659,7 @@ fun ExpandableTaskCardRow(
                 viewModel.checkIsActivityCompleted()
             }
         },
+        onPrimaryButtonClick = onPrimaryButtonClick,
         isActivityCompleted = viewModel.isActivityCompleted.value,
         viewModel = viewModel,
         onAnswerSelection = { _, _ ->
@@ -312,6 +706,7 @@ fun ExpandableTaskCard(
     isNotAvailableButtonEnable: Boolean,
     isActivityCompleted: Boolean,
     onNotAvailableClick: () -> Unit,
+    onPrimaryButtonClick: (subjectName: String) -> Unit,
     onAnswerSelection: (optionValue: String, optionId: Int) -> Unit
 ) {
     val taskStatus = remember(status?.value) {
@@ -366,6 +761,7 @@ fun ExpandableTaskCard(
                 isActivityCompleted = isActivityCompleted,
                 secondaryButtonTitle = secondaryButtonTitle,
                 onNotAvailableClick = onNotAvailableClick,
+                onPrimaryButtonClick = onPrimaryButtonClick,
                 context = context,
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
@@ -393,6 +789,7 @@ fun SelectActivityCard(
     secondaryButtonTitle: String,
     taskStatus: MutableState<String?>,
     onNotAvailableClick: () -> Unit,
+    onPrimaryButtonClick: (subjectName: String) -> Unit,
     context: Context,
     isNotAvailableButtonEnable: Boolean
 ) {
@@ -485,16 +882,27 @@ fun SelectActivityCard(
                 SubContainerView(subtitle2)
             }
         }
-        if (subtitle3?.value?.isNotBlank() == true || subtitle4?.value?.isNotBlank() == true) {
+
+        if (subtitle3?.value?.orEmpty()?.isNotBlank() == true) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
                 SubContainerView(subtitle3)
+            }
+        }
+
+        if (subtitle4?.value?.orEmpty()?.isNotBlank() == true) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
             }
         }
+
     }
     if (viewModel.isDidiImageDialogVisible.value.first
         && viewModel.isDidiImageDialogVisible.value.third != null
@@ -514,6 +922,7 @@ fun SelectActivityCard(
     ) {
         if (expanded) {
             OptionsUI(
+                title = title?.value.value(),
                 referenceId = viewModel.activityConfigUiModelWithoutSurvey?.referenceId,
                 translationHelper = translationHelper,
                 questionUiModel = questionUiModel,
@@ -522,13 +931,32 @@ fun SelectActivityCard(
                 isActivityCompleted = isActivityCompleted,
                 taskStatus = taskStatus,
                 onNotAvailableClick = onNotAvailableClick,
+                onPrimaryButtonClick = onPrimaryButtonClick,
                 secondaryButtonTitle = secondaryButtonTitle,
                 context = context,
                 isNotAvailableButtonEnable = isNotAvailableButtonEnable
             )
         } else {
             DisplaySelectedOption(translationHelper, questionUiModel, taskStatus.value) {
-                title?.let { onExpendClick(expanded, it) }
+                title?.let {
+                    when (questionUiModel?.type?.lowercase()) {
+                        QuestionType.RadioButton.name.toLowerCase(),
+                        QuestionType.Toggle.name.toLowerCase() -> {
+                            onExpendClick(expanded, it)
+                        }
+
+                        QuestionType.MultiSelectDropDown.name.lowercase(),
+                        QuestionType.SingleSelectDropDown.name.lowercase(),
+                        QuestionType.MultiSelect.name.toLowerCase(),
+                        QuestionType.SingleSelectGrid.name.toLowerCase() -> {
+                            onPrimaryButtonClick(title.value.value())
+                        }
+
+                        else -> {
+                            onExpendClick(expanded, it)
+                        }
+                    }
+                }
             }
         }
     }
@@ -619,6 +1047,7 @@ fun DisplaySelectedOption(
 @Composable
 private fun OptionsUI(
     referenceId: Int?,
+    title: String = BLANK_STRING,
     translationHelper: TranslationHelper,
     questionUiModel: QuestionUiModel?,
     taskMarkedNotAvailable: MutableState<Boolean>,
@@ -627,6 +1056,7 @@ private fun OptionsUI(
     secondaryButtonTitle: String,
     taskStatus: MutableState<String?>,
     onNotAvailableClick: () -> Unit,
+    onPrimaryButtonClick: (subjectName: String) -> Unit,
     context: Context,
     isNotAvailableButtonEnable: Boolean
 ) {
@@ -660,118 +1090,26 @@ private fun OptionsUI(
                     }
                 }
 
+                QuestionType.MultiSelectDropDown.name.lowercase(),
+                QuestionType.SingleSelectDropDown.name.lowercase(),
+                QuestionType.MultiSelect.name.toLowerCase(),
                 QuestionType.SingleSelectGrid.name.toLowerCase() -> {
-                    GridTypeComponent(
-                        questionDisplay = questionUiModel.questionDisplay,
-                        optionUiModelList = it,
-                        questionIndex = 0,
-                        areOptionsEnabled = !isActivityCompleted,
-                        maxCustomHeight = customGridHeight(it.size),
-                        isQuestionDisplay = false,
-                        showCardView = false,
-                        isTaskMarkedNotAvailable = taskMarkedNotAvailable,
-                        isEditAllowed = !isActivityCompleted,
-                        onAnswerSelection = { selectedOptionIndex, isSelected ->
-                            if (!isActivityCompleted) {
-                                questionUiModel.options?.let { options ->
-                                    options.forEach {
-                                        it.isSelected = false
-                                        it.selectedValue = BLANK_STRING
-                                    }
-                                    options[selectedOptionIndex].isSelected = true
-                                    taskMarkedNotAvailable.value = false
-                                    onAnswerSelection(BLANK_STRING, selectedOptionIndex)
-                                }
-                            } else {
-                                showCustomToast(
-                                    context,
-                                    translationHelper.getString(
-                                        com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
-                                    )
-                                )
-                            }
-                        }, questionDetailExpanded = {}
-                    )
-                }
 
-                QuestionType.MultiSelect.name.toLowerCase() -> {
-                    GridTypeComponent(
-                        questionDisplay = questionUiModel.questionDisplay,
-                        optionUiModelList = it,
-                        questionIndex = 0,
-                        areOptionsEnabled = !isActivityCompleted,
-                        maxCustomHeight = customGridHeight(it.size),
-                        isQuestionDisplay = false,
-                        showCardView = false,
-                        isTaskMarkedNotAvailable = taskMarkedNotAvailable,
-                        onAnswerSelection = { selectedOptionIndex, isSelected ->
-                            if (!isActivityCompleted) {
-                                questionUiModel.options?.get(selectedOptionIndex)?.isSelected =
-                                    isSelected
-                                taskMarkedNotAvailable.value = false
-                                onAnswerSelection(BLANK_STRING, selectedOptionIndex)
-                            } else {
-                                showCustomToast(
-                                    context,
-                                    translationHelper.getString(
-                                        com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
-                                    )
-                                )
-                            }
-                        }, questionDetailExpanded = {}
+                    PrimarySecondaryButtonView(
+                        translationHelper = translationHelper,
+                        modifier = Modifier.padding(horizontal = dimen_16_dp),
+                        secondaryButtonText = BLANK_STRING,
+                        taskMarkedNotAvailable,
+                        onNotAvailable = {},
+                        primaryButtonText = "Start",
+                        onPrimaryButtonClick = { subjectName ->
+                            onPrimaryButtonClick(subjectName)
+                        },
+                        title = title,
+                        isActivityCompleted,
+                        taskStatus,
+                        isNotAvailableButtonEnable
                     )
-                }
-
-                QuestionType.MultiSelectDropDown.name.lowercase() -> {
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = dimen_10_dp, vertical = dimen_10_dp)
-                    ) {
-                        TypeMultiSelectedDropDownComponent(
-                            content = questionUiModel.contentEntities,
-                            questionIndex = 0,
-                            title = BLANK_STRING,
-                            isMandatory = questionUiModel.isMandatory,
-                            sources = getOptionsValueDto(questionUiModel.options ?: listOf()),
-                            isEditAllowed = !isActivityCompleted,
-                            maxCustomHeight = dimen_60_dp,
-                            showCardView = false,
-                            isQuestionNumberVisible = false,
-                            optionStateMap = questionUiModel.options?.map {
-                                Pair(
-                                    it.optionId!!,
-                                    true
-                                )
-                            }?.toMap() ?: emptyMap(),
-                            showSearchBar = true,
-                            navigateToMediaPlayerScreen = {},
-                            onAnswerSelection = { selectedItems ->
-                                if (!isActivityCompleted) {
-                                    val selectedOptions =
-                                        selectedItems.split(DELIMITER_MULTISELECT_OPTIONS)
-                                    questionUiModel.options?.forEach { options ->
-                                        if (selectedOptions.find { it == options.description.toString() } != null) {
-                                            options.isSelected = true
-                                        } else {
-                                            options.isSelected = false
-                                        }
-                                    }
-                                    onAnswerSelection(
-                                        selectedItems,
-                                        questionUiModel.options?.firstOrNull()?.optionId.value()
-                                    )
-                                } else {
-                                    showCustomToast(
-                                        context,
-                                        translationHelper.getString(
-                                            com.sarathi.surveymanager.R.string.activity_completed_unable_to_edit
-                                        )
-                                    )
-                                }
-                            }
-                        )
-                    }
                 }
             }
 

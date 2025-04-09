@@ -143,6 +143,7 @@
     <string name="sort_by">Sort By</string>
     <string name="income_expanse">আয় / ব্যয়</string>
     <string name="date_of_event">ঘটনার তারিখ</string>
+    <string name="decrese_in_number">সংখ্যা হ্রাস:</string>
     <string name="type_of_adult_asset">প্রাপ্তবয়স্ক সম্পদ</string>
     <string name="type_of_child_asset">শিশু সম্পদ</string>
     <string name="enter_child_asset_count">স্থানান্তরের জন্য শিশু সম্পদের সংখ্যা লিখুন</string>
