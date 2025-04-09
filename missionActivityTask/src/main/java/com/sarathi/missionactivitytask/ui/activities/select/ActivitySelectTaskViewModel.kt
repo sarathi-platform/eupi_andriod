@@ -129,6 +129,16 @@ open class ActivitySelectTaskViewModel @Inject constructor(
         }
     }
 
+    fun onExpandClicked(
+        taskId: Int
+    ) {
+        if (expandedIds.contains(taskId)) {
+            expandedIds.remove(taskId)
+        } else {
+            expandedIds.add(taskId)
+        }
+    }
+
     fun expandNextItem(currentIndex: Int, groupKey: String? = null) {
         val nextIndex = currentIndex + 1
         var taskIdList =
@@ -293,6 +303,10 @@ open class ActivitySelectTaskViewModel @Inject constructor(
             checkButtonValidation()
             updateProgress()
         }
+    }
+
+    fun collapseItemCard(taskId: Int) {
+        expandedIds.remove(taskId)
     }
 
 //    override fun getScreenName(): TranslationEnum {
