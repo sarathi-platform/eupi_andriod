@@ -485,16 +485,27 @@ fun SelectActivityCard(
                 SubContainerView(subtitle2)
             }
         }
-        if (subtitle3?.value?.isNotBlank() == true || subtitle4?.value?.isNotBlank() == true) {
+
+        if (subtitle3?.value?.orEmpty()?.isNotBlank() == true) {
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
             ) {
                 SubContainerView(subtitle3)
+            }
+        }
+
+        if (subtitle4?.value?.orEmpty()?.isNotBlank() == true) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
                 SubContainerView(subtitle4, isNumberFormattingRequired = true)
             }
         }
+
     }
     if (viewModel.isDidiImageDialogVisible.value.first
         && viewModel.isDidiImageDialogVisible.value.third != null
