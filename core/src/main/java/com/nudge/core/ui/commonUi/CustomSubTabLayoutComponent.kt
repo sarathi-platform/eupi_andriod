@@ -3,6 +3,7 @@ package com.nudge.core.ui.commonUi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
@@ -37,7 +39,6 @@ import com.nudge.core.ui.theme.dimen_8_dp
 import com.nudge.core.ui.theme.mediumTextStyle
 import com.nudge.core.ui.theme.tabBgColor
 import com.nudge.core.ui.theme.textColorDark
-import com.nudge.core.ui.theme.weight_100_percent
 import com.nudge.core.ui.theme.white
 
 @Composable
@@ -130,16 +131,15 @@ fun CustomFixedCountSubTabLayoutWithCallBack(
 ) {
 
     Row(
-        horizontalArrangement = Arrangement.spacedBy(dimen_10_dp),
+        horizontalArrangement = Arrangement.spacedBy(dimen_12_dp),
         modifier = Modifier
-            .fillMaxWidth()
+            .horizontalScroll(rememberScrollState())
             .then(modifier),
     ) {
         if (tabs.size <= 2) {
             tabs.forEachIndexed { index, tab ->
                 TabItem(
-                    modifier = tabModifier
-                        .weight(weight_100_percent),
+                    modifier = tabModifier,
                     tabTextModifier = tabTextModifier
                         .padding(
                             vertical = dimen_8_dp,

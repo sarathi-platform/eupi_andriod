@@ -7,7 +7,6 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.MISSION_LANGUAGE_TABLE_NAME
-import com.sarathi.dataloadingmangement.model.mat.response.Language
 
 
 @Entity(tableName = MISSION_LANGUAGE_TABLE_NAME)
@@ -26,15 +25,16 @@ data class MissionLanguageEntity(
 
         fun getMissionLanguageEntity(
             missionId: Int,
-            language: Language,
+            languageCode: String,
+            description: String,
             uniqueUserIdentifier: String,
         ): MissionLanguageEntity {
 
             return MissionLanguageEntity(
                 id = 0,
                 userId = uniqueUserIdentifier,
-                languageCode = language.language,
-                description = language.description,
+                languageCode = languageCode,
+                description = description,
                 missionId
             )
         }

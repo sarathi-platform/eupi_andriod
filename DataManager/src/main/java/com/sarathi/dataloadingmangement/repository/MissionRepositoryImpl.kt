@@ -1,5 +1,6 @@
 package com.sarathi.dataloadingmangement.repository
 
+import android.text.TextUtils
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.nudge.core.model.ApiResponseModel
@@ -150,16 +151,37 @@ class MissionRepositoryImpl @Inject constructor(
     }
 
     private fun saveMissionsLanguageAttributes(mission: MissionResponse) {
-        mission.languages.forEach {
-            missionLanguageAttributeDao.insertMissionLanguageAttribute(
-                MissionLanguageEntity.getMissionLanguageEntity(
-                    mission.id,
-                    it,
-                    sharedPrefs.getUniqueUserIdentifier()
+
+        val stateCode = sharedPrefs.getStateCode().lowercase()
+
+        mission.languages.forEach { missionLanguageAttribute ->
+            val languageCodeParts = missionLanguageAttribute.language.lowercase().split("_")
+            val updatedLanguageCode =
+                if (languageCodeParts.size > 1) {
+                    if (languageCodeParts[1] == stateCode) {
+                        languageCodeParts.firstOrNull() ?: com.nudge.core.BLANK_STRING
+                    } else {
+                        com.nudge.core.BLANK_STRING
+                    }
+                } else {
+                    missionLanguageAttribute.language
+                }
+
+            missionLanguageAttribute.language = updatedLanguageCode
+            if (!TextUtils.isEmpty(updatedLanguageCode)) {
+
+                missionLanguageAttributeDao.insertMissionLanguageAttribute(
+                    MissionLanguageEntity.getMissionLanguageEntity(
+                        mission.id,
+                        missionLanguageAttribute.language,
+                        missionLanguageAttribute.description,
+                        sharedPrefs.getUniqueUserIdentifier()
+                    )
                 )
-            )
+            }
         }
     }
+
 
     private fun saveContentConfig(
         id: Int,
@@ -460,22 +482,43 @@ class MissionRepositoryImpl @Inject constructor(
     private fun saveActivityLanguageAttributes(
         missionId: Int,
         id: Int,
-        activityTitle: List<ActivityTitle>
+        activityTitles: List<ActivityTitle>
     ) {
         activityLanguageDao.deleteActivityLanguageAttributeForActivity(
             userId = sharedPrefs.getUniqueUserIdentifier(),
             missionId = missionId,
             activityId = id
         )
-        activityTitle.forEach {
+
+        val stateCode = sharedPrefs.getStateCode().lowercase()
+
+        activityTitles?.forEach { activityTitle ->
+            val languageCodeParts = activityTitle.language.lowercase().split("_")
+            val updatedLanguageCode =
+                if (languageCodeParts.size > 1) {
+                    if (languageCodeParts[1] == stateCode) {
+                        languageCodeParts.firstOrNull() ?: com.nudge.core.BLANK_STRING
+                    } else {
+                        com.nudge.core.BLANK_STRING
+                    }
+                } else {
+                    activityTitle.language
+                }
+
+            activityTitle.language = updatedLanguageCode
+            if (!TextUtils.isEmpty(updatedLanguageCode)) {
+
             activityLanguageDao.insertActivityLanguage(
                 ActivityLanguageAttributesEntity.getActivityLanguageAttributesEntity(
                     missionId = missionId,
                     activityId = id,
                     userId = sharedPrefs.getUniqueUserIdentifier(),
-                    activityTitle = it
+                    activityName = activityTitle.name,
+                    languageCode = activityTitle.language
                 )
             )
+
+            }
         }
     }
 

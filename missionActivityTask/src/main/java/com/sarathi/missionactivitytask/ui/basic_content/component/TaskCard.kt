@@ -407,7 +407,11 @@ fun PrimarySecondaryButtonView(
 
 ) {
     val context = LocalContext.current
-    Row(modifier = Modifier.fillMaxWidth()) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .then(modifier)
+    ) {
         if (secondaryButtonText.isNotBlank()) {
             PrimaryButton(
                 text = secondaryButtonText,

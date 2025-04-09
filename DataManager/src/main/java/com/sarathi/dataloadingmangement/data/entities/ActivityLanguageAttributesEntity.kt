@@ -7,7 +7,6 @@ import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.sarathi.dataloadingmangement.ACTIVITY_LANGUAGE_ATTRIBUTE_TABLE_NAME
 import com.sarathi.dataloadingmangement.BLANK_STRING
-import com.sarathi.dataloadingmangement.model.mat.response.ActivityTitle
 
 @Entity(tableName = ACTIVITY_LANGUAGE_ATTRIBUTE_TABLE_NAME)
 data class ActivityLanguageAttributesEntity(
@@ -28,16 +27,17 @@ data class ActivityLanguageAttributesEntity(
             missionId: Int,
             userId: String?,
             activityId: Int,
-            activityTitle: ActivityTitle
+            activityName: String,
+            languageCode: String
         ): ActivityLanguageAttributesEntity {
 
             return ActivityLanguageAttributesEntity(
                 id = 0,
                 userId = userId,
-                languageCode = activityTitle.language,
+                languageCode = languageCode,
                 activityId = activityId,
                 missionId = missionId,
-                description = activityTitle.name
+                description = activityName
             )
         }
     }

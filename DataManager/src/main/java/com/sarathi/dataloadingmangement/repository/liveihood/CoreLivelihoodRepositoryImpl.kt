@@ -1,5 +1,7 @@
 package com.sarathi.dataloadingmangement.repository.liveihood
 
+import android.text.TextUtils
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.model.ApiResponseModel
 import com.nudge.core.preference.CoreSharedPrefs
 import com.sarathi.dataloadingmangement.data.dao.livelihood.AssetDao
@@ -112,17 +114,37 @@ class CoreLivelihoodRepositoryImpl @Inject constructor(
         referenceId: Int?
     ) {
         val languageReferenceEntities = ArrayList<LivelihoodLanguageReferenceEntity>()
-        languageReferences.forEach { languageReference ->
+        val stateCode = coreSharedPrefs.getStateCode().lowercase()
+
+        languageReferences.forEach { languageAttribute ->
+            val languageCodeParts = languageAttribute.languageCode?.lowercase()?.split("_")
+            val updatedLanguageCode =
+                if (languageCodeParts?.size!! > 1) {
+                    if (languageCodeParts[1] == stateCode) {
+                        languageCodeParts.firstOrNull() ?: BLANK_STRING
+                    } else {
+                        BLANK_STRING
+                    }
+                } else {
+                    languageAttribute.languageCode
+                }
+
+            languageAttribute.languageCode = updatedLanguageCode
+            if (!TextUtils.isEmpty(updatedLanguageCode)) {
+
             languageReferenceEntities.add(
                 LivelihoodLanguageReferenceEntity.getLivelihoodLanguageEntity(
                     uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier(),
-                    languageReference = languageReference,
+                    languageCode = languageAttribute.languageCode ?: BLANK_STRING,
+                    languageReferenceId = languageAttribute.id ?: 0,
+                    name = languageAttribute.name ?: BLANK_STRING,
                     referenceType = referenceType,
                     referenceId = referenceId
                 )
             )
         }
         livelihoodLanguageDao.insertLivelihoodLanguage(languageEntity = languageReferenceEntities)
+    }
     }
 
     override suspend fun deleteLivelihoodCoreDataForUser() {

@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class ActivityTitle(
     @SerializedName("language")
-    val language: String,
+    var language: String,
     @SerializedName("description")
     val name: String
 )
