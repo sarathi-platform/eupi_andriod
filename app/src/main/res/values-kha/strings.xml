@@ -575,5 +575,6 @@
     <string name="mobile_number">Mobile number</string>
     <string name="otp_is_invalid">OTP is invalid</string>
     <string name="no_village_found">No Village Found</string>
+    <string name="assets">Assets</string>
 
 </resources>

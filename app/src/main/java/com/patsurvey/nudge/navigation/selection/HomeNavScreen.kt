@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.BottomNavigation
 import androidx.compose.material.BottomNavigationItem
@@ -40,6 +41,7 @@ import com.nudge.core.TabsCore
 import com.nudge.core.enums.TabsEnum
 import com.nudge.core.helper.LocalTranslationHelper
 import com.nudge.core.isOnline
+import com.nudge.core.ui.theme.dimen_24_dp
 import com.nudge.navigationmanager.graphs.HomeScreens
 import com.nudge.navigationmanager.graphs.NudgeNavigationGraph
 import com.patsurvey.nudge.R
@@ -103,9 +105,9 @@ fun BottomBar(navController: NavHostController, prefRepo: PrefRepo) {
         if (prefRepo.isDataTabVisible()) {
             screenList.add(
                 BottomNavItem(
-                    translationHelper.stringResource(R.string.data),
+                    translationHelper.getString(R.string.assets),
                     HomeScreens.DATA_TAB_SCREEN.route,
-                    painterResource(id = R.drawable.data_tab_icon),
+                    painterResource(id = R.drawable.assets_tab_icon),
                     TabsEnum.DataTab
                 )
             )
@@ -192,7 +194,9 @@ fun RowScope.AddItem(
                     painter = screen.icon,
                     contentDescription = screen.name,
                     tint = if (selected) greenActiveIcon else blueDark,
-                    modifier = Modifier.padding(top = 5.dp)
+                    modifier = Modifier
+                        .padding(top = 5.dp)
+                        .size(dimen_24_dp)
                 )
                 Text(
                     text = screen.name,
