@@ -188,10 +188,14 @@ abstract class BaseViewModel : ViewModel() {
                 onComplete = { isSucess, message ->
                     onComplete(isSucess, message)
                 },
-                totalNumberOfApi = { screenName, screenTotalApi ->
-                    totalApiCall.value = screenTotalApi
+                totalNumberOfApi = { screenName, moduleName, requestBody, transactionId ->
+                    totalApiCall.value = fetchAllDataUseCase.getApiInProgressCount(
+                        screenName = screenName,
+                        moduleName = moduleName,
+                        customData = requestBody,
+                        triggerPoint = dataLoadingTriggerType.name,
+                    )
                 },
-
                 apiPerStatus = { apiName, requestPayload ->
                     val apiStatusData = fetchAllDataUseCase.getApiStatus(
                         screenName = screenName,

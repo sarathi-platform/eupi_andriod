@@ -15,13 +15,14 @@ interface ApiCallJournalDao {
     @Query("DELETE FROM $ApiCallJournalTable where userId=:userId")
     suspend fun deleteApiCallJournalTable(userId: String)
 
-    @Query("Select Count(*) from api_call_journal_table where userId=:uniqueUserIdentifier and apiUrl=:apiUrl and requestBody=:requestPayload and screenName=:screenName and moduleName=:moduleName")
+    @Query("Select Count(*) from api_call_journal_table where userId=:uniqueUserIdentifier and apiUrl=:apiUrl and requestBody=:requestPayload and screenName=:screenName and moduleName=:moduleName and transactionId=:transactionId")
     suspend fun isApiCallAlreadyExist(
         apiUrl: String,
         requestPayload: String,
         uniqueUserIdentifier: String,
         screenName: String,
         moduleName: String,
+        transactionId: String,
     ): Int
 
     @Query("Select * from api_call_journal_table where screenName=:screenName and moduleName=:moduleName  and  apiUrl=:apiUrl and requestBody=:requestPayload")
@@ -49,6 +50,14 @@ interface ApiCallJournalDao {
         screenName: String,
         moduleName: String,
         status: String,
-        userId: String,
+        userId: String
     ): List<ApiCallJournalEntity>?
+
+    @Query("SELECT count(*) FROM api_call_journal_table WHERE screenName = :screenName AND moduleName = :moduleName AND userId = :userId and transactionId=:transactionId GROUP BY transactionId")
+    fun getTotalInProgressApiCallJournalEntity(
+        screenName: String,
+        moduleName: String,
+        transactionId: String,
+        userId: String,
+    ): Int?
 }

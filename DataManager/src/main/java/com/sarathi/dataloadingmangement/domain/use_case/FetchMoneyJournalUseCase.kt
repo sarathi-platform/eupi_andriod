@@ -3,14 +3,12 @@ package com.sarathi.dataloadingmangement.domain.use_case
 import com.nudge.core.constants.DataLoadingTriggerType
 import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallJournalRepository
-import com.nudge.core.enums.ActivityTypeEnum
 import com.nudge.core.enums.ApiStatus
 import com.sarathi.dataloadingmangement.BLANK_STRING
 import com.sarathi.dataloadingmangement.SUCCESS
 import com.sarathi.dataloadingmangement.network.ApiException
 import com.sarathi.dataloadingmangement.network.SUBPATH_GET_MONEY_JOURNAL_DETAILS
 import com.sarathi.dataloadingmangement.repository.MoneyJournalNetworkRepository
-import java.util.Locale
 import javax.inject.Inject
 
 
@@ -25,28 +23,26 @@ class FetchMoneyJournalUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
-            val missionId: Int = if (customData["MissionId"] != null) {
-                customData["MissionId"] as? Int ?: -1
-            } else {
-                -1
-            }
-            val activityTypes =
-                fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
-            if (screenName == "ActivityScreen" && !(activityTypes.contains(
-                    ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH)
-                ) || activityTypes.contains(
-                    ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH)
-                ))
-            ) {
-                return false
-            }
+            val missionId = customData["MissionId"] as? Int ?: -1
+//            val activityTypes =
+//                fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
+//            if (screenName == "ActivityScreen" && !(activityTypes.contains(
+//                    ActivityTypeEnum.GRANT.name.lowercase(Locale.ENGLISH)
+//                ) || activityTypes.contains(
+//                    ActivityTypeEnum.LIVELIHOOD_PoP.name.lowercase(Locale.ENGLISH)
+//                ))
+//            ) {
+//                return false
+//            }
             if (!super.invoke(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
+                    transactionId = transactionId,
                     customData = mapOf(),
                 )
             ) {

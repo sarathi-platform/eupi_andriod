@@ -8,4 +8,10 @@ interface IApiCallConfigRepository {
         dataLoadingTriggerType: String
     ): List<ApiCallConfigEntity>
 
+    suspend fun getApiCallConfigForScreenAndModule(
+        screenName: String,
+        moduleName: String,
+        triggerPoint: String
+    ): List<ApiCallConfigEntity>
+
 }

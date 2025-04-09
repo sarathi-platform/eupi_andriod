@@ -46,8 +46,9 @@ class DataTabUseCase @Inject constructor(
             apiUseCaseList[it.apiName]?.invoke(
                 screenName = screenName,
                 triggerType = dataLoadingTriggerType,
-                customData = mapOf(),
-                moduleName = moduleName
+                moduleName = moduleName,
+                transactionId = "",
+                customData = mapOf()
             )
         }
         //Todo handle commented code

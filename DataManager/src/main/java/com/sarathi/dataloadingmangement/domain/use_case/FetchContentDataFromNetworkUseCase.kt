@@ -26,6 +26,7 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
@@ -33,6 +34,7 @@ class FetchContentDataFromNetworkUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
+                    transactionId = transactionId,
                     customData = mapOf(),
                 )
             ) {

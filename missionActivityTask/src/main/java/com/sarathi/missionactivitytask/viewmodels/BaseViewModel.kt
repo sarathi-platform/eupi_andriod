@@ -168,7 +168,7 @@ abstract class BaseViewModel : ViewModel() {
         }
     }
 
-    suspend fun loadAllData(
+    fun loadAllData(
         screenName: String,
         moduleName: String,
         customData: Map<String, Any>,
@@ -186,8 +186,13 @@ abstract class BaseViewModel : ViewModel() {
                 isRefresh = false,
                 onComplete = { isSucess, message ->
                 },
-                totalNumberOfApi = { screenName, screenTotalApi ->
-                    totalApiCall.value = screenTotalApi
+                totalNumberOfApi = { screenName, moduleName, requestBody, transactionId ->
+                    totalApiCall.value = fetchAllDataUseCase.getApiInProgressCount(
+                        screenName = screenName,
+                        moduleName = moduleName,
+                        customData = requestBody,
+                        triggerPoint = dataLoadingTriggerType.name,
+                    )
                 },
                 apiPerStatus = { apiName, requestPayload ->
                     val apiStatusData = fetchAllDataUseCase.getApiStatus(

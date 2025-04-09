@@ -11,6 +11,7 @@ import com.nudge.core.database.MigrationQueries.CREATE_API_CALL_JOURNAL_TABLE
 import com.nudge.core.database.MigrationQueries.CREATE_CASTE_TABLE
 import com.nudge.core.database.MigrationQueries.CREATE_LANGUAGE_TABLE
 import com.nudge.core.database.MigrationQueries.CREATE_TRANSLATION_CONFIG_TABLE
+import com.nudge.core.database.converters.ApiExpressionConverter
 import com.nudge.core.database.converters.DateConverter
 import com.nudge.core.database.converters.ListConvertor
 import com.nudge.core.database.dao.ApiConfigDao
@@ -40,7 +41,7 @@ import java.sql.SQLException
     version = CORE_DB_VERSION,
     exportSchema = false
 )
-@TypeConverters(DateConverter::class, ListConvertor::class)
+@TypeConverters(DateConverter::class, ListConvertor::class, ApiExpressionConverter::class)
 abstract class CoreDatabase : RoomDatabase() {
 
     abstract fun appConfigDao(): ApiConfigDao

@@ -6,6 +6,7 @@ import com.nudge.core.data.repository.BaseApiCallNetworkUseCase
 import com.nudge.core.data.repository.IApiCallConfigRepository
 import com.nudge.core.data.repository.IApiCallJournalRepository
 import com.nudge.core.database.entities.api.ApiCallJournalEntity
+import com.nudge.core.database.entities.api.ApiExpression
 import com.nudge.core.json
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.FetchAppConfigFromNetworkUseCase
@@ -28,6 +29,7 @@ import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGro
 import com.sarathi.dataloadingmangement.domain.use_case.smallGroup.FetchSmallGroupListsFromDbUseCase
 import com.sarathi.dataloadingmangement.model.uiModel.ActivityInfoUIModel
 import com.sarathi.dataloadingmangement.model.uiModel.MissionInfoUIModel
+import java.util.UUID
 import javax.inject.Inject
 
 class FetchAllDataUseCase @Inject constructor(
@@ -100,6 +102,7 @@ class FetchAllDataUseCase @Inject constructor(
         // "SUB_PATH_CONTENT_MANAGER" to fetchContentDataFromNetworkUseCase,
     )
 
+    //  @SuppressLint("SuspiciousIndentation")
     suspend fun invoke(
         screenName: String,
         dataLoadingTriggerType: DataLoadingTriggerType,
@@ -107,41 +110,56 @@ class FetchAllDataUseCase @Inject constructor(
         customData: Map<String, Any>,
         onComplete: (isSuccess: Boolean, successMsg: String) -> Unit,
         isRefresh: Boolean = true,
-        totalNumberOfApi: (screenName: String, screenTotalApi: Int) -> Unit,
+        totalNumberOfApi: suspend (screenName: String, moduleName: String, customData: Map<String, Any>, transactionId: String) -> Unit,
         apiPerStatus: suspend (apiName: String, requestPayload: String) -> Unit
     ) {
         val apiCallList =
             apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name)
-        val nonLoopingApiCount = apiCallList.filter { it.isLoopingCall != true }.size
-        totalNumberOfApi(screenName, nonLoopingApiCount)
-            apiCallList.forEach { apiDetails ->
-                try {
+        val transactionId = UUID.randomUUID().toString()
+        totalNumberOfApi(
+            screenName,
+            moduleName,
+            customData,
+            transactionId
+        )
+        apiCallList.forEach { apiDetails ->
+            try {
+                if (apiDetails.expression == null || expressionCheckerForApiCall(
+                        apiExpressions = apiDetails.expression,
+                        customData = customData
+                    )
+                ) {
                     apiUseCaseList[apiDetails.apiName]?.invoke(
                         screenName = screenName,
                         triggerType = dataLoadingTriggerType,
-                        customData = customData,
-                        moduleName = moduleName
+                        moduleName = moduleName,
+                        transactionId = transactionId,
+                        customData = customData
                     )
 
                     apiPerStatus(
                         apiDetails.apiUrls,
-                        generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
+                        generateRequestPacket(
+                            customData = customData,
+                            apiName = apiDetails.apiName
+                        )
                     )
-                } catch (e: retrofit2.HttpException) {
-                    Log.e("API Error", "HttpException occurred: ${e.message()}")
-                    apiPerStatus(
-                        apiUseCaseList[apiDetails.apiName]?.getApiEndpoint().toString(),
-                        generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
-                    )
-                    return@forEach
-                } catch (e: Exception) {
-                    Log.e("API Error", "Unexpected error occurred: ${e.message}")
-                    apiPerStatus(
-                        apiUseCaseList[apiDetails.apiName]?.getApiEndpoint().toString(),
-                        generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
-                    )
-                    return@forEach
                 }
+            } catch (e: retrofit2.HttpException) {
+                Log.e("API Error", "HttpException occurred: ${e.message()}")
+                apiPerStatus(
+                    apiUseCaseList[apiDetails.apiName]?.getApiEndpoint().toString(),
+                    generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
+                )
+                return@forEach
+            } catch (e: Exception) {
+                Log.e("API Error", "Unexpected error occurred: ${e.message}")
+                apiPerStatus(
+                    apiUseCaseList[apiDetails.apiName]?.getApiEndpoint().toString(),
+                    generateRequestPacket(customData = customData, apiName = apiDetails.apiName)
+                )
+                return@forEach
+            }
         }
         onComplete(true, BLANK_STRING)
     }
@@ -192,8 +210,9 @@ class FetchAllDataUseCase @Inject constructor(
         apiCallConfigRepository.getApiCallList(screenName, dataLoadingTriggerType.name).forEach {
             apiUseCaseList[it.apiName]?.invoke(
                 screenName = screenName,
-                moduleName = moduleName,
                 triggerType = dataLoadingTriggerType,
+                moduleName = moduleName,
+                transactionId = "",
                 customData = mapOf("MissionId" to missionId, "ProgramId" to programId),
             )
         }
@@ -254,10 +273,6 @@ class FetchAllDataUseCase @Inject constructor(
         return fetchMissionActivityDetailDataUseCase.fetchActivityInfo(missionId, activityId)
     }
 
-    fun getAiCallNeed(): Boolean {
-        return false
-    }
-
     suspend fun getApiStatus(
         screenName: String,
         moduleName: String,
@@ -271,6 +286,42 @@ class FetchAllDataUseCase @Inject constructor(
             requestPayload = requestPayload
 
         )
+    }
+
+    suspend fun getApiInProgressCount(
+        screenName: String,
+        moduleName: String,
+        customData: Map<String, Any>,
+        triggerPoint: String
+    ): Int {
+        val apiConfigs = apiCallConfigRepository.getApiCallConfigForScreenAndModule(
+            screenName = screenName,
+            moduleName = moduleName,
+            triggerPoint = triggerPoint
+        )
+        return apiConfigs.count {
+            it.expression == null || expressionCheckerForApiCall(
+                apiExpressions = it.expression,
+                customData = customData
+            )
+        }
+    }
+
+    private suspend fun expressionCheckerForApiCall(
+        apiExpressions: List<ApiExpression>?,
+        customData: Map<String, Any>
+    ): Boolean {
+        val missionId = customData["MissionId"] as? Int ?: -1
+        val activityTypes =
+            fetchMissionActivityDetailDataUseCase.getActivityTypesForMission(missionId)
+        return apiExpressions?.any { expression ->
+            expression.condition == "activityTypes" &&
+                    expression.activityType.any { activityName ->
+                        activityTypes.contains(
+                            activityName
+                        )
+                    }
+        } ?: true
     }
 
 }

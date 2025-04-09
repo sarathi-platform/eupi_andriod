@@ -21,10 +21,11 @@ class FetchMissionDataUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
-            if (!super.invoke(screenName, triggerType, moduleName, mapOf())) {
+            if (!super.invoke(screenName, triggerType, moduleName, transactionId, mapOf())) {
                 return false
             }
             val apiResponse = repository.fetchMissionListFromServer()

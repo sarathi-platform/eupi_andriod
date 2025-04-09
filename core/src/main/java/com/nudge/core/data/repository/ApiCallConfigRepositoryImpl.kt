@@ -20,4 +20,16 @@ class ApiCallConfigRepositoryImpl @Inject constructor(
 
         ).filter { it.triggerPoint.contains(dataLoadingTriggerType) }
     }
+
+    override suspend fun getApiCallConfigForScreenAndModule(
+        screenName: String,
+        moduleName: String,
+        triggerPoint: String
+    ): List<ApiCallConfigEntity> {
+        return apiCallConfigDao.getApiCallConfigForScreenAndModule(
+            screenName = screenName,
+            moduleName = moduleName,
+            triggerPoint = triggerPoint
+        )
+    }
 }

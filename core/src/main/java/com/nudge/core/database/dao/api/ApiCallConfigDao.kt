@@ -20,4 +20,11 @@ interface ApiCallConfigDao {
         screenName: String, triggerPoint: String
     ): List<ApiCallConfigEntity>
 
+    @Query("Select * FROM $ApiCallConfigTable where screenName=:screenName  and triggerPoint=:triggerPoint and moduleName=:moduleName ")
+    fun getApiCallConfigForScreenAndModule(
+        screenName: String,
+        moduleName: String,
+        triggerPoint: String
+    ): List<ApiCallConfigEntity>
+
 }

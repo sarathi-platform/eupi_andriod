@@ -33,12 +33,14 @@ class FetchCasteConfigNetworkUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         if (!super.invoke(
                 screenName = screenName,
                 triggerType = triggerType,
                 moduleName = moduleName,
+                transactionId = transactionId,
                 customData = mapOf(),
             )
         ) {

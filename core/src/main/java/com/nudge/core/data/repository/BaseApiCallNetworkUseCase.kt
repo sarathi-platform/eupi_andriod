@@ -14,6 +14,7 @@ open class BaseApiCallNetworkUseCase @Inject constructor(val apiCallJournalRepos
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         apiCallJournalRepository.addApiCall(
@@ -21,6 +22,7 @@ open class BaseApiCallNetworkUseCase @Inject constructor(val apiCallJournalRepos
             moduleName = moduleName,
             dataLoadingTriggerType = triggerType.name,
             requestPayload = customData.json(),
+            transactionId = transactionId,
             apiUrl = getApiEndpoint()
         )
 

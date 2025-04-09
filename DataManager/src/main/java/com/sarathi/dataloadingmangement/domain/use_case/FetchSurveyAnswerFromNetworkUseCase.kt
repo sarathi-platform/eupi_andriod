@@ -22,6 +22,7 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
@@ -29,12 +30,12 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
+                    transactionId = transactionId,
                     customData = customData,
                 )
             ) {
                 return false
             }
-            //TODO need to add MissionId
             val missionId = customData["MissionId"] as Int
             repository.getActivityConfig(missionId = missionId)?.forEach {
                 callSurveAnsweryApi(
@@ -51,8 +52,6 @@ class FetchSurveyAnswerFromNetworkUseCase @Inject constructor(
                     )
                 )
             }
-
-
         } catch (apiException: ApiException) {
             throw apiException
         } catch (ex: Exception) {

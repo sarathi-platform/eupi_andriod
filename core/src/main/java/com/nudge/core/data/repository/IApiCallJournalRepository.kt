@@ -8,6 +8,7 @@ interface IApiCallJournalRepository {
         moduleName: String,
         dataLoadingTriggerType: String,
         requestPayload: String,
+        transactionId: String,
         apiUrl: String
     )
 
@@ -32,5 +33,12 @@ interface IApiCallJournalRepository {
         screenName: String,
         moduleName: String
     ): List<ApiCallJournalEntity>?
+
+    suspend fun getTotalInProgressApiCallJournalEntity(
+        screenName: String,
+        moduleName: String,
+        requestBody: String,
+        transactionId: String
+    ): Int?
 
 }

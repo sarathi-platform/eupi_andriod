@@ -15,6 +15,7 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
         moduleName: String,
         dataLoadingTriggerType: String,
         requestPayload: String,
+        transactionId: String,
         apiUrl: String
     ) {
 
@@ -22,7 +23,8 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
                 apiUrl,
                 requestPayload,
                 screenName = screenName,
-                moduleName = moduleName
+                moduleName = moduleName,
+                transactionId = transactionId
             )
         )
             apiCallJournalJournalDao.insert(
@@ -32,7 +34,8 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
                     triggerPoint = dataLoadingTriggerType,
                     userId = coreSharedPrefs.getUniqueUserIdentifier(),
                     apiUrl = apiUrl,
-                    requestBody = requestPayload
+                    requestBody = requestPayload,
+                    transactionId = transactionId
                 )
             )
 
@@ -86,16 +89,34 @@ class ApiCallJournalRepositoryImpl @Inject constructor(
         )
     }
 
+    override suspend fun getTotalInProgressApiCallJournalEntity(
+        screenName: String,
+        moduleName: String,
+        requestBody: String,
+        transactionId: String
+    ): Int? {
+        return apiCallJournalJournalDao.getTotalInProgressApiCallJournalEntity(
+            userId = coreSharedPrefs.getUniqueUserIdentifier(),
+            screenName = screenName,
+            moduleName = moduleName,
+            transactionId = transactionId
+        )
+    }
+
 
     private suspend fun isApiCallAlreadyExist(
-        apiUrl: String, requestPayload: String, screenName: String,
+        apiUrl: String,
+        requestPayload: String,
+        screenName: String,
         moduleName: String,
+        transactionId: String,
     ): Boolean {
         return apiCallJournalJournalDao.isApiCallAlreadyExist(
             apiUrl,
             requestPayload,
             moduleName = moduleName,
             screenName = screenName,
+            transactionId = transactionId,
             uniqueUserIdentifier = coreSharedPrefs.getUniqueUserIdentifier()
         ) > 0
     }

@@ -3,7 +3,9 @@ package com.nudge.core.database.entities.api
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.TypeConverters
 import com.nudge.core.ApiCallConfigTable
+import com.nudge.core.database.converters.ApiExpressionConverter
 
 @Entity(tableName = ApiCallConfigTable)
 data class ApiCallConfigEntity(
@@ -17,5 +19,8 @@ data class ApiCallConfigEntity(
     @ColumnInfo("moduleName") val moduleName: String,
     @ColumnInfo("apiOrder") val apiOrder: Int,
     @ColumnInfo("isAsyncCall") val isAsyncCall: Boolean,
-    @ColumnInfo("isLoopingCall") val isLoopingCall: Boolean?
+    @ColumnInfo("isLoopingCall") val isLoopingCall: Boolean?,
+    @ColumnInfo("expression")
+    @TypeConverters(ApiExpressionConverter::class)
+    var expression: List<ApiExpression>?
 )

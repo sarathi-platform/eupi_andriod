@@ -22,10 +22,11 @@ class FetchMissionActivityDetailDataUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
-            if (!super.invoke(screenName, triggerType, moduleName, customData)) {
+            if (!super.invoke(screenName, triggerType, moduleName, transactionId, customData)) {
                 return false
             }
 

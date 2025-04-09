@@ -20,7 +20,8 @@ data class ApiCallJournalEntity(
     @ColumnInfo("errorMsg") val errorMsg: String?,
     @ColumnInfo("retryCount") val retryCount: Int,
     @ColumnInfo("createdDate") val createdDate: Long,
-    @ColumnInfo("modifiedDate") val modifiedDate: Long
+    @ColumnInfo("modifiedDate") val modifiedDate: Long,
+    @ColumnInfo("transactionId") val transactionId: String,
 ) {
     companion object {
         fun getApiCallJournalEntity(
@@ -29,7 +30,8 @@ data class ApiCallJournalEntity(
             moduleName: String,
             screenName: String,
             requestBody: String,
-            triggerPoint: String
+            triggerPoint: String,
+            transactionId: String,
         ): ApiCallJournalEntity {
             return ApiCallJournalEntity(
                 id = 0,
@@ -43,7 +45,8 @@ data class ApiCallJournalEntity(
                 errorMsg = BLANK_STRING,
                 retryCount = 0,
                 createdDate = System.currentTimeMillis(),
-                modifiedDate = System.currentTimeMillis()
+                modifiedDate = System.currentTimeMillis(),
+                transactionId = transactionId
             )
         }
     }

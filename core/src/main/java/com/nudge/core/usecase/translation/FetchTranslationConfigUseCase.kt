@@ -21,6 +21,7 @@ class FetchTranslationConfigUseCase @Inject constructor(
         screenName: String,
         triggerType: DataLoadingTriggerType,
         moduleName: String,
+        transactionId: String,
         customData: Map<String, Any>
     ): Boolean {
         try {
@@ -28,6 +29,7 @@ class FetchTranslationConfigUseCase @Inject constructor(
                     screenName = screenName,
                     triggerType = triggerType,
                     moduleName = moduleName,
+                    transactionId = transactionId,
                     customData = mapOf(),
                 )
             ) {
