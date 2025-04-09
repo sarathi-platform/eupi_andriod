@@ -179,8 +179,6 @@ fun ActivitySelectTaskScreen(
 
         val selectedItems = remember { mutableStateListOf<ValuesDto>() }
 
-//        var sourceItems = updateSourceItemsList(filteredItems, options)
-
         ModalBottomSheetLayout(
             sheetState = sheetState,
             sheetShape = RoundedCornerShape(topStart = dimen_10_dp, topEnd = dimen_10_dp),
