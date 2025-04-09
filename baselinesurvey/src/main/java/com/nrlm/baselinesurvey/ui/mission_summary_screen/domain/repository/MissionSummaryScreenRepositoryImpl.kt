@@ -86,7 +86,7 @@ class MissionSummaryScreenRepositoryImpl @Inject constructor(
         return prefBSRepo.getUniqueUserIdentifier()
     }
 
-    override suspend fun getMission(missionId: Int): MissionEntity {
+    override suspend fun getMission(missionId: Int): MissionEntity? {
         return missionEntityDao.getMission(userId = getBaseLineUserId(), missionId)
     }
 

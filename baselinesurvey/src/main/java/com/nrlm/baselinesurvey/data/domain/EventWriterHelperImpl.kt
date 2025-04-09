@@ -352,22 +352,24 @@ class EventWriterHelperImpl @Inject constructor(
     ): Events {
         val mission = missionEntityDao.getMission(getBaseLineUserId(), missionId)
 
-        val mUpdateMissionStatusEventDto = UpdateMissionStatusEventDto(
-            missionId = mission.missionId,
-            actualStartDate = mission.actualStartDate,
-            completedDate = mission.actualCompletedDate,
-            referenceType = StatusReferenceType.MISSION.name,
-            status = status
-        )
+        mission?.let {
+            val mUpdateMissionStatusEventDto = UpdateMissionStatusEventDto(
+                missionId = mission.missionId,
+                actualStartDate = mission.actualStartDate,
+                completedDate = mission.actualCompletedDate,
+                referenceType = StatusReferenceType.MISSION.name,
+                status = status
+            )
 
-        val mUpdateMissionStatusEvent = repositoryImpl.createEvent(
-            mUpdateMissionStatusEventDto,
-            EventName.UPDATE_MISSION_STATUS_EVENT,
-            EventType.STATEFUL
-        )
+            val mUpdateMissionStatusEvent = repositoryImpl.createEvent(
+                mUpdateMissionStatusEventDto,
+                EventName.UPDATE_MISSION_STATUS_EVENT,
+                EventType.STATEFUL
+            )
 
-        return mUpdateMissionStatusEvent ?: Events.getEmptyEvent()
-
+            return mUpdateMissionStatusEvent ?: Events.getEmptyEvent()
+        }
+        return Events.getEmptyEvent()
     }
 
     override suspend fun markMissionInProgress(missionId: Int, status: SectionStatus) {
@@ -436,8 +438,8 @@ class EventWriterHelperImpl @Inject constructor(
                 markActivityInProgress(missionId, activityId, status)
             }
         }
-        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
-            if (missionEntity.status == null) {
+        if (missionEntity?.status != SectionStatus.COMPLETED.name && missionEntity?.status != SectionStatus.INPROGRESS.name) {
+            if (missionEntity?.status == null) {
                 markMissionInProgress(missionId, SectionStatus.INPROGRESS)
             } else {
                 markMissionInProgress(missionId, status)
@@ -536,8 +538,8 @@ class EventWriterHelperImpl @Inject constructor(
                 eventList.add(activityStatusUpdateEvent)
             }
         }
-        if (missionEntity.status != SectionStatus.COMPLETED.name && missionEntity.status != SectionStatus.INPROGRESS.name) {
-            if (missionEntity.status == null) {
+        if (missionEntity?.status != SectionStatus.COMPLETED.name && missionEntity?.status != SectionStatus.INPROGRESS.name) {
+            if (missionEntity?.status == null) {
                 val missionStatusUpdateEvent =
                     createMissionStatusUpdateEvent(missionId, SectionStatus.INPROGRESS)
                 eventList.add(missionStatusUpdateEvent)
@@ -755,7 +757,8 @@ class EventWriterHelperImpl @Inject constructor(
 
 
                 if (pendingActivityCount > 0) {
-             var currentMissionStatus=  baselineDatabase.missionEntityDao().getMission(userId =getBaseLineUserId() ,missionEntity.missionId).status
+                    var currentMissionStatus = baselineDatabase.missionEntityDao()
+                        .getMission(userId = getBaseLineUserId(), missionEntity.missionId)?.status
                     if (currentMissionStatus !=SurveyState.INPROGRESS.name) {
                         missionEntityDao.updateMissionStatus(
                             userId = getBaseLineUserId(),
@@ -769,7 +772,8 @@ class EventWriterHelperImpl @Inject constructor(
                     }
                 }
             } else {
-                var currentMissionStatus=  baselineDatabase.missionEntityDao().getMission(userId =getBaseLineUserId() ,missionEntity.missionId).status
+                var currentMissionStatus = baselineDatabase.missionEntityDao()
+                    .getMission(userId = getBaseLineUserId(), missionEntity.missionId)?.status
                 if (currentMissionStatus !=SurveyState.COMPLETED.name) {
                     missionEntityDao.updateMissionStatus(
                         userId = getBaseLineUserId(),

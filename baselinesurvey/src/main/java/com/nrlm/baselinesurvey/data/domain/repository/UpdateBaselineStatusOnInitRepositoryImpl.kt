@@ -24,7 +24,7 @@ class UpdateBaselineStatusOnInitRepositoryImpl @Inject constructor(
         return coreSharedPrefs.getUniqueUserIdentifier()
     }
 
-    override suspend fun getBaselineMission(): MissionEntity {
+    override suspend fun getBaselineMission(): MissionEntity? {
         return missionEntityDao.getMission(getUserId(), BASELINE_MISSION_ID)
     }
 

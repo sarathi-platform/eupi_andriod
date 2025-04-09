@@ -668,8 +668,8 @@ class CustomStateData constructor(
                 "An end date was provided without a start date."
             }
             // Validate that the end date appears on or after the start date.
-            require(startDate.utcTimeMillis <= endDate.utcTimeMillis) {
-                "The provided end date appears before the start date."
+            require(startDate.utcTimeMillis < endDate.utcTimeMillis) {
+                " The provided end date appears before the start date."
             }
         }
         selectedStartDate.value = startDate

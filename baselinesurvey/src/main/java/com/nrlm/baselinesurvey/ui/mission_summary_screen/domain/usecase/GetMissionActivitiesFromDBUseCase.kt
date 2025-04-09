@@ -10,7 +10,7 @@ class GetMissionActivitiesFromDBUseCase @Inject constructor(private val reposito
         return repository.getMissionActivitiesFromDB(missionId)
     }
 
-    suspend fun getMission(missionId: Int): MissionEntity {
+    suspend fun getMission(missionId: Int): MissionEntity? {
         return repository.getMission(missionId)
     }
 }

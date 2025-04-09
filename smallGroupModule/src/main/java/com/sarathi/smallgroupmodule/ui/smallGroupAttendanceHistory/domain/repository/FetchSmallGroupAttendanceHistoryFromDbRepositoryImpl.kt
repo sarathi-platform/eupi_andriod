@@ -63,15 +63,16 @@ class FetchSmallGroupAttendanceHistoryFromDbRepositoryImpl @Inject constructor(
             val dateAttribute =
                 dateMapItem.value.find { it.key == AttributesType.ATTRIBUTE_ATTENDANCE_DATE.attributeType }
             val date = dateAttribute?.value?.convertToDataType(dateAttribute.valueType) as Long
-
+            subjectEntityListMap[historyAttributesForSubject.key]?.let {
             completeSubjectHistory.add(
                 SubjectAttendanceHistoryState(
                     subjectId = historyAttributesForSubject.key,
-                    subjectEntity = subjectEntityListMap[historyAttributesForSubject.key]!!,
+                    subjectEntity = it,
                     attendance = attendance,
                     date = date
                 )
             )
+        }
         }
 
         return completeSubjectHistory

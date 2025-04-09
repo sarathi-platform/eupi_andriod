@@ -2,6 +2,7 @@ package com.nrlm.baselinesurvey.data.domain.useCase
 
 import com.nrlm.baselinesurvey.data.domain.repository.UpdateBaselineStatusOnInitRepository
 import com.nrlm.baselinesurvey.utils.states.SectionStatus
+import com.nudge.core.BLANK_STRING
 import com.nudge.core.utils.CoreLogger
 import javax.inject.Inject
 
@@ -15,9 +16,9 @@ class UpdateBaselineStatusOnInitUseCase @Inject constructor(
         try {
             val mUserId = updateBaselineStatusOnInitRepository.getUserId()
             val mission = updateBaselineStatusOnInitRepository.getBaselineMission()
-            mission.apply {
+            mission?.apply {
                 updateBaselineStatusOnInitRepository.updateBaselineMissionStatusForGrant(
-                    missionId = missionId, status = status,
+                    missionId = missionId, status = status ?: BLANK_STRING,
                     userId = mUserId
                 )
 
@@ -43,6 +44,8 @@ class UpdateBaselineStatusOnInitUseCase @Inject constructor(
     suspend fun setMissionLoadedInGrantDb() {
         val mission = updateBaselineStatusOnInitRepository.getBaselineMission()
 
-        updateBaselineStatusOnInitRepository.updateBaselineMissionDataLoadedForGrant(missionId = mission.missionId)
+        updateBaselineStatusOnInitRepository.updateBaselineMissionDataLoadedForGrant(
+            missionId = mission?.missionId ?: 0
+        )
     }
 }

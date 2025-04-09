@@ -7,7 +7,7 @@ interface UpdateBaselineStatusOnInitRepository {
 
     fun getUserId(): String
 
-    suspend fun getBaselineMission(): MissionEntity
+    suspend fun getBaselineMission(): MissionEntity?
 
     suspend fun getActivitiesForMission(
         userId: String,
