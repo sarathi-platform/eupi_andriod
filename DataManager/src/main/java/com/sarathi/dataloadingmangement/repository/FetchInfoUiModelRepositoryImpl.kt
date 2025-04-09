@@ -22,7 +22,7 @@ class FetchInfoUiModelRepositoryImpl @Inject constructor(
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
         val livelihoodName =
-            findLivelihoodSubtitle(missionUIInfoModel?.livelihoodType)
+            findLivelihoodSubtitle(missionUIInfoModel?.programLivelihoodReferenceId)
         return missionUIInfoModel?.copy(livelihoodName = livelihoodName)
     }
 
@@ -34,18 +34,18 @@ class FetchInfoUiModelRepositoryImpl @Inject constructor(
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
         val livelihoodName =
-            findLivelihoodSubtitle(activityUIInfoModel?.livelihoodType)
+            findLivelihoodSubtitle(activityUIInfoModel?.programLivelihoodReferenceId)
         return activityUIInfoModel?.copy(livelihoodName = livelihoodName)
     }
 
-    private fun findLivelihoodSubtitle(livelihoodType: String?): String? {
+    private fun findLivelihoodSubtitle(programLivelihoodReferenceId: List<Int>?): String? {
         val livelihood = livelihoodDao.getLivelihoodList(
             userId = sharedPrefs.getUniqueUserIdentifier(),
             languageCode = sharedPrefs.getSelectedLanguageCode()
         )
         val livelihoodName =
-            livelihood.find { it.type.equals(livelihoodType, true) }?.name
-                ?: livelihoodType
+            livelihood.find { programLivelihoodReferenceId?.contains(it.programLivelihoodId) == true }?.name
+
         return livelihoodName
     }
 }
