@@ -23,6 +23,7 @@ import com.nudge.core.model.EventLimitAlertUiModel
 import com.nudge.core.notifications.NotificationHandler
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.ui.events.CommonEvents
+import com.nudge.core.utils.CoreLogger
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.activities.domain.useCase.CheckEventLimitThresholdUseCase
 import com.patsurvey.nudge.base.BaseViewModel
@@ -207,7 +208,12 @@ class MainActivityViewModel @Inject constructor(
                 params.putAll(storageUsedByApp)
 
             } catch (ex: Exception) {
-                // ignore
+                CoreLogger.e(
+                    tag = "MainActivityViewModel",
+                    msg = "getStorageParams -> ex: $ex",
+                    ex = ex,
+                    stackTrace = true
+                )
             }
         }
         return params
