@@ -49,6 +49,7 @@ import com.nudge.core.ui.events.ToastMessageEvent
 import com.nudge.core.uriFromFile
 import com.nudge.core.utils.CoreLogger
 import com.nudge.core.utils.LogWriter
+import com.nudge.core.value
 import com.nudge.syncmanager.utils.SYNC_WORKER_TAG
 import com.patsurvey.nudge.BuildConfig
 import com.patsurvey.nudge.MyApplication
@@ -61,6 +62,7 @@ import com.patsurvey.nudge.database.DidiEntity
 import com.patsurvey.nudge.database.VillageEntity
 import com.patsurvey.nudge.database.service.csv.ExportHelper
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
+import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.DidiEndorsementStatus
 import com.patsurvey.nudge.utils.DidiStatus
 import com.patsurvey.nudge.utils.NudgeCore
@@ -89,7 +91,8 @@ class SettingBSViewModel @Inject constructor(
     val prefBSRepo: PrefBSRepo,
     val prefRepo: PrefRepo,
     val selectionVillageUseCase: SelectionVillageUseCase,
-    val languageRepository: LanguageRepository
+    val languageRepository: LanguageRepository,
+    val connectionMonitorV2: ConnectionMonitorV2
 ) : BaseViewModel() {
     val _optionList = mutableStateOf<List<SettingOptionModel>>(emptyList())
     val syncEventCount = mutableStateOf(0)
@@ -214,8 +217,16 @@ class SettingBSViewModel @Inject constructor(
             languageRepository.prefRepo.saveAppLanguage(DEFAULT_LANGUAGE_CODE)
             val settingUseCaseResponse = settingBSUserCase.logoutUseCase.invoke()
             delay(2000)
-            analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName)
             cancelSyncUploadWorker()
+            val params = mutableMapOf<String, String>()
+            params.put(
+                AnalyticsEventsParam.PARAM_MOBILE_NUMBER.eventParam,
+                getUserMobileNumber().value()
+            )
+            connectionMonitorV2.getIpAddress()?.let {
+                params.put(AnalyticsEventsParam.PARAM_IP_ADDRESS.eventParam, it)
+            }
+            analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGOUT.eventName, params)
             withContext(CoreDispatchers.mainDispatcher) {
                 showLoader.value = false
                 onLogout(settingUseCaseResponse)

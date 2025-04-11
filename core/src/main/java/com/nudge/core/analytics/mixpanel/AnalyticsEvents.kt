@@ -76,6 +76,8 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     CACHE_SIZE("cache_size"),
     SELECTED_LANGUAGE("selected_language"),
 
+    PARAM_MOBILE_NUMBER("mobile_number"),
+    PARAM_IP_ADDRESS("ip_address"),
 }
 
 data class CommonEventParams(
