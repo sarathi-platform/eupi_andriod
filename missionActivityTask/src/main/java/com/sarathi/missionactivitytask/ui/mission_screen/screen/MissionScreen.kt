@@ -44,6 +44,7 @@ import com.nudge.core.ui.commonUi.FilterRowItem
 import com.nudge.core.ui.commonUi.customVerticalSpacer
 import com.nudge.core.ui.events.CommonEvents
 import com.nudge.core.ui.theme.blueDark
+import com.nudge.core.ui.theme.dimen_100_dp
 import com.nudge.core.ui.theme.dimen_10_dp
 import com.nudge.core.ui.theme.dimen_12_dp
 import com.nudge.core.ui.theme.dimen_14_dp
@@ -229,6 +230,7 @@ fun MissionScreen(
 
                 LazyRow(
                     modifier = Modifier
+                        .height(dimen_100_dp)
                         .padding(horizontal = dimen_12_dp)
                 ) {
                     itemsIndexed(viewModel.missionFilterUtils.getMissionFiltersList()) { index: Int, item: FilterUiModel ->
