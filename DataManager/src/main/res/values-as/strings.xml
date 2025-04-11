@@ -146,7 +146,7 @@
     <string name="date_of_event">ঘটনাৰ তাৰিখ</string>
     <string name="type_of_adult_asset">প্ৰাপ্তবয়স্ক সম্পত্তি</string>
     <string name="type_of_child_asset">শিশু সম্পত্তি</string>
-    <string name="enter_child_asset_count">পৰিৱৰ্তনৰ বাবে শিশু সম্পত্তিৰ সংখ্যা প্ৰবিষ্ট কৰক</string>
+    <string name="enter_child_asset_count">"শিশু-সম্পদবোৰ পৰিৱৰ্তন কৰিব লাগিব "</string>
     <string name="decrese_in_number">সংখ্যা হ্ৰাস পায়:</string>
 
 </resources>

@@ -146,6 +146,6 @@
     <string name="decrese_in_number">Decrease in Number:</string>
     <string name="type_of_adult_asset">संपत्ति (व्यस्क)</string>
     <string name="type_of_child_asset">संपत्ति (बच्चे )</string>
-    <string name="enter_child_asset_count">संपत्ति (बच्चों) की संख्या में बदलाव को भरये</string>
+    <string name="enter_child_asset_count">परिवर्तन के लिए बाल संपत्ति</string>
 
 </resources>
