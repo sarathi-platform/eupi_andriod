@@ -83,6 +83,7 @@ import com.nudge.core.BLANK_STRING
 import com.nudge.core.DEFAULT_ID
 import com.nudge.core.EXPANSTION_TRANSITION_DURATION
 import com.nudge.core.TRANSITION
+import com.nudge.core.formatToIndianRupee
 import com.nudge.core.getFirstAndLastInitials
 import com.nudge.core.helper.TranslationHelper
 import com.nudge.core.showCustomToast
@@ -436,6 +437,7 @@ fun ActivitySelectTaskScreen(
                                 filteredItems,
                                 sheetState
                             )
+                            selectedItems.addAll(filteredItems.value.filter { it.isSelected == true })
                         }
                     )
                 },
@@ -455,7 +457,9 @@ fun ActivitySelectTaskScreen(
                                 filteredItems,
                                 sheetState
                             )
-                        })
+                            selectedItems.addAll(filteredItems.value.filter { it.isSelected == true })
+                        }
+                    )
                 }
             )
         }
@@ -988,10 +992,10 @@ fun DisplaySelectedOption(
                 .padding(horizontal = dimen_16_dp),
             horizontalArrangement = Arrangement.spacedBy(dimen_10_dp)
         ) {
-            SubContainerView(
+            CompletedTaskView(
                 TaskCardModel(
-                    label = options.toString(),
-                    value = BLANK_STRING,
+                    label = BLANK_STRING,
+                    value = options.toString(),
                     icon = null
                 )
             )
@@ -1185,3 +1189,36 @@ private fun NotAvailableUI(
     }
 }
 
+@Composable
+fun CompletedTaskView(
+    taskCard: TaskCardModel?,
+    isNumberFormattingRequired: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        taskCard?.icon?.let {
+            ImageViewer(it)
+            Spacer(modifier = Modifier.width(dimen_5_dp))
+        }
+
+        if (!TextUtils.isEmpty(taskCard?.label)) {
+            Text(
+                text = taskCard?.label!!,
+                color = blueDark,
+                style = newMediumTextStyle
+            )
+        }
+        if (!TextUtils.isEmpty(taskCard?.value)) {
+            Text(
+                text = if (isNumberFormattingRequired) formatToIndianRupee(taskCard?.value!!) else taskCard?.value!!,
+                color = blueDark,
+                style = newMediumTextStyle,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+        }
+    }
+}
