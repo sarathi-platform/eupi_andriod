@@ -128,6 +128,9 @@ class MainActivity : ComponentActivity(), OnLocaleChangedListener, CoreObserverI
                 buildEnvironment = BuildConfig.FLAVOR.uppercase(Locale.ENGLISH)
             )
         )
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
+            mViewModel.sendAppOpenEvent(this)
+
         appUpdateManager = AppUpdateManagerFactory.create(this)
 
         CoreObserverManager.addObserver(this)

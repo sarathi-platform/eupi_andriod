@@ -2,8 +2,10 @@ package com.patsurvey.nudge.activities.ui.login
 
 import androidx.compose.runtime.mutableStateOf
 import com.nudge.core.analytics.mixpanel.AnalyticsEvents
+import com.nudge.core.analytics.mixpanel.AnalyticsEventsParam
 import com.nudge.core.preference.CoreSharedPrefs
 import com.nudge.core.usecase.language.LanguageConfigUseCase
+import com.nudge.core.value
 import com.patsurvey.nudge.RetryHelper
 import com.patsurvey.nudge.base.BaseViewModel
 import com.patsurvey.nudge.database.VillageEntity
@@ -11,6 +13,7 @@ import com.patsurvey.nudge.model.dataModel.ErrorModel
 import com.patsurvey.nudge.model.dataModel.ErrorModelWithApi
 import com.patsurvey.nudge.utils.BLANK_STRING
 import com.patsurvey.nudge.utils.CRP_USER_TYPE
+import com.patsurvey.nudge.utils.ConnectionMonitorV2
 import com.patsurvey.nudge.utils.FAIL
 import com.patsurvey.nudge.utils.SUCCESS
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -26,7 +29,8 @@ import javax.inject.Inject
 class OtpVerificationViewModel @Inject constructor(
     private val otpVerificationRepository: OtpVerificationRepository,
     private val languageConfigUseCase: LanguageConfigUseCase,
-    private val prefs: CoreSharedPrefs
+    private val prefs: CoreSharedPrefs,
+    private val connectionMonitorV2: ConnectionMonitorV2
 ) : BaseViewModel() {
 
     val otpNumber = mutableStateOf("")
@@ -56,7 +60,15 @@ class OtpVerificationViewModel @Inject constructor(
                         onOtpResponse(it.typeName ?: CRP_USER_TYPE, true, response.message)
                     }
                 }
-                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGIN.eventName)
+                val params = mutableMapOf<String, String>()
+                params.put(
+                    AnalyticsEventsParam.PARAM_MOBILE_NUMBER.eventParam,
+                    getUserMobileNumber().value()
+                )
+                connectionMonitorV2.getIpAddress()?.let {
+                    params.put(AnalyticsEventsParam.PARAM_IP_ADDRESS.eventParam, it)
+                }
+                analyticsEventUseCase.sendAnalyticsEvent(AnalyticsEvents.LOGIN.eventName, params)
 
             } else {
                 onError(tag = "OtpVerificationViewModel", "Error : ${response.message}")

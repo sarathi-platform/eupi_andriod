@@ -28,6 +28,7 @@ enum class AnalyticsEvents(val eventName: String) {
     DATA_SYNC_EVENT_PROGRESS("data_sync_event_progress"),
     IMAGE_SYNC_EVENT_PROGRESS("image_sync_event_progress"),
     OLD_DELETE_EVENT_COUNT("old_event_delete_count"),
+    APP_LAUNCHED("app_launched"),
 }
 
 
@@ -66,8 +67,17 @@ enum class AnalyticsEventsParam(val eventParam: String) {
     TOTAL_EVENT_COUNT("total_event_count"),
 
     TOTAL_DELETED_EVENT_COUNT("total_deleted_event_count"),
-    BUILD_ENVIRONMENT_NAME("build_environment_name")
+    BUILD_ENVIRONMENT_NAME("build_environment_name"),
 
+    TOTAL_STORAGE("total_storage"),
+    FREE_STORAGE("free_storage"),
+    APP_SIZE("app_size"),
+    DATA_SIZE("data_size"),
+    CACHE_SIZE("cache_size"),
+    SELECTED_LANGUAGE("selected_language"),
+
+    PARAM_MOBILE_NUMBER("mobile_number"),
+    PARAM_IP_ADDRESS("ip_address"),
 }
 
 data class CommonEventParams(
