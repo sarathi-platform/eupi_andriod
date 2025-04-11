@@ -99,7 +99,7 @@ enum class TranslationEnum(val screenName: String, val keys: List<String> = empt
             "do_you_want_to_exit_the_app", "exit", "cancel",
             "refresh_failed_please_try_again", "app_name", "not_able_to_load",
             "no_didi_s_assigned_to_you", "search_didi", "search_by_small_groups",
-            "total_didis"
+            "total_didis", "decrese_in_number"
         )
     ),
 
